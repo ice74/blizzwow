@@ -1943,8 +1943,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     }
     else
     {
+		/* Autorise le TP des DK si la questline n'est pas termin e ou bien si le joueur n'est pas MJ
         if (getClass() == CLASS_DEATH_KNIGHT && GetMapId() == 609 && !isGameMaster() && !HasSpell(50977))
             return false;
+		*/
 
         // far teleport to another map
         Map* oldmap = IsInWorld() ? GetMap() : NULL;

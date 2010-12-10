@@ -1,0 +1,102 @@
+﻿diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
+--- a/src/server/game/Scripting/ScriptLoader.cpp
++++ b/src/server/game/Scripting/ScriptLoader.cpp
+@@ -463,5 +463,7 @@
+ void AddSC_halls_of_reflection();
+ void AddSC_boss_falric();
+ void AddSC_boss_marwyn();
+-void AddSC_boss_lord_marrowgar();       // Icecrown Citadel
++void AddSC_instance_icecrown_citadel(); //Icecrown Citadel
++void AddSC_boss_saurfang();
++void AddSC_boss_festergut();
+ void AddSC_boss_lady_deathwhisper();
+@@ -467,4 +469,6 @@
+ void AddSC_boss_lady_deathwhisper();
+-void AddSC_boss_deathbringer_saurfang();
+-void AddSC_boss_festergut();
++void AddSC_boss_lord_marrowgar();
++void AddSC_boss_professor_putricide();
++void AddSC_boss_sindragosa();
++void AddSC_boss_lichking();
+ void AddSC_boss_rotface();
+@@ -470,8 +474,8 @@
+ void AddSC_boss_rotface();
+-void AddSC_boss_professor_putricide();
+-void AddSC_boss_blood_prince_council();
+-void AddSC_icecrown_citadel_teleport();
+-void AddSC_instance_icecrown_citadel();
++void AddSC_boss_rat_des_blutes();
++void AddSC_icecrown_citadel();
++void AddSC_boss_blood_queen_lana_thel();
++void AddSC_boss_valithria();
+
+ void AddSC_dalaran();
+ void AddSC_borean_tundra();
+@@ -1148,5 +1152,7 @@
+     AddSC_halls_of_reflection();
+     AddSC_boss_falric();
+     AddSC_boss_marwyn();
+-    AddSC_boss_lord_marrowgar();        // Icecrown Citadel
++    AddSC_instance_icecrown_citadel(); //Icecrown Citadel
++    AddSC_boss_saurfang();
++    AddSC_boss_festergut();
+     AddSC_boss_lady_deathwhisper();
+@@ -1152,4 +1158,6 @@
+     AddSC_boss_lady_deathwhisper();
+-    AddSC_boss_deathbringer_saurfang();
+-    AddSC_boss_festergut();
++    AddSC_boss_lord_marrowgar();
++    AddSC_boss_professor_putricide();
++    AddSC_boss_sindragosa();
++    AddSC_boss_lichking();
+     AddSC_boss_rotface();
+@@ -1155,8 +1163,8 @@
+     AddSC_boss_rotface();
+-    AddSC_boss_professor_putricide();
+-    AddSC_boss_blood_prince_council();
+-    AddSC_icecrown_citadel_teleport();
+-    AddSC_instance_icecrown_citadel();
++    AddSC_boss_rat_des_blutes();
++    AddSC_icecrown_citadel();
++    AddSC_boss_blood_queen_lana_thel();
++    AddSC_boss_valithria();
+
+     AddSC_dalaran();
+     AddSC_borean_tundra();
+diff --git a/src/server/scripts/Northrend/CMakeLists.txt b/src/server/scripts/Northrend/CMakeLists.txt
+--- a/src/server/scripts/Northrend/CMakeLists.txt
++++ b/src/server/scripts/Northrend/CMakeLists.txt
+@@ -142,10 +142,6 @@
+   Northrend/VioletHold/boss_xevozz.cpp
+   Northrend/VioletHold/boss_erekem.cpp
+   Northrend/VioletHold/violet_hold.cpp
+-  Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+-  Northrend/IcecrownCitadel/icecrown_citadel.h
+-  Northrend/IcecrownCitadel/icecrown_citadel_teleport.cpp
+-  Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+-  Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
++  Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp
+   Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+   Northrend/IcecrownCitadel/boss_festergut.cpp
+@@ -150,3 +146,8 @@
+   Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+   Northrend/IcecrownCitadel/boss_festergut.cpp
++  Northrend/IcecrownCitadel/boss_gunship_battle.cpp
++  Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
++  Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++  Northrend/IcecrownCitadel/boss_professor_putricide.cpp
++  Northrend/IcecrownCitadel/boss_rat_des_blutes.cpp
+   Northrend/IcecrownCitadel/boss_rotface.cpp
+@@ -152,6 +153,10 @@
+   Northrend/IcecrownCitadel/boss_rotface.cpp
+-  Northrend/IcecrownCitadel/boss_professor_putricide.cpp
+-  Northrend/IcecrownCitadel/boss_blood_prince_council.cpp
++  Northrend/IcecrownCitadel/boss_sindragosa.cpp
++  Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++  Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++  Northrend/IcecrownCitadel/icecrown_citadel.cpp
++  Northrend/IcecrownCitadel/icecrown_citadel.h
++  Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+   Northrend/zuldrak.cpp
+   Northrend/icecrown.cpp
+   Northrend/Gundrak/boss_slad_ran.cpp

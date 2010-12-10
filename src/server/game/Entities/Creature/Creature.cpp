@@ -2218,9 +2218,24 @@ void Creature::GetRespawnCoord(float &x, float &y, float &z, float* ori, float* 
         }
     }
 
-    x = GetPositionX();
-    y = GetPositionY();
-    z = GetPositionZ();
+    if (m_homePosition.IsPositionValid())
+	{
+	    
+	    if((m_homePosition.GetPositionX() != 0) && (m_homePosition.GetPositionY() != 0) && (m_homePosition.GetPositionZ() != 0) )
+	    {
+	        x = m_homePosition.GetPositionX();
+            y = m_homePosition.GetPositionY();
+            z = m_homePosition.GetPositionZ();
+			if (ori)
+                *ori = GetOrientation();
+            if (dist)
+                *dist = 0;
+			return;
+		}
+	}
+	x = GetPositionX();
+	y = GetPositionY();
+	z = GetPositionZ();
     if (ori)
         *ori = GetOrientation();
     if (dist)

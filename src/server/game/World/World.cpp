@@ -1247,6 +1247,9 @@ void World::LoadConfigSettings(bool reload)
     // MySQL ping time interval
     m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfig.GetIntDefault("MaxPingTime", 30);
 
+	// Balance Battleground
+	m_int_configs[CONFIG_BALANCE_MINIMUM] = sConfig.GetIntDefault("Battleground.Balance", -1);
+	
     sScriptMgr.OnConfigLoad(reload);
 }
 

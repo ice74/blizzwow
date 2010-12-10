@@ -2360,6 +2360,12 @@ Battleground.GiveXPForKills = 0
 
 Battleground.Random.ResetHour = 6
 
+# Battleground.Balance
+#		 Description: maximum enter player
+#		 Default: -1 (disable)
+
+Battleground.Balance = -1
+
 #
 ###################################################################################################
 

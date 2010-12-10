@@ -156,6 +156,7 @@ Battleground::Battleground()
     m_MaxPlayers        = 0;
     m_MinPlayersPerTeam = 0;
     m_MinPlayers        = 0;
+	m_balance           = 0;
 
     m_MapId             = 0;
     m_Map               = NULL;
@@ -332,6 +333,7 @@ void Battleground::Update(uint32 diff)
     /*********************************************************/
 
     // if less then minimum players are in on one side, then start premature finish timer
+	UpdateBalance();
     if (GetStatus() == STATUS_IN_PROGRESS && !isArena() && sBattlegroundMgr.GetPrematureFinishTime() && (GetPlayersCountByTeam(ALLIANCE) < GetMinPlayersPerTeam() || GetPlayersCountByTeam(HORDE) < GetMinPlayersPerTeam()))
     {
         if (!m_PrematureCountDown)
@@ -1022,7 +1024,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         {
             // a player has left the battleground, so there are free slots -> add to queue
             AddToBGFreeSlotQueue();
-            sBattlegroundMgr.ScheduleQueueUpdate(0, 0, bgQueueTypeId, bgTypeId, GetBracketId());
+			sBattlegroundMgr.ScheduleQueueUpdate(0, 0, bgQueueTypeId, bgTypeId, GetBracketId());
         }
         // Let others know
         WorldPacket data;
@@ -1269,6 +1271,9 @@ void Battleground::RemoveFromBGFreeSlotQueue()
 // returns the number how many players can join battleground to MaxPlayersPerTeam
 uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
 {
+    if (HasBalanceTeam(Team))
+	    return 0;
+
     //if BG is starting ... invite anyone
     if (GetStatus() == STATUS_WAIT_JOIN)
         return (GetInvitedCount(Team) < GetMaxPlayersPerTeam()) ? GetMaxPlayersPerTeam() - GetInvitedCount(Team) : 0;
@@ -1325,6 +1330,28 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
 bool Battleground::HasFreeSlots() const
 {
     return GetPlayersSize() < GetMaxPlayers();
+}
+
+void Battleground::UpdateBalance()
+{
++	if (GetPlayersCountByTeam(ALLIANCE) < GetPlayersCountByTeam(HORDE))
+		m_balance = GetPlayersCountByTeam(HORDE) - GetPlayersCountByTeam(ALLIANCE);
+	else if (GetPlayersCountByTeam(HORDE) < GetPlayersCountByTeam(ALLIANCE))
+		m_balance = GetPlayersCountByTeam(ALLIANCE) - GetPlayersCountByTeam(HORDE);
+	else
+		m_balance = 0;
+}
+
+bool Battleground::HasBalanceTeam(uint32 TeamId) const
+{
+    if (sWorld.getIntConfig(CONFIG_BALANCE_MINIMUM) < 0)
+		return false;
+	if (m_balance > sWorld.getIntConfig(CONFIG_BALANCE_MINIMUM))
+	{
+		if (GetPlayersCountByTeam(TeamId) > GetPlayersCountByTeam(GetOtherTeam(TeamId)))
+			return true;
+	}
+	return false;
 }
 
 void Battleground::UpdatePlayerScore(Player *Source, uint32 type, uint32 value, bool doAddHonor)

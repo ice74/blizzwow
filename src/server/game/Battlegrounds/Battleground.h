@@ -417,6 +417,8 @@ class Battleground
                 return m_InvitedHorde;
         }
         bool HasFreeSlots() const;
+		bool HasBalanceTeam(uint32 TeamId) const;
+		void UpdateBalance();
         uint32 GetFreeSlotsForTeam(uint32 Team) const;
 
         bool isArena() const        { return m_IsArena; }
@@ -630,6 +632,7 @@ class Battleground
         bool   m_IsRated;                                   // is this battle rated?
         bool   m_PrematureCountDown;
         uint32 m_PrematureCountDownTimer;
+		uint32 m_balance;
         char const *m_Name;
 
         /* Player lists */

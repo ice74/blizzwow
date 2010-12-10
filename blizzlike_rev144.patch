@@ -1,0 +1,20 @@
+# HG changeset patch
+# User asniker
+# Date 1288860388 -18000
+# Node ID 23307ab0d0a4039bf8dc3e94f6a8737d095090d7
+# Parent  8f8059c57321e9c9ea45119d45325e0dbbcf8a39
+Fix crash when core takes no event data
+
+diff --git a/src/server/shared/Utilities/EventProcessor.cpp b/src/server/shared/Utilities/EventProcessor.cpp
+--- a/src/server/shared/Utilities/EventProcessor.cpp
++++ b/src/server/shared/Utilities/EventProcessor.cpp
+@@ -44,6 +44,9 @@
+         BasicEvent* Event = i->second;
+         m_events.erase(i);
+ 
++		if (!Event)
++			continue;
++
+         if (!Event->to_Abort)
+         {
+             if (Event->Execute(m_time, p_time))

@@ -1,0 +1,49 @@
+# HG changeset patch
+# User asniker
+# Date 1289724103 -18000
+# Node ID 63b193a9d6c7eb6a734e7bc1c753b8dc7961f74f
+# Parent  277186b2d0b0da6a0a92744dbd80e73755d02413
+fix Waylay spell
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5917,9 +5917,19 @@
+ UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=33658;
+ UPDATE `quest_template` SET `ReqCreatureOrGOId2` = 33272, `ReqSpellCast2` = 63010 WHERE `entry` = 13839;
+ 
+-
+-
+-
+-
+-
+-
++DELETE FROM `spell_proc_event` WHERE `entry` IN (51696);
++INSERT INTO `spell_proc_event` VALUES (51696, 0x00, 8, 0x00000204, 0x00000000, 
++0x00000000, 0x00000000, 0x00000000, 0.000000, 100.000000, 0);
++
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (51692);
++INSERT INTO `spell_proc_event` VALUES (51692, 0x00, 8, 0x00000204, 0x00000000, 
++0x00000000, 0x00000000, 0x00000000, 0.000000, 50.000000, 0);
++
++
++
++
++
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix Waylay.sql b/sql/Blizzlike@Sacred-core/new fix/fix Waylay.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix Waylay.sql	
+@@ -0,0 +1,8 @@
++﻿DELETE FROM `spell_proc_event` WHERE `entry` IN (51696);
++INSERT INTO `spell_proc_event` VALUES (51696, 0x00, 8, 0x00000204, 0x00000000, 
++0x00000000, 0x00000000, 0x00000000, 0.000000, 100.000000, 0);
++
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (51692);
++INSERT INTO `spell_proc_event` VALUES (51692, 0x00, 8, 0x00000204, 0x00000000, 
++0x00000000, 0x00000000, 0x00000000, 0.000000, 50.000000, 0);

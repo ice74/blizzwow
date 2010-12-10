@@ -1,0 +1,271 @@
+# HG changeset patch
+# User asniker
+# Date 1289390077 -18000
+# Node ID b8d62207e16900bb2e892c48b3f71d0e2fc0e309
+# Parent  320e5616210ab8783c64f5e0e1dbaaea24b554ed
+fix icecrown citadel
+fix ruby sanctum
+fix resilence
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -1042,47 +1042,53 @@
+                 }
+ 
+ 				// Reduce damage from resilience for players and pets only.
+-            // As of patch 3.3 pets inherit 100% of master resilience.
+-            if (GetSpellModOwner())
+-                if (Player* modOwner = pVictim->GetSpellModOwner())
+-                {
+-                    if (crit)
+-                    {
+-                        if (attackType != RANGED_ATTACK)
+-                            damage -= modOwner->GetMeleeCritDamageReduction(damage);
+-                        else
+-                            damage -= modOwner->GetRangedCritDamageReduction(damage);
+-                    }
+-                    if (attackType != RANGED_ATTACK)
+-                        damage -= modOwner->GetMeleeDamageReduction(damage);
+-                    else
+-                        damage -= modOwner->GetRangedDamageReduction(damage);
+-                }
+-         }
+-            break;
++				// As of patch 3.3 pets inherit 100% of master resilience.
++				if (GetSpellModOwner())
++					if (Player* modOwner = pVictim->GetSpellModOwner())
++					{
++						if (crit)
++						{
++							if (attackType != RANGED_ATTACK)
++								damage -= modOwner->GetMeleeCritDamageReduction(damage);
++							else
++								damage -= modOwner->GetRangedCritDamageReduction(damage);
++						}
++						if (attackType != RANGED_ATTACK)
++							damage -= modOwner->GetMeleeDamageReduction(damage);
++						else
++							 damage -= modOwner->GetRangedDamageReduction(damage);
++					}
++                if (attackType != RANGED_ATTACK)
++                    ApplyResilience(pVictim, NULL, &damage, crit, CR_CRIT_TAKEN_MELEE);
++                else
++                    ApplyResilience(pVictim, NULL, &damage, crit, CR_CRIT_TAKEN_RANGED);
++            }
+         // Magical Attacks
+         case SPELL_DAMAGE_CLASS_NONE:
+         case SPELL_DAMAGE_CLASS_MAGIC:
+             {
++
+                 // If crit add critical bonus
+-             if (crit)
+-             {
+-                damageInfo->HitInfo |= SPELL_HIT_TYPE_CRIT;
+-				damage = SpellCriticalDamageBonus(spellInfo, damage, pVictim);                
+-            }
+-
+-            // Reduce damage from resilience for players and pets only.
+-            // As of patch 3.3 pets inherit 100% of master resilience.
+-            if (GetSpellModOwner())
+-                if (Player* modOwner = pVictim->GetSpellModOwner())
+-                {
+-                    if (crit)
+-                        damage -= modOwner->GetSpellCritDamageReduction(damage);
+-                    damage -= modOwner->GetSpellDamageReduction(damage);
+-                }
+-         }
+-         break;
+-     }
++                if (crit)
++                {
++                    damageInfo->HitInfo |= SPELL_HIT_TYPE_CRIT;
++                    damage = SpellCriticalDamageBonus(spellInfo, damage, pVictim);
++                }
++				{
++					// Reduce damage from resilience for players and pets only.
++					// As of patch 3.3 pets inherit 100% of master resilience.
++					if (GetSpellModOwner())
++						if (Player* modOwner = pVictim->GetSpellModOwner())
++						{
++							if (crit)
++								damage -= modOwner->GetSpellCritDamageReduction(damage);
++							damage -= modOwner->GetSpellDamageReduction(damage);
++						}
++				}
++                ApplyResilience(pVictim, NULL, &damage, crit, CR_CRIT_TAKEN_SPELL);
++            }
++            break;
++    }
+ 
+     // Calculate absorb resist
+     if (damage > 0)
+@@ -1265,8 +1271,8 @@
+ 						 damageInfo->damage      -= resilienceReduction;
+ 						 damageInfo->cleanDamage += resilienceReduction;
+ 					 }
+-            break;
+ 			}
++            break;
+         case MELEE_HIT_PARRY:
+             damageInfo->TargetState  = VICTIMSTATE_PARRY;
+             damageInfo->procEx      |= PROC_EX_PARRY;
+@@ -1326,6 +1332,15 @@
+             break;
+     }
+ 
++   int32 resilienceReduction = damageInfo->damage;
++    if (attackType != RANGED_ATTACK)
++        ApplyResilience(pVictim, NULL, &resilienceReduction, (damageInfo->hitOutCome == MELEE_HIT_CRIT), CR_CRIT_TAKEN_MELEE);
++    else
++        ApplyResilience(pVictim, NULL, &resilienceReduction, (damageInfo->hitOutCome == MELEE_HIT_CRIT), CR_CRIT_TAKEN_RANGED);
++    resilienceReduction = damageInfo->damage - resilienceReduction;
++    damageInfo->damage      -= resilienceReduction;
++    damageInfo->cleanDamage += resilienceReduction;
++
+     // Reduce damage from resilience for players and pets only.
+ 	// As of patch 3.3 pets inherit 100% of master resilience.
+ 	if (GetSpellModOwner())
+@@ -3103,18 +3118,26 @@
+     if (attackType != RANGED_ATTACK)
+     {
+ 		 // Reduce crit chance from resilience for players and pets only.
+-        // As of patch 3.3 pets inherit 100% of master resilience.
+-        if (GetSpellModOwner())
+-            if (Player* modOwner = pVictim->GetSpellModOwner())
+-                crit -= modOwner->GetMeleeCritChanceReduction();
++	// As of patch 3.3 pets inherit 100% of master resilience.
++		{
++			if (GetSpellModOwner())
++		if (Player* modOwner = pVictim->GetSpellModOwner())
++			crit -= modOwner->GetMeleeCritChanceReduction();
++        ApplyResilience(pVictim, &crit, NULL, false, CR_CRIT_TAKEN_MELEE);
++
+         // Glyph of barkskin
+         if (pVictim->HasAura(63057) && pVictim->HasAura(22812))
+             crit -= 25.0f;
+-    }
+-    else if (GetSpellModOwner())
+-        if (Player* modOwner = pVictim->GetSpellModOwner())
+-            crit -= modOwner->GetRangedCritChanceReduction();
+-
++
++    	 else if (GetSpellModOwner())
++		 if (Player* modOwner = pVictim->GetSpellModOwner())
++			 crit -= modOwner->GetRangedCritChanceReduction();
++    }
++	}
++    else
++        ApplyResilience(pVictim, &crit, NULL, false, CR_CRIT_TAKEN_RANGED);
++
++	
+     // Apply crit chance from defence skill
+     crit += (int32(GetMaxSkillValueForLevel(pVictim)) - int32(pVictim->GetDefenseSkillValue(this))) * 0.04f;
+ 
+@@ -10961,13 +10984,15 @@
+                     crit_chance += pVictim->GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_ATTACKER_SPELL_CRIT_CHANCE, schoolMask);
+                     // Modify critical chance by victim SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE
+                     crit_chance += pVictim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
+-           
+-				 // Reduce crit chance from resilience for players and pets only.
+-                    // As of patch 3.3 pets inherit 100% of master resilience.
+-                    if (GetSpellModOwner())
+-                        if (Player* modOwner = pVictim->GetSpellModOwner())
+-                            crit_chance -= modOwner->GetSpellCritChanceReduction();
+-                 }
++					ApplyResilience(pVictim, &crit_chance, NULL, false, CR_CRIT_TAKEN_SPELL);
++                }
++
++				// Reduce crit chance from resilience for players and pets only.
++				// As of patch 3.3 pets inherit 100% of master resilience.
++				if (GetSpellModOwner())
++					if (Player* modOwner = pVictim->GetSpellModOwner())
++						crit_chance -= modOwner->GetSpellCritChanceReduction();
++      				
+                 // scripted (increase crit chance ... against ... target by x%
+                 AuraEffectList const& mOverrideClassScript = GetAuraEffectsByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
+                 for (AuraEffectList::const_iterator i = mOverrideClassScript.begin(); i != mOverrideClassScript.end(); ++i)
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -1288,6 +1288,16 @@
+                     cleanDamage.mitigated_damage += damage - damageReductedArmor;
+                     damage = damageReductedArmor;
+                 }
++
++				// Reduce damage from resilience for players and pets only.
++			// As of patch 3.3 pets inherit 100% of master resilience.
++			 if (caster->GetSpellModOwner())
++				 if (Player* modOwner = target->GetSpellModOwner())
++				 {
++					 if (CR_CRIT_TAKEN_SPELL)
++						 damage -= modOwner->GetSpellCritDamageReduction(damage);
++					 damage -= modOwner->GetSpellDamageReduction(damage);
++				 }
+                 
+                 // Curse of Agony damage-per-tick calculation
+                 if (GetSpellProto()->SpellFamilyName == SPELLFAMILY_WARLOCK && (GetSpellProto()->SpellFamilyFlags[0] & 0x400) && GetSpellProto()->SpellIconID == 544)
+@@ -1338,15 +1348,9 @@
+             if (crit)
+                 damage = caster->SpellCriticalDamageBonus(m_spellProto, damage, target);
+ 
+-            // Reduce damage from resilience for players and pets only.
+-            // As of patch 3.3 pets inherit 100% of master resilience.
+-            if (caster->GetSpellModOwner())
+-                if (Player* modOwner = target->GetSpellModOwner())
+-                {
+-                    if (crit)
+-                        damage -= modOwner->GetSpellCritDamageReduction(damage);
+-                    damage -= modOwner->GetSpellDamageReduction(damage);
+-                }
++			int32 dmg = damage;
++			caster->ApplyResilience(target, NULL, &dmg, crit, CR_CRIT_TAKEN_SPELL);
++			damage = dmg;
+ 
+             caster->CalcAbsorbResist(target, GetSpellSchoolMask(GetSpellProto()), DOT, damage, &absorb, &resist, m_spellProto);
+ 
+@@ -1423,16 +1427,10 @@
+                 damage = damageReductedArmor;
+             }
+ 
+-            // Reduce damage from resilience for players and pets only.
+-            // As of patch 3.3 pets inherit 100% of master resilience.
+-            if (caster->GetSpellModOwner())
+-                if (Player* modOwner = target->GetSpellModOwner())
+-                {
+-                    if (crit)
+-                        damage -= modOwner->GetSpellCritDamageReduction(damage);
+-                    damage -= modOwner->GetSpellDamageReduction(damage);
+-                }
+-
++			int32 dmg = damage;
++			caster->ApplyResilience(target, NULL, &dmg, crit, CR_CRIT_TAKEN_SPELL);
++			damage = dmg;
++          
+             caster->CalcAbsorbResist(target, GetSpellSchoolMask(GetSpellProto()), DOT, damage, &absorb, &resist, m_spellProto);
+ 
+             if (target->GetHealth() < damage)
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+@@ -360,7 +360,7 @@
+                             DoCast(pTarget, SPELL_COLD_FLAME_SPAWN);
+                         }
+ 						 else
+-+                        {
++                        {
+                             pInstance->SetData(DATA_ANGLE, (me->GetAngle(me->getVictim())*1000));
+                             DoCast(me->getVictim(), SPELL_COLD_FLAME_SPAWN);
+                         }
+diff --git a/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp b/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
+--- a/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
++++ b/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
+@@ -584,7 +584,7 @@
+ 
+             void Register()
+             {
+-                OnEffect += SpellEffectFn(spell_halion_portal_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
++                OnEffect += SpellEffectFn(spell_halion_portal_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+             }
+         };
+ 

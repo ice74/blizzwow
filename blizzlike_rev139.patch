@@ -1,0 +1,76 @@
+# HG changeset patch
+# User asniker
+# Date 1288855680 -18000
+# Node ID 7bc7677f0e85f915ea990a2a7b0ce84c906a1ed0
+# Parent  15e88fbe9005a7d2f1054a4d925231840553fd61
+������� ������ ������ mute, ban, kick
+
+diff --git a/src/server/game/Chat/Commands/Level2.cpp b/src/server/game/Chat/Commands/Level2.cpp
+--- a/src/server/game/Chat/Commands/Level2.cpp
++++ b/src/server/game/Chat/Commands/Level2.cpp
+@@ -64,7 +64,7 @@
+ 
+     if(!mutereason)
+     {
+-        PSendSysMessage("You must enter a reason of mute");
++        PSendSysMessage("Вы должны ввести причину блокировки чата");
+         SetSentErrorMessage(true);
+         return false;
+     }
+@@ -102,13 +102,13 @@
+ 
+     PSendSysMessage(LANG_YOU_DISABLE_CHAT, nameLink.c_str(), notspeaktime, mutereasonstr.c_str());
+ 
+-    announce = "The character '";
++    announce = "У игрока '";
+     announce += nameStr;
+-    announce += "' was muted for ";
++    announce += "' был отключён чат на ";
+     announce += delayStr;
+-    announce += " minutes by the character '";
++    announce += " минут гейм-мастером '";
+     announce += m_session->GetPlayerName();
+-    announce += "'. The reason is: ";
++    announce += "'. Причина: ";
+     announce += mutereason;
+     HandleAnnounceCommand(announce.c_str());
+ 
+@@ -2093,9 +2093,9 @@
+     PSendSysMessage(LANG_COMMAND_KICKMESSAGE,GetNameLink(target).c_str());
+     target->GetSession()->KickPlayer();
+ 
+-    announce = "The character '";
++    announce = "Игрок '";
+     announce += target->GetName();
+-    announce += "' was kicked by the character '";
++    announce += "' был кикнуть из мира персонажем '";
+     announce += m_session->GetPlayerName();
+     announce += "'.";
+     HandleAnnounceCommand(announce.c_str());
+diff --git a/src/server/game/Chat/Commands/Level3.cpp b/src/server/game/Chat/Commands/Level3.cpp
+--- a/src/server/game/Chat/Commands/Level3.cpp
++++ b/src/server/game/Chat/Commands/Level3.cpp
+@@ -5774,17 +5774,17 @@
+     }
+ 
+ 	if (mode == BAN_CHARACTER)
+-        announce = "The character '";
++        announce = "Игрок '";
+     else if (mode == BAN_IP)
+-        announce = "The IP '";
++        announce = "IP-адресс '";
+     else
+-    announce = "Account '";
++    announce = "Аккаунт '";
+     announce += nameOrIP.c_str();
+-    announce += "' was banned for ";
++    announce += "' был забанен на ";
+     announce += duration;
+-    announce += " by the character '";
++    announce += " гейм-мастером '";
+     announce += m_session->GetPlayerName();
+-    announce += "'. The reason is: ";
++    announce += "'. Причина: ";
+     announce += reason;
+     HandleAnnounceCommand(announce.c_str());
+ 

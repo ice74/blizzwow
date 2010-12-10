@@ -1,0 +1,18 @@
+# HG changeset patch
+# User asniker
+# Date 1289385328 -18000
+# Node ID be334e5c2e9a422422a64ba1409ced7f6d7c2ebc
+# Parent  739abf8359dd4216b2a094f97875b98cb4025a69
+fix bug with updating stats
+
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -6427,6 +6427,7 @@
+                         return SPELL_FAILED_DONT_REPORT;
+                     }
+                 }
++				break;
+             case SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC:
+             {
+                 Item* targetItem = m_targets.getItemTarget();

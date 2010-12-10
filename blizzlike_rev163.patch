@@ -1,0 +1,780 @@
+# HG changeset patch
+# User asniker
+# Date 1289385250 -18000
+# Node ID 739abf8359dd4216b2a094f97875b98cb4025a69
+# Parent  5976476a2e2dc74d24cc65800e1ca68792fd64db
+update icecrown citadel
+update ruby sanctum
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -1948,6 +1948,18 @@
+ UPDATE `creature_template` SET `dynamicflags` = 8, `npcflag` = 0, `unit_flags` = 32832 WHERE `entry` = 38995;
+ UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14 WHERE `entry` IN (36899,38123);
+ UPDATE `creature_template` SET `MovementType` = 1 WHERE `entry` IN(37985,37799,39284,39285,39286);
++UPDATE `creature_template` SET `InhabitType`=5,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=30298;
++UPDATE `creature_template` SET `InhabitType`=5,`minlevel`=82,`maxlevel`=82,`faction_A`=14,`faction_H`=14,`speed_walk`=0.142857 WHERE `entry` IN (38454,38775,38776,38777); -- Kinetic Bomb
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38458; -- Kinetic Bomb Target
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38422; -- Shock Vortex
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`speed_walk`=1.57143,`unit_flags`=33554432,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38332; -- Ball of Flame
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`speed_walk`=1.57143,`unit_flags`=33554432,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38451; -- Ball of Inferno Flame
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10092,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37970,38401,38784,38785); -- Prince Valanar
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10077,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37972,38399,38769,38770); -- Prince Keleseth
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10091,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37973,38400,38771,38772); -- Prince Taldaram
++UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
++UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
++
+ 
+ -- Spell
+ 
+@@ -1966,12 +1978,17 @@
+ 
+ -- Creature addon template
+ 
+-DELETE FROM `creature_addon` WHERE `guid` = 136107;
++	
++
++DELETE FROM `creature_addon` WHERE `guid` IN (136107,104365);
+ DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918);
+ 
+ INSERT INTO creature_addon (`guid`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (136107, 0, 0, 0, 1, 0, '18950 0 18950 1 72242 0');
+ 
++INSERT INTO `creature_addon` (`guid`, `bytes1`) VALUES
++(104365,0x03000000); -- Blood Queen Lana'Thel
++
+ INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (37690, 0, 0, 0, 0, 0, '70345 0  70343 0'),
+ (37672, 0, 0, 0, 0, 0, '70385 0 70405 0'),
+@@ -1987,6 +2004,9 @@
+ 
+ DELETE FROM `conditions` WHERE `SourceEntry` IN (69508,70881,70360,36659,70781,70856,70857,70858,70859,70860,70861,69157,71614,70588);
+ DELETE FROM `conditions` WHERE `ConditionValue2` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
++DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceEntry` IN (70952,70982,70981,70983,71070,71081,71080);
++DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=21 AND `SourceGroup` IN (37672,38285);
++
+ 
+ INSERT INTO `conditions` (`SourceTypeOrReferenceId`,`SourceGroup`,`SourceEntry`,`ElseGroup`,`ConditionTypeOrReference`,`ConditionValue1`,`ConditionValue2`,`ConditionValue3`,`ErrorTextId`,`ScriptName`,`Comment`) VALUES
+ (13,0,70360,0,18,1,37690,0,0, '', ''),
+@@ -1997,7 +2017,18 @@
+ (13,0,70588,0,18,1,36789,0,0, '', 'Valithria - Suppression'),
+ (13,0,70588,0,18,1,38174,0,0, '', 'Valithria - Suppression'),
+ (13,0,71617,0,18,1,38317,0,0, '', 'Putricide - Tear Gas'),
+-(13,0,69125,0,18,1,37013,0,0, '', '');
++(13,0,69125,0,18,1,37013,0,0, '', ''),
++(21,37672,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
++(21,38285,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
++(13,0,70952,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood'),
++(13,0,70982,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood'),
++(13,0,70981,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood'),
++(13,0,70983,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood beam'),
++(13,0,70983,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood beam'),
++(13,0,70983,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood beam'),
++(13,0,71070,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood visual'),
++(13,0,71081,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood visual'),
++(13,0,71080,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood visual');
+ 
+ -- creature
+ 
+@@ -2019,7 +2050,7 @@
+ -- Linked spell
+ 
+ DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (72202,70117);
+-DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291);
++DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291, 70338,72846);
+ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
+ (70360,70347,0,'Eat Ooze'),
+ (72379,72380,0,'Blood Nova'),
+@@ -2041,7 +2072,10 @@
+ (-71224,69706,0, 'Rotface: Mutated Infection Summon'),
+ (-73022,69706,0, 'Rotface: Mutated Infection Summon'),
+ (-73023,69706,0, 'Rotface: Mutated Infection Summon'),
+-(-69290,69291,0, 'Festergut: Gaseous spore');
++(-69290,69291,0, 'Festergut: Gaseous spore'),
++(-70337,70338,0, 'The Lich King: Necrotic plague initial cast'),
++(-70337,72846,0, 'The Lich King: Necrotic plague immun'),
++(-70338,70338,0, 'The Lich King: Necrotic jump');
+ 
+ -- Linked Respawn
+ 
+@@ -2072,7 +2106,7 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (72262) AND `ScriptName`='spell_lich_king_quake';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (74361) AND `ScriptName`='spell_lich_king_valkyr_summon';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70541,73779,73780,73781) AND `ScriptName`='spell_lich_king_infection';
+-DELETE FROM `spell_script_names` WHERE `spell_id` IN (73781,73785,73786,73787) AND `ScriptName`='spell_lich_king_necrotic_plague';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70338,73785,73786,73787) AND `ScriptName`='spell_lich_king_necrotic_plague';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (69075,70834,70835,70836) AND `ScriptName`='spell_lord_marrowgar_bone_storm';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70157) AND `ScriptName`='spell_sindragosa_ice_tomb';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70127,72528,72529,72530) AND `ScriptName`='spell_sindragosa_mystic_buffet';
+@@ -2086,7 +2120,7 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id`=71806 AND `ScriptName`='spell_taldaram_glittering_sparks';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (71718,72040) AND `ScriptName`='spell_taldaram_summon_flame_ball';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (55891,55947) AND `ScriptName`='spell_taldaram_flame_ball_visual';
+-DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72783) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72784) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72080 AND `ScriptName`='spell_valanar_kinetic_bomb';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
+@@ -2110,7 +2144,7 @@
+ (73779,'spell_lich_king_infection'),
+ (73780,'spell_lich_king_infection'),
+ (73781,'spell_lich_king_infection'),
+-(73781,'spell_lich_king_necrotic_plague'),
++(70338,'spell_lich_king_necrotic_plague'),
+ (73785,'spell_lich_king_necrotic_plague'),
+ (73786,'spell_lich_king_necrotic_plague'),
+ (73787,'spell_lich_king_necrotic_plague'),
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
+@@ -63,3 +63,51 @@
+ (37970,-1631138,'BOW DOWN BEFORE THE SAN''LAYN!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16684,1,0,0,'SAY_VALANAR_BERSERK'),
+ (37970,-1631139,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'SAY_VALANAR_DEATH');
+ 
++
++INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
++(-70337,70338,0, 'The Lich King: Necrotic plague initial cast'),
++(-70337,72846,0, 'The Lich King: Necrotic plague immun'),
++(-70338,70338,0, 'The Lich King: Necrotic jump');
++
++
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (73781) AND `ScriptName`='spell_lich_king_necrotic_plague';
++INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
++(70338,'spell_lich_king_necrotic_plague');
++
++UPDATE `creature_template` SET `InhabitType`=5,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=30298;
++UPDATE `creature_template` SET `InhabitType`=5,`minlevel`=82,`maxlevel`=82,`faction_A`=14,`faction_H`=14,`speed_walk`=0.142857 WHERE `entry` IN (38454,38775,38776,38777); -- Kinetic Bomb
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38458; -- Kinetic Bomb Target
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38422; -- Shock Vortex
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`speed_walk`=1.57143,`unit_flags`=33554432,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38332; -- Ball of Flame
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`speed_walk`=1.57143,`unit_flags`=33554432,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38451; -- Ball of Inferno Flame
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10092,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37970,38401,38784,38785); -- Prince Valanar
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10077,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37972,38399,38769,38770); -- Prince Keleseth
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10091,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37973,38400,38771,38772); -- Prince Taldaram
++UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
++UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
++
++INSERT INTO `creature_addon` (`guid`, `bytes1`) VALUES
++(201252,0x03000000); -- Blood Queen Lana'Thel
++
++DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceEntry` IN (70952,70982,70981,70983,71070,71081,71080);
++DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=21 AND `SourceGroup` IN (37672,38285);
++
++(21,37672,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
++(21,38285,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
++(13,0,70952,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood'),
++(13,0,70982,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood'),
++(13,0,70981,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood'),
++(13,0,70983,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood beam'),
++(13,0,70983,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood beam'),
++(13,0,70983,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood beam'),
++(13,0,71070,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood visual'),
++(13,0,71081,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood visual'),
++(13,0,71080,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood visual');
++
++
++INSERT INTO `creature_addon` (`guid`, `bytes1`) VALUES
++(104365,0x03000000); -- Blood Queen Lana'Thel
++
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+--- a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
++++ b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+@@ -84,6 +84,18 @@
+ UPDATE `creature_template` SET `dynamicflags` = 8, `npcflag` = 0, `unit_flags` = 32832 WHERE `entry` = 38995;
+ UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14 WHERE `entry` IN (36899,38123);
+ UPDATE `creature_template` SET `MovementType` = 1 WHERE `entry` IN(37985,37799,39284,39285,39286);
++UPDATE `creature_template` SET `InhabitType`=5,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=30298;
++UPDATE `creature_template` SET `InhabitType`=5,`minlevel`=82,`maxlevel`=82,`faction_A`=14,`faction_H`=14,`speed_walk`=0.142857 WHERE `entry` IN (38454,38775,38776,38777); -- Kinetic Bomb
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38458; -- Kinetic Bomb Target
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38422; -- Shock Vortex
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`speed_walk`=1.57143,`unit_flags`=33554432,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38332; -- Ball of Flame
++UPDATE `creature_template` SET `minlevel`=82,`maxlevel`=82,`exp`=2,`speed_walk`=1.57143,`unit_flags`=33554432,`flags_extra`=`flags_extra`|0x80 WHERE `entry`=38451; -- Ball of Inferno Flame
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10092,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37970,38401,38784,38785); -- Prince Valanar
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10077,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37972,38399,38769,38770); -- Prince Keleseth
++UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10091,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37973,38400,38771,38772); -- Prince Taldaram
++UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
++UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
++
+ 
+ -- Spell
+ 
+@@ -102,12 +114,17 @@
+ 
+ -- Creature addon template
+ 
+-DELETE FROM `creature_addon` WHERE `guid` = 136107;
++	
++
++DELETE FROM `creature_addon` WHERE `guid` IN (136107,104365);
+ DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918);
+ 
+ INSERT INTO creature_addon (`guid`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (136107, 0, 0, 0, 1, 0, '18950 0 18950 1 72242 0');
+ 
++INSERT INTO `creature_addon` (`guid`, `bytes1`) VALUES
++(104365,0x03000000); -- Blood Queen Lana'Thel
++
+ INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (37690, 0, 0, 0, 0, 0, '70345 0  70343 0'),
+ (37672, 0, 0, 0, 0, 0, '70385 0 70405 0'),
+@@ -123,6 +140,9 @@
+ 
+ DELETE FROM `conditions` WHERE `SourceEntry` IN (69508,70881,70360,36659,70781,70856,70857,70858,70859,70860,70861,69157,71614,70588);
+ DELETE FROM `conditions` WHERE `ConditionValue2` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
++DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceEntry` IN (70952,70982,70981,70983,71070,71081,71080);
++DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=21 AND `SourceGroup` IN (37672,38285);
++
+ 
+ INSERT INTO `conditions` (`SourceTypeOrReferenceId`,`SourceGroup`,`SourceEntry`,`ElseGroup`,`ConditionTypeOrReference`,`ConditionValue1`,`ConditionValue2`,`ConditionValue3`,`ErrorTextId`,`ScriptName`,`Comment`) VALUES
+ (13,0,70360,0,18,1,37690,0,0, '', ''),
+@@ -133,7 +153,18 @@
+ (13,0,70588,0,18,1,36789,0,0, '', 'Valithria - Suppression'),
+ (13,0,70588,0,18,1,38174,0,0, '', 'Valithria - Suppression'),
+ (13,0,71617,0,18,1,38317,0,0, '', 'Putricide - Tear Gas'),
+-(13,0,69125,0,18,1,37013,0,0, '', '');
++(13,0,69125,0,18,1,37013,0,0, '', ''),
++(21,37672,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
++(21,38285,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
++(13,0,70952,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood'),
++(13,0,70982,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood'),
++(13,0,70981,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood'),
++(13,0,70983,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood beam'),
++(13,0,70983,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood beam'),
++(13,0,70983,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood beam'),
++(13,0,71070,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood visual'),
++(13,0,71081,0,18,1,37973,0,0, '', 'Taldaram - Invocation of Blood visual'),
++(13,0,71080,0,18,1,37972,0,0, '', 'Keleseth - Invocation of Blood visual');
+ 
+ -- creature
+ 
+@@ -155,7 +186,7 @@
+ -- Linked spell
+ 
+ DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (72202,70117);
+-DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291);
++DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291, 70338,72846);
+ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
+ (70360,70347,0,'Eat Ooze'),
+ (72379,72380,0,'Blood Nova'),
+@@ -177,7 +208,10 @@
+ (-71224,69706,0, 'Rotface: Mutated Infection Summon'),
+ (-73022,69706,0, 'Rotface: Mutated Infection Summon'),
+ (-73023,69706,0, 'Rotface: Mutated Infection Summon'),
+-(-69290,69291,0, 'Festergut: Gaseous spore');
++(-69290,69291,0, 'Festergut: Gaseous spore'),
++(-70337,70338,0, 'The Lich King: Necrotic plague initial cast'),
++(-70337,72846,0, 'The Lich King: Necrotic plague immun'),
++(-70338,70338,0, 'The Lich King: Necrotic jump');
+ 
+ -- Linked Respawn
+ 
+@@ -208,7 +242,7 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (72262) AND `ScriptName`='spell_lich_king_quake';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (74361) AND `ScriptName`='spell_lich_king_valkyr_summon';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70541,73779,73780,73781) AND `ScriptName`='spell_lich_king_infection';
+-DELETE FROM `spell_script_names` WHERE `spell_id` IN (73781,73785,73786,73787) AND `ScriptName`='spell_lich_king_necrotic_plague';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70338,73785,73786,73787) AND `ScriptName`='spell_lich_king_necrotic_plague';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (69075,70834,70835,70836) AND `ScriptName`='spell_lord_marrowgar_bone_storm';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70157) AND `ScriptName`='spell_sindragosa_ice_tomb';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70127,72528,72529,72530) AND `ScriptName`='spell_sindragosa_mystic_buffet';
+@@ -222,7 +256,7 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id`=71806 AND `ScriptName`='spell_taldaram_glittering_sparks';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (71718,72040) AND `ScriptName`='spell_taldaram_summon_flame_ball';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (55891,55947) AND `ScriptName`='spell_taldaram_flame_ball_visual';
+-DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72783) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72784) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72080 AND `ScriptName`='spell_valanar_kinetic_bomb';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
+@@ -246,7 +280,7 @@
+ (73779,'spell_lich_king_infection'),
+ (73780,'spell_lich_king_infection'),
+ (73781,'spell_lich_king_infection'),
+-(73781,'spell_lich_king_necrotic_plague'),
++(70338,'spell_lich_king_necrotic_plague'),
+ (73785,'spell_lich_king_necrotic_plague'),
+ (73786,'spell_lich_king_necrotic_plague'),
+ (73787,'spell_lich_king_necrotic_plague'),
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+@@ -235,8 +235,7 @@
+                 m_uiBoneStormTimer = 45000;
+                 m_uiBoneStormRemoveTimer = 20000;
+                 m_uiBerserkTimer = 600000;
+-                m_uiMoveTimer = 5000;
+-                angle = 0;
++                m_uiMoveTimer = 5000;            
+ 
+                 me->SetSpeed(MOVE_RUN, fBaseSpeed, true);
+ 
+@@ -355,12 +354,16 @@
+ 
+                     if (m_uiColdFlameTimer <= uiDiff)
+                     {
+-                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_NEAREST, 1))
+-                        {
+-                            angle = me->GetAngle(pTarget);
+-                            pInstance->SetData(DATA_ANGLE, angle*1000);
++                       if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, -8.0f, true))
++                        {                         
++                            pInstance->SetData(DATA_ANGLE, (me->GetAngle(pTarget)*1000));
+                             DoCast(pTarget, SPELL_COLD_FLAME_SPAWN);
+                         }
++						 else
+++                        {
++                            pInstance->SetData(DATA_ANGLE, (me->GetAngle(me->getVictim())*1000));
++                            DoCast(me->getVictim(), SPELL_COLD_FLAME_SPAWN);
++                        }
+                         m_uiColdFlameTimer = 10000;
+                     } else m_uiColdFlameTimer -= uiDiff;
+ 
+@@ -409,7 +412,6 @@
+             uint32 m_uiMoveTimer;
+             uint8 m_uiBoneCount;
+             float fBaseSpeed;
+-            float angle;
+             bool bIntro;
+ 
+             SummonList summons;
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -23,12 +23,9 @@
+ #include "SpellAuraEffects.h"
+ #include "icecrown_citadel.h"
+ 
+-/*
+-//Speaking to Tirion Fordring to begin the fight
+-Long have I waited for this day, hero. Are you and your allies prepared to bring the Lich King to justice? We charge on your command!
+- We are prepared, Highlord. Let us battle for the fate of Azeroth! For the light of dawn!
+-*/
+-#define GOSSIP_START_EVENT "Мы готовы, Верховный Лорд. Давайте вступи в бой за судьбу Азерота! За свет зари!"
++#define GOSSIP_MENU 10600
++//#define GOSSIP_MENU "Long have I waited for this day, hero. Are you and your allies prepared to bring the Lich King to justice? We charge on your command!"
++#define GOSSIP_START_EVENT "We are prepared, Highlord. Let us battle for the fate of Azeroth! For the light of dawn!"
+ 
+ enum Yells
+ {
+@@ -77,7 +74,7 @@
+     SPELL_SUMMON_BROKEN_FROSTMOURNE  = 72406,
+     SPELL_SUMMON_SHADOW_TRAP         = 73539,
+     SPELL_INFEST                     = 70541,
+-    SPELL_NECROTIC_PLAGUE            = 70338,
++    SPELL_NECROTIC_PLAGUE            = 70337, //70337 - initial cast
+     SPELL_NECROTIC_PLAGUE_IMMUNITY   = 72846,
+     SPELL_PLAGUE_SIPHON              = 74074,
+     SPELL_REMORSELES_WINTER          = 68981,
+@@ -95,7 +92,7 @@
+     SPELL_TIRION_LIGHT               = 71797,
+     SPELL_FROSTMOURNE_TRIGGER        = 72405,
+     SPELL_DISENGAGE                  = 61508,
+-    SPELL_FURY_OF_FROSTMOURNE        = 72350,
++    SPELL_FURY_OF_FROSTMOURNE        = 70063,
+     SPELL_REVIVE_VISUAL              = 37755,
+     SPELL_REVIVE                     = 72429,
+     SPELL_REVIVE_EFFECT              = 72423,
+@@ -110,7 +107,8 @@
+     SPELL_BURST                      = 70503,
+     SPELL_VILE_SPIRIT_DISTANCE_CHECK = 70502,
+     SPELL_ICE_BURST_DISTANCE_CHECK   = 69109,
+-    SPELL_VILE_SPIRIT_ACTIVE         = 72130
++    SPELL_VILE_SPIRIT_ACTIVE         = 72130,
++    SPELL_RAGING_VISUAL              = 69198
+ 
+     //SPELL_70501 //Vile Spirit Move Target Search
+ };
+@@ -118,7 +116,9 @@
+ enum ePoints
+ {
+     POINT_PLATFORM_CENTRE            = 3659701,
+-    POINT_PLARFORM_END               = 3659702
++    POINT_PLATFORM_END               = 3659702,
++    POINT_VALKYR_END                 = 3659703,
++    POINT_VALKYR_ZET                 = 3659704
+ };
+ 
+ struct Position MovePos[]=
+@@ -217,17 +217,17 @@
+                     me->GetMotionMaster()->MovementExpired();
+ 
+                 if(SpellEntry* spellRevive = GET_SPELL(SPELL_SUMMON_DEFILE))
+-				{
++                {
+                     spellRevive->DurationIndex = 3;
+-				}
+-				if(SpellEntry* lock = GET_SPELL(SPELL_ICEBLOCK_TRIGGER))
+-				{
+-					lock->Targets = 6; //target chain damage
+-				}
+-				if(SpellEntry* reaper = GET_SPELL(SPELL_SOUL_REAPER_HASTE_AURA))
+-				{
+-					reaper->Targets = 1;
+-				}
++                }
++                if(SpellEntry* lock = GET_SPELL(SPELL_ICEBLOCK_TRIGGER))
++                {
++                    lock->Targets = 6; //target chain damage
++                }
++                if(SpellEntry* reaper = GET_SPELL(SPELL_SOUL_REAPER_HASTE_AURA))
++                {
++                    reaper->Targets = 1;
++                }
+             }
+ 
+             void EnterCombat(Unit* /*pWho*/)
+@@ -250,6 +250,8 @@
+                 if(pInstance->GetData(DATA_NECK_DEEP) == FAIL)
+                     pInstance->DoCompleteAchievement(RAID_MODE(ACHIEV_NECK_DEEP_IN_VILE_10,ACHIEV_NECK_DEEP_IN_VILE_25));
+ 
++                pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_INFEST);
++
+                 summons.DespawnAll();
+ 
+                 PlayerCinematic();
+@@ -289,8 +291,11 @@
+ 
+             void JustReachedHome()
+             {
+-                if(pInstance)
+-                    pInstance->SetData(DATA_LICH_KING_EVENT, FAIL);
++                if(!pInstance)
++                    return;
++
++                pInstance->SetData(DATA_LICH_KING_EVENT, FAIL);
++                pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_INFEST);
+ 
+                 summons.DespawnAll();
+             }
+@@ -320,18 +325,24 @@
+                 switch(summoned->GetEntry())
+                 {
+                     case CREATURE_ICE_SPHERE:
+-                        DoCast(summoned, SPELL_ICE_BURST_DISTANCE_CHECK);
+-                        DoCast(summoned, SPELL_ICE_PULSE);
++                        summoned->CastSpell(summoned, SPELL_ICE_BURST_DISTANCE_CHECK, true);
++                        summoned->CastSpell(summoned, SPELL_ICE_PULSE, true);
+                         if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
+                         {
+-                            me->AI()->AttackStart(pTarget);
+-                            me->GetMotionMaster()->MoveChase(pTarget);
++                            summoned->AI()->AttackStart(pTarget);
++                            summoned->GetMotionMaster()->MoveChase(pTarget);
+                         }
+                         break;
+                     case CREATURE_DEFILE:
+                         DoCast(summoned, SPELL_DEFILE);
+                         summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                         break;
++                    case CREATURE_RAGING_SPIRIT:
++                        summoned->CastSpell(summoned->getVictim(), SPELL_RAGING_VISUAL, true);
++                        break;
++                    case CREATURE_VILE_SPIRIT:
++                        summoned->CastSpell(summoned, SPELL_VILE_SPIRIT_DISTANCE_CHECK, true);
++                        break;
+                 }
+             }
+ 
+@@ -469,7 +480,7 @@
+                     if (m_uiDefileTimer < uiDiff)
+                     {
+                         DoScriptText(SAY_EMOTE_DEFILE, me);
+-                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
++                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                             DoCast(pTarget, SPELL_SUMMON_DEFILE);
+                         m_uiDefileTimer = 20000;
+                     } else m_uiDefileTimer -= uiDiff;
+@@ -544,7 +555,7 @@
+ 
+                     if (m_uiDefileTimer < uiDiff)
+                     {
+-                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
++                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                             DoCast(pTarget, SPELL_SUMMON_DEFILE);
+                         m_uiDefileTimer = 20000;
+                     } else m_uiDefileTimer -= uiDiff;
+@@ -862,7 +873,7 @@
+         bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+         {
+             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, 999999);
+-            pPlayer->SEND_GOSSIP_MENU(10600, pCreature->GetGUID());
++            pPlayer->SEND_GOSSIP_MENU(GOSSIP_MENU, pCreature->GetGUID());
+ 
+             return true;
+         }
+@@ -900,21 +911,47 @@
+                 me->SetFlying(true);
+                 m_uiGrabTimer = 2000;
+                 me->GetVehicleKit();
+-                InVehicle = false;
++                CanCast = false;
++                inVehicle = false;
++                DoCast(me, SPELL_WINGS_OF_THE_DAMNED);
++                m_uiLifeSiphonTimer = 3000;
+ 
+                 if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
+                     me->GetMotionMaster()->MovementExpired();
+             }
+ 
+-            void EnterCombat(Unit* /*who*/) { }
++            void DamageTaken(Unit* /*done_by*/, uint32& /*damage*/)
++            {
++                if(!HealthAbovePct(50) && IsHeroic() && !CanCast)
++                {
++                    vehicle->RemoveAllPassengers();
++                    me->GetMotionMaster()->MovePoint(POINT_VALKYR_ZET, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 10);
++                }
++            }
+ 
+             void MovementInform(uint32 type, uint32 id)
+             {
+                 if(type != POINT_MOTION_TYPE)
+                     return;
+ 
+-                if(id == POINT_PLARFORM_END)
+-                    vehicle->RemoveAllPassengers();
++                if(CanCast)
++                    return;
++
++                switch(id)
++                {
++                    case POINT_PLATFORM_END:
++                        vehicle->RemoveAllPassengers();
++                        float x,y,z;
++                        me->GetNearPoint2D(x, y, 50, me->GetAngle(me));
++                        me->GetMotionMaster()->MovePoint(POINT_VALKYR_END,x,y,z+15);
++                        break;
++                    case POINT_VALKYR_END:
++                        me->ForcedDespawn();
++                        break;
++                    case POINT_VALKYR_ZET:
++                        CanCast = true;
++                        break;
++                }
+             }
+ 
+             void UpdateAI(const uint32 uiDiff)
+@@ -922,23 +959,28 @@
+                 if (!UpdateVictim())
+                     return;
+ 
+-                if (!InVehicle && m_uiGrabTimer < uiDiff)
++                if (!inVehicle && m_uiGrabTimer < uiDiff)
+                 {
+                     if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
+                     {
+                         pTarget->EnterVehicle(vehicle);
+-                        InVehicle = true;
+-                        me->GetMotionMaster()->MovePoint(POINT_PLARFORM_END, MovePos[4]);
+-                        DoCast(me, SPELL_WINGS_OF_THE_DAMNED);
+-                        if (IsHeroic())
+-                            DoCast(pTarget, SPELL_LIFE_SIPHON);
++                        me->GetMotionMaster()->MovePoint(POINT_PLATFORM_END, MovePos[4]);
++                        inVehicle = true;
+                     }
+                     m_uiGrabTimer = 20000;
+                 } else m_uiGrabTimer -= uiDiff;
++
++                if (CanCast && m_uiLifeSiphonTimer < uiDiff)
++                {
++                    DoCastVictim(SPELL_LIFE_SIPHON);
++                    m_uiLifeSiphonTimer = 3000;
++                } else m_uiLifeSiphonTimer -= uiDiff;
+             }
+         private:
+             uint32 m_uiGrabTimer;
+-            bool InVehicle;
++            uint32 m_uiLifeSiphonTimer;
++            bool CanCast;
++            bool inVehicle;
+ 
+             Vehicle* vehicle;
+         };
+@@ -961,7 +1003,6 @@
+             void Reset()
+             {
+                 m_uiMoveTimer = 15000;
+-                DoCast(me, SPELL_VILE_SPIRIT_DISTANCE_CHECK);
+                 bStartMove = false;
+                 DoStartNoMovement(me->getVictim());
+             }
+@@ -999,28 +1040,28 @@
+         {
+             PrepareAuraScript(spell_lich_king_necrotic_plague_AuraScript)
+ 
+-            void ExtraEffect(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
++            void OnApply(AuraEffect const* aurEff, AuraApplication const* aurApp)
+             {
+-                if(!aurApp->GetBase()->GetCaster())
+-                    return;
+-
+                 if (InstanceScript* instance = aurApp->GetBase()->GetCaster()->GetInstanceScript())
+                 {
+-                    CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, CAST_CRE(aurApp->GetBase()->GetCaster())->AI())->DoCast(SPELL_PLAGUE_SIPHON);
+-                    aurApp->GetBase()->GetCaster()->CastSpell(aurApp->GetBase()->GetCaster(), SPELL_NECROTIC_PLAGUE_IMMUNITY, true);
+-
+-                if (Unit* target = aurApp->GetTarget())
+-                    if (Aura* plague = target->AddAura(SPELL_NECROTIC_PLAGUE, target))
+-                        plague->SetStackAmount(plague->GetStackAmount() + 1);
+-
+-                if(aurApp->GetBase()->GetStackAmount() >= 30)
+-                    instance->SetData(DATA_BEEN_WAITING, FAIL);
++                    aurApp->GetBase()->SetStackAmount(aurApp->GetBase()->GetStackAmount() + instance->GetData(DATA_NECROTIC_STACK));
++                    instance->SetData(DATA_NECROTIC_STACK, instance->GetData(DATA_NECROTIC_STACK) + 1);
++                    if(aurApp->GetBase()->GetStackAmount() >= 30)
++                        instance->SetData(DATA_BEEN_WAITING, FAIL);
+                 }
+             }
++            void OnRemove(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
++            {
++                //70337 âåøàåò îáû÷íóþ ÷óìó.Â áàçå äåëàåì çàïèñü, ÷òî áû ïðè ñïàäå 70337 êàñòîâàëàñü 70338 è èììóíèòåò
++                //Äëÿ 70338 â áàçå òàêæå äåëàåì êàñò ïðè ñïàäåò.Êàñòîâàòü áóäåò òîò-æå 70338
++                //Â Ñêðèïòå îñòàåòñÿ ñäåëàòü óâåëè÷åíèå ñòàêà è ðåàëèçàöèþ à÷èâêè
++                CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, CAST_CRE(aurApp->GetBase()->GetCaster())->AI())->DoCast(SPELL_PLAGUE_SIPHON);
++            }
+ 
+             void Register()
+             {
+-                OnEffectRemove += AuraEffectRemoveFn(spell_lich_king_necrotic_plague_AuraScript::ExtraEffect, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
++                OnEffectRemove += AuraEffectRemoveFn(spell_lich_king_necrotic_plague_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
++                OnEffectApply += AuraEffectApplyFn(spell_lich_king_necrotic_plague_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+             }
+         };
+ 
+@@ -1040,11 +1081,16 @@
+         {
+             PrepareAuraScript(spell_lich_king_infection_AuraScript)
+ 
+-            void OnPeriodic(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
++            void OnPeriodic(AuraEffect const* aurEff, AuraApplication const* aurApp)
+             {
+-                if (Unit* sick = aurApp->GetBase()->GetCaster())
+-                    if(sick->isAlive() && sick->GetHealthPct() > 90)
+-                        sick->RemoveAurasDueToSpell(SPELL_INFEST);
++                PreventDefaultAction();
++                if(!aurApp->GetTarget()->isAlive() || aurApp->GetTarget()->GetHealthPct() < 90)
++                    return;
++
++                aurApp->GetTarget()->RemoveAurasDueToSpell(SPELL_INFEST);
++
++                if(aurApp->GetBase()->GetCaster()->GetMapId() != 631) //Remove infection if player without ICC
++                    aurApp->GetTarget()->RemoveAurasDueToSpell(SPELL_INFEST);
+             }
+ 
+             void Register()
+@@ -1113,22 +1159,20 @@
+         {
+             PrepareAuraScript(spell_lich_king_winter_AuraScript)
+ 
+-            void OnPereodic(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
++            void OnPereodic(AuraEffect const* /*aurEff*/, AuraApplication const* aurApp)
+             {
+-			if(!aurApp->GetTarget() || !aurApp->GetBase()->GetOwner() || !aurApp)
+-			return;
+-			
++                PreventDefaultAction();
++                if(!aurApp)
++                    return;
++
+                 if (InstanceScript* instance = aurApp->GetTarget()->GetInstanceScript())
+-                    if (GameObject* floor = GameObject::GetGameObject((*aurApp->GetBase()->GetOwner()), instance->GetData64(DATA_PLATFORM)))
++                    if (GameObject* floor = GameObject::GetGameObject(*aurApp->GetTarget(), instance->GetData64(DATA_PLATFORM)))
+                         if(floor->HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED))
+                             floor->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED);
+             }
+ 
+             void OnRemove(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
+-			if(!aurApp)
+-			return;
+-			
+                 if (Unit* caster = aurApp->GetBase()->GetCaster())
+                 {
+                     caster->CastSpell(caster, SPELL_QUAKE, true);
+@@ -1161,7 +1205,7 @@
+ 
+             void OnRemove(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
+-                if(!aurApp->GetBase()->GetCaster() || !aurApp->GetBase()->GetOwner() || !aurApp)
++                if(!aurApp->GetBase()->GetCaster() || !aurApp->GetBase()->GetOwner())
+                     return;
+ 
+                 if (InstanceScript* instance = aurApp->GetTarget()->GetInstanceScript())
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+@@ -307,7 +307,7 @@
+ 
+             void MoveInLineOfSight(Unit *who)
+             {
+-                if (me->IsWithinDistInMap(who, 5.0f))             
++               if (me->IsWithinDistInMap(who, 5.0f, true))             
+                     DoCast(SPELL_VIGOR);
+ 
+ 				ScriptedAI::MoveInLineOfSight(who);
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
+--- a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
++++ b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
+@@ -101,7 +101,8 @@
+     DATA_BEEN_WAITING,
+     DATA_NECK_DEEP,
+     DATA_PLATFORM,
+-    DATA_BLOOD_PRINCES_CONTROL
++    DATA_BLOOD_PRINCES_CONTROL,
++	DATA_NECROTIC_STACK
+ };
+ 
+ enum eCreatures
+@@ -180,7 +181,8 @@
+     CREATURE_VALKYR                  = 36609,
+     CREATURE_DEFILE                  = 38757,
+     CREATURE_RAGING_SPIRIT           = 36701,
+-    CREATURE_TRIGGER                 = 38667
++    CREATURE_TRIGGER                 = 38667,
++	CREATURE_VILE_SPIRIT             = 37799
+ };
+ 
+ enum eGameobjects
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+@@ -61,6 +61,7 @@
+                 uiSpawn                 = 0;
+                 uiBoned                 = 0;
+                 uiAllYouCanEat          = 0;
++				uiNecroticStack         = 0;
+ 				uiBloodCouncilController = 0;
+                 uiBeenWaiting           = 0;
+                 uiNeckDeep              = 0;
+@@ -423,6 +424,7 @@
+                     case DATA_NECK_DEEP:              return uiNeckDeep;
+                     case DATA_PLATFORM:               return uiArthasPlatform;
+ 					case DATA_BLOOD_PRINCES_CONTROL:  return uiBloodCouncilController;
++					case DATA_NECROTIC_STACK:         return uiNecroticStack;
+                 }
+                 return 0;
+             }
+@@ -900,6 +902,7 @@
+             uint8 uiAllYouCanEat;
+             uint8 uiBeenWaiting;
+             uint8 uiNeckDeep;
++			uint8 uiNecroticStack;
+             uint64 uiAngle;
+             uint32 uiEncounter[MAX_ENCOUNTER];
+         };
+diff --git a/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp b/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
+--- a/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
++++ b/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
+@@ -584,7 +584,7 @@
+ 
+             void Register()
+             {
+-                OnEffect += SpellEffectFn(spell_halion_portal_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
++                OnEffect += SpellEffectFn(spell_halion_portal_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+             }
+         };
+ 

@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1288859484 -18000
+# Node ID c529cc2d85eb4082c5460224db5f237363080db1
+# Parent  7bc7677f0e85f915ea990a2a7b0ce84c906a1ed0
+warrior bladestorm disarm fix
+
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -4269,6 +4269,8 @@
+     std::list <AuraType> immunity_list;
+     if (GetMiscValue() & (1<<10))
+         immunity_list.push_back(SPELL_AURA_MOD_STUN);
++	if ((GetMiscValue() & (1<<7)) && !(apply && GetId() == 46924))
++		immunity_list.push_back(SPELL_AURA_MOD_DISARM);
+     if (GetMiscValue() & (1<<1))
+         immunity_list.push_back(SPELL_AURA_TRANSFORM);
+ 

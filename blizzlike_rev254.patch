@@ -1,0 +1,31 @@
+# HG changeset patch
+# User asniker
+# Date 1291349712 -18000
+# Node ID 04dbd9a3880a2a3c9aaf801f51c4fc94bb07f80e
+# Parent  cb44fccf4e2139e26b27a9e9517f3d0999149cca
+База: правка уровней у мобов
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -2978,7 +2978,7 @@
+ UPDATE gameobject SET spawntimesecs = '72000' WHERE map = 533 AND id IN (181126,181195,181167,181235,181197,181209,181123,181120,181121,181124,181125,181170,181119,181200,181201,181202,181203,181241,181225,181228,181496,181366);
+ 
+ UPDATE `creature_template` SET mechanic_immune_mask = 113983323 WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
+-UPDATE `creature_template` SET maxlevel = 63, minlevel = 63  WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,15930,15929,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
++UPDATE `creature_template` SET maxlevel = 83, minlevel = 83  WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,15930,15929,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
+ UPDATE `creature_template` SET maxlevel = 73, minlevel = 73 WHERE `entry` = 16363;
+ 
+ -- Spawns
+diff --git a/sql/Blizzlike@Sacred-core/world/Naxxramas.sql b/sql/Blizzlike@Sacred-core/world/Naxxramas.sql
+--- a/sql/Blizzlike@Sacred-core/world/Naxxramas.sql
++++ b/sql/Blizzlike@Sacred-core/world/Naxxramas.sql
+@@ -38,7 +38,7 @@
+ UPDATE gameobject SET spawntimesecs = '72000' WHERE map = 533 AND id IN (181126,181195,181167,181235,181197,181209,181123,181120,181121,181124,181125,181170,181119,181200,181201,181202,181203,181241,181225,181228,181496,181366);
+ 
+ UPDATE `creature_template` SET mechanic_immune_mask = 113983323 WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
+-UPDATE `creature_template` SET maxlevel = 63, minlevel = 63  WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,15930,15929,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
++UPDATE `creature_template` SET maxlevel = 83, minlevel = 83  WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,15930,15929,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
+ UPDATE `creature_template` SET maxlevel = 73, minlevel = 73 WHERE `entry` = 16363;
+ 
+ -- Spawns

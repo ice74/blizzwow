@@ -1,0 +1,33 @@
+# HG changeset patch
+# User asniker
+# Date 1289834042 -18000
+# Node ID 6cfb8ca5e1c6f66e3ff9d9049c50bb5f3d6bc29a
+# Parent  40f50338de6b42ea69a8f9afe505af0934f0acec
+fix druid bug
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5753,7 +5753,7 @@
+ 
+ 
+ UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
+-DELETE FROM `creature` WHERE `entry` = '33115';
++DELETE FROM `creature` WHERE `guid` = '33115';
+ 
+ 
+ UPDATE `quest_template` SET `SkillOrClassMask` = '773' WHERE `entry` IN (12517,12518,12798,13311);
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -7355,10 +7355,6 @@
+     if (!proto)
+         return;
+ 		
+-    // don't apply/remove mods if the weapon is disarmed
+-    if (item->GetSlot() == EQUIPMENT_SLOT_MAINHAND && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
+-        return;		
+-
+     // not apply/remove mods for broken item
+     if (item->IsBroken())
+         return;

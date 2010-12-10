@@ -1,0 +1,32 @@
+# HG changeset patch
+# User asniker
+# Date 1288861391 -18000
+# Node ID 17130f74be21521feee8cd598af3fce80a4dbfc9
+# Parent  eb9366c1b332646347fdca281f3f1cf57698b157
+Fix Mirror Image
+
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -2253,6 +2253,12 @@
+         {
+             if (cur == TARGET_SRC_CASTER)
+             {
++				// Mirror Image
++				if(m_spellInfo->Id == 58836)
++					for (std::set<Unit*>::iterator itr = m_caster->m_Controlled.begin() ; itr != m_caster->m_Controlled.end(); ++itr)
++						if((*itr)->GetEntry() == 31216)
++							AddUnitTarget(*itr, i);
++				return;
+                 m_targets.setSrc(*m_caster);
+                 break;
+             }
+@@ -2914,6 +2920,8 @@
+             {
+                 switch (m_spellInfo->Id)
+                 {
++					case 58836: // Mirror Image
++						return;
+                     case 27285: // Seed of Corruption proc spell
+                     case 49821: // Mind Sear proc spell Rank 1
+                     case 53022: // Mind Sear proc spell Rank 2

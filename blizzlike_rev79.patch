@@ -1,0 +1,30 @@
+# HG changeset patch
+# User asniker
+# Date 1287066230 -21600
+# Node ID e1e766da5a60ab153cecd93498bc9e02eb6c8379
+# Parent  ce201cfd0a2e05b3a0015e0dc1946bd17ab3adce
+fix wintergrasp quest
+
+diff --git a/src/server/game/Entities/Vehicle/Vehicle.h b/src/server/game/Entities/Vehicle/Vehicle.h
+--- a/src/server/game/Entities/Vehicle/Vehicle.h
++++ b/src/server/game/Entities/Vehicle/Vehicle.h
+@@ -99,6 +99,7 @@
+ 
+         bool HasEmptySeat(int8 seatId) const;
+         Unit *GetPassenger(int8 seatId) const;
++		void TeleportVehicle(float x, float y, float z, float ang);
+         int8 GetNextEmptySeat(int8 seatId, bool next) const;
+         bool AddPassenger(Unit *passenger, int8 seatId = -1);
+         void RemovePassenger(Unit *passenger);
+diff --git a/src/server/game/Quests/QuestDef.h b/src/server/game/Quests/QuestDef.h
+--- a/src/server/game/Quests/QuestDef.h
++++ b/src/server/game/Quests/QuestDef.h
+@@ -250,7 +250,7 @@
+         bool   IsWeekly() const { return QuestFlags & QUEST_FLAGS_WEEKLY; }
+         bool   IsDailyOrWeekly() const { return QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY); }
+         bool   IsAutoAccept() const { return QuestFlags & QUEST_FLAGS_AUTO_ACCEPT; }
+-        bool   IsRaidQuest() const { return Type == QUEST_TYPE_RAID || Type == QUEST_TYPE_RAID_10 || Type == QUEST_TYPE_RAID_25; }
++        bool   IsRaidQuest() const { return Type == QUEST_TYPE_RAID || Type == QUEST_TYPE_RAID_10 || Type == QUEST_TYPE_RAID_25 || Type == QUEST_TYPE_PVP; }
+         bool   IsAllowedInRaid() const;
+         bool   IsDFQuest() const { return QuestFlags & QUEST_TRINITY_FLAGS_DF_QUEST; }
+ 

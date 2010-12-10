@@ -1,0 +1,27 @@
+# HG changeset patch
+# User asniker
+# Date 1288882327 -18000
+# Node ID b278a859bb78ce81414ed662ea808bc85c84b35e
+# Parent  bd589f9e0008fc65813c97b6a2b58eb0cbbed667
+fix quest http://ru.wowhead.com/spell=53487
+
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -801,13 +801,12 @@
+         {
+             switch (m_spellInfo->Id)
+             {
+-				 case 53487:
++				 case 54015: //Set Oracle Faction Honored
++                case 53487: //Set Wolvar Faction Honored
+                 {
+                     if (effIndex==0)
+                     {
+-                        int32 repVal = unitTarget->ToPlayer()->GetReputation(m_spellInfo->Effect[0]);
+-                        if (repVal < 21000)
+-                            unitTarget->ToPlayer()->SetReputation(1104,(21000-repVal));
++                            unitTarget->ToPlayer()->SetReputation(m_spellInfo->EffectBasePoints[0]+1,21000);
+                     }
+                     return;
+                 }

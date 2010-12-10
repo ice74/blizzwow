@@ -1,0 +1,2637 @@
+# HG changeset patch
+# User asniker
+# Date 1287222862 -21600
+# Node ID 4be79457f7401702bc62ad2cc30657933f286700
+# Parent  e1e766da5a60ab153cecd93498bc9e02eb6c8379
+add new sql + fix many warnings in it
+
+diff --git a/sql/Greedy-core/world/Ahbot.sql b/sql/Greedy-core/world/Ahbot.sql
+--- a/sql/Greedy-core/world/Ahbot.sql
++++ b/sql/Greedy-core/world/Ahbot.sql
+@@ -1,76 +1,73 @@
+-/*Table structure for table `auctionhousebot` */
+-
+-DROP TABLE IF EXISTS `auctionhousebot`;
+-
+-CREATE TABLE `auctionhousebot` (
+-  `auctionhouse` int(11) NOT NULL default '0' COMMENT 'mapID of the auctionhouse.',
+-  `name` char(25) default NULL COMMENT 'Text name of the auctionhouse.',
+-  `minitems` int(11) default '0' COMMENT 'This is the minimum number of items you want to keep in the auction house. a 0 here will make it the same as the maximum.',
+-  `maxitems` int(11) default '0' COMMENT 'This is the number of items you want to keep in the auction house.',
+-  `percentgreytradegoods` int(11) default '0' COMMENT 'Sets the percentage of the Grey Trade Goods auction items',
+-  `percentwhitetradegoods` int(11) default '27' COMMENT 'Sets the percentage of the White Trade Goods auction items',
+-  `percentgreentradegoods` int(11) default '12' COMMENT 'Sets the percentage of the Green Trade Goods auction items',
+-  `percentbluetradegoods` int(11) default '10' COMMENT 'Sets the percentage of the Blue Trade Goods auction items',
+-  `percentpurpletradegoods` int(11) default '1' COMMENT 'Sets the percentage of the Purple Trade Goods auction items',
+-  `percentorangetradegoods` int(11) default '0' COMMENT 'Sets the percentage of the Orange Trade Goods auction items',
+-  `percentyellowtradegoods` int(11) default '0' COMMENT 'Sets the percentage of the Yellow Trade Goods auction items',
+-  `percentgreyitems` int(11) default '0' COMMENT 'Sets the percentage of the non trade Grey auction items',
+-  `percentwhiteitems` int(11) default '10' COMMENT 'Sets the percentage of the non trade White auction items',
+-  `percentgreenitems` int(11) default '30' COMMENT 'Sets the percentage of the non trade Green auction items',
+-  `percentblueitems` int(11) default '8' COMMENT 'Sets the percentage of the non trade Blue auction items',
+-  `percentpurpleitems` int(11) default '2' COMMENT 'Sets the percentage of the non trade Purple auction items',
+-  `percentorangeitems` int(11) default '0' COMMENT 'Sets the percentage of the non trade Orange auction items',
+-  `percentyellowitems` int(11) default '0' COMMENT 'Sets the percentage of the non trade Yellow auction items',
+-  `minpricegrey` int(11) default '100' COMMENT 'Minimum price of Grey items (percentage).',
+-  `maxpricegrey` int(11) default '150' COMMENT 'Maximum price of Grey items (percentage).',
+-  `minpricewhite` int(11) default '150' COMMENT 'Minimum price of White items (percentage).',
+-  `maxpricewhite` int(11) default '250' COMMENT 'Maximum price of White items (percentage).',
+-  `minpricegreen` int(11) default '800' COMMENT 'Minimum price of Green items (percentage).',
+-  `maxpricegreen` int(11) default '1400' COMMENT 'Maximum price of Green items (percentage).',
+-  `minpriceblue` int(11) default '1250' COMMENT 'Minimum price of Blue items (percentage).',
+-  `maxpriceblue` int(11) default '1750' COMMENT 'Maximum price of Blue items (percentage).',
+-  `minpricepurple` int(11) default '2250' COMMENT 'Minimum price of Purple items (percentage).',
+-  `maxpricepurple` int(11) default '4550' COMMENT 'Maximum price of Purple items (percentage).',
+-  `minpriceorange` int(11) default '3250' COMMENT 'Minimum price of Orange items (percentage).',
+-  `maxpriceorange` int(11) default '5550' COMMENT 'Maximum price of Orange items (percentage).',
+-  `minpriceyellow` int(11) default '5250' COMMENT 'Minimum price of Yellow items (percentage).',
+-  `maxpriceyellow` int(11) default '6550' COMMENT 'Maximum price of Yellow items (percentage).',
+-  `minbidpricegrey` int(11) default '70' COMMENT 'Starting bid price of Grey items as a percentage of the randomly chosen buyout price. Default: 70',
+-  `maxbidpricegrey` int(11) default '100' COMMENT 'Starting bid price of Grey items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `minbidpricewhite` int(11) default '70' COMMENT 'Starting bid price of White items as a percentage of the randomly chosen buyout price. Default: 70',
+-  `maxbidpricewhite` int(11) default '100' COMMENT 'Starting bid price of White items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `minbidpricegreen` int(11) default '80' COMMENT 'Starting bid price of Green items as a percentage of the randomly chosen buyout price. Default: 80',
+-  `maxbidpricegreen` int(11) default '100' COMMENT 'Starting bid price of Green items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `minbidpriceblue` int(11) default '75' COMMENT 'Starting bid price of Blue items as a percentage of the randomly chosen buyout price. Default: 75',
+-  `maxbidpriceblue` int(11) default '100' COMMENT 'Starting bid price of Blue items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `minbidpricepurple` int(11) default '80' COMMENT 'Starting bid price of Purple items as a percentage of the randomly chosen buyout price. Default: 80',
+-  `maxbidpricepurple` int(11) default '100' COMMENT 'Starting bid price of Purple items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `minbidpriceorange` int(11) default '80' COMMENT 'Starting bid price of Orange items as a percentage of the randomly chosen buyout price. Default: 80',
+-  `maxbidpriceorange` int(11) default '100' COMMENT 'Starting bid price of Orange items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `minbidpriceyellow` int(11) default '80' COMMENT 'Starting bid price of Yellow items as a percentage of the randomly chosen buyout price. Default: 80',
+-  `maxbidpriceyellow` int(11) default '100' COMMENT 'Starting bid price of Yellow items as a percentage of the randomly chosen buyout price. Default: 100',
+-  `maxstackgrey` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `maxstackwhite` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `maxstackgreen` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `maxstackblue` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `maxstackpurple` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `maxstackorange` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `maxstackyellow` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
+-  `buyerpricegrey` int(11) default '1' COMMENT 'Multiplier to vendorprice when buying grey items from auctionhouse',
+-  `buyerpricewhite` int(11) default '3' COMMENT 'Multiplier to vendorprice when buying white items from auctionhouse',
+-  `buyerpricegreen` int(11) default '5' COMMENT 'Multiplier to vendorprice when buying green items from auctionhouse',
+-  `buyerpriceblue` int(11) default '12' COMMENT 'Multiplier to vendorprice when buying blue items from auctionhouse',
+-  `buyerpricepurple` int(11) default '15' COMMENT 'Multiplier to vendorprice when buying purple items from auctionhouse',
+-  `buyerpriceorange` int(11) default '20' COMMENT 'Multiplier to vendorprice when buying orange items from auctionhouse',
+-  `buyerpriceyellow` int(11) default '22' COMMENT 'Multiplier to vendorprice when buying yellow items from auctionhouse',
+-  `buyerbiddinginterval` int(11) default '1' COMMENT 'Interval how frequently AHB bids on each AH. Time in minutes',
+-  `buyerbidsperinterval` int(11) default '1' COMMENT 'number of bids to put in per bidding interval',
+-  PRIMARY KEY  (`auctionhouse`)
+-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-
+-/*Data for the table `auctionhousebot` */
+-
+-insert  into `auctionhousebot`(`auctionhouse`,`name`,`minitems`,`maxitems`,`percentgreytradegoods`,`percentwhitetradegoods`,`percentgreentradegoods`,`percentbluetradegoods`,`percentpurpletradegoods`,`percentorangetradegoods`,`percentyellowtradegoods`,`percentgreyitems`,`percentwhiteitems`,`percentgreenitems`,`percentblueitems`,`percentpurpleitems`,`percentorangeitems`,`percentyellowitems`,`minpricegrey`,`maxpricegrey`,`minpricewhite`,`maxpricewhite`,`minpricegreen`,`maxpricegreen`,`minpriceblue`,`maxpriceblue`,`minpricepurple`,`maxpricepurple`,`minpriceorange`,`maxpriceorange`,`minpriceyellow`,`maxpriceyellow`,`minbidpricegrey`,`maxbidpricegrey`,`minbidpricewhite`,`maxbidpricewhite`,`minbidpricegreen`,`maxbidpricegreen`,`minbidpriceblue`,`maxbidpriceblue`,`minbidpricepurple`,`maxbidpricepurple`,`minbidpriceorange`,`maxbidpriceorange`,`minbidpriceyellow`,`maxbidpriceyellow`,`maxstackgrey`,`maxstackwhite`,`maxstackgreen`,`maxstackblue`,`maxstackpurple`,`maxstackorange`,`maxstackyellow`,`buyerpricegrey`,`buyerpricewhite`,`buyerpricegreen`,`buyerpriceblue`,`buyerpricepurple`,`buyerpriceorange`,`buyerpriceyellow`,`buyerbiddinginterval`,`buyerbidsperinterval`) values (2,'Alliance',0,0,8,27,12,10,1,0,0,0,10,30,8,2,0,0,100,150,150,250,800,1400,1250,1750,2250,4550,3250,5550,5250,6550,70,100,70,100,80,100,75,100,80,100,80,100,80,100,0,0,3,2,1,1,1,1,3,5,12,15,20,22,1,1),(6,'Horde',0,0,8,27,12,10,1,0,0,0,10,30,8,2,0,0,100,150,150,250,800,1400,1250,1750,2250,4550,3250,5550,5250,6550,70,100,70,100,80,100,75,100,80,100,80,100,80,100,0,0,3,2,1,1,1,1,3,5,12,15,20,22,1,1),(7,'Neutral',10,60,8,27,12,10,1,0,0,0,10,30,8,2,0,0,100,150,150,250,800,1400,1250,1750,2250,4550,3250,5550,5250,6550,70,100,70,100,80,100,75,100,80,100,80,100,80,100,0,0,3,2,1,1,1,1,3,5,12,15,20,22,1,1);
+-
+-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
++DROP TABLE IF EXISTS `auctionhousebot`;
++
++CREATE TABLE `auctionhousebot` (
++  `auctionhouse` int(11) NOT NULL default '0' COMMENT 'mapID of the auctionhouse.',
++  `name` char(25) default NULL COMMENT 'Text name of the auctionhouse.',
++  `minitems` int(11) default '0' COMMENT 'This is the minimum number of items you want to keep in the auction house. a 0 here will make it the same as the maximum.',
++  `maxitems` int(11) default '0' COMMENT 'This is the number of items you want to keep in the auction house.',
++  `percentgreytradegoods` int(11) default '0' COMMENT 'Sets the percentage of the Grey Trade Goods auction items',
++  `percentwhitetradegoods` int(11) default '27' COMMENT 'Sets the percentage of the White Trade Goods auction items',
++  `percentgreentradegoods` int(11) default '12' COMMENT 'Sets the percentage of the Green Trade Goods auction items',
++  `percentbluetradegoods` int(11) default '10' COMMENT 'Sets the percentage of the Blue Trade Goods auction items',
++  `percentpurpletradegoods` int(11) default '1' COMMENT 'Sets the percentage of the Purple Trade Goods auction items',
++  `percentorangetradegoods` int(11) default '0' COMMENT 'Sets the percentage of the Orange Trade Goods auction items',
++  `percentyellowtradegoods` int(11) default '0' COMMENT 'Sets the percentage of the Yellow Trade Goods auction items',
++  `percentgreyitems` int(11) default '0' COMMENT 'Sets the percentage of the non trade Grey auction items',
++  `percentwhiteitems` int(11) default '10' COMMENT 'Sets the percentage of the non trade White auction items',
++  `percentgreenitems` int(11) default '30' COMMENT 'Sets the percentage of the non trade Green auction items',
++  `percentblueitems` int(11) default '8' COMMENT 'Sets the percentage of the non trade Blue auction items',
++  `percentpurpleitems` int(11) default '2' COMMENT 'Sets the percentage of the non trade Purple auction items',
++  `percentorangeitems` int(11) default '0' COMMENT 'Sets the percentage of the non trade Orange auction items',
++  `percentyellowitems` int(11) default '0' COMMENT 'Sets the percentage of the non trade Yellow auction items',
++  `minpricegrey` int(11) default '100' COMMENT 'Minimum price of Grey items (percentage).',
++  `maxpricegrey` int(11) default '150' COMMENT 'Maximum price of Grey items (percentage).',
++  `minpricewhite` int(11) default '150' COMMENT 'Minimum price of White items (percentage).',
++  `maxpricewhite` int(11) default '250' COMMENT 'Maximum price of White items (percentage).',
++  `minpricegreen` int(11) default '800' COMMENT 'Minimum price of Green items (percentage).',
++  `maxpricegreen` int(11) default '1400' COMMENT 'Maximum price of Green items (percentage).',
++  `minpriceblue` int(11) default '1250' COMMENT 'Minimum price of Blue items (percentage).',
++  `maxpriceblue` int(11) default '1750' COMMENT 'Maximum price of Blue items (percentage).',
++  `minpricepurple` int(11) default '2250' COMMENT 'Minimum price of Purple items (percentage).',
++  `maxpricepurple` int(11) default '4550' COMMENT 'Maximum price of Purple items (percentage).',
++  `minpriceorange` int(11) default '3250' COMMENT 'Minimum price of Orange items (percentage).',
++  `maxpriceorange` int(11) default '5550' COMMENT 'Maximum price of Orange items (percentage).',
++  `minpriceyellow` int(11) default '5250' COMMENT 'Minimum price of Yellow items (percentage).',
++  `maxpriceyellow` int(11) default '6550' COMMENT 'Maximum price of Yellow items (percentage).',
++  `minbidpricegrey` int(11) default '70' COMMENT 'Starting bid price of Grey items as a percentage of the randomly chosen buyout price. Default: 70',
++  `maxbidpricegrey` int(11) default '100' COMMENT 'Starting bid price of Grey items as a percentage of the randomly chosen buyout price. Default: 100',
++  `minbidpricewhite` int(11) default '70' COMMENT 'Starting bid price of White items as a percentage of the randomly chosen buyout price. Default: 70',
++  `maxbidpricewhite` int(11) default '100' COMMENT 'Starting bid price of White items as a percentage of the randomly chosen buyout price. Default: 100',
++  `minbidpricegreen` int(11) default '80' COMMENT 'Starting bid price of Green items as a percentage of the randomly chosen buyout price. Default: 80',
++  `maxbidpricegreen` int(11) default '100' COMMENT 'Starting bid price of Green items as a percentage of the randomly chosen buyout price. Default: 100',
++  `minbidpriceblue` int(11) default '75' COMMENT 'Starting bid price of Blue items as a percentage of the randomly chosen buyout price. Default: 75',
++  `maxbidpriceblue` int(11) default '100' COMMENT 'Starting bid price of Blue items as a percentage of the randomly chosen buyout price. Default: 100',
++  `minbidpricepurple` int(11) default '80' COMMENT 'Starting bid price of Purple items as a percentage of the randomly chosen buyout price. Default: 80',
++  `maxbidpricepurple` int(11) default '100' COMMENT 'Starting bid price of Purple items as a percentage of the randomly chosen buyout price. Default: 100',
++  `minbidpriceorange` int(11) default '80' COMMENT 'Starting bid price of Orange items as a percentage of the randomly chosen buyout price. Default: 80',
++  `maxbidpriceorange` int(11) default '100' COMMENT 'Starting bid price of Orange items as a percentage of the randomly chosen buyout price. Default: 100',
++  `minbidpriceyellow` int(11) default '80' COMMENT 'Starting bid price of Yellow items as a percentage of the randomly chosen buyout price. Default: 80',
++  `maxbidpriceyellow` int(11) default '100' COMMENT 'Starting bid price of Yellow items as a percentage of the randomly chosen buyout price. Default: 100',
++  `maxstackgrey` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `maxstackwhite` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `maxstackgreen` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `maxstackblue` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `maxstackpurple` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `maxstackorange` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `maxstackyellow` int(11) default '0' COMMENT 'Stack size limits for item qualities - a value of 0 will disable a maximum stack size for that quality, which will allow the bot to create items in stack as large as the item allows.',
++  `buyerpricegrey` int(11) default '1' COMMENT 'Multiplier to vendorprice when buying grey items from auctionhouse',
++  `buyerpricewhite` int(11) default '3' COMMENT 'Multiplier to vendorprice when buying white items from auctionhouse',
++  `buyerpricegreen` int(11) default '5' COMMENT 'Multiplier to vendorprice when buying green items from auctionhouse',
++  `buyerpriceblue` int(11) default '12' COMMENT 'Multiplier to vendorprice when buying blue items from auctionhouse',
++  `buyerpricepurple` int(11) default '15' COMMENT 'Multiplier to vendorprice when buying purple items from auctionhouse',
++  `buyerpriceorange` int(11) default '20' COMMENT 'Multiplier to vendorprice when buying orange items from auctionhouse',
++  `buyerpriceyellow` int(11) default '22' COMMENT 'Multiplier to vendorprice when buying yellow items from auctionhouse',
++  `buyerbiddinginterval` int(11) default '1' COMMENT 'Interval how frequently AHB bids on each AH. Time in minutes',
++  `buyerbidsperinterval` int(11) default '1' COMMENT 'number of bids to put in per bidding interval',
++  PRIMARY KEY  (`auctionhouse`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++
++
++INSERT  INTO `auctionhousebot`(`auctionhouse`,`name`,`minitems`,`maxitems`,`percentgreytradegoods`,`percentwhitetradegoods`,`percentgreentradegoods`,`percentbluetradegoods`,`percentpurpletradegoods`,`percentorangetradegoods`,`percentyellowtradegoods`,`percentgreyitems`,`percentwhiteitems`,`percentgreenitems`,`percentblueitems`,`percentpurpleitems`,`percentorangeitems`,`percentyellowitems`,`minpricegrey`,`maxpricegrey`,`minpricewhite`,`maxpricewhite`,`minpricegreen`,`maxpricegreen`,`minpriceblue`,`maxpriceblue`,`minpricepurple`,`maxpricepurple`,`minpriceorange`,`maxpriceorange`,`minpriceyellow`,`maxpriceyellow`,`minbidpricegrey`,`maxbidpricegrey`,`minbidpricewhite`,`maxbidpricewhite`,`minbidpricegreen`,`maxbidpricegreen`,`minbidpriceblue`,`maxbidpriceblue`,`minbidpricepurple`,`maxbidpricepurple`,`minbidpriceorange`,`maxbidpriceorange`,`minbidpriceyellow`,`maxbidpriceyellow`,`maxstackgrey`,`maxstackwhite`,`maxstackgreen`,`maxstackblue`,`maxstackpurple`,`maxstackorange`,`maxstackyellow`,`buyerpricegrey`,`buyerpricewhite`,`buyerpricegreen`,`buyerpriceblue`,`buyerpricepurple`,`buyerpriceorange`,`buyerpriceyellow`,`buyerbiddinginterval`,`buyerbidsperinterval`) values (2,'Alliance',0,0,8,27,12,10,1,0,0,0,10,30,8,2,0,0,100,150,150,250,800,1400,1250,1750,2250,4550,3250,5550,5250,6550,70,100,70,100,80,100,75,100,80,100,80,100,80,100,0,0,3,2,1,1,1,1,3,5,12,15,20,22,1,1),(6,'Horde',0,0,8,27,12,10,1,0,0,0,10,30,8,2,0,0,100,150,150,250,800,1400,1250,1750,2250,4550,3250,5550,5250,6550,70,100,70,100,80,100,75,100,80,100,80,100,80,100,0,0,3,2,1,1,1,1,3,5,12,15,20,22,1,1),(7,'Neutral',10,60,8,27,12,10,1,0,0,0,10,30,8,2,0,0,100,150,150,250,800,1400,1250,1750,2250,4550,3250,5550,5250,6550,70,100,70,100,80,100,75,100,80,100,80,100,80,100,0,0,3,2,1,1,1,1,3,5,12,15,20,22,1,1);
++
++
+diff --git a/sql/Greedy-core/world/Argenttournament.sql b/sql/Greedy-core/world/Argenttournament.sql
+--- a/sql/Greedy-core/world/Argenttournament.sql
++++ b/sql/Greedy-core/world/Argenttournament.sql
+@@ -355,7 +355,7 @@
+ 
+ -- Quest : Le fil de l'hiver
+ DELETE FROM creature WHERE guid = '336364';
+-INSERT INTO creature VALUES  (336364,33289,571,1,1,0,0,5136.74,-83.3769,347.326,1.44434,300,0,0,12600,3994,0,0);
++INSERT INTO creature VALUES  (336364,33289,571,1,1,0,0,5136.74,-83.3769,347.326,1.44434,300,0,0,12600,3994,0,0,0,0,0);
+ DELETE FROM `creature_loot_template` WHERE `entry`=33289 AND `item`=45005;
+ INSERT INTO `creature_loot_template` (`entry`, `item`, `ChanceOrQuestChance`) VALUES (33289, 45005, -100);
+ 
+diff --git a/sql/Greedy-core/world/CullingOfStratholme.sql b/sql/Greedy-core/world/CullingOfStratholme.sql
+--- a/sql/Greedy-core/world/CullingOfStratholme.sql
++++ b/sql/Greedy-core/world/CullingOfStratholme.sql
+@@ -1,11 +1,4 @@
+-?-- [Culling of Stratholme] Instance by John Holiver
+--- Much work done, the instance is playable with this
+--- Although there're things that aren't implemented yet
+--- * Random placement of risen zombies after MalGanis transform some
+--- * Recovery of the city in case of Reset()
+--- * Heroic timer for Infinite Corruptor spawn
+--- Known bugs (that if i knew where to fix i would do it):
+--- * Jaina get spawned 2 times on the beggining
++
+ 
+ SET @Meathook :=26529;
+ SET @Salramm :=26530;
+@@ -343,6 +336,8 @@
+ -- Some fixes to make Chest work
+ UPDATE `gameobject_template` SET `flags`='4' WHERE `gameobject_template`.`entry` in (190663,193597);
+ DELETE FROM `gameobject` WHERE `gameobject`.`id` in (190663,193597);
++DELETE FROM `gameobject` WHERE (`guid`=67603);
++DELETE FROM `gameobject` WHERE (`guid`=500000);
+ INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+ (67603, 190663, 595, 1, 1, 2288.35, 1498.73, 128.414, -0.994837, 0, 0, 0, 1, 180, 0, 1),
+ (500000, 193597, 595, 2, 1, 2288.35, 1498.73, 128.414, -0.994837, 0, 0, 0, 1, 180, 0, 1);
+diff --git a/sql/Greedy-core/world/DalaranSewers.sql b/sql/Greedy-core/world/DalaranSewers.sql
+--- a/sql/Greedy-core/world/DalaranSewers.sql
++++ b/sql/Greedy-core/world/DalaranSewers.sql
+@@ -1,4 +1,4 @@
+-UPDATE `world`.`gameobject_template` SET `flags` = '36' WHERE `gameobject_template`.`entry` =192642 LIMIT 1 ;
+-UPDATE `world`.`gameobject_template` SET `flags` = '36' WHERE `gameobject_template`.`entry` =192643 LIMIT 1 ;
+-UPDATE `world`.`battleground_template` SET `MinPlayersPerTeam` = '0', `MaxPlayersPerTeam` = '2' WHERE `battleground_template`.`id` =10 LIMIT 1 ;
+-DELETE FROM `disables` WHERE `entry` = 10 ;
++UPDATE `world`.`gameobject_template` SET `flags` = '36' WHERE `gameobject_template`.`entry` =192642 LIMIT 1 ;
++UPDATE `world`.`gameobject_template` SET `flags` = '36' WHERE `gameobject_template`.`entry` =192643 LIMIT 1 ;
++UPDATE `world`.`battleground_template` SET `MinPlayersPerTeam` = '0', `MaxPlayersPerTeam` = '2' WHERE `battleground_template`.`id` =10 LIMIT 1 ;
++DELETE FROM `disables` WHERE `entry` = 10 ;
+diff --git a/sql/Greedy-core/world/Fix_Error.sql b/sql/Greedy-core/world/Fix_Error.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Greedy-core/world/Fix_Error.sql
+@@ -0,0 +1,19 @@
++DELETE FROM areatrigger_scripts WHERE `entry`=4156;
++INSERT INTO areatrigger_scripts VALUES (4156,'at_naxxramas_frostwyrm_wing');
++UPDATE `creature_template` SET `ScriptName`='mob_iron_construct' WHERE `entry`=33121;
++UPDATE `creature_template` SET `ScriptName`='mob_scorch_ground' WHERE `entry`=33221;
++UPDATE creature_template SET ScriptName="npc_expedition_commander" WHERE entry=33210;
++UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35, `npcflag` = 1, `flags_extra` = 2, `ScriptName` = 'npc_keeper_image' WHERE `entry` IN (33213, 33241, 33242, 33244);
++UPDATE `creature_template` SET `ScriptName` = 'npc_ys_freya' WHERE `entry` = 33410;
++UPDATE `creature_template` SET `ScriptName` = 'npc_ys_hodir' WHERE `entry` = 33411;
++UPDATE `creature_template` SET `ScriptName` = 'npc_ys_mimiron' WHERE `entry` = 33412;
++UPDATE `creature_template` SET `ScriptName` = 'npc_ys_thorim' WHERE `entry` = 33413;
++UPDATE `creature_template` SET `modelid1` = 11686, `modelid2` = 0, `minlevel` = 80, `maxlevel` = 80, `unit_flags` = 33686018, `type_flags` = 0, `ScriptName` = 'npc_sanity_well' WHERE `entry` = 33991;
++UPDATE `creature_template` SET `ScriptName` = 'npc_vendor_argent_tournament' WHERE `entry` IN (33553,33554,33555,33556,33557,33307,33310,33653,33650,33657);
++UPDATE `creature_template` SET `ScriptName`='quest_givers_argent_tournament' WHERE `entry` IN (33593, 33592, 33225, 33312, 33335, 33379, 33373, 33361, 33403, 33372);
++UPDATE `creature_template` SET `ScriptName` = 'npc_justicar_mariel_trueheart' WHERE `entry` = 33817;
++UPDATE `creature_template` SET `ScriptName` = 'npc_argent_champion' WHERE `entry` = 33708;
++UPDATE `creature_template` SET `ScriptName` = 'npc_argent_champion' WHERE `entry` = 33707;
++UPDATE `creature_template` SET `ScriptName` = 'npc_squire_danny' WHERE `entry` = 33518;
++
++UPDATE `script_texts` SET `content_default`='<ZeoneCore Text Entry Missing!>' WHERE `entry`=-1000000;
+diff --git a/sql/Greedy-core/world/HallsOfLightning.sql b/sql/Greedy-core/world/HallsOfLightning.sql
+--- a/sql/Greedy-core/world/HallsOfLightning.sql
++++ b/sql/Greedy-core/world/HallsOfLightning.sql
+@@ -6,7 +6,7 @@
+ 
+ UPDATE creature_loot_template SET item = 40752 WHERE item = 47241 AND entry IN (@lootid_bjarngrim,@lootid_volkhan,@lootid_ionar,@lootid_loken);
+ 
+-## EventAI for Slag
++
+ -- Non-Heroic NPCs
+ REPLACE INTO creature_ai_scripts (id, creature_id, event_type, event_inverse_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, action1_type, action1_param1, action1_param2, action1_param3, action2_type, action2_param1, action2_param2, action2_param3, action3_type, action3_param1, action3_param2, action3_param3, comment) VALUES 
+ (2858501, 28585, 1, 0, 100, 1|2, 
+@@ -86,23 +86,23 @@
+ -- Comment
+ 'Halls of Lightning Heroic - Slag - Blast Wave on Death');
+ 
+-## Get a bit more damage from Bosses :)
++
+ SET @boss_bjarngrim = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 28586);
+ SET @boss_volkhan   = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 28587);
+ SET @boss_ionar     = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 28546);
+ SET @boss_loken     = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 28923);
+ UPDATE creature_template SET dmg_multiplier = 20 WHERE entry IN (@boss_bjarngrim, @boss_volkhan, @boss_ionar, @boss_loken);
+ 
+-## Add Some damage for whole Instance (heroic)
++
+ UPDATE creature_template SET dmg_multiplier = dmg_multiplier + 2 WHERE entry IN (31537, 30979, 30967, 30966, 30968, 30977, 30974, 30964, 30983, 30970, 31533, 31536, 30969, 30965, 30978, 30971, 30975, 30976, 30981, 30972, 31538, 31867, 30980, 30982, 30973);
+ 
+-## Correct Faction fur Heroic Sparks and Molten Golems
++
+ UPDATE creature_template SET faction_A = 14 WHERE entry = 28695;
+ UPDATE creature_template SET faction_H = 14 WHERE entry = 28695;
+ UPDATE creature_template SET faction_H = 14 WHERE entry = 28926;
+ UPDATE creature_template SET faction_H = 14 WHERE entry = 28926;
+ 
+-## Trigger Static Overload Final Damage & Knockback
++
+ INSERT IGNORE INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) 
+ VALUES
+ ('-52658','53337','0','Static Overload'),
+diff --git a/sql/Greedy-core/world/HallsOfReflection.sql b/sql/Greedy-core/world/HallsOfReflection.sql
+--- a/sql/Greedy-core/world/HallsOfReflection.sql
++++ b/sql/Greedy-core/world/HallsOfReflection.sql
+@@ -1,4 +1,4 @@
+-UPDATE `creature_template` SET `speed_walk`='1.5', `speed_run`='2.0' WHERE `entry` in (36954, 37226);
++﻿UPDATE `creature_template` SET `speed_walk`='1.5', `speed_run`='2.0' WHERE `entry` in (36954, 37226);
+ UPDATE `creature_template` SET `AIName`='', `Scriptname`='npc_jaina_and_sylvana_HRintro' WHERE `entry` in (37221, 37223);
+ UPDATE `creature_template` SET `AIName`='', `Scriptname`='boss_falric' WHERE `entry`=38112;
+ UPDATE `creature_template` SET `AIName`='', `Scriptname`='boss_marwyn' WHERE `entry`=38113;
+@@ -15,10 +15,10 @@
+ UPDATE `creature_template` SET `scale`='0.8' WHERE `entry` in (36658, 37225, 37223, 37226, 37554);
+ UPDATE `creature_template` SET `unit_flags`='768', `type_flags`='268435564' WHERE `entry` in (38177, 38176, 38173, 38172, 38567, 38175);
+ UPDATE `creature_template` SET `AIName`='', `Scriptname`='npc_frostworn_general' WHERE `entry`=36723;
+-/*
++
+ UPDATE `creature_template` SET `equipment_id`='38112' WHERE `entry`=38112;
+ UPDATE `creature_template` SET `equipment_id`='38113' WHERE `entry`=38113;
+-*/
++
+ UPDATE `creature_template` set `scale`='1' where `entry` in (37223);
+ UPDATE `instance_template` SET `script` = 'instance_hall_of_reflection' WHERE map=668;
+ UPDATE `gameobject_template` SET `faction`='1375' WHERE `entry` in (197341, 202302, 201385, 201596);
+@@ -26,13 +26,13 @@
+ UPDATE `creature` SET `phaseMask` = 64 WHERE `id` = 36990; 
+ UPDATE `instance_template` SET `script` = 'instance_halls_of_reflection' WHERE map=668;
+ 
+-/*
++
+ DELETE FROM `creature` WHERE `map` = 668 AND `id` IN (38177,38176,38173,38172,38567,38175,36940,36941,37069);
+ REPLACE INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES (135341, 38112, 668, 3, 1, 0, 0, 5276.81, 2037.45, 709.32, 5.58779, 604800, 0, 0, 377468, 0, 0, 0);
+ REPLACE INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES (135342, 38113, 668, 3, 1, 0, 0, 5341.72, 1975.74, 709.32, 2.40694, 604800, 0, 0, 539240, 0, 0, 0);
+-*/
+ 
+-/*
++
++
+ UPDATE `gameobject_template` SET `ScriptName` = '' WHERE `entry` IN (202236,202302);
+ UPDATE `gameobject_template` SET `faction` = '114' WHERE `entry` IN (197341, 201976);
+ UPDATE `gameobject_template` SET `faction`='1375' WHERE `entry` IN (197341, 202302, 201385, 201596);
+@@ -56,29 +56,28 @@
+ UPDATE `creature_template` SET `equipment_id`='38113' WHERE `entry` IN (38113);
+ UPDATE `creature_template` SET `equipment_id`='38112' WHERE `entry` IN (38112);
+ UPDATE `creature_template` SET `modelid1` = 11686, `modelid2` = 11686, `modelid3` = 11686, `modelid4` = 11686 WHERE `entry` IN (37014,37704);
+-*/
+ 
+-/*
++
++
+ REPLACE INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction_A`, `faction_H`, `npcflag`, `speed_walk`, `speed_run`, `scale`, `rank`, `mindmg`, `maxdmg`, `dmgschool`, `attackpower`, `dmg_multiplier`, `baseattacktime`, `rangeattacktime`, `unit_class`, `unit_flags`, `dynamicflags`, `family`, `trainer_type`, `trainer_spell`, `trainer_class`, `trainer_race`, `minrangedmg`, `maxrangedmg`, `rangedattackpower`, `type`, `type_flags`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `InhabitType`, `Health_mod`, `Mana_mod`, `Armor_mod`, `RacialLeader`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `movementId`, `RegenHealth`, `equipment_id`, `mechanic_immune_mask`, `flags_extra`, `ScriptName`, `WDBVerified`) VALUES (37014, 0, 0, 0, 0, 0, 169, 16925, 0, 0, 'Ice Wall Target', '', '', 0, 1, 1, 2, 35, 35, 0, 1, 1.14286, 1, 0, 1, 2, 0, 0, 1, 2000, 2000, 1, 0, 8, 0, 0, 0, 0, 0, 1, 2, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1.35, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, '', 12340);
+-*/
+ 
+-/*
++
+ -- Conditions
+ REPLACE INTO `conditions`  VALUES 
+-(13, 0, 69431, 0, 18, 1, 37496, 0, 0, NULL),
+-(13, 0, 69431, 0, 18, 1, 37497, 0, 0, NULL),
+-(13, 0, 69431, 0, 18, 1, 37584, 0, 0, NULL),
+-(13, 0, 69431, 0, 18, 1, 37587, 0, 0, NULL),
+-(13, 0, 69431, 0, 18, 1, 37588, 0, 0, NULL),
+-(13, 0, 69708, 0, 18, 1, 37226, 0, 0, NULL),
+-(13, 0, 69784, 0, 18, 1, 37014, 0, 0, NULL),
+-(13, 0, 70194, 0, 18, 1, 37226, 0, 0, NULL),
+-(13, 0, 70224, 0, 18, 1, 37014, 0, 0, NULL),
+-(13, 0, 70225, 0, 18, 1, 37014, 0, 0, NULL),
+-(13, 0, 70464, 0, 18, 1, 36881, 0, 0, NULL);
+-*/
++(13, 0, 69431, 0, 18, 1, 37496, 0, 0, 0, NULL),
++(13, 0, 69431, 0, 18, 1, 37497, 0, 0, 0, NULL),
++(13, 0, 69431, 0, 18, 1, 37584, 0, 0, 0, NULL),
++(13, 0, 69431, 0, 18, 1, 37587, 0, 0, 0, NULL),
++(13, 0, 69431, 0, 18, 1, 37588, 0, 0, 0, NULL),
++(13, 0, 69708, 0, 18, 1, 37226, 0, 0, 0, NULL),
++(13, 0, 69784, 0, 18, 1, 37014, 0, 0, 0, NULL),
++(13, 0, 70194, 0, 18, 1, 37226, 0, 0, 0, NULL),
++(13, 0, 70224, 0, 18, 1, 37014, 0, 0, 0, NULL),
++(13, 0, 70225, 0, 18, 1, 37014, 0, 0, 0, NULL),
++(13, 0, 70464, 0, 18, 1, 36881, 0, 0, 0, NULL);
+ 
+-/*
++
++
+ REPLACE INTO `conditions` (`SourceTypeOrReferenceId`, `SourceEntry`, `ConditionTypeOrReference`, `ConditionValue1`, `ConditionValue2`) VALUES 
+ ('13', '70464', '18', '1', '36881'),
+ ('13', '69708', '18', '1', '37226'),
+@@ -101,9 +100,9 @@
+ REPLACE INTO `conditions` (`SourceTypeOrReferenceId`, `SourceEntry`, `ConditionTypeOrReference`, `ConditionValue1`, `ConditionValue2`) VALUES ('13', '69784', '18', '1', '37014');
+ REPLACE INTO `conditions` (`SourceTypeOrReferenceId`, `SourceEntry`, `ConditionTypeOrReference`, `ConditionValue1`, `ConditionValue2`) VALUES ('13', '70224', '18', '1', '37014');
+ REPLACE INTO `conditions` (`SourceTypeOrReferenceId`, `SourceEntry`, `ConditionTypeOrReference`, `ConditionValue1`, `ConditionValue2`) VALUES ('13', '70225', '18', '1', '37014');
+-*/
+ 
+-/*
++
++
+ REPLACE INTO `creature_equip_template` VALUES ('38112', '50249', '49777', '0'); #Falric
+ REPLACE INTO `creature_equip_template` VALUES ('38113', '50248', '50248', '0'); #Marwyn
+ 
+@@ -114,9 +113,9 @@
+ (36955, 668, 3, 128, 0, 0, 5547.27, 2256.95, 733.011, 0.835987, 7200, 0, 0, 252000, 881400, 0, 0),
+ (37554, 668, 3, 64, 0, 0, 5547.27, 2256.95, 733.011, 0.835987, 7200, 0, 0, 252000, 881400, 0, 0),
+ (37226, 668, 3, 1, 0, 0, 5551.29, 2261.33, 733.012, 4.0452, 604800, 0, 0, 27890000, 0, 0, 0);
+-*/
+ 
+-/*
++
++
+ UPDATE `gameobject_template` SET `flags` = 0 WHERE `gameobject_template`.`entry` IN (202212,201710,202337,202336);
+ UPDATE `gameobject_template` SET `faction` = '114',`data0` = '0' WHERE `gameobject_template`.`entry` IN (197341,197342,197343);
+ 
+@@ -134,11 +133,11 @@
+ INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+ (972565, 202079, 668, 3, 65535, 5250.959961, 1639.359985, 784.302, 0, 0, 0, 0, 0, -604800, 100, 1);
+ DELETE FROM `gameobject` WHERE `id` IN (201385,201596,202079);
+-*/
++
+ 
+ DELETE FROM `script_texts` WHERE `entry` BETWEEN -1594540 AND -1594430;
+ INSERT INTO `script_texts` (`entry`,`content_default`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+-# SCENE - Hall Of Reflection (Intro) - PreUther
++
+ (-1594433, 'The chill of this place freezes the marrow of my bones!', 'Как же тут холодно... Кровь стынет в жилах.', 16631,0,0,1, '67234'),
+ (-1594434, 'I... I don\'t believe it! Frostmourne stands before us, unguarded! Just as the Gnome claimed. Come, heroes!', 'Я... Я не верю своим глазам. Ледяная скорбь перед нами без всякой охраны! Как и говорил гном. Вперед герои!', 17049,0,0,1, '67234'),
+ (-1594435, 'What is that? Up ahead! Could it be ... ? Heroes at my side!', 'Что это там впереди? Неужели? Скорее герои!', 16632,1,0,1, '67234'),
+@@ -238,16 +237,15 @@
+ (-1594532, '<need translate>', 'Вот вам сундук за работу.', 0,0,0,0, '67234'),
+ (-1594533, '<need translate>', 'И, поскольку корабля с оффа не будет, вот вам портал в Даларан.', 0,0,0,0, '67234');
+ 
+-/*
+-# Gossips
+-DELETE FROM `creature_ai_texts` WHERE `entry` BETWEEN -3594540 AND -3594530;
++
++DELETE FROM `creature_ai_texts` WHERE `entry` BETWEEN -1594540 AND -1594530;
+ INSERT INTO `creature_ai_texts` (`entry`, `content_default`, `content_loc8`, `comment`) VALUES
+-(-3594536, 'Lady Jaina, we are ready for next mission!', 'Джайна, мы готовы!',''),
+-(-3594537, 'Lady Jaina, Let\'s go!', 'Давай быстрее!', ''),
+-(-3594538, 'Lady Sylvanas, we are ready for next mission!', 'Сильвана, мы готовы!', ''),
+-(-3594539, 'Lady Sylvanas, Let\'s go!', 'Поехали!', ''),
+-(-3594540, 'Let\'s go!', 'Побежали!', '');
+-*/
++(-159456, 'Lady Jaina, we are ready for next mission!', 'Джайна, мы готовы!',''),
++(-159457, 'Lady Jaina, Let\'s go!', 'Давай быстрее!', ''),
++(-159458, 'Lady Sylvanas, we are ready for next mission!', 'Сильвана, мы готовы!', ''),
++(-159459, 'Lady Sylvanas, Let\'s go!', 'Поехали!', ''),
++(-159450, 'Let\'s go!', 'Побежали!', '');
++
+ 
+ -- Waipoints to escort event on Halls of reflection
+ 
+@@ -328,13 +326,12 @@
+    (37226, 20, 5278.694,1697.912,785.692, 0, 'WP20'),
+    (37226, 21, 5283.589,1703.755,784.176, 0, 'WP19');
+    
+-/* Original Icewalls from YTDB
++
+ REPLACE INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+ (3485, 201385, 668, 3, 1, 5540.39, 2086.48, 731.066, 1.00057, 0, 0, 0.479677, 0.877445, 604800, 100, 1),
+ (3438, 201385, 668, 3, 1, 5494.3, 1978.27, 736.689, 1.0885, 0, 0, 0.517777, 0.855516, 604800, 100, 1),
+ (3386, 201385, 668, 3, 1, 5434.27, 1881.12, 751.303, 0.923328, 0, 0, 0.445439, 0.895312, 604800, 100, 1),
+ (3383, 201385, 668, 3, 1, 5323.61, 1755.85, 770.305, 0.784186, 0, 0, 0.382124, 0.924111, 604800, 100, 1);
+-*/
+ 
+ DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (37068,37107,37158);
+ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`action2_type`,`action2_param1`,`action2_param2`,`action2_param3`,`action3_type`,`action3_param1`,`action3_param2`,`action3_param3`,`comment`) VALUES
+diff --git a/sql/Greedy-core/world/IcecrownCitadel.sql b/sql/Greedy-core/world/IcecrownCitadel.sql
+--- a/sql/Greedy-core/world/IcecrownCitadel.sql
++++ b/sql/Greedy-core/world/IcecrownCitadel.sql
+@@ -1,3 +1,57 @@
++﻿UPDATE `creature_template` SET `ScriptName`='' WHERE `entry` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
++
++# GameObject
++UPDATE `gameobject_template` SET `ScriptName` = 'go_icecrown_teleporter' WHERE `entry` IN (202223,202235,202242,202243,202244,202245,202246);
++UPDATE `gameobject_template` SET `flags` = 32 WHERE `entry` IN (202235,202242,202243,202244,202245,202246,202223);
++UPDATE `gameobject_template` SET `ScriptName` = '', `data10` = 70308 WHERE `entry` = 201584;
++UPDATE `gameobject` SET `phaseMask` = '1' WHERE `id` IN (202242,202243,202244,202245,202235,202223,202246);
++UPDATE `gameobject` SET `state` = '1' WHERE `id` IN (201614,201613);
++UPDATE `gameobject` SET `state` = '0' WHERE `id` IN (201375);
++
++# Boss
++
++UPDATE `creature_template` SET `ScriptName`='boss_rotface' WHERE `entry`= 36627;
++UPDATE `creature_template` SET `ScriptName`='boss_professor_putricide' WHERE `entry` = 36678;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_valanar_icc' WHERE `entry` = 37970;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_keleset_icc' WHERE `entry` = 37972;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_taldaram_icc' WHERE `entry` = 37973;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_queen_lanathel' WHERE `entry` = 37955;
++UPDATE `creature_template` SET `ScriptName`='boss_valithria' WHERE `entry` = 36789;
++UPDATE `creature_template` SET `ScriptName`='boss_sindragosa' WHERE `entry` = 36853;
++UPDATE `creature_template` SET `ScriptName`='boss_the_lich_king' WHERE `entry` = 36597;
++
++# Mobs
++UPDATE `creature_template` SET `ScriptName`='npc_tirion_icc' WHERE `entry`= 38995;
++UPDATE `creature_template` SET `ScriptName`='npc_swarming_shadows' WHERE `entry` = 38163;
++UPDATE `creature_template` SET `ScriptName`='npc_bloodbeast' WHERE `entry` = 38508;
++UPDATE `creature_template` SET `ScriptName`='npc_cold_flame' WHERE `entry` = 36672;
++UPDATE `creature_template` SET `ScriptName`='npc_bone_spike' WHERE `entry` = 36619;
++UPDATE `creature_template` SET `ScriptName`='npc_volatile_ooze' WHERE `entry` = 37697;
++UPDATE `creature_template` SET `ScriptName`='npc_ice_puls_icc' WHERE `entry` = 36633;
++UPDATE `creature_template` SET `ScriptName`='npc_valkyr_icc' WHERE `entry` = 36609;
++UPDATE `creature_template` SET `ScriptName`='npc_ghoul_icc' WHERE `entry` = 37695;
++UPDATE `creature_template` SET `ScriptName`='npc_defile_icc' WHERE `entry` = 38757;
++UPDATE `creature_template` SET `ScriptName`='npc_raging_spirit_icc' WHERE `entry`= 36701;
++UPDATE `creature_template` SET `ScriptName`='npc_shambling_horror_icc' WHERE `entry` = 37698;
++UPDATE `creature_template` SET `ScriptName`='npc_ooze_little' WHERE `entry`= 36897;
++UPDATE `creature_template` SET `ScriptName`='npc_ooze_big' WHERE `entry`= 36899;
++UPDATE `creature_template` SET `ScriptName`='npc_shade' WHERE `entry` = 38222;
++UPDATE `creature_template` SET `ScriptName`='npc_skellmage_icc' WHERE `entry` = 37868;
++UPDATE `creature_template` SET `ScriptName`='npc_fireskell_icc' WHERE `entry` = 36791;
++UPDATE `creature_template` SET `ScriptName`='npc_suppressor_icc' WHERE `entry` = 37863;
++UPDATE `creature_template` SET `ScriptName`='npc_manavoid_icc' WHERE `entry` = 38068;
++UPDATE `creature_template` SET `ScriptName`='npc_glutabomination_icc' WHERE `entry` = 37886;
++UPDATE `creature_template` SET `ScriptName`='npc_blistzombie_icc' WHERE `entry` = 37934;
++UPDATE `creature_template` SET `ScriptName`='npc_dreamcloud_icc' WHERE `entry` = 37985;
++UPDATE `creature_template` SET `ScriptName`='npc_dreamportal_icc' WHERE `entry` IN (38186,37945,38429,38430);
++UPDATE `creature_template` SET `ScriptName`='npc_cult_fanatic_and_adherent' WHERE `entry` IN (37949,38010,38136,37890,38009,38135);
++UPDATE `creature_template` SET `ScriptName`='npc_rimefang' WHERE `entry`= 37533;
++UPDATE `creature_template` SET `ScriptName`='npc_spinestalker' WHERE `entry`= 37534;
++UPDATE `creature_template` SET `ScriptName`='npc_ice_tomb' WHERE `entry`= 36980;
++UPDATE `creature_template` SET `ScriptName`='npc_frost_bomb' WHERE `entry`= 37186;
++UPDATE `creature_template` SET `ScriptName`='npc_icc_puddle_stalker' WHERE `entry`= 37824;
++UPDATE `creature_template` SET `ScriptName`='npc_abomination' WHERE `entry` = 37672;
++
+ UPDATE `creature_template` SET `ScriptName`='' WHERE `entry` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
+ 
+ # GameObject
+@@ -61,29 +115,32 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_bomb_icc' WHERE `entry` = 38159;
+ UPDATE `creature_template` SET `ScriptName`='npc_stinky_icc' WHERE `entry` = 37025;
+ UPDATE `creature_template` SET `ScriptName`='npc_precious_icc' WHERE `entry` = 37217;
+-UPDATE `creature_template` SET `ScriptName`='npc_icc_column_stalker' WHERE `entry` = 37918;
++UPDATE `creature_template` SET `ScriptName`='npc_icc_combat_stalker' WHERE `entry` = 38752;
++UPDATE `creature_template` SET `ScriptName`='npc_valithria_alternative' WHERE `entry` = 37950;
++
+ 
+ # Other
+ UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 14, `faction_H` = 14, `unit_flags` = 33554434, `type_flags` = 1024 WHERE `entry` = 36672;
+-UPDATE `creature_template` SET `minlevel` = '80', `maxlevel` = '80', `faction_A` = '14', `faction_H` = '14', `unit_flags` = '0', `type_flags` = '0', `VehicleId` = '647' WHERE `entry` IN (38711,38970,38971,38972);
++UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 35, `faction_H` = 35 WHERE `entry` = 37950;
++UPDATE `creature_template` SET `minlevel` = 80, `maxlevel` = 80, `faction_A` = 14, `faction_H` = 14, `unit_flags` = 0, type_flags = 0, `VehicleId` = 533 WHERE `entry` IN (36619,38233,38459,38460);
++UPDATE `creature_template` SET `faction_A`=2068, `faction_H`=2068 WHERE `entry` IN (36899,38123,3689902,3689903);
+ UPDATE `creature_template` SET `faction_A` = 21, `faction_H` = 21, `unit_flags` = 33600, `vehicleId` = 639 WHERE `entry` IN (37813,38402,38582,38583);
+-UPDATE `creature_template` SET `faction_A` = 1801, `faction_H` = 1801, `type_flags` = 67113036 WHERE `entry` IN (36789,38174);
+-UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14, `minlevel` = '80', `maxlevel` = '80' WHERE `entry` IN (37006,37013,37986,38107,38548,36659,37690,37562,38159);
++UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35, `type_flags` = 67113036 WHERE `entry` IN (36789,38174);
++UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14, `minlevel` = 80, `maxlevel` = 80 WHERE `entry` IN (37006,37013,37986,38107,38548,36659,37690,37562,38159);
+ UPDATE `creature_template` SET `vehicleId` = 318 WHERE `entry` IN (36609,39120,39121,39122);
+ UPDATE `creature_model_info` SET `bounding_radius` = 5,`combat_reach` = 5 WHERE `modelid` = 31119;
+ UPDATE `creature_template` SET `mechanic_immune_mask` = 634339327 WHERE `entry` IN (36855,38106,38296,38297);
+ UPDATE `creature_template` SET `flags_extra` = 2 WHERE `entry` IN (37007,38301);
+ UPDATE `creature_template` SET `spell1` = 70360, `spell2` = 70539, `spell3` = 70542, `VehicleId` = 591 WHERE `entry` IN (37672,38605,38786,38787);
+ UPDATE `creature_template` SET `dynamicflags` = 8, `npcflag` = 0, `unit_flags` = 32832 WHERE `entry` = 38995;
++UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14 WHERE `entry` IN (36899,38123);
+ 
+ # Spell
+ 
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN(69783,69057,69140,72705,69147,69075,70834,70835,70836,70903,71236);
+-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+-('69783', 'spell_rotface_ooze_flood');
+ 
+ # Not attackable and disable move flag
+-UPDATE `creature_template` SET `unit_flags` = 33555204 WHERE `entry` IN (37986,37824,38234,38317,36659,38548,37186,37006,37918);
++UPDATE `creature_template` SET `unit_flags` = 33555204 WHERE `entry` IN (37986,37824,38234,38317,36659,38548,37186,37006,37918,37690);
+ UPDATE `creature_template` SET `unit_flags` = 33587972 WHERE `entry` = 37013;
+ UPDATE `creature_template` SET `flags_extra` = 0 WHERE `entry` IN (37986,38234,38317,36659,38548,37186,37013);
+ UPDATE `creature_template` SET `flags_extra` = 128 WHERE `entry` = 38234;
+@@ -94,16 +151,20 @@
+ # Creature addon template
+ 
+ DELETE FROM `creature_addon` WHERE `guid` = 136107;
+-DELETE FROM `creature_template_addon` WHERE `entry`= 37690;
+-DELETE FROM `creature_template_addon` WHERE `entry`= 37672;
+-DELETE FROM `creature_template_addon` WHERE `entry`= 36659;
++DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918);
+ 
+ INSERT INTO creature_addon (`guid`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (136107, 0, 0, 0, 1, 0, '18950 0 18950 1 72242 0');
+ 
+ INSERT INTO `creature_template_addon` (`entry`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (37690, 0, 0, 0, 0, 0, '70345 0  70343 0'),
+-(37672, 0, 0, 0, 0, 0, '70385 0 70405 0');
++(37672, 0, 0, 0, 0, 0, '70385 0 70405 0'),
++(38186, 0, 0, 0, 0, 0, '71304 0'),
++(37945, 0, 0, 0, 0, 0, '70763 0'),
++(38429, 0, 0, 0, 0, 0, '71986 0'),
++(38430, 0, 0, 0, 0, 0, '71994 0'),
++(37918, 0, 0, 0, 0, 0, '70715 0');
++
+ 
+ #Thanks YTDB
+ 
+@@ -137,7 +198,7 @@
+ #Linked spell
+ 
+ DELETE FROM `spell_linked_spell` WHERE `spell_trigger` = 72202;
+-DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380);
++DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70311,69291);
+ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
+ (70360,70347,0,'Eat Ooze'),
+ (72379,72380,0,'Blood Nova'),
+@@ -152,7 +213,36 @@
+ (69195,69166,0,'Pungent Blight 10N'),
+ (71279,69166,0,'Pungent Blight 25N'),
+ (73031,69166,0,'Pungent Blight 10H'),
+-(73032,69166,0,'Pungent Blight 25H');
++(73032,69166,0,'Pungent Blight 25H'),
++(70715,70702,0,'?'),
++(-69674,69706,0, 'Rotface: Mutated Infection Summon'),
++(-71224,69706,0, 'Rotface: Mutated Infection Summon'),
++(-73022,69706,0, 'Rotface: Mutated Infection Summon'),
++(-73023,69706,0, 'Rotface: Mutated Infection Summon'),
++(-70308,70311,0, 'Professor: Abomination call'),
++(-69290,69291,0, 'Festergut: Gaseous spore');
++
++#Linked Respawn
++
++DELETE FROM `creature_linked_respawn` WHERE `guid` IN (136104,136105,136107,67608,67614,67901,77641,77642,77643,115558);
++INSERT INTO `creature_linked_respawn` (`guid`,`linkedGuid`) VALUES
++(136104,136104), -- Lord Marrowgar
++(136105,136105), -- Lady Deathwhisper
++(136107,136107), -- Deathbringer Saurfang
++(67608,67608), -- Festergut
++(67614,67614), -- Rotface
++(67901,67901), -- Professor Putricide
++(77641,77641), -- Prince Keleseth
++(77642,77642), -- Prince Taldaram
++(77643,77643), -- Prince Valanar
++(115558,115558); -- Blood-Queen Lana'thel
++
++# Npc spell click spell
++
++DELETE FROM `npc_spellclick_spells` WHERE npc_entry IN (37945,38430);
++INSERT INTO `npc_spellclick_spells` (`npc_entry`, `spell_id`, `quest_start`, `quest_start_active`, `quest_end`, `cast_flags`, `aura_required`, `aura_forbidden`, `user_type`) VALUES
++(37945,70766,0,0,0,3,0,0,0),
++(38430,70766,0,0,0,3,0,0,0);
+ 
+ DELETE FROM script_texts WHERE entry <= -1665902 AND entry >= -1666080;
+ DELETE FROM script_texts WHERE entry <= -1810001 AND entry >= -1810031;
+@@ -309,19 +399,22 @@
+ (36678,-1631090, 'Oh, Festergut. You were always my favorite. Next to Rotface. The good news is you left behind so much gas, I can practically taste it!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17124,1,0,0, 'SAY_FESTERGUT_DEATH');
+ 
+ # 6
++DELETE FROM `script_texts` WHERE `entry` BETWEEN -1631103 AND -1631091;
+ INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+-(36627,-1666015,'What? Precious? Noooooooooo!!!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16993,1,0,0,''),
+-(36627,-1666016,'WEEEEEE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16986,1,0,0,''),
+-(36627,-1666017,'Icky sticky.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16991,1,0,0,''),
+-(36627,-1666018,'I think I made an angry poo-poo. It gonna blow! ',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16992,1,0,0,''),
+-(36627,-1666019,'Great news, everyone! The slime is flowing again!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17126,1,0,0,''),
+-(36627,-1666020,'Good news, everyone! I''ve fixed the poison slime pipes!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17123,1,0,0,''),
+-(36678,-1666021,'Daddy make toys out of you!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16988,1,0,0,''),
+-(36627,-1666022,'I brokes-ded it...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16987,1,0,0,''),
+-(36627,-1666023,'Sleepy Time!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16990,1,0,0,''),
+-(36627,-1666024,'Bad news daddy.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16989,1,0,0,''),
+-(36627,-1666025,'Terrible news, everyone, Rotface is dead! But great news everyone, he left behind plenty of ooze for me to use! Whaa...? I''m a poet, and I didn''t know it? Astounding!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,'');
+-
++(36678,-1631091,'Great news, everyone! The slime is flowing again!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17126,1,0,1,'SAY_ROTFACE_OOZE_FLOOD1'),
++(36678,-1631092,'Good news, everyone! I''ve fixed the poison slime pipes!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17123,1,0,1,'SAY_ROTFACE_OOZE_FLOOD2'),
++(36678,-1631093,'Terrible news, everyone, Rotface is dead! But great news everyone, he left behind plenty of ooze for me to use! Whaa...? I''m a poet, and I didn''t know it? Astounding!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17146,1,0,0,'SAY_ROTFACE_DEATH'),
++(36627,-1631094,'What? Precious? Noooooooooo!!!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16993,1,0,0,'SAY_PRECIOUS_DIES'),
++(36627,-1631095,'WEEEEEE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16986,1,0,0,'SAY_AGGRO'),
++(36627,-1631096,'%s begins to cast Slime Spray!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_SLIME_SPRAY'),
++(36627,-1631097,'Icky sticky.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16991,1,0,0,'SAY_SLIME_SPRAY'),
++(36627,-1631098,'|TInterface\Icons\spell_shadow_unstableaffliction_2.blp:16|t%s begins to cast |cFFFF0000Unstable Ooze Explosion!|r',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_UNSTABLE_EXPLOSION'),
++(36627,-1631099,'I think I made an angry poo-poo. It gonna blow!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16992,1,0,0,'SAY_UNSTABLE_EXPLOSION'),
++(36627,-1631100,'Daddy make toys out of you!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16988,1,0,0,'SAY_KILL_1'),
++(36627,-1631101,'I brokes-ded it...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16987,1,0,0,'SAY_KILL_2'),
++(36627,-1631102,'Sleepy Time!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16990,1,0,0,'SAY_BERSERK'),
++(36627,-1631103,'Bad news daddy...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16989,1,0,0,'SAY_DEATH');
++ 
+ # 7
+ INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+ (36678,-1666026,'Good news, everyone! I think I perfected a plague that will destroy all life on Azeroth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17144,1,0,0,''),
+@@ -557,27 +650,26 @@
+ 
+ /*Гниломорд*/
+ 
+-UPDATE `script_texts` SET `content_loc8`='Что? Прелесть? Нееееееееееееет!!!' WHERE `entry`=-1666015;
+-UPDATE `script_texts` SET `content_loc8`='УУИИИИИИ!' WHERE `entry`=-1666016;
+-UPDATE `script_texts` SET `content_loc8`='Отличные новости, народ! Слизь снова потелка!' WHERE `entry`=-1666019;
+-UPDATE `script_texts` SET `content_loc8`='Отличные новости, народ! Я починил трубы для подачи ядовитой слизи!' WHERE `entry`=-1666020;
+-UPDATE `script_texts` SET `content_loc8`='Папочка сделает новые игрушки из вас!' WHERE `entry`=-1666021;
+-UPDATE `script_texts` SET `content_loc8`='Я это заломал...' WHERE `entry`=-1666022;
+-UPDATE `script_texts` SET `content_loc8`='Папочка, не огорчайся…' WHERE `entry`=-1666024;
+-UPDATE `script_texts` SET `content_loc8`='Я сделал очень злую каку! Сейчас взорвется!' WHERE `entry`=-1666018;
++UPDATE `script_texts` SET `content_loc8`='Что? Прелесть? Нееееееееееееет!!!' WHERE `entry`=-1631094;
++UPDATE `script_texts` SET `content_loc8`='УУИИИИИИ!' WHERE `entry`=-1631095;
++UPDATE `script_texts` SET `content_loc8`='Отличные новости, народ! Слизь снова потекла!' WHERE `entry`=-1631091;
++UPDATE `script_texts` SET `content_loc8`='Отличные новости, народ! Я починил трубы для подачи ядовитой слизи!' WHERE `entry`=-1631092;
++UPDATE `script_texts` SET `content_loc8`='Папочка сделает новые игрушки из вас!' WHERE `entry`=-1631100;
++UPDATE `script_texts` SET `content_loc8`='Я это заломал...' WHERE `entry`=-1631101;
++UPDATE `script_texts` SET `content_loc8`='Папочка, не огорчайся…' WHERE `entry`=-1631103;
++UPDATE `script_texts` SET `content_loc8`='Я сделал очень злую каку! Сейчас взорвется!' WHERE `entry`=-1631099;
+ 
+ /*Тухлопуз*/
+ 
+-UPDATE `script_texts` SET `content_loc8`='Тухлопуз, ты всегда был моим любимчиком, как и Гниломорд! Молодец, что оставил столько газа. Я его даже чувствую!' WHERE `entry`=-1666014;
+-UPDATE `script_texts` SET `content_loc8`='Нет! Вы убили Вонючку! Сейчас получите!' WHERE `entry`=-1666004;
+-UPDATE `script_texts` SET `content_loc8`='Повеселимся?' WHERE `entry`=-1666005;
+-UPDATE `script_texts` SET `content_loc8`='Что-то мне нехорошо...' WHERE `entry`=-1666008;
+-UPDATE `script_texts` SET `content_loc8`='Папочка, у меня получилось!' WHERE `entry`=-1666010;
+-UPDATE `script_texts` SET `content_loc8`='Веселью конец!' WHERE `entry`=-1666012;
+-UPDATE `script_texts` SET `content_loc8`='Па-па...' WHERE `entry`=-1666013;
+-UPDATE `script_texts` SET `content_loc8`='Мер-твец, мер-твец, мер-твец!' WHERE `entry`=-1666011;
+-UPDATE `script_texts` SET `content_loc8`='Папочка! У меня получилось!' WHERE `entry`=-1666010;
+-UPDATE `script_texts` SET `content_loc8`='Это обычное облаго газа, только будьте осторожны, не такое уж оно и обычное!' WHERE `entry`=-1666006;
++UPDATE `script_texts` SET `content_loc8`='Тухлопуз, ты всегда был моим любимчиком, как и Гниломорд! Молодец, что оставил столько газа. Я его даже чувствую!' WHERE `entry`=-1631090;
++UPDATE `script_texts` SET `content_loc8`='Нет! Вы убили Вонючку! Сейчас получите!' WHERE `entry`=-1631078;
++UPDATE `script_texts` SET `content_loc8`='Повеселимся?' WHERE `entry`=-1631079;
++UPDATE `script_texts` SET `content_loc8`='Что-то мне нехорошо...' WHERE `entry`=-1631083;
++UPDATE `script_texts` SET `content_loc8`='Веселью конец!' WHERE `entry`=-1631088;
++UPDATE `script_texts` SET `content_loc8`='Па-па...' WHERE `entry`=-1631089;
++UPDATE `script_texts` SET `content_loc8`='Мер-твец, мер-твец, мер-твец!' WHERE `entry`=-1631087;
++UPDATE `script_texts` SET `content_loc8`='Папочка! У меня получилось!' WHERE `entry`=-1631086;
++UPDATE `script_texts` SET `content_loc8`='Это обычное облаго газа, только будьте осторожны, не такое уж оно и обычное!' WHERE `entry`=-1631080;
+ 
+ 
+ /*Профессор Мерзоцоид*/
+@@ -635,7 +727,7 @@
+ UPDATE `script_texts` SET `content_loc8`='Пришел КОНЕЦ!' WHERE `entry`=-1810011;
+ UPDATE `script_texts` SET `content_loc8`='Встречайте трагический финал!' WHERE `entry`=-1810012;
+ UPDATE `script_texts` SET `content_loc8`='Сомнений нет, вы величайшие герои Азерота! Вы преодолели все препятствия, которые я воздвиг перед вами. Сильнейшие из моих слуг пали под вашим натиском, сгорели в пламени вашей ярости!' WHERE `entry`=-1810013;
+-UPDATE `script_texts` SET `content_loc8`='Ты отлично их обучил, Фордринг! ' WHERE `entry`=-1810014;*/
++UPDATE `script_texts` SET `content_loc8`='Ты отлично их обучил, Фордринг! ' WHERE `entry`=-1810014;
+ UPDATE `script_texts` SET `content_loc8`='Смотри, как я буду всокрешать их, и превращать в воинов Плети! Они повергнут этот мир в пучину хаоса. Азерот падет от их рук! и ты станешь первой жертвой.' WHERE `entry`=-1810015;
+ UPDATE `script_texts` SET `content_loc8`='Мне по душе эта ирония.' WHERE `entry`=-1810016;
+ UPDATE `script_texts` SET `content_loc8`='СВЕТ, ДАРУЙ МНЕ ПОСЛЕДНЕЕ БЛАГОСЛОВЛЕНИЕ... ДАЙ МНЕ СИЛЫ РАЗБИТЬ ЭТИ ОКОВЫ!' WHERE `entry`=-1810017;
+diff --git a/sql/Greedy-core/world/IoC.sql b/sql/Greedy-core/world/IoC.sql
+--- a/sql/Greedy-core/world/IoC.sql
++++ b/sql/Greedy-core/world/IoC.sql
+@@ -1,100 +1,100 @@
+-UPDATE gameobject_template SET size=2.151325 WHERE entry=195451;
+-UPDATE gameobject_template SET size=2.151325 WHERE entry=195452;
+-UPDATE gameobject_template SET size=3.163336 WHERE entry=195223;
+-UPDATE creature_template SET speed_run=1.142857 WHERE entry=36154;
+-UPDATE creature_template SET speed_run=1.142857 WHERE entry=36169;
+-
+--- Canon de la canonni re de l'Alliance
+--- http://fr.wowhead.com/npc=34929
+-UPDATE `creature_template` SET `spell1`=69495,`VehicleId`='452' WHERE `entry` =34929;
+-
+--- Canon de la canonni re de la Horde
+--- http://fr.wowhead.com/npc=34935
+-UPDATE `creature_template` SET `spell1`=68825,`VehicleId`='453' WHERE `entry` =34935;
+-
+--- Canon du donjon
+--- http://fr.wowhead.com/npc=34944
+-UPDATE `creature_template` SET `VehicleId`=160,`spell1`=67452,`spell2`='68169' WHERE `entry` =34944;
+-
+--- Catapulte
+--- http://fr.wowhead.com/npc=34793
+-UPDATE `creature_template` SET `VehicleId`=438,`spell1`=66218,`spell2`=66296 WHERE `entry`=34793;
+-
+--- D molisseur
+--- http://fr.wowhead.com/npc=34775
+-UPDATE `creature_template` SET `VehicleId`='509',`spell1`='67442',`spell2`='68068' WHERE `entry` =34775;
+-
+--- Engin de si ge
+--- http://fr.wowhead.com/npc=34776
+-UPDATE `creature_template` SET `VehicleId`=447,`spell1`=67816,`spell2`=69502 WHERE `entry`=34776;
+-
+--- Engin de si ge
+--- http://fr.wowhead.com/npc=35069
+-UPDATE `creature_template` SET `VehicleId`=436,`spell1`=67816,`spell2`=69502 WHERE `entry`=35069;
+-
+--- Lanceur de glaive
+--- http://fr.wowhead.com/npc=34802
+-UPDATE `creature_template` SET `VehicleId`=447,`spell1`=68827,`spell2`=69515 WHERE `entry`=34802;
+-
+--- Lanceur de glaive
+--- http://fr.wowhead.com/npc=35273
+-UPDATE `creature_template` SET `VehicleId`=447,`spell1`=68827,`spell2`=69515 WHERE `entry`=35273;
+-
+--- Tourelle de flammes
+--- http://fr.wowhead.com/npc=34778
+-
+-UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =34778;
+--- Tourelle de flammes
+--- http://fr.wowhead.com/npc=36356
+-UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36356;
+-
+--- Tourelle de si ge
+--- http://fr.wowhead.com/npc=34777
+-UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=34777;
+-
+--- Tourelle de si ge
+--- http://fr.wowhead.com/npc=36355
+-UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36355;
+-
+--- Catapult speed
+-UPDATE creature_template SET `speed_run`=2.428571,`speed_walk`=2.8 WHERE `entry`=34793;
+-
+--- Overlord Agmar &   script
+-UPDATE creature_template SET `ScriptName`='boss_isle_of_conquest' WHERE `entry` IN (34924,34922);
+-	
+-INSERT INTO `trinity_string` (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`) VALUES
+-(12039, 'le donjon de l''alliance', NULL, 'le donjon de l''alliance', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12038, 'le donjon de la Horde', NULL, 'le donjon de la Horde', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12037, 'L''Alliance a pris le donjon de la Horde !', NULL, 'L''Alliance a pris le donjon de la Horde !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12036, 'La Horde a pris le donjon de l''Alliance !', NULL, 'La Horde a pris le donjon de l''Alliance !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12035, '%s l''emporte !', NULL, '%s l''emporte !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12034, '%s a attaqu  le donjon de la Horde !', NULL, '%s a attaqu  le donjon de la Horde !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12033, '%s a attaqu  le donjon de l''Alliance !', NULL, '%s a attaqu  le donjon de l''Alliance !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12032, 'La porte ouest du donjon de la Horde est d truite !', NULL, 'La porte ouest du donjon de la Horde est d truite !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12031, 'La porte est du donjon de la Horde est d truite !', NULL, 'La porte est du donjon de la Horde est d truite !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12030, 'La porte sud du donjon de la Horde est d truite !', NULL, 'La porte sud du donjon de la Horde est d truite !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12029, 'La porte ouest du donjon de l''Alliance est d truite !', NULL, 'La porte ouest du donjon de l''Alliance est d truite !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12028, 'La porte est du donjon de l''Alliance est d truite !', NULL, 'La porte est du donjon de l''Alliance est d truite !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12027, 'La porte nord du donjon de l''Alliance est d truite !', NULL, 'La porte nord du donjon de l''Alliance est d truite !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12026, 'The battle will begin in 15 seconds!', NULL, 'La bataille commencera dans 15 secondes.', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12025, '$n has assaulted the %s', '', '$n a attaqu  %s !', '', '', '', '', '', ''),
+-(12024, '$n has defended the %s', '', '$n a d fendu %s', '', '', '', '', '', ''),
+-(12023, '$n claims the %s! If left unchallenged, the %s will control it in 1 minute!', NULL, '$n   attaqu  %s! Si rien n\'est fait, %s le contr lera dans 1 minute!', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12022, 'Alliance', NULL, 'L''Alliance', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12021, 'Horde', NULL, 'La Horde', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12020, 'The %s has taken the %s', NULL, '%s a pris %s', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12019, 'Workshop', NULL, 'l''atelier', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12018, 'Docks', NULL, 'les docks', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12017, 'Refinery', NULL, 'la raffinerie', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12016, 'Quarry', NULL, 'la carri re', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12015, 'Hangar', NULL, 'le hangar', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12014, 'The battle has begun!', NULL, 'Que la bataille commence !', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12013, 'The battle will begin in 30 seconds!', NULL, 'La bataille commencera dans 30 secondes.', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12012, 'The battle will begin in one minute!', NULL, 'La bataille commencera dans 1 minute.', NULL, NULL, NULL, NULL, NULL, NULL),
+-(12011, 'The battle will begin in two minutes!', NULL, 'La bataille commencera dans 2 minutes.', NULL, NULL, NULL, NULL, NULL, NULL);
+-
+-INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+-(66548, 66550, 0, 'Isle of Conquest (OUT>IN)'),
+-(66549, 66550, 0, 'Isle of Conquest (IN>OUT)'),
+-(66550, -66549, 2, 'Isle of Conquest Teleport (OUT>IN) Debuff limit'),
+-(66550, -66548, 2, 'Isle of Conquest Teleport (IN>OUT) Debuff limit');
++UPDATE gameobject_template SET size=2.151325 WHERE entry=195451;
++UPDATE gameobject_template SET size=2.151325 WHERE entry=195452;
++UPDATE gameobject_template SET size=3.163336 WHERE entry=195223;
++UPDATE creature_template SET speed_run=1.142857 WHERE entry=36154;
++UPDATE creature_template SET speed_run=1.142857 WHERE entry=36169;
++
++-- Canon de la canonni�re de l'Alliance
++-- http://fr.wowhead.com/npc=34929
++UPDATE `creature_template` SET `spell1`=69495,`VehicleId`='452' WHERE `entry` =34929;
++
++-- Canon de la canonni�re de la Horde
++-- http://fr.wowhead.com/npc=34935
++UPDATE `creature_template` SET `spell1`=68825,`VehicleId`='453' WHERE `entry` =34935;
++
++-- Canon du donjon
++-- http://fr.wowhead.com/npc=34944
++UPDATE `creature_template` SET `VehicleId`=160,`spell1`=67452,`spell2`='68169' WHERE `entry` =34944;
++
++-- Catapulte
++-- http://fr.wowhead.com/npc=34793
++UPDATE `creature_template` SET `VehicleId`=438,`spell1`=66218,`spell2`=66296 WHERE `entry`=34793;
++
++-- D�molisseur
++-- http://fr.wowhead.com/npc=34775
++UPDATE `creature_template` SET `VehicleId`='509',`spell1`='67442',`spell2`='68068' WHERE `entry` =34775;
++
++-- Engin de si�ge
++-- http://fr.wowhead.com/npc=34776
++UPDATE `creature_template` SET `VehicleId`=447,`spell1`=67816,`spell2`=69502 WHERE `entry`=34776;
++
++-- Engin de si�ge
++-- http://fr.wowhead.com/npc=35069
++UPDATE `creature_template` SET `VehicleId`=436,`spell1`=67816,`spell2`=69502 WHERE `entry`=35069;
++
++-- Lanceur de glaive
++-- http://fr.wowhead.com/npc=34802
++UPDATE `creature_template` SET `VehicleId`=447,`spell1`=68827,`spell2`=69515 WHERE `entry`=34802;
++
++-- Lanceur de glaive
++-- http://fr.wowhead.com/npc=35273
++UPDATE `creature_template` SET `VehicleId`=447,`spell1`=68827,`spell2`=69515 WHERE `entry`=35273;
++
++-- Tourelle de flammes
++-- http://fr.wowhead.com/npc=34778
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =34778;
++-- Tourelle de flammes
++-- http://fr.wowhead.com/npc=36356
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36356;
++
++-- Tourelle de si�ge
++-- http://fr.wowhead.com/npc=34777
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=34777;
++
++-- Tourelle de si�ge
++-- http://fr.wowhead.com/npc=36355
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36355;
++
++-- Catapult speed
++UPDATE creature_template SET `speed_run`=2.428571,`speed_walk`=2.8 WHERE `entry`=34793;
++
++-- Overlord Agmar &   script
++UPDATE creature_template SET `ScriptName`='boss_isle_of_conquest' WHERE `entry` IN (34924,34922);
++	
++INSERT INTO `trinity_string` (`entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`) VALUES
++(12039, 'le donjon de l''alliance', NULL, 'le donjon de l''alliance', NULL, NULL, NULL, NULL, NULL, NULL),
++(12038, 'le donjon de la Horde', NULL, 'le donjon de la Horde', NULL, NULL, NULL, NULL, NULL, NULL),
++(12037, 'L''Alliance a pris le donjon de la Horde !', NULL, 'L''Alliance a pris le donjon de la Horde !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12036, 'La Horde a pris le donjon de l''Alliance !', NULL, 'La Horde a pris le donjon de l''Alliance !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12035, '%s l''emporte !', NULL, '%s l''emporte !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12034, '%s a attaqu� le donjon de la Horde !', NULL, '%s a attaqu� le donjon de la Horde !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12033, '%s a attaqu� le donjon de l''Alliance !', NULL, '%s a attaqu� le donjon de l''Alliance !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12032, 'La porte ouest du donjon de la Horde est d�truite !', NULL, 'La porte ouest du donjon de la Horde est d�truite !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12031, 'La porte est du donjon de la Horde est d�truite !', NULL, 'La porte est du donjon de la Horde est d�truite !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12030, 'La porte sud du donjon de la Horde est d�truite !', NULL, 'La porte sud du donjon de la Horde est d�truite !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12029, 'La porte ouest du donjon de l''Alliance est d�truite !', NULL, 'La porte ouest du donjon de l''Alliance est d�truite !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12028, 'La porte est du donjon de l''Alliance est d�truite !', NULL, 'La porte est du donjon de l''Alliance est d�truite !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12027, 'La porte nord du donjon de l''Alliance est d�truite !', NULL, 'La porte nord du donjon de l''Alliance est d�truite !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12026, 'The battle will begin in 15 seconds!', NULL, 'La bataille commencera dans 15 secondes.', NULL, NULL, NULL, NULL, NULL, NULL),
++(12025, '$n has assaulted the %s', '', '$n a attaqu� %s !', '', '', '', '', '', ''),
++(12024, '$n has defended the %s', '', '$n a d�fendu %s', '', '', '', '', '', ''),
++(12023, '$n claims the %s! If left unchallenged, the %s will control it in 1 minute!', NULL, '$n � attaqu� %s! Si rien n\'est fait, %s le contr�lera dans 1 minute!', NULL, NULL, NULL, NULL, NULL, NULL),
++(12022, 'Alliance', NULL, 'L''Alliance', NULL, NULL, NULL, NULL, NULL, NULL),
++(12021, 'Horde', NULL, 'La Horde', NULL, NULL, NULL, NULL, NULL, NULL),
++(12020, 'The %s has taken the %s', NULL, '%s a pris %s', NULL, NULL, NULL, NULL, NULL, NULL),
++(12019, 'Workshop', NULL, 'l''atelier', NULL, NULL, NULL, NULL, NULL, NULL),
++(12018, 'Docks', NULL, 'les docks', NULL, NULL, NULL, NULL, NULL, NULL),
++(12017, 'Refinery', NULL, 'la raffinerie', NULL, NULL, NULL, NULL, NULL, NULL),
++(12016, 'Quarry', NULL, 'la carri�re', NULL, NULL, NULL, NULL, NULL, NULL),
++(12015, 'Hangar', NULL, 'le hangar', NULL, NULL, NULL, NULL, NULL, NULL),
++(12014, 'The battle has begun!', NULL, 'Que la bataille commence !', NULL, NULL, NULL, NULL, NULL, NULL),
++(12013, 'The battle will begin in 30 seconds!', NULL, 'La bataille commencera dans 30 secondes.', NULL, NULL, NULL, NULL, NULL, NULL),
++(12012, 'The battle will begin in one minute!', NULL, 'La bataille commencera dans 1 minute.', NULL, NULL, NULL, NULL, NULL, NULL),
++(12011, 'The battle will begin in two minutes!', NULL, 'La bataille commencera dans 2 minutes.', NULL, NULL, NULL, NULL, NULL, NULL);
++
++INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
++(66548, 66550, 0, 'Isle of Conquest (OUT>IN)'),
++(66549, 66550, 0, 'Isle of Conquest (IN>OUT)'),
++(66550, -66549, 2, 'Isle of Conquest Teleport (OUT>IN) Debuff limit'),
++(66550, -66548, 2, 'Isle of Conquest Teleport (IN>OUT) Debuff limit');
+diff --git a/sql/Greedy-core/world/Naxxramas.sql b/sql/Greedy-core/world/Naxxramas.sql
+--- a/sql/Greedy-core/world/Naxxramas.sql
++++ b/sql/Greedy-core/world/Naxxramas.sql
+@@ -2,7 +2,7 @@
+ 
+ -- Remove invisible state for Shadow Fissure c16129 used by Kel'Thuzad in Naxxramas and set proper baseattacktiem (by Ident thx Trazom for baseattacktime)
+ UPDATE `creature_template` SET `baseattacktime`=5000,`flags_extra`=`flags_extra`&~128 WHERE `entry`=16129;
+--- *******************************************************************************************
++
+ -- Naxxramas
+ -- Delete Copse Scarabs
+ DELETE FROM `creature` WHERE `id`= 16698;
+@@ -39,9 +39,7 @@
+ UPDATE `creature_template` SET mechanic_immune_mask = 113983323 WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
+ UPDATE `creature_template` SET maxlevel = 63, minlevel = 63  WHERE `entry` IN (15956,15953,15952,16028,15931,15932,15928,15930,15929,16061,16060,16064,16065,16062,16063,15954,15936,16011,15989,15990);
+ UPDATE `creature_template` SET maxlevel = 73, minlevel = 73 WHERE `entry` = 16363;
+--- *******************************************************************************************
+--- Doors
+--- *******************************************************************************************
++
+ -- Spawns
+ -- Delete existing Spawns
+ DELETE FROM gameobject WHERE id IN (181126,181195,181167,181235,181197,181209,181123,181120,181121,181124,181125,181170,181119,181200,181201,181202,181203,181241,181225,181228,181496);
+diff --git a/sql/Greedy-core/world/Nexus.sql b/sql/Greedy-core/world/Nexus.sql
+--- a/sql/Greedy-core/world/Nexus.sql
++++ b/sql/Greedy-core/world/Nexus.sql
+@@ -1,4 +1,4 @@
+-## Set Emblem of Heroism Badges
++
+ SET @lootid_anomalus     = (SELECT lootid FROM creature_template WHERE entry = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 26763));
+ SET @lootid_telestra     = (SELECT lootid FROM creature_template WHERE entry = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 26731));
+ SET @lootid_keristrasza  = (SELECT lootid FROM creature_template WHERE entry = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 26723));
+@@ -7,7 +7,7 @@
+ UPDATE creature_loot_template SET item = 40752 WHERE item = 47241 AND entry IN (@lootid_anomalus,@lootid_telestra,@lootid_keristrasza,@lootid_ormorok);
+ UPDATE reference_loot_template SET item = 40752 WHERE item = 47241 AND entry = 35034;
+ 
+-## Set Damage for Commander Kolurg to Commander Stoutbeards Values
++
+ SET @mindmg = (SELECT mindmg      FROM creature_template WHERE entry = 26796);
+ SET @maxdmg = (SELECT maxdmg      FROM creature_template WHERE entry = 26796);
+ SET @attack = (SELECT attackpower FROM creature_template WHERE entry = 26796);
+@@ -19,7 +19,7 @@
+ SET @kolurg_diff1 = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 26798);
+ UPDATE creature_template SET mindmg = @mindmg, maxdmg = @maxdmg, attackpower = @attack WHERE entry = @kolurg_diff1;
+ 
+-## First Boss should be interruptable
++
+ UPDATE creature_template SET mechanic_immune_mask = mechanic_immune_mask &~ 33554432 WHERE entry IN (26731,30510);
+ 
+ UPDATE creature_template SET AIName = '', ScriptName = 'boss_magus_telestra_arcane' WHERE entry = 26929;
+@@ -29,18 +29,18 @@
+ (26796,576,2,1,24366,0,424.185,185.37,-35.004,3.263,3600,0,0,337025,0,0,0), -- alli boss hero
+ (27949,576,1,1,24366,0,424.185,185.37,-35.004,3.263,3600,0,0,337025,0,0,0); -- alli commander non hero
+ 
+-## Remove Keristrasza's Broken Heart from loot Table
++
+ DELETE FROM creature_loot_template WHERE item = 43665;
+ 
+-## Spikes at Ormorok unselectable and unattackable
++
+ SET @spike_h = (SELECT difficulty_entry_1 FROM creature_template WHERE entry = 27099);
+ UPDATE creature_template SET unit_flags = unit_flags|2|33554432 WHERE entry IN (27099,@spike_h);
+ 
+-## Change Position of Trashmobs near Ormorok
++
+ UPDATE creature SET position_x = '323.541779', position_y = '-240.492249', position_z = '-14.088820', orientation = '2.964224' WHERE guid = '126444';
+ UPDATE creature SET position_x = '323.179108', position_y = '-242.347137', position_z = '-14.088820', orientation = '2.948516' WHERE guid = '126606';
+ UPDATE creature SET position_x = '324.616272', position_y = '-234.996307', position_z = '-14.088820', orientation = '3.152720' WHERE guid = '126605';
+ UPDATE creature SET position_x = '317.004852', position_y = '-237.360901', position_z = '-14.088820', orientation = '3.231260' WHERE guid = '126445';
+ 
+-## Remove Reputation from Horde/Alliance Commander (nonhero) - old: 250
++
+ DELETE FROM creature_onkill_reputation WHERE creature_id IN (27947,27949);
+diff --git a/sql/Greedy-core/world/Ruby_sanctum.sql b/sql/Greedy-core/world/Ruby_sanctum.sql
+--- a/sql/Greedy-core/world/Ruby_sanctum.sql
++++ b/sql/Greedy-core/world/Ruby_sanctum.sql
+@@ -64,7 +64,7 @@
+ INSERT INTO spell_linked_spell VALUES (-74792, 74800, 0, 'Soul Consumption removed -> Consumption');
+ 
+ DELETE FROM creature WHERE `id`=39863 and `map`=724;
+-INSERT INTO creature VALUES (null,39863,724,15,1,0,0,3144.93,527.233,72.8887,0.110395,300,0,0,11156000,0,0,0);
++INSERT INTO creature VALUES (null,39863,724,15,1,0,0,3144.93,527.233,72.8887,0.110395,300,0,0,11156000,0,0,0,0,0,0);
+ 
+ UPDATE `creature_template` SET `ScriptName` = 'npc_onyx_flamecaller' WHERE `entry` = '39814';
+ 
+diff --git a/sql/Greedy-core/world/TrialChampion.sql b/sql/Greedy-core/world/TrialChampion.sql
+--- a/sql/Greedy-core/world/TrialChampion.sql
++++ b/sql/Greedy-core/world/TrialChampion.sql
+@@ -1,10 +1,4 @@
+--- Georgios: I have been working since a long time ago in this information stepp by steem dat by day.
+--- I have asign all guids to each npc and there is not anyy problem with satabase in the moment to insert the information.
+--- All event is working perfect, just go close to the anouncer and wait, he will start the presentation.
+--- Problemas: I add PhaseMask to mount then each faction see their mount, but in the moment you ride a mount then you can not see the anouncer.
+--- Solutions:  If change the phaseMask to make horde and alliance see all mounts, then will see the announcer as well.
+--- This information in not jet in CTDB, please, if there is something wrong just let me know.
+--- NOTE: I have set phaseMask to 1 (provisional)
++
+ 
+ UPDATE `instance_template` SET `script`='instance_trial_of_the_champion' WHERE `map`=650;
+ UPDATE `creature_template` SET `ScriptName`='npc_announcer_toc5' WHERE `entry`IN (35004,35005);
+diff --git a/sql/Greedy-core/world/TrialofCrusader.sql b/sql/Greedy-core/world/TrialofCrusader.sql
+--- a/sql/Greedy-core/world/TrialofCrusader.sql
++++ b/sql/Greedy-core/world/TrialofCrusader.sql
+@@ -1,26 +1,26 @@
+ DELETE FROM `gameobject` WHERE `map`=649;
+ INSERT INTO `gameobject` VALUES
+-(500000,195527,649,15,1,563.678,177.284,398.621,1.57047,0,0,0,0,0,100,0), /* Argent Coliseum Floor */
+-(500001,195647,649,15,1,563.678,199.329,394.766,1.58619,0,0,0,0,0,100,1), /* Main Gate */
+-(500002,195650,649,15,1,624.656,139.342,395.261,0.00202179,0,0,0,0,0,100,1), /* South Portcullis */
+-(500003,195648,649,15,1,563.671,78.459,395.261,4.69083,0,0,0,0,0,100,0), /* East Portcullis */
+-(500004,195649,649,15,1,502.674,139.302,395.26,3.14933,0,0,0,0,0,100,1), /* North Portcullis */
+-(500046,195594,649,1,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1), /* Portal 10 normal */
+-(500048,195595,649,2,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1), /* Portal 25 normal */
+-(500050,195596,649,8,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1), /* Portal 25 hc */
+-(500052,195593,649,4,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1); /* Portal 10 hc */
++(600000,195527,649,15,1,563.678,177.284,398.621,1.57047,0,0,0,0,0,100,0), 
++(500001,195647,649,15,1,563.678,199.329,394.766,1.58619,0,0,0,0,0,100,1), 
++(500002,195650,649,15,1,624.656,139.342,395.261,0.00202179,0,0,0,0,0,100,1), 
++(500003,195648,649,15,1,563.671,78.459,395.261,4.69083,0,0,0,0,0,100,0), 
++(500004,195649,649,15,1,502.674,139.302,395.26,3.14933,0,0,0,0,0,100,1), 
++(500046,195594,649,1,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1), 
++(500048,195595,649,2,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1), 
++(500050,195596,649,8,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1), 
++(500052,195593,649,4,1,563.72,77.1442,396.336,1.559,0,0,0.715397,-0.698718,300,0,1); 
+ 
+-/* Creatures */
++
+ DELETE FROM `creature` WHERE `map`=649;
+ INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+-(604905,34990,649,15,1,0,0,624.633,139.386,418.209,3.15008,300,0,0,8367000,0,0,0), /* King Varian Wrynn */
+-(604903,34996,649,15,1,0,547,563.697,78.3457, 418.21,1.55937,300,0,0,13945000,4258,0,0), /* Hight Lord Tirion Fordring */
+-(604907,34995,649,15,1,0,0,502.825,139.407,418.211,0.0163429,300,0,0,1394500,0,0,0), /* Garrosh Hellscream */
+-/*(604909,35458,649,15,1,0,2106,622.6,112.19,419.705,2.62386,300,0,0,100000,90000,0,0), /* Wilfred Fizzlebang */
+-(604911,34816,649,15,1,0,0,556.27,89.0785,395.241,1.05514,300,0,0,126000,0,0,0), /* Barrett Ramsey */
+-(504913,34564,649,15,1,0,0,783.237,133.477,142.576,3.06614,300,0,0,4183500,0,0,0); /* Anubarak */
++(604905,34990,649,15,1,0,0,624.633,139.386,418.209,3.15008,300,0,0,8367000,0,0,0), 
++(604903,34996,649,15,1,0,547,563.697,78.3457, 418.21,1.55937,300,0,0,13945000,4258,0,0), 
++(604907,34995,649,15,1,0,0,502.825,139.407,418.211,0.0163429,300,0,0,1394500,0,0,0), 
++(604909,35458,649,15,1,0,2106,622.6,112.19,419.705,2.62386,300,0,0,100000,90000,0,0), 
++(604911,34816,649,15,1,0,0,556.27,89.0785,395.241,1.05514,300,0,0,126000,0,0,0), 
++(504913,34564,649,15,1,0,0,783.237,133.477,142.576,3.06614,300,0,0,4183500,0,0,0); 
+ 
+-/* Texts (yells) */
++
+ SET @id := -1760000;
+ DELETE FROM `script_texts` WHERE `entry` BETWEEN @id-76 AND @id;
+ INSERT INTO `script_texts` (npc_entry, entry, content_default, sound, type, language, emote, comment) VALUES
+@@ -101,19 +101,19 @@
+ (34564, @id-75, "I have failed you, master....", 16238, 1, 0, 0, "Anub'arak - death"),
+ (36095, @id-76, "Champions, you're alive! Not only have you defeated every challenge of the Trial of the Crusader, but thwarted Arthas directly! Your skill and cunning will prove to be a powerful weapon against the Scourge. Well done! Allow one of my mages to transport you back to the surface!", 0, 1, 0, 0, "Anub'arak - outro");
+ 
+-/* Creature/Instance Templates */
+-UPDATE creature_template SET ScriptName="boss_gormok_the_impaler" WHERE entry=34796; /* gormok the impaler */
+-UPDATE creature_template SET ScriptName="boss_acidmaw" WHERE entry=35144; /* acidmaw */
+-UPDATE creature_template SET ScriptName="boss_dreadscale" WHERE entry=34799; /* dreascale */
+-UPDATE creature_template SET scriptname="mob_slime_pool" WHERE entry = 35176; /* slime pool - acidmaw's and dreadscale's add */
+-UPDATE creature_template SET ScriptName="boss_icehowl" WHERE entry=34797; /* icehowl */
+-UPDATE creature_template SET ScriptName="mob_snobold" WHERE entry=34800; /* Snobold */
+-UPDATE creature_template SET ScriptName="boss_lord_jaraxxus" WHERE entry=34780; /* Lord Jaraxxus */
+-UPDATE creature_template SET scriptname="mob_misstress_of_pain" WHERE entry=34826; /* Misstress of pain (Jaraxxus' add) */
+-UPDATE creature_template SET scriptname="mob_felflame_infernal" WHERE entry=34815; /* Felflame Infernal (Jaraxxus' add) */
+-UPDATE creature_template SET scriptname="mob_jaraxxus_vulcan" WHERE entry=34813; /* Vulcan, summoned by Lord Jaraxxus, summoning Felflame Infernals */
+-UPDATE creature_template SET scriptname="mob_jaraxxus_portal" WHERE entry=34825; /* Nether Portal, summoned by Lord Jaraxxus, summonig Misstress of pain */
+-UPDATE creature_template SET scriptname="mob_legion_flame" WHERE entry = 34784; /* Jaraxxus' spell's effect - summon legion fire, deal damage every sec */
++
++UPDATE creature_template SET ScriptName="boss_gormok_the_impaler" WHERE entry=34796; 
++UPDATE creature_template SET ScriptName="boss_acidmaw" WHERE entry=35144; 
++UPDATE creature_template SET ScriptName="boss_dreadscale" WHERE entry=34799; 
++UPDATE creature_template SET scriptname="mob_slime_pool" WHERE entry = 35176; 
++UPDATE creature_template SET ScriptName="boss_icehowl" WHERE entry=34797; 
++UPDATE creature_template SET ScriptName="mob_snobold" WHERE entry=34800; 
++UPDATE creature_template SET ScriptName="boss_lord_jaraxxus" WHERE entry=34780; 
++UPDATE creature_template SET scriptname="mob_misstress_of_pain" WHERE entry=34826; 
++UPDATE creature_template SET scriptname="mob_felflame_infernal" WHERE entry=34815; 
++UPDATE creature_template SET scriptname="mob_jaraxxus_vulcan" WHERE entry=34813; 
++UPDATE creature_template SET scriptname="mob_jaraxxus_portal" WHERE entry=34825; 
++UPDATE creature_template SET scriptname="mob_legion_flame" WHERE entry = 34784; 
+ 
+ UPDATE creature_template SET scriptname="mob_toc_warrior" WHERE entry IN (34475,34453);
+ UPDATE creature_template SET scriptname="mob_toc_mage" WHERE entry IN (34468,34449);
+@@ -132,32 +132,33 @@
+ UPDATE creature_template SET scriptname="mob_toc_pet_warlock" WHERE entry IN (35465);
+ UPDATE creature_template SET scriptname="mob_toc_pet_hunter" WHERE entry IN (35610);
+ 
+-UPDATE creature_template SET ScriptName="boss_light_twin" WHERE entry=34497; /* Fjola Lightbane */
+-UPDATE creature_template SET ScriptName="boss_dark_twin" WHERE entry=34496; /* Eydis Darkbane */
+-UPDATE creature_template SET ScriptName="light_essence" WHERE entry=34568; /* Light Essence (twins' fight) */
+-UPDATE creature_template SET ScriptName="dark_essence" WHERE entry=34567; /* Dark Essence (twins' fight) */
+-UPDATE creature_template SET ScriptName="mob_concetrated_light" WHERE entry=34630; /* Concentrated Light (twins' fight) */
+-UPDATE creature_template SET ScriptName="mob_concetrated_dark" WHERE entry=34628; /* Concentrated Dark (twins' fight) */
+-UPDATE creature_template SET ScriptName="boss_anubarak_trial" WHERE entry=34564; /* Anubarak */
+-UPDATE creature_template SET ScriptName="mob_swarm_scarab" WHERE entry=34605; /* Anub's adds */
+-UPDATE creature_template SET ScriptName="mob_nerubian_burrower" WHERE entry=34607; /* Anub's adds */
++UPDATE creature_template SET ScriptName="boss_light_twin" WHERE entry=34497; 
++UPDATE creature_template SET ScriptName="boss_dark_twin" WHERE entry=34496; 
++UPDATE creature_template SET ScriptName="light_essence" WHERE entry=34568; 
++UPDATE creature_template SET ScriptName="dark_essence" WHERE entry=34567; 
++UPDATE creature_template SET ScriptName="mob_concetrated_light" WHERE entry=34630; 
++UPDATE creature_template SET ScriptName="mob_concetrated_dark" WHERE entry=34628; 
++UPDATE creature_template SET ScriptName="boss_anubarak_trial" WHERE entry=34564; 
++UPDATE creature_template SET ScriptName="mob_swarm_scarab" WHERE entry=34605; 
++UPDATE creature_template SET ScriptName="mob_nerubian_burrower" WHERE entry=34607; 
+ UPDATE creature_template SET scriptname="mob_anubarak_spike" WHERE entry=34660;
+ UPDATE creature_template SET ScriptName="mob_frost_sphere" WHERE entry = 34606;
+-UPDATE creature_template SET ScriptName="toc_tirion_fordring" WHERE entry=34996; /* Tirion Fordring */
+-UPDATE creature_template SET ScriptName="toc_barrett_ramsey" WHERE entry=34816; /* Barrett Ramsey (Arena Master) */
+-UPDATE instance_template SET script="instance_trial_of_the_crusader" WHERE map=649; /* Instance */
++UPDATE creature_template SET ScriptName="toc_tirion_fordring" WHERE entry=34996; 
++UPDATE creature_template SET ScriptName="toc_barrett_ramsey" WHERE entry=34816; 
++UPDATE instance_template SET script="instance_trial_of_the_crusader" WHERE map=649; 
+ 
+-/* Additional */
+-UPDATE creature_template SET npcflag=1 WHERE entry IN(34816, 3481601, 3481602, 3481603, 34568, 3456801, 3456802, 3456803, 34567, 3456701, 3456702, 3456703); /* Make Barrett Ramsey, Dark and Light Essenes gossip creatures */
+-UPDATE creature_template SET IconName="Interact" WHERE entry IN(34568, 3456801, 3456802, 3456803, 34567, 3456701, 3456702, 3456703); /* Change white chat bubble on interaction wheel when mouse-overing Light and Dark Essences */
+-UPDATE creature_template SET unit_flags=4 WHERE entry IN(34813, 3481301, 3481302, 3481303, 34825, 3482501, 3482502, 3482503); /* Disable move for Jaraxxus' portals and vulcans */
+-UPDATE creature_template SET unit_flags=unit_flags|4 WHERE entry in (34784, 3478401, 3478402, 3478403); /* Disable move for Jaraxxus' spell's Legion Fire */
+-UPDATE creature_template SET modelid1=30039, modelid2=30039 where entry IN (348125, 3482501, 3482502, 3482503);  /* Set correct model for Jaraxxus' portal */
+-UPDATE creature_template SET faction_A=189, faction_H=189 WHERE entry IN (34605, 3460501, 3460502, 3460503); /* Make swarm scarab's neutral for players, faction switch implemented in anub's script */
+-UPDATE creature_template SET flags_extra=2 WHERE entry IN (34630, 3463001, 3463002, 3463003, 34628, 3462801, 3462802, 3462803); /* Makes Concentraded Energies ignore aggro */
+ 
+-/* Loot and Tribute Chests (from TC forum, thanks Gyullo) */
++UPDATE creature_template SET npcflag=1 WHERE entry IN(34816, 3481601, 3481602, 3481603, 34568, 3456801, 3456802, 3456803, 34567, 3456701, 3456702, 3456703); 
++UPDATE creature_template SET IconName="Interact" WHERE entry IN(34568, 3456801, 3456802, 3456803, 34567, 3456701, 3456702, 3456703); 
++UPDATE creature_template SET unit_flags=4 WHERE entry IN(34813, 3481301, 3481302, 3481303, 34825, 3482501, 3482502, 3482503); 
++UPDATE creature_template SET unit_flags=unit_flags|4 WHERE entry in (34784, 3478401, 3478402, 3478403); 
++UPDATE creature_template SET modelid1=30039, modelid2=30039 where entry IN (348125, 3482501, 3482502, 3482503);  
++UPDATE creature_template SET faction_A=189, faction_H=189 WHERE entry IN (34605, 3460501, 3460502, 3460503); 
++UPDATE creature_template SET flags_extra=2 WHERE entry IN (34630, 3463001, 3463002, 3463003, 34628, 3462801, 3462802, 3462803); 
++
++
+ -- Chest Templates (this are for 10 Heroic)
++DELETE FROM `gameobject_loot_template` WHERE entry IN (195665,195666,195667,195668,195669,195670,195671,195672);
+ DELETE FROM `gameobject_template` WHERE entry IN (195665,195666,195667,195668);
+ INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`, `WDBVerified`) VALUES
+ (195665, 3, 9069, 'Argent Crusade Tribute Chest', '', '', '', 0, 0, 1.5, 0, 0, 0, 0, 0, 0, 1634, 27514, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, '', 11723),
+@@ -262,6 +263,7 @@
+ SET @RefTribute := 51000;
+ 
+ DELETE FROM `reference_loot_template` WHERE entry=@RefTribute;
++DELETE FROM `reference_loot_template` WHERE entry=47557;
+ INSERT INTO `reference_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`lootmode`,`groupid`,`mincountOrRef`,`maxcount`) VALUES
+ (@RefTribute,47557,0,1,1,1,1),
+ (@RefTribute,47558,0,1,1,1,1),
+@@ -355,7 +357,7 @@
+ (27518,47548,0,1,4,1,1),
+ (27518,47546,0,1,4,1,1);
+ 
+-/* Achievements criteria (thanks Gyullo) */
++
+ -- 10 Normal
+ DELETE FROM `achievement_criteria_data` WHERE `criteria_id` IN (11684,11685,11686,11687,11688);
+ INSERT INTO `achievement_criteria_data` (`criteria_id`,`type`,`value1`,`value2`) VALUES
+@@ -398,11 +400,7 @@
+ -- Realm First! Grand Crusader
+ (12350,12,3,0);
+ 
+-/* Immunes:
+- * charm, cofused, disarm, distract, fear, root, pacifi, silence, sleep, snare, stun, freeze, knockout, polymorph, banish, shackle, horror, daze, sapped (in order)
+- * For:
+- * Gormok, Acidmaw, Dreadscale, Icehowl, Jaraxxus, Fjola, Eydis and Anubarak
+- */
++
+ UPDATE creature_template SET mechanic_immune_mask=1|2|4|8|16|64|128|256|512|1024|2048|4096|8192|65536|131072|524288|8388608|67108864|536870912 WHERE entry IN
+ (34796, 3479601, 3479602, 3479603,
+  35144, 3514401, 3514402, 3514403,
+@@ -417,9 +415,7 @@
+ -- Last StartUP error fix. 
+ UPDATE creature_template SET ScriptName="mob_cat" WHERE entry=35610;
+ 
+--- If you can`t Hit Anub. 
+-/* UPDATE `creature_template` SET `unit_flags` = '0' WHERE `creature_template`.`entry` =34564; */
+--- REMOVE " /* */ " for use!
++
+ 
+ -- TOC original texts/sounds (thanks to griffonheart)
+ -- english translation by Cristy
+diff --git a/sql/Greedy-core/world/Ulduar.sql b/sql/Greedy-core/world/Ulduar.sql
+--- a/sql/Greedy-core/world/Ulduar.sql
++++ b/sql/Greedy-core/world/Ulduar.sql
+@@ -1,269 +1,289 @@
+-REPLACE INTO `instance_template` (map, parent, script, allowMount) VALUES ('603', '571', 'instance_ulduar', '1');
+-
+-UPDATE `gameobject_template` SET `ScriptName` = 'ulduar_teleporter' WHERE `entry` = 194569;
+-
+--- Algalon
+-UPDATE creature_template SET scriptname="mob_collapsing_star" WHERE entry=32955;
+-UPDATE creature_template SET ScriptName="boss_algalon_the_observer" WHERE entry=32871;
+-UPDATE creature_template SET ScriptName="mob_living_constellation" WHERE entry=33052;
+-UPDATE creature_template SET ScriptName="mob_black_hole" WHERE entry=32953;
+-UPDATE creature_template SET ScriptName="mob_cosmic_smash_target" WHERE entry=33104;
+-UPDATE creature_template SET ScriptName="mob_dark_mattery" WHERE entry=33089;
+-
+--- Assembly of Iron
+-UPDATE creature_template SET ScriptName = "boss_steelbreaker" WHERE entry = 32867;
+-UPDATE creature_template SET ScriptName = "boss_runemaster_molgeim" WHERE entry = 32927;
+-UPDATE creature_template SET ScriptName = "boss_stormcaller_brundir" WHERE entry = 32857;
+-UPDATE creature_template SET faction_A=16, faction_H=16, scriptname='mob_lightning_elemental', difficulty_entry_1 = 33689 WHERE entry = 32958;
+-UPDATE creature_template SET ScriptName = "mob_rune_of_summoning" WHERE entry = 33051;
+-UPDATE creature_template SET ScriptName = "mob_rune_of_power" WHERE entry = 33705;
+-
+--- Auriaya
+-UPDATE creature_template SET ScriptName = "boss_auriaya" WHERE entry = 33515;
+-UPDATE creature_template SET `faction_A` = 16, `faction_H` = 16, ScriptName = 'feral_defender_trigger' WHERE `entry` = 34096;
+-UPDATE creature_template SET ScriptName = "mob_sanctum_sentry" WHERE entry = 34014;
+-UPDATE creature_template SET ScriptName = "mob_feral_defender" WHERE entry = 34035;
+-UPDATE creature_template SET ScriptName = "seeping_trigger" WHERE entry = 34098;
+-
+--- Flame Leviathan
+-UPDATE creature_template SET ScriptName = "boss_flame_leviathan" WHERE entry = 33113;
+-UPDATE creature_template SET ScriptName = "boss_flame_leviathan_seat" WHERE entry = 33114;
+-UPDATE creature_template SET ScriptName = "boss_flame_leviathan_defense_turret" WHERE entry = 33139;
+-UPDATE creature_template SET ScriptName = "boss_flame_leviathan_overload_device" WHERE entry = 33189;
+-UPDATE creature_template SET ScriptName = "boss_flame_leviathan_safety_container" WHERE entry = 33218;
+-UPDATE creature_template SET ScriptName = "spell_pool_of_tar" WHERE entry = 33090;
+-UPDATE creature_template SET ScriptName = "keeper_norgannon" WHERE entry = 33686;
+-UPDATE creature_template SET ScriptName = "mob_colossus" WHERE entry = 33237;
+--- Correct position
+-DELETE FROM `creature` WHERE `id`=33113;
+-INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
+-(33113, 603, 3, 65535, 0, 0, 435.89, -8.417, 409.886, 3.12723, 480000, 0, 0, 23009250, 0, 0, 0);
+--- Delete extra Colossus
+-DELETE FROM creature WHERE guid IN (128936,128937);
+--- Lore Keeper of Norgannon must be gossip
+-UPDATE creature_template SET npcflag=npcflag |1 WHERE entry=33686;
+--- System Shutdown Stun (thx Bloodycore)
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger`=62475;
+-INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+-('62475','9032','2','System Shutdown');
+--- Fix Repair Station
+-UPDATE gameobject_template SET ScriptName='' WHERE entry=194261;
+-DELETE FROM areatrigger_scripts WHERE entry IN (5369, 5423);
+-INSERT INTO areatrigger_scripts VALUES
+-(5369,'AT_RX_214_repair_o_matic_station'),
+-(5423,'AT_RX_214_repair_o_matic_station');
+--- This mob should be invisible
+-UPDATE creature_template SET flags_extra=flags_extra |128 WHERE entry=33377;
+-
+--- Freya
+-UPDATE creature_template SET ScriptName = "boss_freya" WHERE entry = 32906;
+-UPDATE creature_template SET ScriptName = "boss_elder_brightleaf" WHERE entry = 32915;
+-UPDATE creature_template SET `modelid1` = 11686, `modelid2` = 0, `unit_flags` = 33686022, ScriptName = 'creature_unstable_sun_beam' WHERE `entry` = 33050;
+-UPDATE creature_template SET `unit_flags` = 33685510, `modelid1` = 11686, `modelid2` = 0, ScriptName = 'creature_sun_beam' WHERE `entry` =33170;
+-UPDATE creature_template SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 393220, ScriptName = 'creature_iron_roots' WHERE `entry` = 33168;
+-UPDATE creature_template SET ScriptName = "boss_elder_ironbranch" WHERE entry = 32913;
+-UPDATE creature_template SET `unit_flags` = 393220, ScriptName = 'creature_eonars_gift' WHERE `entry` =33228;
+-UPDATE creature_template SET ScriptName = "boss_elder_stonebark" WHERE entry = 32914;
+-UPDATE creature_template SET `modelid1` = 11686, `modelid2` = 0, `unit_flags` = 33685508, ScriptName = 'creature_nature_bomb' WHERE `entry` =34129;
+-UPDATE creature_template SET ScriptName = 'creature_detonating_lasher' WHERE `entry` =32918;
+-UPDATE creature_template SET ScriptName = 'creature_ancient_conservator' WHERE `entry` =33203;
+-UPDATE creature_template SET `unit_flags` = 33686022, ScriptName = 'creature_healthy_spore' WHERE `entry` =33215;
+-UPDATE creature_template SET ScriptName = 'creature_storm_lasher' WHERE `entry` =32919;
+-UPDATE creature_template SET ScriptName = 'creature_snaplasher' WHERE `entry` =32916;
+-UPDATE creature_template SET ScriptName = 'creature_ancient_water_spirit' WHERE `entry` =33202;
+-
+--- General Vezax
+-UPDATE creature_template SET `mechanic_immune_mask` = 617299803, `flags_extra` = 257, ScriptName = 'boss_general_vezax' WHERE `entry` = 33271;
+-UPDATE creature_template SET `faction_A` = 14, `faction_H` = 14, `mechanic_immune_mask` = 650854235, ScriptName = 'mob_saronite_vapors' WHERE `entry` = 33488;
+-UPDATE creature_template SET `faction_A` = 14, `faction_H` = 14, `mechanic_immune_mask` = 650854235, ScriptName = 'mob_saronite_animus' WHERE `entry` = 33524;
+-UPDATE creature_template SET `modelid1` = 28470, `modelid2` = 0, ScriptName = 'mob_icicle' WHERE `entry` = 33169;
+-UPDATE creature_template SET `modelid1` = 28470, `modelid2` = 0, ScriptName = 'mob_icicle_snowdrift' WHERE `entry` = 33173;
+-
+--- Hodir
+-UPDATE creature_template SET ScriptName = "boss_hodir" WHERE entry=32845;
+-UPDATE creature_template SET ScriptName = 'mob_hodir_priest' WHERE `entry` IN (32897, 33326, 32948, 33330);
+-UPDATE creature_template SET ScriptName = 'mob_hodir_shaman' WHERE `entry` IN (33328, 32901, 33332, 32950);
+-UPDATE creature_template SET ScriptName = 'mob_hodir_druid' WHERE `entry` IN (33325, 32900, 32941, 33333);
+-UPDATE creature_template SET ScriptName = 'mob_hodir_mage' WHERE `entry` IN (32893, 33327, 33331, 32946);
+-UPDATE creature_template SET `modelid1` = 15880, `modelid2` = 0, ScriptName = 'toasty_fire' WHERE `entry` = 33342;
+-
+--- Ignis
+-UPDATE creature_template SET ScriptName = "boss_ignis" WHERE entry = 33118;
+-UPDATE creature_template SET ScriptName = "mob_iron_construct" WHERE entry = 33121;
+-UPDATE creature_template SET `modelid1` = 16925, `modelid2` = 0, ScriptName = 'mob_scorch_ground' WHERE `entry` = 33221;
+-
+--- Kologarn
+-UPDATE creature_template SET ScriptName = "boss_kologarn" WHERE entry = 32930;
+-UPDATE creature_template SET `faction_A` = 16, `faction_H` = 16, ScriptName = 'mob_focused_eyebeam' WHERE `entry` IN (33632, 33802);
+-UPDATE creature_template SET ScriptName = "mob_right_arm" WHERE entry = 32934;
+-UPDATE creature_template SET ScriptName = "mob_left_arm" WHERE entry = 32933;
+-
+-
+--- Razorscale
+-REPLACE INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES (33115,603,1,1,0,0,-784.969,-135.608,429.774,0.351076,480000,0,0,3458360,279750,0,0);
+-UPDATE `creature_template` SET `ScriptName` = 'mob_darkrune_watcher' WHERE `entry` = 33453;
+-UPDATE `creature_template` SET `ScriptName` = 'mob_darkrune_sentinel' WHERE `entry` = 33846;
+-UPDATE `creature_template` SET `ScriptName` = 'mob_darkrune_guardian' WHERE `entry` = 33388;
+-UPDATE `creature_template` SET `ScriptName` = 'mob_devouring_flame' WHERE `entry` = 34188;
+-UPDATE `creature_template` SET `ScriptName` = 'npc_expedition_commander_ulduar' WHERE `entry` = 33210;
+-UPDATE `creature_template` SET `ScriptName` = 'mole_machine_trigger' WHERE `entry` = 33282;
+-UPDATE `creature_template` SET `unit_flags` = 33685506 WHERE `entry` IN (33245,33233);
+-
+--- Thorim
+-UPDATE creature_template SET ScriptName = "boss_thorim" WHERE entry=32865;
+-UPDATE creature_template SET `faction_A` = 14, `faction_H` = 14, ScriptName = 'mob_pre_phase' WHERE `entry` IN (32882, 32908, 32885, 33110);
+-UPDATE creature_template SET `unit_flags` = 0, `faction_A` = 14, `faction_H` = 14, ScriptName = 'mob_arena_phase' WHERE `entry` IN (32876, 32904, 32878, 32877, 32874, 32875);
+-UPDATE creature_template SET `unit_flags` = 0, ScriptName = 'mob_runic_colossus' WHERE `entry` = 32872;
+-UPDATE creature_template SET `unit_flags` = 0, ScriptName = 'mob_rune_giant' WHERE `entry` = 32873;
+-UPDATE creature_template SET `modelid1` = 16925, `modelid2` = 0, ScriptName = 'thorim_trap_bunny' WHERE `entry` = 33725;
+-UPDATE creature_template SET `flags_extra` = 0, ScriptName = 'thorim_energy_source' WHERE `entry` = 32892;
+-UPDATE creature_template SET `dmgschool` = 4, `dmg_multiplier` = 7.5, `unit_flags` = 33587202, ScriptName = 'npc_sif' WHERE `entry` = 33196;
+-
+--- XT-002
+-UPDATE creature_template SET ScriptName = "boss_xt002" WHERE entry = 33293;
+-UPDATE creature_template SET ScriptName = "mob_xt002_heart" WHERE entry=33329;
+-UPDATE creature_template SET ScriptName = "mob_scrapbot" WHERE entry = 33343;
+-UPDATE creature_template SET ScriptName = "mob_pummeller" WHERE entry=33344;
+-UPDATE creature_template SET ScriptName = "mob_boombot" WHERE entry = 33346;
+-UPDATE creature_template SET ScriptName = "mob_void_zone" WHERE entry = 34001;
+-UPDATE creature_template SET ScriptName = "mob_life_spark" WHERE entry = 34004;
+-
+--- Some instance data
+-SET @entry=60000;
+-REPLACE INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction_A`, `faction_H`, `npcflag`, `speed_walk`, `speed_run`, `scale`, `rank`, `mindmg`, `maxdmg`, `dmgschool`, `attackpower`, `dmg_multiplier`, `baseattacktime`, `rangeattacktime`, `unit_class`, `unit_flags`, `dynamicflags`, `family`, `trainer_type`, `trainer_spell`, `trainer_class`, `trainer_race`, `minrangedmg`, `maxrangedmg`, `rangedattackpower`, `type`, `type_flags`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `InhabitType`, `Health_mod`, `Mana_mod`, `Armor_mod`, `RacialLeader`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `movementId`, `RegenHealth`, `equipment_id`, `mechanic_immune_mask`, `flags_extra`, `ScriptName`, `WDBVerified`) VALUES
+-(@entry,'0','0','0','0','0','169','16925','0','0','Thorim Event Bunny','','','0','80','80','2','14','14','0','1','1.14286','1','1','422','586','0','642','7.5','2000','0','1','33554432','8','0','0','0','0','0','345','509','103','10','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','','0','3','1','1','1','0','0','0','0','0','0','0','0','1','0','0','0','thorim_phase_trigger','11723');
+-
+--- Algalon
+-REPLACE INTO script_texts
+-(entry, content_default, sound, TYPE, LANGUAGE, emote, COMMENT) VALUES
+-(-1615172, "Trans-location complete. Commencing planetary analysis of Azeroth.", 15405, 0, 0, 0, "Algalon: Intro 1"),
+-(-1615173, "Stand back, mortals. I am not here to fight you.", 15406, 0, 0, 0, "Algalon: Intro 2"),
+-(-1615174, "It is in the universe's best interest to re-originate this planet should my analysis find systemic corruption. Do not interfere.", 15407, 0, 0, 0, "Algalon: Intro 3"),
+-(-1615175, "See your world through my eyes: A universe so vast as to be immeasurable - incomprehensible even to your greatest minds.", 15390, 1, 0, 0, "Algalon: Engaged for the first time"),
+-(-1615176, "Your actions are illogical. All possible results for this encounter have been calculated. The Pantheon will receive the Observer's message regardless of outcome.", 15386, 1, 0, 0, "Algalon: Aggro"),
+-(-1615177, "The stars come to my aid.", 15392, 1, 0, 0, "Algalon: Summoning Collapsing Stars"),
+-(-1615178, "Witness the fury of cosmos!", 15396, 1, 0, 0, "Algalon: Big Bang 1"),
+-(-1615179, "Behold the tools of creation!", 15397, 1, 0, 0, "Algalon: Big Bang 2"),
+-(-1615180, "Beware!", 15391, 1, 0, 0, "Algalon: Phase 2"),
+-(-1615181, "Loss of life, unavoidable.", 15387, 1, 0, 0, "Algalon: Killing a player 1"),
+-(-1615182, "I do what I must.", 15388, 1, 0, 0, "Algalon: Killing a player 2"),
+-(-1615183, "You are... out of time.", 15394, 1, 0, 0, "Algalon: Berserk"),
+-(-1615184, "Analysis complete. There is partial corruption in the planet's life-support systems as well as complete corruption in most of the planet's defense mechanisms.", 15398, 0, 0, 0, "Algalon: Despawn 1"),
+-(-1615185, "Begin uplink: Reply Code: 'Omega'. Planetary re-origination requested.", 15399, 0, 0, 0, "Algalon: Despawn 2"),
+-(-1615186, "Farewell, mortals. Your bravery is admirable, for such flawed creatures.", 15400, 0, 0, 0, "Algalon: Despawn 3"),
+-(-1615187, "I have seen worlds bathed in the Makers' flames. Their denizens fading without so much as a whimper. Entire planetary systems born and raised in the time that it takes your mortal hearts to beat once. Yet all throughout, my own heart, devoid of emotion... of empathy. I... have... felt... NOTHING! A million, million lives wasted. Had they all held within them your tenacity? Had they all loved life as you do?", 15393, 0, 0, 0, "Algalon: Defeated 1"),
+-(-1615188, "Perhaps it is your imperfection that which grants you free will. That allows you to persevere against cosmically calculated odds. You prevailed where the Titans' own perfect creations have failed.", 15401, 0, 0, 0, "Algalon: Defeated 2"),
+-(-1615189, "I've rearranged the reply code. Your planet will be spared. I cannot be certain of my own calculations anymore.", 15402, 0, 0, 0, "Algalon: Defeated 3"),
+-(-1615190, "I lack the strength to transmit the signal. You must hurry. Find a place of power close to the skies.", 15403, 0, 0, 0, "Algalon: Defeated 4"),
+-(-1615191, "Do not worry about my fate $N. If the signal is not transmitted in time re-origination will proceed regardless. Save. Your. World.", 15403, 0, 0, 0, "Algalon: Defeated 5");
+-
+-
+--- Yogg Saron--
+-UPDATE `creature_template` SET `unit_flags` = 0, `type_flags` = 0, `mechanic_immune_mask` = 650854235, `ScriptName` = 'boss_sara' WHERE `entry` = 33134;
+-UPDATE creature_model_info SET bounding_radius = 0.465, combat_reach = 45 WHERE modelid = 29117;
+-UPDATE `creature` SET `spawndist` = 0 WHERE `id` = 33134;
+--- Ominous cloud
+-DELETE FROM `creature` WHERE `id`=33292;
+-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 33947654, `type_flags` = 0, `speed_walk` = 0.2, modelid1 = 28549, modelid2 = 0, `ScriptName` = 'npc_ominous_cloud' WHERE `entry` IN (33292, 32406);
+--- Guardian of Yogg-Saron
+-UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 16, `faction_H` = 16, `mindmg` = 123, `maxdmg` = 123, `attackpower` = 123, `dmg_multiplier` = 123, `baseattacktime` = 1800, `mechanic_immune_mask` = 1234, `ScriptName` = 'npc_guardian_yoggsaron' WHERE `entry` = 33136;
+-UPDATE creature_model_info SET bounding_radius = 0.62, combat_reach = 1.5 WHERE modelid = 28465;
+--- Yogg-Saron
+-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `mechanic_immune_mask` = 650854235, `ScriptName` = 'boss_yoggsaron' WHERE `entry` = 33288;
+-UPDATE creature_model_info SET bounding_radius = 0.755, combat_reach = 18 WHERE modelid = 28817;
+-UPDATE `creature_template` SET  modelid1 = 16946, modelid2 = 0, `minlevel` = 80, `maxlevel` = 80, `faction_A` = 16, `faction_H` = 16, `unit_flags` = 33685510, `speed_walk` = 2, `ScriptName` = 'npc_death_orb' WHERE `entry` = 33882;
+--- Brain of Yogg-Saron
+-UPDATE `creature_template` SET `difficulty_entry_1` = 33954, `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `mechanic_immune_mask` = 650854235, `ScriptName` = 'boss_brain_yoggsaron' WHERE `entry` = 33890;
+-UPDATE creature_model_info SET bounding_radius = 0.755, combat_reach = 30 WHERE modelid = 28951;
+--- Illusions
+-UPDATE `creature_template` SET modelid1 = 15880, modelid2 = 0, `minlevel` = 82, `maxlevel` = 82, `faction_A` = 16, `faction_H` = 16, `unit_flags` = 33685510, `ScriptName` = 'npc_laughing_skull' WHERE `entry` = 33990;
+-UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 7, `faction_H` = 7, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_illusion' WHERE `entry` IN (33433, 33716, 33717, 33719, 33720, 33567);
+-UPDATE creature_model_info SET bounding_radius = 0.306, combat_reach = 1.5 WHERE modelid = 28621;
+-UPDATE creature_model_info SET bounding_radius = 1, combat_reach = 10 WHERE modelid IN (2718, 1687, 2717, 12869);
+--- Influence Tentacle
+-UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 16, `faction_H` = 16, `mindmg` = 123, `maxdmg` = 123, `attackpower` = 123, `dmg_multiplier` = 12 WHERE `entry` = 33943;
+-UPDATE creature_model_info SET bounding_radius = 0.306, combat_reach = 1.5 WHERE modelid = 28813;
+--- Fake npcs
+-UPDATE `creature_template` SET `unit_flags` = 518, `type_flags` = 0, `flags_extra` = 2 WHERE `entry` IN (33436, 33437, 33536, 33535, 33495, 33523, 33441, 33442);
+--- Whispers
+-UPDATE `script_texts` SET `type` = 4 WHERE `entry` IN (-1603317, -1603340, -1603339);
+--- Descend into madness portal
+-UPDATE `creature_template` SET `npcflag` = 16777216, `unit_flags` = 2, `type_flags` = 0, `ScriptName` = 'npc_descend_into_madness' WHERE `entry` = 34072;
+-DELETE FROM `creature_template` WHERE entry IN (34122, 34123);
+-INSERT INTO `creature_template` VALUES
+-('34122','0','0','0','0','0','29074','0','0','0','Descend Into Madness','','Interact','0','81','81','0','35','35','16777216','1','1.14286','1','0','0','0','0','0','1','2000','0','1','2','0','0','0','0','0','0','0','0','0','10','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','','0','3','1','1','1','0','0','0','0','0','0','0','0','1','0','0','0','npc_descend_into_madness','11159'),
+-('34123','0','0','0','0','0','29074','0','0','0','Descend Into Madness','','Interact','0','81','81','0','35','35','16777216','1','1.14286','1','0','0','0','0','0','1','2000','0','1','2','0','0','0','0','0','0','0','0','0','10','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','','0','3','1','1','1','0','0','0','0','0','0','0','0','1','0','0','0','npc_descend_into_madness','11159');
+--- Flee to the Surface
+-UPDATE `gameobject_template` SET `data10` = 63992 WHERE `entry` = 194625;
+-DELETE FROM `gameobject` WHERE `id` = 194625;
+-INSERT INTO `gameobject` VALUES
+-(NULL, 194625, 603, 3, 1, 1996.41, -0.070, 240.59, 0, 0, 0, 1, 0, 300, 0, 1),
+-(NULL, 194625, 603, 3, 1, 1949.63, -26.07, 241.25, 0, 0, 0, 1, 0, 300, 0, 1),
+-(NULL, 194625, 603, 3, 1, 1995.03, -52.98, 241.02, 0, 0, 0, 1, 0, 300, 0, 1);
+-DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` IN (34072, 34122, 34123);
+-INSERT INTO `npc_spellclick_spells` VALUES
+-(34072, 63989, 0, 0, 0, 3, 0, 0, 0), -- Stormwind
+-(34122, 63997, 0, 0, 0, 3, 0, 0, 0), -- Chamber
+-(34123, 63998, 0, 0, 0, 3, 0, 0, 0); -- Icecrown
+--- Cancel Illusion Room Aura
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger` = 63992;
+-INSERT INTO `spell_linked_spell` VALUES
+-(63992, -63988, 0, "Cancel Illusion Room Aura");
+--- Dragon blood
+-DELETE FROM gameobject WHERE id = 194462;
+-INSERT INTO gameobject VALUES (NULL, 194462, 603, 3, 1, 2104.35, -25.3753, 242.647, 0, 0, 0, 0, -1, 300, 0, 1);
+--- Remove spawned mobs
+-DELETE FROM `creature` WHERE `id`=34137 AND position_x = 1921.84;
+--- Portals coordinates
+-DELETE FROM `spell_target_position` WHERE `id` IN (63989, 63992, 63997, 63998);
+-INSERT INTO `spell_target_position` VALUES
+-(63989, 603, 1953.91, 21.91, 239.71, 2.08),
+-(63992, 603, 1980.28, -25.59, 329.40, 3.14),
+-(63997, 603, 2042.02, -25.54, 239.72, 6.28),
+-(63998, 603, 1948.44, -82.04, 239.99, 4.18);
+--- Tentacles
+-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `type_flags` = 0, `ScriptName` = "npc_constrictor_tentacle" WHERE `entry` = 33983;
+-UPDATE creature_model_info SET bounding_radius = 0.306, combat_reach = 1.5 WHERE modelid = 28815;
+--- Squeeze stun
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (64125, 64126);
+-INSERT INTO `spell_linked_spell` VALUES
+-(64125, 9032, 2, "Squeeze stun"),
+-(64126, 9032, 2, "Squeeze stun");
+-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 4, `type_flags` = 0, `mindmg` = 123, `maxdmg` = 123, `attackpower` = 123, `dmg_multiplier` = 123, `baseattacktime` = 1800, `ScriptName` = 'npc_crusher_tentacle' WHERE `entry` = 33966;
+-UPDATE creature_model_info SET bounding_radius = 0.985, combat_reach = 5 WHERE modelid = 28814;
+-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `ScriptName` = 'npc_corruptor_tentacle' WHERE `entry` = 33985;
+--- Immortal Guardian
+-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `mindmg` = 123, `maxdmg` = 132, `attackpower` = 123, `dmg_multiplier` = 12, `type_flags` = 0, `ScriptName` = 'npc_immortal_guardian' WHERE `entry` = 33988;
+-UPDATE creature_model_info SET bounding_radius = 0.92, combat_reach = 4 WHERE modelid = 29024;
+--- Shattered Illusion
+--- DELETE FROM `spell_script_target` WHERE `entry` = 64173;
+--- INSERT INTO `spell_script_target` VALUES
+--- (64173, 1, 33966),
+--- (64173, 1, 33983),
+--- (64173, 1, 33985);
+-DELETE FROM `conditions` WHERE `SourceEntry` = 64173;
+-INSERT INTO `conditions` (SourceTypeOrReferenceId,SourceEntry,ConditionTypeOrReference,ConditionValue1,ConditionValue2) VALUES 
+-(13, 64173, 18, 1, 33966),
+-(13, 64173, 18, 1, 33983),
+-(13, 64173, 18, 1, 33985);
+--- Remove area stun
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (64059, 65238);
+-INSERT INTO `spell_linked_spell` VALUES
+-(64059, 65238, 0, "Shattered illusion remove"),
+-(65238, -64173, 1, "Shattered illusion remove");
+--- Thorim's Titanic Storm
+--- DELETE FROM `spell_script_target` WHERE `entry` = 64172;
+--- INSERT INTO `spell_script_target` VALUES
+--- (64172, 1, 33988);
+-DELETE FROM `conditions` WHERE `SourceEntry` = 64172;
+-INSERT INTO `conditions` (SourceTypeOrReferenceId,SourceEntry,ConditionTypeOrReference,ConditionValue1,ConditionValue2) VALUES 
+-(13, 64172, 18, 1, 33988);
+--- Empowering Shadows
+--- DELETE FROM `spell_script_target` WHERE `entry` = 64468;
+--- INSERT INTO `spell_script_target` VALUES
+--- (64468, 1, 33288),
+--- (64468, 1, 33988);
+-DELETE FROM `conditions` WHERE `SourceEntry` = 64468;
+-INSERT INTO `conditions` (SourceTypeOrReferenceId,SourceEntry,ConditionTypeOrReference,ConditionValue1,ConditionValue2) VALUES 
+-(13, 64468, 18, 1, 33288),
+-(13, 64468, 18, 1, 33988);
++REPLACE INTO `instance_template` (map, parent, script, allowMount) VALUES ('603', '571', 'instance_ulduar', '1');
++
++UPDATE `gameobject_template` SET `ScriptName` = 'ulduar_teleporter' WHERE `entry` = 194569;
++-- Algalon
++UPDATE creature_template SET scriptname="mob_collapsing_star" WHERE entry=32955;
++UPDATE creature_template SET ScriptName="boss_algalon_the_observer" WHERE entry=32871;
++UPDATE creature_template SET ScriptName="mob_living_constellation" WHERE entry=33052;
++UPDATE creature_template SET ScriptName="mob_black_hole" WHERE entry=32953;
++UPDATE creature_template SET ScriptName="mob_cosmic_smash_target" WHERE entry=33104;
++UPDATE creature_template SET ScriptName="mob_dark_mattery" WHERE entry=33089;
++
++-- Assembly of Iron
++UPDATE creature_template SET ScriptName = "boss_steelbreaker" WHERE entry = 32867;
++UPDATE creature_template SET ScriptName = "boss_runemaster_molgeim" WHERE entry = 32927;
++UPDATE creature_template SET ScriptName = "boss_stormcaller_brundir" WHERE entry = 32857;
++UPDATE creature_template SET faction_A=16, faction_H=16, scriptname='mob_lightning_elemental', difficulty_entry_1 = 33689 WHERE entry = 32958;
++UPDATE creature_template SET ScriptName = "mob_rune_of_summoning" WHERE entry = 33051;
++UPDATE creature_template SET ScriptName = "mob_rune_of_power" WHERE entry = 33705;
++
++-- Auriaya
++UPDATE creature_template SET ScriptName = "boss_auriaya" WHERE entry = 33515;
++UPDATE creature_template SET `faction_A` = 16, `faction_H` = 16, ScriptName = 'feral_defender_trigger' WHERE `entry` = 34096;
++UPDATE creature_template SET ScriptName = "mob_sanctum_sentry" WHERE entry = 34014;
++UPDATE creature_template SET ScriptName = "mob_feral_defender" WHERE entry = 34035;
++UPDATE creature_template SET ScriptName = "seeping_trigger" WHERE entry = 34098;
++
++-- Flame Leviathan
++UPDATE creature_template SET ScriptName = "boss_flame_leviathan" WHERE entry = 33113;
++UPDATE creature_template SET ScriptName = "boss_flame_leviathan_seat" WHERE entry = 33114;
++UPDATE creature_template SET ScriptName = "boss_flame_leviathan_defense_turret" WHERE entry = 33139;
++UPDATE creature_template SET ScriptName = "boss_flame_leviathan_overload_device" WHERE entry = 33189;
++UPDATE creature_template SET ScriptName = "boss_flame_leviathan_safety_container" WHERE entry = 33218;
++UPDATE creature_template SET ScriptName = "spell_pool_of_tar" WHERE entry = 33090;
++UPDATE creature_template SET ScriptName = "keeper_norgannon" WHERE entry = 33686;
++UPDATE creature_template SET ScriptName = "mob_colossus" WHERE entry = 33237;
++-- Correct position
++DELETE FROM `creature` WHERE `id`=33113;
++INSERT INTO `creature` (`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`,`position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`DeathState`,`MovementType`) VALUES
++(33113, 603, 3, 65535, 0, 0, 435.89, -8.417, 409.886, 3.12723, 480000, 0, 0, 23009250, 0, 0, 0);
++-- Delete extra Colossus
++DELETE FROM creature WHERE guid IN (128936,128937);
++-- Lore Keeper of Norgannon must be gossip
++UPDATE creature_template SET npcflag=npcflag |1 WHERE entry=33686;
++-- System Shutdown Stun (thx Bloodycore)
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger`=62475;
++INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
++('62475','9032','2','System Shutdown');
++-- Fix Repair Station
++UPDATE gameobject_template SET ScriptName='' WHERE entry=194261;
++DELETE FROM areatrigger_scripts WHERE entry IN (5369, 5423);
++INSERT INTO areatrigger_scripts VALUES
++(5369,'at_RX_214_repair_o_matic_station'),
++(5423,'at_RX_214_repair_o_matic_station');
++-- This mob should be invisible
++UPDATE creature_template SET flags_extra=flags_extra |128 WHERE entry=33377;
++
++-- Freya
++UPDATE creature_template SET ScriptName = "boss_freya" WHERE entry = 32906;
++UPDATE creature_template SET ScriptName = "boss_elder_brightleaf" WHERE entry = 32915;
++UPDATE creature_template SET `modelid1` = 11686, `modelid2` = 0, `unit_flags` = 33686022, ScriptName = 'creature_unstable_sun_beam' WHERE `entry` = 33050;
++UPDATE creature_template SET `unit_flags` = 33685510, `modelid1` = 11686, `modelid2` = 0, ScriptName = 'creature_sun_beam' WHERE `entry` =33170;
++UPDATE creature_template SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 393220, ScriptName = 'creature_iron_roots' WHERE `entry` = 33168;
++UPDATE creature_template SET ScriptName = "boss_elder_ironbranch" WHERE entry = 32913;
++UPDATE creature_template SET `unit_flags` = 393220, ScriptName = 'creature_eonars_gift' WHERE `entry` =33228;
++UPDATE creature_template SET ScriptName = "boss_elder_stonebark" WHERE entry = 32914;
++UPDATE creature_template SET `modelid1` = 11686, `modelid2` = 0, `unit_flags` = 33685508, ScriptName = 'creature_nature_bomb' WHERE `entry` =34129;
++UPDATE creature_template SET ScriptName = 'creature_detonating_lasher' WHERE `entry` =32918;
++UPDATE creature_template SET ScriptName = 'creature_ancient_conservator' WHERE `entry` =33203;
++UPDATE creature_template SET `unit_flags` = 33686022, ScriptName = 'creature_healthy_spore' WHERE `entry` =33215;
++UPDATE creature_template SET ScriptName = 'creature_storm_lasher' WHERE `entry` =32919;
++UPDATE creature_template SET ScriptName = 'creature_snaplasher' WHERE `entry` =32916;
++UPDATE creature_template SET ScriptName = 'creature_ancient_water_spirit' WHERE `entry` =33202;
++
++-- General Vezax
++UPDATE creature_template SET `mechanic_immune_mask` = 617299803, `flags_extra` = 257, ScriptName = 'boss_general_vezax' WHERE `entry` = 33271;
++UPDATE creature_template SET `faction_A` = 14, `faction_H` = 14, `mechanic_immune_mask` = 650854235, ScriptName = 'mob_saronite_vapors' WHERE `entry` = 33488;
++UPDATE creature_template SET `faction_A` = 14, `faction_H` = 14, `mechanic_immune_mask` = 650854235, ScriptName = 'mob_saronite_animus' WHERE `entry` = 33524;
++UPDATE creature_template SET `modelid1` = 28470, `modelid2` = 0, ScriptName = 'mob_icicle' WHERE `entry` = 33169;
++UPDATE creature_template SET `modelid1` = 28470, `modelid2` = 0, ScriptName = 'mob_icicle_snowdrift' WHERE `entry` = 33173;
++
++-- Hodir
++UPDATE creature_template SET ScriptName = "boss_hodir" WHERE entry=32845;
++UPDATE creature_template SET ScriptName = 'mob_hodir_priest' WHERE `entry` IN (32897, 33326, 32948, 33330);
++UPDATE creature_template SET ScriptName = 'mob_hodir_shaman' WHERE `entry` IN (33328, 32901, 33332, 32950);
++UPDATE creature_template SET ScriptName = 'mob_hodir_druid' WHERE `entry` IN (33325, 32900, 32941, 33333);
++UPDATE creature_template SET ScriptName = 'mob_hodir_mage' WHERE `entry` IN (32893, 33327, 33331, 32946);
++UPDATE creature_template SET `modelid1` = 15880, `modelid2` = 0, ScriptName = 'toasty_fire' WHERE `entry` = 33342;
++
++-- Ignis
++UPDATE creature_template SET ScriptName = "boss_ignis" WHERE entry = 33118;
++UPDATE creature_template SET ScriptName = "mob_iron_construct" WHERE entry = 33121;
++UPDATE creature_template SET `modelid1` = 16925, `modelid2` = 0, ScriptName = 'mob_scorch_ground' WHERE `entry` = 33221;
++
++-- Kologarn
++UPDATE creature_template SET ScriptName = "boss_kologarn" WHERE entry = 32930;
++UPDATE creature_template SET `faction_A` = 16, `faction_H` = 16, ScriptName = 'mob_focused_eyebeam' WHERE `entry` IN (33632, 33802);
++UPDATE creature_template SET ScriptName = "mob_right_arm" WHERE entry = 32934;
++UPDATE creature_template SET ScriptName = "mob_left_arm" WHERE entry = 32933;
++
++
++-- Razorscale
++UPDATE `creature_template` SET `ScriptName` = 'boss_razorscale' WHERE `entry`=33186;
++UPDATE `creature_template` SET `ScriptName` = 'npc_devouring_flame' WHERE `entry`=34188;
++UPDATE `creature_template` SET `ScriptName` = 'npc_mole_machine_trigger' WHERE `entry`=33245;
++UPDATE `creature_template` SET `ScriptName` = 'npc_expedition_commander' WHERE `entry`=33210;
++UPDATE `creature_template` SET `ScriptName` = 'npc_darkrune_guardian' WHERE `entry`=33388;
++UPDATE `creature_template` SET `ScriptName` = 'npc_darkrune_sentinel' WHERE `entry`=33846;
++UPDATE `creature_template` SET `ScriptName` = 'npc_darkrune_watcher' WHERE `entry`=33453;
++
++-- Thorim
++UPDATE creature_template SET ScriptName = "boss_thorim" WHERE entry=32865;
++UPDATE creature_template SET `faction_A` = 14, `faction_H` = 14, ScriptName = 'mob_pre_phase' WHERE `entry` IN (32882, 32908, 32885, 33110);
++UPDATE creature_template SET `unit_flags` = 0, `faction_A` = 14, `faction_H` = 14, ScriptName = 'mob_arena_phase' WHERE `entry` IN (32876, 32904, 32878, 32877, 32874, 32875);
++UPDATE creature_template SET `unit_flags` = 0, ScriptName = 'mob_runic_colossus' WHERE `entry` = 32872;
++UPDATE creature_template SET `unit_flags` = 0, ScriptName = 'mob_rune_giant' WHERE `entry` = 32873;
++UPDATE creature_template SET `modelid1` = 16925, `modelid2` = 0, ScriptName = 'thorim_trap_bunny' WHERE `entry` = 33725;
++UPDATE creature_template SET `flags_extra` = 0, ScriptName = 'thorim_energy_source' WHERE `entry` = 32892;
++UPDATE creature_template SET `dmgschool` = 4, `dmg_multiplier` = 7.5, `unit_flags` = 33587202, ScriptName = 'npc_sif' WHERE `entry` = 33196;
++
++-- XT-002
++UPDATE creature_template SET ScriptName = "boss_xt002" WHERE entry = 33293;
++UPDATE creature_template SET ScriptName = "mob_xt002_heart" WHERE entry=33329;
++UPDATE creature_template SET ScriptName = "mob_scrapbot" WHERE entry = 33343;
++UPDATE creature_template SET ScriptName = "mob_pummeller" WHERE entry=33344;
++UPDATE creature_template SET ScriptName = "mob_boombot" WHERE entry = 33346;
++UPDATE creature_template SET ScriptName = "mob_void_zone" WHERE entry = 34001;
++UPDATE creature_template SET ScriptName = "mob_life_spark" WHERE entry = 34004;
++
++-- Some instance data
++SET @entry=60000;
++REPLACE INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction_A`, `faction_H`, `npcflag`, `speed_walk`, `speed_run`, `scale`, `rank`, `mindmg`, `maxdmg`, `dmgschool`, `attackpower`, `dmg_multiplier`, `baseattacktime`, `rangeattacktime`, `unit_class`, `unit_flags`, `dynamicflags`, `family`, `trainer_type`, `trainer_spell`, `trainer_class`, `trainer_race`, `minrangedmg`, `maxrangedmg`, `rangedattackpower`, `type`, `type_flags`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `InhabitType`, `Health_mod`, `Mana_mod`, `Armor_mod`, `RacialLeader`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `movementId`, `RegenHealth`, `equipment_id`, `mechanic_immune_mask`, `flags_extra`, `ScriptName`, `WDBVerified`) VALUES
++(@entry,'0','0','0','0','0','169','16925','0','0','Thorim Event Bunny','','','0','80','80','2','14','14','0','1','1.14286','1','1','422','586','0','642','7.5','2000','0','1','33554432','8','0','0','0','0','0','345','509','103','10','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','','0','3','1','1','1','0','0','0','0','0','0','0','0','1','0','0','0','thorim_phase_trigger','11723');
++
++-- Algalon
++REPLACE INTO script_texts
++(entry, content_default, sound, TYPE, LANGUAGE, emote, COMMENT) VALUES
++(-1615172, "Trans-location complete. Commencing planetary analysis of Azeroth.", 15405, 0, 0, 0, "Algalon: Intro 1"),
++(-1615173, "Stand back, mortals. I am not here to fight you.", 15406, 0, 0, 0, "Algalon: Intro 2"),
++(-1615174, "It is in the universe's best interest to re-originate this planet should my analysis find systemic corruption. Do not interfere.", 15407, 0, 0, 0, "Algalon: Intro 3"),
++(-1615175, "See your world through my eyes: A universe so vast as to be immeasurable - incomprehensible even to your greatest minds.", 15390, 1, 0, 0, "Algalon: Engaged for the first time"),
++(-1615176, "Your actions are illogical. All possible results for this encounter have been calculated. The Pantheon will receive the Observer's message regardless of outcome.", 15386, 1, 0, 0, "Algalon: Aggro"),
++(-1615177, "The stars come to my aid.", 15392, 1, 0, 0, "Algalon: Summoning Collapsing Stars"),
++(-1615178, "Witness the fury of cosmos!", 15396, 1, 0, 0, "Algalon: Big Bang 1"),
++(-1615179, "Behold the tools of creation!", 15397, 1, 0, 0, "Algalon: Big Bang 2"),
++(-1615180, "Beware!", 15391, 1, 0, 0, "Algalon: Phase 2"),
++(-1615181, "Loss of life, unavoidable.", 15387, 1, 0, 0, "Algalon: Killing a player 1"),
++(-1615182, "I do what I must.", 15388, 1, 0, 0, "Algalon: Killing a player 2"),
++(-1615183, "You are... out of time.", 15394, 1, 0, 0, "Algalon: Berserk"),
++(-1615184, "Analysis complete. There is partial corruption in the planet's life-support systems as well as complete corruption in most of the planet's defense mechanisms.", 15398, 0, 0, 0, "Algalon: Despawn 1"),
++(-1615185, "Begin uplink: Reply Code: 'Omega'. Planetary re-origination requested.", 15399, 0, 0, 0, "Algalon: Despawn 2"),
++(-1615186, "Farewell, mortals. Your bravery is admirable, for such flawed creatures.", 15400, 0, 0, 0, "Algalon: Despawn 3"),
++(-1615187, "I have seen worlds bathed in the Makers' flames. Their denizens fading without so much as a whimper. Entire planetary systems born and raised in the time that it takes your mortal hearts to beat once. Yet all throughout, my own heart, devoid of emotion... of empathy. I... have... felt... NOTHING! A million, million lives wasted. Had they all held within them your tenacity? Had they all loved life as you do?", 15393, 0, 0, 0, "Algalon: Defeated 1"),
++(-1615188, "Perhaps it is your imperfection that which grants you free will. That allows you to persevere against cosmically calculated odds. You prevailed where the Titans' own perfect creations have failed.", 15401, 0, 0, 0, "Algalon: Defeated 2"),
++(-1615189, "I've rearranged the reply code. Your planet will be spared. I cannot be certain of my own calculations anymore.", 15402, 0, 0, 0, "Algalon: Defeated 3"),
++(-1615190, "I lack the strength to transmit the signal. You must hurry. Find a place of power close to the skies.", 15403, 0, 0, 0, "Algalon: Defeated 4"),
++(-1615191, "Do not worry about my fate $N. If the signal is not transmitted in time re-origination will proceed regardless. Save. Your. World.", 15403, 0, 0, 0, "Algalon: Defeated 5");
++
++
++
++DELETE FROM `script_texts` WHERE `entry` IN (-1603268,-1603267,-1603266);
++INSERT INTO `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) VALUES
++(33186, -1603268, 'Razorscale grounded permanently!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0, 'EMOTE_PERMA'),
++(33186, -1603267, 'Razorscale takes a deep breath...', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0, 'EMOTE_BREATH'),
++(33287, -1603266, 'Harpoon Turret is ready for use!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0, 'EMOTE_HARPOON');
++
++DELETE FROM `script_texts` WHERE `entry` IN (-1603265,-1603264,-1603263,-1603262);
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(33287, -1603265, 'Fires out! Let''s rebuild those turrets!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_TURRETS'),
++(33287, -1603264, 'Ready to move out, keep those dwarves off of our backs!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_AGGRO_3'),
++(33287, -1603263, 'Be on the lookout! Mole machines will be surfacing soon with those nasty Iron dwarves aboard!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_AGGRO_2'),
++(33287, -1603262, 'Give us a moment to prepare to build the turrets.', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_AGGRO_1');
++
++-- Razorscale emotes
++UPDATE `script_texts` SET `content_default` = "Welcome, champions! All of our attempts at grounding her have failed. We could use a hand in bring her down with these harpoon guns.", `type`=0  WHERE `entry`=-1603260;
++UPDATE `script_texts` SET `content_default` = "Move! Quickly! She won't remain grounded for long.", `type`=1  WHERE `entry`=-1603261;
++
++
++
++
++-- Yogg Saron--
++UPDATE `creature_template` SET `unit_flags` = 0, `type_flags` = 0, `mechanic_immune_mask` = 650854235, `ScriptName` = 'boss_sara' WHERE `entry` = 33134;
++UPDATE creature_model_info SET bounding_radius = 0.465, combat_reach = 45 WHERE modelid = 29117;
++UPDATE `creature` SET `spawndist` = 0 WHERE `id` = 33134;
++-- Ominous cloud
++DELETE FROM `creature` WHERE `id`=33292;
++UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 33947654, `type_flags` = 0, `speed_walk` = 0.2, modelid1 = 28549, modelid2 = 0, `ScriptName` = 'npc_ominous_cloud' WHERE `entry` IN (33292, 32406);
++-- Guardian of Yogg-Saron
++UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 16, `faction_H` = 16, `mindmg` = 123, `maxdmg` = 123, `attackpower` = 123, `dmg_multiplier` = 123, `baseattacktime` = 1800, `mechanic_immune_mask` = 1234, `ScriptName` = 'npc_guardian_yoggsaron' WHERE `entry` = 33136;
++UPDATE creature_model_info SET bounding_radius = 0.62, combat_reach = 1.5 WHERE modelid = 28465;
++-- Yogg-Saron
++UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `mechanic_immune_mask` = 650854235, `ScriptName` = 'boss_yoggsaron' WHERE `entry` = 33288;
++UPDATE creature_model_info SET bounding_radius = 0.755, combat_reach = 18 WHERE modelid = 28817;
++UPDATE `creature_template` SET  modelid1 = 16946, modelid2 = 0, `minlevel` = 80, `maxlevel` = 80, `faction_A` = 16, `faction_H` = 16, `unit_flags` = 33685510, `speed_walk` = 2, `ScriptName` = 'npc_death_orb' WHERE `entry` = 33882;
++-- Brain of Yogg-Saron
++UPDATE `creature_template` SET `difficulty_entry_1` = 33954, `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `mechanic_immune_mask` = 650854235, `ScriptName` = 'boss_brain_yoggsaron' WHERE `entry` = 33890;
++UPDATE creature_model_info SET bounding_radius = 0.755, combat_reach = 30 WHERE modelid = 28951;
++-- Illusions
++UPDATE `creature_template` SET modelid1 = 15880, modelid2 = 0, `minlevel` = 82, `maxlevel` = 82, `faction_A` = 16, `faction_H` = 16, `unit_flags` = 33685510, `ScriptName` = 'npc_laughing_skull' WHERE `entry` = 33990;
++UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 7, `faction_H` = 7, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_illusion' WHERE `entry` IN (33433, 33716, 33717, 33719, 33720, 33567);
++UPDATE creature_model_info SET bounding_radius = 0.306, combat_reach = 1.5 WHERE modelid = 28621;
++UPDATE creature_model_info SET bounding_radius = 1, combat_reach = 10 WHERE modelid IN (2718, 1687, 2717, 12869);
++-- Influence Tentacle
++UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 16, `faction_H` = 16, `mindmg` = 123, `maxdmg` = 123, `attackpower` = 123, `dmg_multiplier` = 12 WHERE `entry` = 33943;
++UPDATE creature_model_info SET bounding_radius = 0.306, combat_reach = 1.5 WHERE modelid = 28813;
++-- Fake npcs
++UPDATE `creature_template` SET `unit_flags` = 518, `type_flags` = 0, `flags_extra` = 2 WHERE `entry` IN (33436, 33437, 33536, 33535, 33495, 33523, 33441, 33442);
++-- Whispers
++UPDATE `script_texts` SET `type` = 4 WHERE `entry` IN (-1603317, -1603340, -1603339);
++-- Descend into madness portal
++UPDATE `creature_template` SET `npcflag` = 16777216, `unit_flags` = 2, `type_flags` = 0, `ScriptName` = 'npc_descend_into_madness' WHERE `entry` = 34072;
++DELETE FROM `creature_template` WHERE entry IN (34122, 34123);
++INSERT INTO `creature_template` VALUES
++('34122','0','0','0','0','0','29074','0','0','0','Descend Into Madness','','Interact','0','81','81','0','35','35','16777216','1','1.14286','1','0','0','0','0','0','1','2000','0','1','2','0','0','0','0','0','0','0','0','0','10','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','','0','3','1','1','1','0','0','0','0','0','0','0','0','1','0','0','0','npc_descend_into_madness','11159'),
++('34123','0','0','0','0','0','29074','0','0','0','Descend Into Madness','','Interact','0','81','81','0','35','35','16777216','1','1.14286','1','0','0','0','0','0','1','2000','0','1','2','0','0','0','0','0','0','0','0','0','10','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','','0','3','1','1','1','0','0','0','0','0','0','0','0','1','0','0','0','npc_descend_into_madness','11159');
++-- Flee to the Surface
++UPDATE `gameobject_template` SET `data10` = 63992 WHERE `entry` = 194625;
++DELETE FROM `gameobject` WHERE `id` = 194625;
++INSERT INTO `gameobject` VALUES
++(NULL, 194625, 603, 3, 1, 1996.41, -0.070, 240.59, 0, 0, 0, 1, 0, 300, 0, 1),
++(NULL, 194625, 603, 3, 1, 1949.63, -26.07, 241.25, 0, 0, 0, 1, 0, 300, 0, 1),
++(NULL, 194625, 603, 3, 1, 1995.03, -52.98, 241.02, 0, 0, 0, 1, 0, 300, 0, 1);
++DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` IN (34072, 34122, 34123);
++INSERT INTO `npc_spellclick_spells` VALUES
++(34072, 63989, 0, 0, 0, 3, 0, 0, 0), -- Stormwind
++(34122, 63997, 0, 0, 0, 3, 0, 0, 0), -- Chamber
++(34123, 63998, 0, 0, 0, 3, 0, 0, 0); -- Icecrown
++-- Cancel Illusion Room Aura
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger` = 63992;
++INSERT INTO `spell_linked_spell` VALUES
++(63992, -63988, 0, "Cancel Illusion Room Aura");
++-- Dragon blood
++DELETE FROM gameobject WHERE id = 194462;
++INSERT INTO gameobject VALUES (NULL, 194462, 603, 3, 1, 2104.35, -25.3753, 242.647, 0, 0, 0, 0, -1, 300, 0, 1);
++-- Remove spawned mobs
++DELETE FROM `creature` WHERE `id`=34137 AND position_x = 1921.84;
++-- Portals coordinates
++DELETE FROM `spell_target_position` WHERE `id` IN (63989, 63992, 63997, 63998);
++INSERT INTO `spell_target_position` VALUES
++(63989, 603, 1953.91, 21.91, 239.71, 2.08),
++(63992, 603, 1980.28, -25.59, 329.40, 3.14),
++(63997, 603, 2042.02, -25.54, 239.72, 6.28),
++(63998, 603, 1948.44, -82.04, 239.99, 4.18);
++-- Tentacles
++UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `type_flags` = 0, `ScriptName` = "npc_constrictor_tentacle" WHERE `entry` = 33983;
++UPDATE creature_model_info SET bounding_radius = 0.306, combat_reach = 1.5 WHERE modelid = 28815;
++-- Squeeze stun
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (64125, 64126);
++INSERT INTO `spell_linked_spell` VALUES
++(64125, 9032, 2, "Squeeze stun"),
++(64126, 9032, 2, "Squeeze stun");
++UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 4, `type_flags` = 0, `mindmg` = 123, `maxdmg` = 123, `attackpower` = 123, `dmg_multiplier` = 123, `baseattacktime` = 1800, `ScriptName` = 'npc_crusher_tentacle' WHERE `entry` = 33966;
++UPDATE creature_model_info SET bounding_radius = 0.985, combat_reach = 5 WHERE modelid = 28814;
++UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `unit_flags` = 131076, `ScriptName` = 'npc_corruptor_tentacle' WHERE `entry` = 33985;
++-- Immortal Guardian
++UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `mindmg` = 123, `maxdmg` = 132, `attackpower` = 123, `dmg_multiplier` = 12, `type_flags` = 0, `ScriptName` = 'npc_immortal_guardian' WHERE `entry` = 33988;
++UPDATE creature_model_info SET bounding_radius = 0.92, combat_reach = 4 WHERE modelid = 29024;
++-- Shattered Illusion
++-- DELETE FROM `spell_script_target` WHERE `entry` = 64173;
++-- INSERT INTO `spell_script_target` VALUES
++-- (64173, 1, 33966),
++-- (64173, 1, 33983),
++-- (64173, 1, 33985);
++DELETE FROM `conditions` WHERE `SourceEntry` = 64173;
++INSERT INTO `conditions` (SourceTypeOrReferenceId,SourceEntry,ConditionTypeOrReference,ConditionValue1,ConditionValue2) VALUES 
++(13, 64173, 18, 1, 33966),
++(13, 64173, 18, 1, 33983),
++(13, 64173, 18, 1, 33985);
++-- Remove area stun
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (64059, 65238);
++INSERT INTO `spell_linked_spell` VALUES
++(64059, 65238, 0, "Shattered illusion remove"),
++(65238, -64173, 1, "Shattered illusion remove");
++-- Thorim's Titanic Storm
++-- DELETE FROM `spell_script_target` WHERE `entry` = 64172;
++-- INSERT INTO `spell_script_target` VALUES
++-- (64172, 1, 33988);
++DELETE FROM `conditions` WHERE `SourceEntry` = 64172;
++INSERT INTO `conditions` (SourceTypeOrReferenceId,SourceEntry,ConditionTypeOrReference,ConditionValue1,ConditionValue2) VALUES 
++(13, 64172, 18, 1, 33988);
++-- Empowering Shadows
++-- DELETE FROM `spell_script_target` WHERE `entry` = 64468;
++-- INSERT INTO `spell_script_target` VALUES
++-- (64468, 1, 33288),
++-- (64468, 1, 33988);
++DELETE FROM `conditions` WHERE `SourceEntry` = 64468;
++INSERT INTO `conditions` (SourceTypeOrReferenceId,SourceEntry,ConditionTypeOrReference,ConditionValue1,ConditionValue2) VALUES 
++(13, 64468, 18, 1, 33288),
++(13, 64468, 18, 1, 33988);
++UPDATE `creature` SET `MovementType`='0' WHERE `guid`='131859';
+diff --git a/sql/Greedy-core/world/Wintergrasp.sql b/sql/Greedy-core/world/Wintergrasp.sql
+--- a/sql/Greedy-core/world/Wintergrasp.sql
++++ b/sql/Greedy-core/world/Wintergrasp.sql
+@@ -1,75 +1,71 @@
+-DELETE FROM `trinity_string` WHERE entry IN (756,757,758,759,760,761,762,763,764,765,766,767,768,769,770,771,772,780,781);
+-REPLACE INTO `trinity_string` VALUES ('756', 'Battle begins!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '����� ��������');
+-REPLACE INTO `trinity_string` VALUES ('757', '%s has successfully defended the fortress!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ������� �������(�) ��������!');
+-REPLACE INTO `trinity_string` VALUES ('758', '%s has taken over the fortress!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ��������(�) ��������');
+-REPLACE INTO `trinity_string` VALUES ('759', 'The %s siege workshop has been damaged by the %s!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('760', 'The %s siege workshop has been destroyed by the %s!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('761', 'The %s tower has been damaged!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ����� ����������');
+-REPLACE INTO `trinity_string` VALUES ('762', 'The %s tower has been destroyed!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ����� ����������!');
+-REPLACE INTO `trinity_string` VALUES ('763', 'Wintergrasp fortress is under attack!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('764', 'Wintergrasp is now under the control of the %s.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('765', 'Wintergrasp timer set to %s.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('766', 'Wintergrasp battle started.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('767', 'Wintergrasp battle finished.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('768', 'Wintergrasp info: %s controlled. Timer: %s. Wartime: %s. Number of Players: (Horde: %u, Alliance: %u)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('769', 'Wintergrasp outdoorPvP is disabled.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('770', 'Wintergrasp outdoorPvP is enabled.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+-REPLACE INTO `trinity_string` VALUES ('771', 'You have reached Rank 1: Corporal', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� �������� ����� 1: ������');
+-REPLACE INTO `trinity_string` VALUES ('772', 'You have reached Rank 2: First Lieutenant', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� �������� ����� 2: ���������');
+-REPLACE INTO `trinity_string` VALUES ('780', 'Before the Battle of  Wintergrasp left 30 minutes!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� ����� ��  ����� ������� ���� �������� 30 �����!');
+-REPLACE INTO `trinity_string` VALUES ('781', 'Before the Battle of  Wintergrasp left 10 minutes!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� ����� ��  ����� ������� ���� �������� 10 �����!');
+-REPLACE INTO `trinity_string` VALUES ('782', 'The battle for Wintergrasp  has stopped! Not enough defenders. Wintergrasp Fortress remains  Attackers.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '����� �� ����� ������� ���� �����������. �� ������� ����������. �������� ��������� ���������  �������.');
+-REPLACE INTO `trinity_string` VALUES ('783', 'The battle for Wintergrasp  has stopped! Not enough attackers. Wintergrasp Fortress remains  Defenders.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '����� �� ����� ������� ���� �����������. �� ������� ����������. �������� �������� ����������.');
+-
+-DELETE FROM `command` WHERE name IN ('wg','wg enable','wg start','wg status','wg stop','wg switch','wg timer');
+-REPLACE INTO `command` VALUES ('wg', '3', 'Syntax: .wg $subcommand.');
+-REPLACE INTO `command` VALUES ('wg enable', '3', 'Syntax: .wg enable [on/off] Enable/Disable Wintergrasp outdoorPvP.');
+-REPLACE INTO `command` VALUES ('wg start', '3', 'Syntax: .wg start\r\nForce Wintergrasp battle start.');
+-REPLACE INTO `command` VALUES ('wg status', '3', 'Syntax: .wg status\r\nWintergrasp info, defender, timer, wartime.');
+-REPLACE INTO `command` VALUES ('wg stop', '3', 'Syntax: .wg stop\r\nForce Wintergrasp battle stop (No rewards).');
+-REPLACE INTO `command` VALUES ('wg switch', '3', 'Syntax: .wg switch\r\nSwitchs Wintergrasp defender team.');
+-REPLACE INTO `command` VALUES ('wg timer', '3', 'Syntax: .wg timer $minutes\r\nChange the current timer. Min value = 1, Max value 60 (Wartime), 1440 (Not Wartime)');
+-
+-
+-/* Temp removed gameobject stopping you getting to the relic
+-* 60070 - [Wintergrasp Keep Collision Wall X:5396.209961 Y:2840.010010 Z:432.268005 MapId:571
+-* 60476 - [Doodad_WG_Keep_Door01_collision01 X:5397.109863 Y:2841.540039 Z:425.901001 MapId:571]*/
+-DELETE FROM gameobject WHERE id IN ('194323', '194162');
+-
+-/* Titan Relic remove */
+-DELETE FROM `gameobject` WHERE `id`=192829;
+-
+-/* Towers */
+-UPDATE `gameobject_template` SET `faction` = 0, `flags` = 6553632 WHERE `entry` IN (190356,190357,190358);
+-
+-/* Teleport WG SPELLs*/
+-REPLACE INTO `spell_target_position` VALUES ('59096', '571', '5325.06', '2843.36', '409.285', '3.20278');
+-REPLACE INTO `spell_target_position` VALUES ('58632', '571', '5097.79', '2180.29', '365.61', '2.41');
+-REPLACE INTO `spell_target_position` VALUES ('58633', '571', '5026.80', '3676.69', '362.58', '3.94');
+-
+-/* Defender's Portal Activate Proper Spell */
+-REPLACE INTO `spell_linked_spell` VALUES ('54640','54643','0','Defender\'s Portal Activate Proper Spell');
+-
+-/*For wg antifly */
+-REPLACE INTO `spell_area` VALUES ('58730', '4197', '0', '0', '0', '0', '0', '2', '1');
+-
+-/*Spirit healer FIX */
+-UPDATE creature_template SET npcflag=npcflag|32768 WHERE entry   IN (31841,31842);
+-
+-/* Creature template */
+-UPDATE creature_template SET faction_A = '1802', faction_H = '1802' WHERE entry IN (30499,28312,28319);
+-UPDATE creature_template SET faction_A = '1801', faction_H = '1801' WHERE entry IN (30400,32629,32627);
+-UPDATE creature_template SET npcflag=npcflag|32768 WHERE entry   IN (31841,31842);
+-
+-/* WG scriptname */
+-REPLACE INTO `outdoorpvp_template` VALUES ('7', 'outdoorpvp_wg', 'Wintergrasp');
+-UPDATE `creature_template` SET `ScriptName` = 'npc_demolisher_engineerer' WHERE `entry` IN (30400,30499);
+-
+-/* spell target for build vehicles */
+-REPLACE INTO `conditions` VALUES ('13', '0', '56663', '0', '18', '1', '27852', '0', '0', '', null);
+-REPLACE INTO `conditions` VALUES ('13', '0', '56575', '0', '18', '1', '27852', '0', '0', '', null);
+-REPLACE INTO `conditions` VALUES ('13', '0', '61408', '0', '18', '1', '27852', '0', '0', '', null);
+-REPLACE INTO `conditions` VALUES ('13', '0', '56661', '0', '18', '1', '27852', '0', '0', '', null);
+-
+-/* Workshop */
++DELETE FROM `trinity_string` WHERE entry IN (756,757,758,759,760,761,762,763,764,765,766,767,768,769,770,771,772,780,781);
++REPLACE INTO `trinity_string` VALUES ('756', 'Battle begins!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '����� ��������');
++REPLACE INTO `trinity_string` VALUES ('757', '%s has successfully defended the fortress!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ������� �������(�) ��������!');
++REPLACE INTO `trinity_string` VALUES ('758', '%s has taken over the fortress!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ��������(�) ��������');
++REPLACE INTO `trinity_string` VALUES ('759', 'The %s siege workshop has been damaged by the %s!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('760', 'The %s siege workshop has been destroyed by the %s!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('761', 'The %s tower has been damaged!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ����� ����������');
++REPLACE INTO `trinity_string` VALUES ('762', 'The %s tower has been destroyed!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '%s ����� ����������!');
++REPLACE INTO `trinity_string` VALUES ('763', 'Wintergrasp fortress is under attack!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('764', 'Wintergrasp is now under the control of the %s.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('765', 'Wintergrasp timer set to %s.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('766', 'Wintergrasp battle started.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('767', 'Wintergrasp battle finished.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('768', 'Wintergrasp info: %s controlled. Timer: %s. Wartime: %s. Number of Players: (Horde: %u, Alliance: %u)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('769', 'Wintergrasp outdoorPvP is disabled.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('770', 'Wintergrasp outdoorPvP is enabled.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
++REPLACE INTO `trinity_string` VALUES ('771', 'You have reached Rank 1: Corporal', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� �������� ����� 1: ������');
++REPLACE INTO `trinity_string` VALUES ('772', 'You have reached Rank 2: First Lieutenant', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� �������� ����� 2: ���������');
++REPLACE INTO `trinity_string` VALUES ('780', 'Before the Battle of  Wintergrasp left 30 minutes!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� ����� ��  ����� ������� ���� �������� 30 �����!');
++REPLACE INTO `trinity_string` VALUES ('781', 'Before the Battle of  Wintergrasp left 10 minutes!', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '�� ����� ��  ����� ������� ���� �������� 10 �����!');
++REPLACE INTO `trinity_string` VALUES ('782', 'The battle for Wintergrasp  has stopped! Not enough defenders. Wintergrasp Fortress remains  Attackers.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '����� �� ����� ������� ���� �����������. �� ������� ����������. �������� ��������� ���������  �������.');
++REPLACE INTO `trinity_string` VALUES ('783', 'The battle for Wintergrasp  has stopped! Not enough attackers. Wintergrasp Fortress remains  Defenders.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '����� �� ����� ������� ���� �����������. �� ������� ����������. �������� �������� ����������.');
++
++DELETE FROM `command` WHERE name IN ('wg','wg enable','wg start','wg status','wg stop','wg switch','wg timer');
++REPLACE INTO `command` VALUES ('wg', '3', 'Syntax: .wg $subcommand.');
++REPLACE INTO `command` VALUES ('wg enable', '3', 'Syntax: .wg enable [on/off] Enable/Disable Wintergrasp outdoorPvP.');
++REPLACE INTO `command` VALUES ('wg start', '3', 'Syntax: .wg start\r\nForce Wintergrasp battle start.');
++REPLACE INTO `command` VALUES ('wg status', '3', 'Syntax: .wg status\r\nWintergrasp info, defender, timer, wartime.');
++REPLACE INTO `command` VALUES ('wg stop', '3', 'Syntax: .wg stop\r\nForce Wintergrasp battle stop (No rewards).');
++REPLACE INTO `command` VALUES ('wg switch', '3', 'Syntax: .wg switch\r\nSwitchs Wintergrasp defender team.');
++REPLACE INTO `command` VALUES ('wg timer', '3', 'Syntax: .wg timer $minutes\r\nChange the current timer. Min value = 1, Max value 60 (Wartime), 1440 (Not Wartime)');
++
++
++DELETE FROM gameobject WHERE id IN ('194323', '194162');
++
++
++DELETE FROM `gameobject` WHERE `id`=192829;
++
++
++UPDATE `gameobject_template` SET `faction` = 0, `flags` = 6553632 WHERE `entry` IN (190356,190357,190358);
++
++
++REPLACE INTO `spell_target_position` VALUES ('59096', '571', '5325.06', '2843.36', '409.285', '3.20278');
++REPLACE INTO `spell_target_position` VALUES ('58632', '571', '5097.79', '2180.29', '365.61', '2.41');
++REPLACE INTO `spell_target_position` VALUES ('58633', '571', '5026.80', '3676.69', '362.58', '3.94');
++
++
++REPLACE INTO `spell_linked_spell` VALUES ('54640','54643','0','Defender\'s Portal Activate Proper Spell');
++
++REPLACE INTO `spell_area` VALUES ('58730', '4197', '0', '0', '0', '0', '0', '2', '1');
++
++
++UPDATE creature_template SET npcflag=npcflag|32768 WHERE entry   IN (31841,31842);
++
++
++UPDATE creature_template SET faction_A = '1802', faction_H = '1802' WHERE entry IN (30499,28312,28319);
++UPDATE creature_template SET faction_A = '1801', faction_H = '1801' WHERE entry IN (30400,32629,32627);
++UPDATE creature_template SET npcflag=npcflag|32768 WHERE entry   IN (31841,31842);
++
++
++REPLACE INTO `outdoorpvp_template` VALUES ('7', 'outdoorpvp_wg', 'Wintergrasp');
++UPDATE `creature_template` SET `ScriptName` = 'npc_demolisher_engineerer' WHERE `entry` IN (30400,30499);
++
++
++REPLACE INTO `conditions` VALUES ('13', '0', '56663', '0', '18', '1', '27852', '0', '0', '', null);
++REPLACE INTO `conditions` VALUES ('13', '0', '56575', '0', '18', '1', '27852', '0', '0', '', null);
++REPLACE INTO `conditions` VALUES ('13', '0', '61408', '0', '18', '1', '27852', '0', '0', '', null);
++REPLACE INTO `conditions` VALUES ('13', '0', '56661', '0', '18', '1', '27852', '0', '0', '', null);
++
++
+ UPDATE `gameobject_template` SET `faction` = 35 WHERE `entry` IN (192028,192029,192030,192031,192032,192033);
+\ No newline at end of file
+diff --git a/sql/Greedy-core/world/error-fix.sql b/sql/Greedy-core/world/error-fix.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Greedy-core/world/error-fix.sql
+@@ -0,0 +1,106 @@
++delete from `conditions` where `sourceEntry`='64468 ';
++DELETE FROM `creature_template` WHERE `entry` between "200000" AND "300004";
++INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entry_2`, `difficulty_entry_3`, `KillCredit1`, `KillCredit2`, `modelid1`, `modelid2`, `modelid3`, `modelid4`, `name`, `subname`, `IconName`, `gossip_menu_id`, `minlevel`, `maxlevel`, `exp`, `faction_A`, `faction_H`, `npcflag`, `scale`, `rank`, `mindmg`, `maxdmg`, `dmgschool`, `attackpower`, `dmg_multiplier`, `baseattacktime`, `rangeattacktime`, `unit_class`, `unit_flags`, `dynamicflags`, `family`, `trainer_type`, `trainer_spell`, `trainer_class`, `trainer_race`, `minrangedmg`, `maxrangedmg`, `rangedattackpower`, `type`, `type_flags`, `lootid`, `pickpocketloot`, `skinloot`, `resistance1`, `resistance2`, `resistance3`, `resistance4`, `resistance5`, `resistance6`, `spell1`, `spell2`, `spell3`, `spell4`, `spell5`, `spell6`, `spell7`, `spell8`, `PetSpellDataId`, `VehicleId`, `mingold`, `maxgold`, `AIName`, `MovementType`, `InhabitType`, `Health_mod`, `Mana_mod`, `RacialLeader`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `movementId`, `RegenHealth`, `equipment_id`, `mechanic_immune_mask`, `flags_extra`, `ScriptName`) VALUES
++
++(200000, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Axe 1h/Axe 2h', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200001, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Bow/Gun/Crossbow', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200002, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Mace 1h/Mace 2h', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200003, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Sword 1h/Sword 2h', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200004, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Polearm/Staff', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200005, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'First weapon/Dagger', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200006, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Thrown/Wand', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++
++(200007, 0, 0, 0, 0, 0, '3222', 0, 0, 0, 'Boots', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200008, 0, 0, 0, 0, 0, '3222', 0, 0, 0, 'Bracers', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200009, 0, 0, 0, 0, 0, '3222', 0, 0, 0, 'Waist', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++
++(200010, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Shield', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200011, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Libram/Idol/Totem/Sigils', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200012, 0, 0, 0, 0, 0, '6097', 0, 0, 0, 'Off-hand', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++
++(200013, 0, 0, 0, 0, 0, '6699', 0, 0, 0, 'Necklace', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200014, 0, 0, 0, 0, 0, '6699', 0, 0, 0, 'Ring', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200015, 0, 0, 0, 0, 0, '6699', 0, 0, 0, 'Trinket', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200016, 0, 0, 0, 0, 0, '6699', 0, 0, 0, 'Cloak', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200017, 0, 0, 0, 0, 0, '6699', 0, 0, 0, 'Shirt/Tabard', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++
++(200018, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Consumable', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200019, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Food', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200020, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Potions', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200021, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Elixir', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200022, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Flask', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200023, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Scroll', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200025, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Enchancement',  'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200026, 0, 0, 0, 0, 0, '17067', 0, 0, 0, 'Bandage',  'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++
++(200027, 0, 0, 0, 0, 0, '10433', 0, 0, 0, 'Red gem', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200028, 0, 0, 0, 0, 0, '10433', 0, 0, 0, 'Blue gem', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200029, 0, 0, 0, 0, 0, '10433', 0, 0, 0, 'Yellow gem', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ''),
++(200030, 0, 0, 0, 0, 0, '10433', 0, 0, 0, 'Purple gem', 'Sacred-wow', '', 0, 90, 90, 0, 35, 35, 4224, 1, 1, 20000, 20000, 0, 20000, 1, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 20000, 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, '');
++UPDATE `creature_template` SET `ScriptName` = 'npc_image_of_medivh' WHERE `entry` = 200000;
++UPDATE `creature_template` SET `ScriptName` = 'mob_high_inquisitor_valroth' WHERE `entry` = 200001;
++UPDATE `creature_template` SET `ScriptName` = 'npc_geezle' WHERE `entry` = 200002;
++UPDATE `creature_template` SET `ScriptName` = 'mobs_risen_husk_spirit' WHERE `entry` = 200003;
++UPDATE `creature_template` SET `ScriptName` = 'npc_bloodmaul_brutebane' WHERE `entry` = 200004;
++UPDATE `creature_template` SET `ScriptName` = 'npc_colossus' WHERE `entry` = 200005;
++UPDATE `creature_template` SET `ScriptName` = 'npc_lorekeeper' WHERE `entry` = 200006;
++UPDATE `creature_template` SET `ScriptName` = 'mob_right_arm' WHERE `entry` = 200007;
++UPDATE `creature_template` SET `ScriptName` = 'npc_raging_gnoul' WHERE `entry` = 200008;
++UPDATE `creature_template` SET `ScriptName` = 'npc_risen_witch_doctor' WHERE `entry` = 200009;
++UPDATE `creature_template` SET `ScriptName` = 'npc_abon' WHERE `entry` = 200010;
++UPDATE `creature_template` SET `ScriptName` = 'npc_coldflame' WHERE `entry` = 200011;
++UPDATE `creature_template` SET `ScriptName` = 'npc_cult_fanatic' WHERE `entry` = 200012;
++UPDATE `creature_template` SET `ScriptName` = 'npc_cult_adherent' WHERE `entry` = 200013;
++UPDATE `creature_template` SET `ScriptName` = 'npc_vengeful_shade' WHERE `entry` = 200014;
++UPDATE `creature_template` SET `ScriptName` = 'boss_deathbringer_saurfang' WHERE `entry` = 200015;
++UPDATE `creature_template` SET `ScriptName` = 'npc_high_overlord_saurfang_icc' WHERE `entry` = 200016;
++UPDATE `creature_template` SET `ScriptName` = 'npc_muradin_bronzebeard_icc' WHERE `entry` = 200017;
++UPDATE `creature_template` SET `ScriptName` = 'npc_mageguard_dalaran' WHERE `entry` = 200018;
++UPDATE `creature_template` SET `ScriptName` = 'npc_sinkhole_kill_credit' WHERE `entry` = 200019;
++UPDATE `creature_template` SET `ScriptName` = 'mob_nerubar_victim' WHERE `entry` = 200020;
++UPDATE `creature_template` SET `ScriptName` = 'npc_beryl_sorcerer' WHERE `entry` = 200021;
++UPDATE `creature_template` SET `ScriptName` = 'npc_magmoth_crusher' WHERE `entry` = 200022;
++UPDATE `creature_template` SET `ScriptName` = 'npc_gymer' WHERE `entry` = 200023;
++UPDATE `creature_template` SET `ScriptName` = 'spell_marrowgar_bone_spike_graveyard' WHERE `entry` = 200025;
++UPDATE `creature_template` SET `ScriptName` = 'spell_marrowgar_bone_storm' WHERE `entry` = 200026;
++UPDATE `creature_template` SET `ScriptName` = 'spell_cultist_dark_martyrdom' WHERE `entry` = 200027;
++UPDATE `creature_template` SET `ScriptName` = 'spell_marrowgar_coldflame' WHERE `entry` = 200028;
++UPDATE `creature_template` SET `ScriptName` = 'npc_myradin_icc' WHERE `entry` = 200029;
++
++DELETE FROM `creature` where `guid` ='86025';
++DELETE FROM `creature` where `guid` ='124255';
++DELETE FROM `creature` where `guid` ='124254';
++DELETE FROM `creature` where `guid` ='124253';
++DELETE FROM `creature` where `guid` ='124252';
++DELETE FROM `creature` where `guid` ='124251';
++DELETE FROM `creature` where `guid` ='124256';
++DELETE FROM `creature` where `guid` ='124257';
++DELETE FROM `creature` where `guid` ='124258';
++DELETE FROM `creature` where `guid` ='124259';
++DELETE FROM `creature` where `guid` ='124260';
++DELETE FROM `creature` where `guid` ='124261';
++DELETE FROM `creature` where `guid` ='124262';
++DELETE FROM `creature` where `guid` ='124263';
++DELETE FROM `creature` where `guid` ='123498';
++DELETE FROM `creature` where `guid` ='123499';
++DELETE FROM `creature` where `guid` ='123500';
++DELETE FROM `creature` where `guid` ='86025';
++
++DELETE FROM `creature_addon` where `guid` ='124255';
++DELETE FROM `creature_addon` where `guid` ='124254';
++DELETE FROM `creature_addon` where `guid` ='124253';
++DELETE FROM `creature_addon` where `guid` ='124252';
++DELETE FROM `creature_addon` where `guid` ='124251';
++DELETE FROM `creature_addon` where `guid` ='124256';
++DELETE FROM `creature_addon` where `guid` ='124257';
++DELETE FROM `creature_addon` where `guid` ='124258';
++DELETE FROM `creature_addon` where `guid` ='124259';
++DELETE FROM `creature_addon` where `guid` ='124260';
++DELETE FROM `creature_addon` where `guid` ='124261';
++DELETE FROM `creature_addon` where `guid` ='124262';
++DELETE FROM `creature_addon` where `guid` ='124263';
++DELETE FROM `creature_addon` where `guid` ='123498';
++DELETE FROM `creature_addon` where `guid` ='123499';
++DELETE FROM `creature_addon` where `guid` ='123500';
++
++UPDATE `creature_template` SET `minlevel`=80,`maxlevel`=80,`unit_class`=1,`exp`=2 WHERE entry>199999 and entry<200031;
+\ No newline at end of file
+diff --git a/sql/Greedy-core/world/penance.sql b/sql/Greedy-core/world/penance.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Greedy-core/world/penance.sql
+@@ -0,0 +1,9 @@
++DELETE FROM spell_script_names WHERE spell_id=-47540 AND ScriptName='spell_pri_penance';
++DELETE FROM spell_script_names WHERE spell_id=53005 AND ScriptName='spell_pri_penance';
++DELETE FROM spell_script_names WHERE spell_id=53006 AND ScriptName='spell_pri_penance';
++DELETE FROM spell_script_names WHERE spell_id=53007 AND ScriptName='spell_pri_penance';
++INSERT INTO spell_script_names (spell_id, ScriptName) VALUES
++(-47540,'spell_pri_penance'),
++(53005,'spell_pri_penance'),
++(53006,'spell_pri_penance'),
++(53007,'spell_pri_penance');
+\ No newline at end of file
+diff --git a/sql/Greedy-core/world/some_spell.sql b/sql/Greedy-core/world/some_spell.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Greedy-core/world/some_spell.sql
+@@ -0,0 +1,7 @@
++DELETE FROM `spell_proc_event` WHERE `entry` IN ('66799','66814','66815','66816','66817');
++INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES
++('66799','0','15','4194304','0','0','0','0','0','0','0'), -- Desolation (Rank 1)
++('66814','0','15','4194304','0','0','0','0','0','0','0'), -- Desolation (Rank 2)
++('66815','0','15','4194304','0','0','0','0','0','0','0'), -- Desolation (Rank 3)
++('66816','0','15','4194304','0','0','0','0','0','0','0'), -- Desolation (Rank 4)
++('66817','0','15','4194304','0','0','0','0','0','0','0'); -- Desolation (Rank 5)
+diff --git a/sql/Greedy-core/world/vanish.sql b/sql/Greedy-core/world/vanish.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Greedy-core/world/vanish.sql
+@@ -0,0 +1,5 @@
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger` = -1784;
++INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
++(-1784, -11327, 0, 'Vanish - Rank 1'),
++(-1784, -11329, 0, 'Vanish - Rank 2'),
++(-1784, -26888, 0, 'Vanish - Rank 3');
+diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
+--- a/src/server/game/Scripting/ScriptLoader.cpp
++++ b/src/server/game/Scripting/ScriptLoader.cpp
+@@ -581,7 +581,6 @@
+ 
+ // player
+ void AddSC_chat_log();
+-void AddSC_lexics_chat_log();
+ 
+ #endif
+ 
+@@ -647,7 +646,6 @@
+     AddSC_npc_taxi();
+     AddSC_achievement_scripts();
+     AddSC_chat_log();
+-	AddSC_lexics_chat_log();
+ 	AddSC_npc_customize();
+ #endif
+ }
+diff --git a/src/server/scripts/World/CMakeLists.txt b/src/server/scripts/World/CMakeLists.txt
+--- a/src/server/scripts/World/CMakeLists.txt
++++ b/src/server/scripts/World/CMakeLists.txt
+@@ -14,8 +14,7 @@
+   World/chat_log.cpp
+   World/boss_taerar.cpp
+   World/npc_mount.cpp
+-  World/ChatLog/ChatLog.cpp
+-  World/ChatLog/ChatLexicsCutter.cpp  World/go_scripts.cpp
++ World/go_scripts.cpp
+   World/npc_innkeeper.cpp
+   World/achievement_scripts.cpp
+ )
+diff --git a/src/server/worldserver/CMakeLists.txt b/src/server/worldserver/CMakeLists.txt
+--- a/src/server/worldserver/CMakeLists.txt
++++ b/src/server/worldserver/CMakeLists.txt
+@@ -1,206 +1,200 @@
+-# Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
+-#
+-# This file is free software; as a special exception the author gives
+-# unlimited permission to copy and/or distribute it, with or without
+-# modifications, as long as this notice is preserved.
+-#
+-# This program is distributed in the hope that it will be useful, but
+-# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+-
+-file(GLOB_RECURSE sources_CommandLine CommandLine/*.cpp CommandLine/*.h)
+-file(GLOB_RECURSE sources_RemoteAccess RemoteAccess/*.cpp RemoteAccess/*.h)
+-file(GLOB_RECURSE sources_TCSoap TCSoap/*.cpp TCSoap/*.h)
+-file(GLOB_RECURSE sources_WorldThread WorldThread/*.cpp WorldThread/*.h)
+-file(GLOB sources_localdir *.cpp *.h)
+-
+-if( USE_COREPCH )
+-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+-endif()
+-
+-if ( USE_COREPCH AND MSVC )
+-  set(worldserver_SRCS
+-    PrecompiledHeaders/worldPCH.cpp
+-    PrecompiledHeaders/worldPCH.h
+-  )
+-endif()
+-
+-set(worldserver_SRCS
+-  ${worldserver_SRCS}
+-  ${sources_CommandLine}
+-  ${sources_RemoteAccess}
+-  ${sources_TCSoap}
+-  ${sources_WorldThread}
+-  ${sources_localdir}
+-)
+-
+-if( WIN32 )
+-  set(worldserver_SRCS
+-    ${worldserver_SRCS}
+-    ${sources_Debugging}
+-    worldserver.rc
+-  )
+-endif()
+-
+-include_directories(
+-  ${CMAKE_BINARY_DIR}
+-  ${CMAKE_SOURCE_DIR}/dep/gsoap
+-  ${CMAKE_SOURCE_DIR}/dep/sockets/include
+-  ${CMAKE_SOURCE_DIR}/dep/SFMT
+-  ${CMAKE_SOURCE_DIR}/dep/mersennetwister
+-  ${CMAKE_SOURCE_DIR}/src/server/collision
+-  ${CMAKE_SOURCE_DIR}/src/server/collision/Management
+-  ${CMAKE_SOURCE_DIR}/src/server/shared
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Configuration
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography/Authentication
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Database
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/DataStores
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/CountedReference
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/LinkedReference
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Logging
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Packets
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Policies
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Threading
+-  ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities
+-  ${CMAKE_SOURCE_DIR}/src/server/game
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Accounts
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Achievements
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Addons
+-  ${CMAKE_SOURCE_DIR}/src/server/game/AI
+-  ${CMAKE_SOURCE_DIR}/src/server/game/AI/CoreAI
+-  ${CMAKE_SOURCE_DIR}/src/server/game/AI/EventAI
+-  ${CMAKE_SOURCE_DIR}/src/server/game/AI/ScriptedAI
+-  ${CMAKE_SOURCE_DIR}/src/server/game/AuctionHouse
+-  ${CMAKE_SOURCE_DIR}/src/server/game/AuctionHouse/AuctionHouseBot
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Battlegrounds
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Battlegrounds/Zones
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Calendar
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Chat
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Chat/Channels
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Chat/Commands
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Combat
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Conditions
+-  ${CMAKE_SOURCE_DIR}/src/server/game/DataStores
+-  ${CMAKE_SOURCE_DIR}/src/server/game/DungeonFinding
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Creature
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Corpse
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/DynamicObject
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/GameObject
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Item
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Item/Container
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object/Updates
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Pet
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Player
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Totem
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Unit
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Vehicle
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Transport
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Events
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Globals
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Cells
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Notifiers
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Grids
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Groups
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Guilds
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Instances
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Loot
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Mails
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Maps
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Miscellaneous
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Movement
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Movement/MovementGenerators
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Movement/Waypoints
+-  ${CMAKE_SOURCE_DIR}/src/server/game/OutdoorPvP
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Pools
+-  ${CMAKE_SOURCE_DIR}/src/server/game/PrecompiledHeaders
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Quests
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Reputation
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Scripting
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Server/Protocol
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Server/Protocol/Handlers
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Server
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Skills
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Spells
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Spells/Auras
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Tools
+-  ${CMAKE_SOURCE_DIR}/src/server/game/Weather
+-  ${CMAKE_SOURCE_DIR}/src/server/game/World
+-  ${CMAKE_CURRENT_SOURCE_DIR}
+-  ${CMAKE_CURRENT_SOURCE_DIR}/CommandLine
+-  ${CMAKE_CURRENT_SOURCE_DIR}/RemoteAccess
+-  ${CMAKE_CURRENT_SOURCE_DIR}/TCSoap
+-  ${CMAKE_CURRENT_SOURCE_DIR}/WorldThread
+-  ${ACE_INCLUDE_DIR}
+-  ${MYSQL_INCLUDE_DIR}
+-  ${OPENSSL_INCLUDE_DIR}
+-)
+-
+-set(worldserver_LINK_FLAGS "")
+-
+-add_executable(worldserver ${worldserver_SRCS})
+-
+-if( NOT WIN32 )
+-  add_definitions(-D_TRINITY_CORE_CONFIG="${CONF_DIR}/worldserver.conf")
+-endif()
+-
+-add_dependencies(worldserver revision.h)
+-
+-if( UNIX )
+-  set(worldserver_LINK_FLAGS "-pthread -lncurses ${worldserver_LINK_FLAGS}")
+-endif()
+-
+-set_target_properties(worldserver PROPERTIES LINK_FLAGS "${worldserver_LINK_FLAGS}")
+-
+-target_link_libraries(worldserver
+-  game
+-  shared
+-  scripts
+-  trinitysockets
+-  collision
+-  g3dlib
+-  gsoap
+-  ${JEMALLOC_LIB}
+-  ${READLINE_LIBRARY}
+-  ${TERMCAP_LIBRARY}
+-  ${ACE_LIBRARY}
+-  ${MYSQL_LIBRARY}
+-  ${OPENSSL_LIBRARIES}
+-  ${OPENSSL_EXTRA_LIBRARIES}
+-  ${ZLIB_LIBRARIES}
+-  ${OSX_LIBS}
+-)
+-
+-if( WIN32 )
+-  add_custom_command(TARGET worldserver
+-    POST_BUILD
+-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/innormative_words.txt.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/letter_analogs.txt.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+-  )
+-endif()
+-
+-if( UNIX )
+-  install(TARGETS worldserver DESTINATION bin)
+-  install(FILES worldserver.conf.dist DESTINATION etc)
+-  install(FILES innormative_words.txt.dist DESTINATION bin)
+-  install(FILES letter_analogs.txt.dist DESTINATION bin)
+-elseif( WIN32 )
+-  install(TARGETS worldserver DESTINATION "${CMAKE_INSTALL_PREFIX}")
+-  install(FILES worldserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+-  install(FILES innormative_words.txt.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+-  install(FILES letter_analogs.txt.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+-endif()
+-
+-# Generate precompiled header
+-if( USE_COREPCH )
+-  if(CMAKE_COMPILER_IS_GNUCXX)
+-    add_precompiled_header(worldserver ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/worldPCH.h)
+-  elseif(MSVC)
+-    add_native_precompiled_header(worldserver ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/worldPCH)
+-  endif()
+-endif()
++# Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++#
++# This file is free software; as a special exception the author gives
++# unlimited permission to copy and/or distribute it, with or without
++# modifications, as long as this notice is preserved.
++#
++# This program is distributed in the hope that it will be useful, but
++# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
++# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++
++file(GLOB_RECURSE sources_CommandLine CommandLine/*.cpp CommandLine/*.h)
++file(GLOB_RECURSE sources_RemoteAccess RemoteAccess/*.cpp RemoteAccess/*.h)
++file(GLOB_RECURSE sources_TCSoap TCSoap/*.cpp TCSoap/*.h)
++file(GLOB_RECURSE sources_WorldThread WorldThread/*.cpp WorldThread/*.h)
++file(GLOB sources_localdir *.cpp *.h)
++
++if( USE_COREPCH )
++  include_directories(${CMAKE_CURRENT_BINARY_DIR})
++endif()
++
++if ( USE_COREPCH AND MSVC )
++  set(worldserver_SRCS
++    PrecompiledHeaders/worldPCH.cpp
++    PrecompiledHeaders/worldPCH.h
++  )
++endif()
++
++set(worldserver_SRCS
++  ${worldserver_SRCS}
++  ${sources_CommandLine}
++  ${sources_RemoteAccess}
++  ${sources_TCSoap}
++  ${sources_WorldThread}
++  ${sources_localdir}
++)
++
++if( WIN32 )
++  set(worldserver_SRCS
++    ${worldserver_SRCS}
++    ${sources_Debugging}
++    worldserver.rc
++  )
++endif()
++
++include_directories(
++  ${CMAKE_BINARY_DIR}
++  ${CMAKE_SOURCE_DIR}/dep/gsoap
++  ${CMAKE_SOURCE_DIR}/dep/sockets/include
++  ${CMAKE_SOURCE_DIR}/dep/SFMT
++  ${CMAKE_SOURCE_DIR}/dep/mersennetwister
++  ${CMAKE_SOURCE_DIR}/src/server/collision
++  ${CMAKE_SOURCE_DIR}/src/server/collision/Management
++  ${CMAKE_SOURCE_DIR}/src/server/shared
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Configuration
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Cryptography/Authentication
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Database
++  ${CMAKE_SOURCE_DIR}/src/server/shared/DataStores
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/CountedReference
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/LinkedReference
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Logging
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Packets
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Policies
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Threading
++  ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities
++  ${CMAKE_SOURCE_DIR}/src/server/game
++  ${CMAKE_SOURCE_DIR}/src/server/game/Accounts
++  ${CMAKE_SOURCE_DIR}/src/server/game/Achievements
++  ${CMAKE_SOURCE_DIR}/src/server/game/Addons
++  ${CMAKE_SOURCE_DIR}/src/server/game/AI
++  ${CMAKE_SOURCE_DIR}/src/server/game/AI/CoreAI
++  ${CMAKE_SOURCE_DIR}/src/server/game/AI/EventAI
++  ${CMAKE_SOURCE_DIR}/src/server/game/AI/ScriptedAI
++  ${CMAKE_SOURCE_DIR}/src/server/game/AuctionHouse
++  ${CMAKE_SOURCE_DIR}/src/server/game/AuctionHouse/AuctionHouseBot
++  ${CMAKE_SOURCE_DIR}/src/server/game/Battlegrounds
++  ${CMAKE_SOURCE_DIR}/src/server/game/Battlegrounds/Zones
++  ${CMAKE_SOURCE_DIR}/src/server/game/Calendar
++  ${CMAKE_SOURCE_DIR}/src/server/game/Chat
++  ${CMAKE_SOURCE_DIR}/src/server/game/Chat/Channels
++  ${CMAKE_SOURCE_DIR}/src/server/game/Chat/Commands
++  ${CMAKE_SOURCE_DIR}/src/server/game/Combat
++  ${CMAKE_SOURCE_DIR}/src/server/game/Conditions
++  ${CMAKE_SOURCE_DIR}/src/server/game/DataStores
++  ${CMAKE_SOURCE_DIR}/src/server/game/DungeonFinding
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Creature
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Corpse
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/DynamicObject
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/GameObject
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Item
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Item/Container
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Object/Updates
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Pet
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Player
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Totem
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Unit
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Vehicle
++  ${CMAKE_SOURCE_DIR}/src/server/game/Entities/Transport
++  ${CMAKE_SOURCE_DIR}/src/server/game/Events
++  ${CMAKE_SOURCE_DIR}/src/server/game/Globals
++  ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Cells
++  ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Notifiers
++  ${CMAKE_SOURCE_DIR}/src/server/game/Grids
++  ${CMAKE_SOURCE_DIR}/src/server/game/Groups
++  ${CMAKE_SOURCE_DIR}/src/server/game/Guilds
++  ${CMAKE_SOURCE_DIR}/src/server/game/Instances
++  ${CMAKE_SOURCE_DIR}/src/server/game/Loot
++  ${CMAKE_SOURCE_DIR}/src/server/game/Mails
++  ${CMAKE_SOURCE_DIR}/src/server/game/Maps
++  ${CMAKE_SOURCE_DIR}/src/server/game/Miscellaneous
++  ${CMAKE_SOURCE_DIR}/src/server/game/Movement
++  ${CMAKE_SOURCE_DIR}/src/server/game/Movement/MovementGenerators
++  ${CMAKE_SOURCE_DIR}/src/server/game/Movement/Waypoints
++  ${CMAKE_SOURCE_DIR}/src/server/game/OutdoorPvP
++  ${CMAKE_SOURCE_DIR}/src/server/game/Pools
++  ${CMAKE_SOURCE_DIR}/src/server/game/PrecompiledHeaders
++  ${CMAKE_SOURCE_DIR}/src/server/game/Quests
++  ${CMAKE_SOURCE_DIR}/src/server/game/Reputation
++  ${CMAKE_SOURCE_DIR}/src/server/game/Scripting
++  ${CMAKE_SOURCE_DIR}/src/server/game/Server/Protocol
++  ${CMAKE_SOURCE_DIR}/src/server/game/Server/Protocol/Handlers
++  ${CMAKE_SOURCE_DIR}/src/server/game/Server
++  ${CMAKE_SOURCE_DIR}/src/server/game/Skills
++  ${CMAKE_SOURCE_DIR}/src/server/game/Spells
++  ${CMAKE_SOURCE_DIR}/src/server/game/Spells/Auras
++  ${CMAKE_SOURCE_DIR}/src/server/game/Tools
++  ${CMAKE_SOURCE_DIR}/src/server/game/Weather
++  ${CMAKE_SOURCE_DIR}/src/server/game/World
++  ${CMAKE_CURRENT_SOURCE_DIR}
++  ${CMAKE_CURRENT_SOURCE_DIR}/CommandLine
++  ${CMAKE_CURRENT_SOURCE_DIR}/RemoteAccess
++  ${CMAKE_CURRENT_SOURCE_DIR}/TCSoap
++  ${CMAKE_CURRENT_SOURCE_DIR}/WorldThread
++  ${ACE_INCLUDE_DIR}
++  ${MYSQL_INCLUDE_DIR}
++  ${OPENSSL_INCLUDE_DIR}
++)
++
++set(worldserver_LINK_FLAGS "")
++
++add_executable(worldserver ${worldserver_SRCS})
++
++if( NOT WIN32 )
++  add_definitions(-D_TRINITY_CORE_CONFIG="${CONF_DIR}/worldserver.conf")
++endif()
++
++add_dependencies(worldserver revision.h)
++
++if( UNIX )
++  set(worldserver_LINK_FLAGS "-pthread -lncurses ${worldserver_LINK_FLAGS}")
++endif()
++
++set_target_properties(worldserver PROPERTIES LINK_FLAGS "${worldserver_LINK_FLAGS}")
++
++target_link_libraries(worldserver
++  game
++  shared
++  scripts
++  trinitysockets
++  collision
++  g3dlib
++  gsoap
++  ${JEMALLOC_LIB}
++  ${READLINE_LIBRARY}
++  ${TERMCAP_LIBRARY}
++  ${ACE_LIBRARY}
++  ${MYSQL_LIBRARY}
++  ${OPENSSL_LIBRARIES}
++  ${OPENSSL_EXTRA_LIBRARIES}
++  ${ZLIB_LIBRARIES}
++  ${OSX_LIBS}
++)
++
++if( WIN32 )
++  add_custom_command(TARGET worldserver
++    POST_BUILD
++    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
++  )
++endif()
++
++if( UNIX )
++  install(TARGETS worldserver DESTINATION bin)
++  install(FILES worldserver.conf.dist DESTINATION etc)
++elseif( WIN32 )
++  install(TARGETS worldserver DESTINATION "${CMAKE_INSTALL_PREFIX}")
++  install(FILES worldserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
++  endif()
++
++# Generate precompiled header
++if( USE_COREPCH )
++  if(CMAKE_COMPILER_IS_GNUCXX)
++    add_precompiled_header(worldserver ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/worldPCH.h)
++  elseif(MSVC)
++    add_native_precompiled_header(worldserver ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/worldPCH)
++  endif()
++endif()
+diff --git a/src/server/worldserver/worldserver.conf.dist b/src/server/worldserver/worldserver.conf.dist
+--- a/src/server/worldserver/worldserver.conf.dist
++++ b/src/server/worldserver/worldserver.conf.dist
+@@ -566,152 +566,6 @@
+ ChatLogTimestamp = 0
+ 
+ ###############################################################################
+-# CHAT LOGGING AND LEXICS CUTTER
+-#
+-#    ChatLog.Enable
+-#        Enable system of chat logging.
+-#        Default: 1 - on
+-#                 0 - off
+-#
+-#    ChatLog.DateSplit
+-#        Split log files by date (filename must include $d as date placeholder).
+-#        Default: 1 - split
+-#                 0 - do not split
+-#
+-#    ChatLog.UTFHeader
+-#        Add UTF8 header at the beginning of new file.
+-#        Default: 1 - add
+-#                 0 - do not add
+-#
+-#    ChatLog.Ignore.Unprintable
+-#        Ignore messages with unprintable characters.
+-#        Default: 1 - ignore
+-#                 0 - do not ignore
+-#
+-#    ChatLog.Lexics.Enable
+-#        Enable lexics cutter in chats.
+-#        Default: 1 - on
+-#                 0 - off
+-#
+-#    ChatLog.Lexics.Cut.Enable
+-#        Cut innormative lexics in chat.
+-#        Default: 1 - cut
+-#                 0 - do not cut
+-#
+-#    ChatLog.Lexics.Cut.Replacement
+-#        Text shown instead of message with innormative lexics.
+-#
+-#    ChatLog.Lexics.WordsFile
+-#        Path to the file with words considered as innormative.
+-#
+-#    ChatLog.Lexics.AnalogsFile
+-#        Path to the file with letter analogs.
+-#
+-#    ChatLog.Lexics.Ignore.Spaces
+-#        Ignore spaces in filtered words. Example: W O R D
+-#        Default: 1 - ignore
+-#                 0 - do not ignore
+-#
+-#    ChatLog.Lexics.Ignore.Repeats
+-#        Ignore repeating symbols in filtered words. Example: WWWOOOORRRRRRDDD
+-#        Default: 1 - ignore
+-#                 0 - do not ignore
+-#
+-#    ChatLog.Lexics.Ignore.GM
+-#        Ignore (do not filter) messages from GM.
+-#        Default: 1 - ignore
+-#                 0 - do not ignore
+-#
+-#    ChatLog.Lexics.Action
+-#        Action taken when bad lexics is found.
+-#        Default: 0 - log only
+-#                 1 - polymorph
+-#                 2 - stun
+-#                 3 - instant kill
+-#                 4 - leave 5 health
+-#                 5 - mute
+-#                 6 - stuck (works as stun + 50% health) [by KAPATEJIb]
+-#                 7 - resurrection sickness [by Koshei]
+-#                 8 - shear [by Koshei]
+-#
+-#    ChatLog.Lexics.Action.Duration
+-#        Duration of action in milliseconds.
+-#        Default: 0 - no duration
+-#
+-#    SETTINGS FOR DIFFERENT CHAT TYPES
+-#    Available types:
+-#        * Chat - common chat
+-#        * Party - party chat
+-#        * Guild - guild chat
+-#        * Whisper - whispers
+-#        * Channel - channels
+-#        * Raid - raid chat
+-#        * BattleGround - battleground chat
+-#        * Lexics.Innormative - messages filtered by lexics cutter
+-#
+-#    ChatLog.*.File
+-#        Log file name for given chat type.
+-#
+-#    ChatLog.*.Screen
+-#        Output message in server console for given chat type.
+-#        Default: 0 - do not show
+-#                 1 - show
+-#
+-#    ChatLog.Lexics.*.Cut
+-#        Cut lexics for given chat type (except Innormative).
+-#        Default: 1 - cut
+-#                 0 - do not cut
+-#
+-###############################################################################
+-
+-ChatLog.Enable = 1
+-ChatLog.DateSplit = 1
+-ChatLog.UTFHeader = 1
+-ChatLog.Ignore.Unprintable = 1
+-
+-ChatLog.Lexics.Enable = 1
+-ChatLog.Lexics.Cut.Enable = 1
+-ChatLog.Lexics.Cut.Replacement = &!@^%!^&*!!!
+-ChatLog.Lexics.AnalogsFile = letter_analogs.txt
+-ChatLog.Lexics.WordsFile = innormative_words.txt
+-ChatLog.Lexics.Ignore.Spaces = 1
+-ChatLog.Lexics.Ignore.Repeats = 1
+-ChatLog.Lexics.Ignore.GM = 1
+-ChatLog.Lexics.Action = 0
+-ChatLog.Lexics.Action.Duration = 0
+-
+-ChatLog.Chat.File = "main_chat-$d.log"
+-ChatLog.Chat.Screen = 0
+-ChatLog.Lexics.Chat.Cut = 1
+-
+-ChatLog.Party.File = "party_chat-$d.log"
+-ChatLog.Party.Screen = 0
+-ChatLog.Lexics.Party.Cut = 1
+-
+-ChatLog.Guild.File = "guild_chat-$d.log"
+-ChatLog.Guild.Screen = 0
+-ChatLog.Lexics.Guild.Cut = 1
+-
+-ChatLog.Whisper.File = "whisper_chat-$d.log"
+-ChatLog.Whisper.Screen = 0
+-ChatLog.Lexics.Whisper.Cut = 1
+-
+-ChatLog.Channel.File = "channel_chat-$d.log"
+-ChatLog.Channel.Screen = 0
+-ChatLog.Lexics.Channel.Cut = 1
+-
+-ChatLog.Raid.File = "raid_chat-$d.log"
+-ChatLog.Raid.Screen = 0
+-ChatLog.Lexics.Raid.Cut = 1
+-
+-ChatLog.BattleGround.File = "bg_chat-$d.log"
+-ChatLog.BattleGround.Screen = 0
+-ChatLog.Lexics.BattleGround.Cut = 1
+-
+-ChatLog.Lexics.Innormative.File = "innormative-$d.log"
+-ChatLog.Lexics.Innormative.Screen = 0
+-
+-###############################################################################
+ # SERVER SETTINGS
+ #
+ #    GameType

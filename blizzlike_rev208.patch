@@ -1,0 +1,331 @@
+# HG changeset patch
+# User asniker
+# Date 1290084372 -18000
+# Node ID b9f682e71a9ebf849f384adfbdb00434dfaf177f
+# Parent  507caa7b9758ebd1386899ffd561cc52bc885fc5
+ядро: добавил патчи на арену
+
+diff --git a/src/server/game/Battlegrounds/ArenaTeam.cpp b/src/server/game/Battlegrounds/ArenaTeam.cpp
+--- a/src/server/game/Battlegrounds/ArenaTeam.cpp
++++ b/src/server/game/Battlegrounds/ArenaTeam.cpp
+@@ -618,9 +618,9 @@
+     // returns the chance to win against a team with the given rating, used in the rating adjustment calculation
+     // ELO system
+ 
+-/*    if (sWorld.getIntConfig(CONFIG_ARENA_SEASON_ID) >= 6)
++//    if (sWorld.getIntConfig(CONFIG_ARENA_SEASON_ID) >= 6)
+         if (enemy_rating < 1000)
+-            enemy_rating = 1000;*/
++            enemy_rating = 1000;
+     return 1.0f/(1.0f+exp(log(10.0f)*(float)((float)enemy_rating - (float)own_rating)/400.0f));
+ }
+ 
+@@ -704,7 +704,7 @@
+     return mod;
+ }
+ 
+-void ArenaTeam::MemberLost(Player * plr, uint32 againstMatchmakerRating, int32 teamratingchange)
++void ArenaTeam::MemberLost(Player * plr, uint32 againstMatchmakerRating, uint32 againstTeamRating, int32 teamratingchange)
+ {
+     // called for each participant of a match after losing
+     for (MemberList::iterator itr = m_members.begin(); itr !=  m_members.end(); ++itr)
+@@ -712,7 +712,7 @@
+         if (itr->guid == plr->GetGUID())
+         {
+             // update personal rating
+-            int32 mod = GetPersonalRatingMod(teamratingchange, itr->personal_rating, (m_stats.rating - teamratingchange));
++            int32 mod = GetRatingMod(itr->personal_rating, againstTeamRating, false);
+             itr->ModifyPersonalRating(plr, mod, GetSlot());
+ 
+             // update matchmaker rating
+@@ -730,7 +730,7 @@
+     }
+ }
+ 
+-void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, int32 teamratingchange)
++void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, uint32 againstTeamRating, int32 teamratingchange)
+ {
+     // called for offline player after ending rated arena match!
+     for (MemberList::iterator itr = m_members.begin(); itr !=  m_members.end(); ++itr)
+@@ -738,7 +738,7 @@
+         if (itr->guid == guid)
+         {
+             // update personal rating
+-            int32 mod = GetPersonalRatingMod(teamratingchange, itr->personal_rating, (m_stats.rating - teamratingchange));
++            int32 mod = GetRatingMod(itr->personal_rating, againstTeamRating, false);
+             itr->ModifyPersonalRating(NULL, mod, GetSlot());
+ 
+             // update matchmaker rating
+@@ -753,7 +753,7 @@
+     }
+ }
+ 
+-void ArenaTeam::MemberWon(Player * plr, uint32 againstMatchmakerRating, int32 teamratingchange)
++void ArenaTeam::MemberWon(Player * plr, uint32 againstMatchmakerRating, uint32 againstTeamRating, int32 teamratingchange)
+ {
+     // called for each participant after winning a match
+     for (MemberList::iterator itr = m_members.begin(); itr !=  m_members.end(); ++itr)
+@@ -761,7 +761,7 @@
+         if (itr->guid == plr->GetGUID())
+         {
+             // update personal rating
+-            int32 mod = GetPersonalRatingMod(teamratingchange, (m_stats.rating - teamratingchange), itr->personal_rating);
++            int32 mod = GetRatingMod(itr->personal_rating, againstTeamRating, true);
+             itr->ModifyPersonalRating(plr, mod, GetSlot());
+ 
+             // update matchmaker rating
+diff --git a/src/server/game/Battlegrounds/ArenaTeam.h b/src/server/game/Battlegrounds/ArenaTeam.h
+--- a/src/server/game/Battlegrounds/ArenaTeam.h
++++ b/src/server/game/Battlegrounds/ArenaTeam.h
+@@ -199,10 +199,10 @@
+         int32 GetPersonalRatingMod(int32 base_rating, uint32 own_rating, uint32 enemy_rating);
+         float GetChanceAgainst(uint32 own_rating, uint32 enemy_rating);
+         int32 WonAgainst(uint32 againstRating);
+-        void MemberWon(Player * plr, uint32 againstMatchmakerRating, int32 teamratingchange = 12);
++        void MemberWon(Player * plr, uint32 againstMatchmakerRating, uint32 againstTeamRating, int32 teamratingchange = 12);
+         int32 LostAgainst(uint32 againstRating);
+-        void MemberLost(Player * plr, uint32 againstMatchmakerRating, int32 teamratingchange = -12);
+-        void OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, int32 teamratingchange = -12);
++        void MemberLost(Player * plr, uint32 againstMatchmakerRating, uint32 againstTeamRating, int32 teamratingchange = -12);
++        void OfflineMemberLost(uint64 guid, uint32 againstMatchmakerRating, uint32 againsTeamRating, int32 teamratingchange = -12);
+ 
+         void UpdateArenaPointsHelper(std::map<uint32, uint32> & PlayerPoints);
+ 
+diff --git a/src/server/game/Battlegrounds/Battleground.cpp b/src/server/game/Battlegrounds/Battleground.cpp
+--- a/src/server/game/Battlegrounds/Battleground.cpp
++++ b/src/server/game/Battlegrounds/Battleground.cpp
+@@ -724,14 +724,14 @@
+     {
+         winner_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(winner));
+         loser_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(winner)));
+-        if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
++        if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team && !(winner == WINNER_NONE))
+         {
+             loser_team_rating = loser_arena_team->GetRating();
+             loser_matchmaker_rating = GetArenaMatchmakerRating(GetOtherTeam(winner));
+             winner_team_rating = winner_arena_team->GetRating();
+             winner_matchmaker_rating = GetArenaMatchmakerRating(winner);
+-            winner_change = winner_arena_team->WonAgainst(loser_matchmaker_rating);
+-            loser_change = loser_arena_team->LostAgainst(winner_matchmaker_rating);
++			winner_change = winner_arena_team->WonAgainst(loser_team_rating);
++            loser_change = loser_arena_team->LostAgainst(winner_team_rating);
+             sLog.outDebug("--- Winner rating: %u, Loser rating: %u, Winner MMR: %u, Loser MMR: %u, Winner change: %u, Losser change: %u ---", winner_team_rating, loser_team_rating,
+                 winner_matchmaker_rating, loser_matchmaker_rating, winner_change, loser_change);
+             SetArenaTeamRatingChangeForTeam(winner, winner_change);
+@@ -742,7 +742,13 @@
+                     if (Player* player = sObjectMgr.GetPlayer(itr->first))
+                         sLog.outArena("Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
+         }
+-        else
++		// -16 rating if there is no winner(after 45+2 mins)
++		else if(winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team && (winner == WINNER_NONE))
++        {
++			SetArenaTeamRatingChangeForTeam(ALLIANCE, -16);
++			SetArenaTeamRatingChangeForTeam(HORDE, -16);
++		}
++		else
+         {
+             SetArenaTeamRatingChangeForTeam(ALLIANCE, 0);
+             SetArenaTeamRatingChangeForTeam(HORDE, 0);
+@@ -759,9 +765,9 @@
+             if (isArena() && isRated() && winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+             {
+                 if (team == winner)
+-                    winner_arena_team->OfflineMemberLost(itr->first, loser_matchmaker_rating, winner_change);
++                    winner_arena_team->OfflineMemberLost(itr->first, loser_matchmaker_rating, loser_team_rating);
+                 else
+-                    loser_arena_team->OfflineMemberLost(itr->first, winner_matchmaker_rating, loser_change);
++                    loser_arena_team->OfflineMemberLost(itr->first, winner_matchmaker_rating, winner_team_rating);
+             }
+             continue;
+         }
+@@ -801,11 +807,11 @@
+                 if (member)
+                     plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, member->personal_rating);
+ 
+-                winner_arena_team->MemberWon(plr,loser_matchmaker_rating, winner_change);
++                winner_arena_team->MemberWon(plr,loser_matchmaker_rating, loser_team_rating);
+             }
+             else
+             {
+-                loser_arena_team->MemberLost(plr, winner_matchmaker_rating, loser_change);
++                loser_arena_team->MemberLost(plr, winner_matchmaker_rating, winner_team_rating);
+ 
+                 // Arena lost => reset the win_rated_arena having the "no_loose" condition
+                 plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, ACHIEVEMENT_CRITERIA_CONDITION_NO_LOSE);
+@@ -957,8 +963,8 @@
+                     //left a rated match while the encounter was in progress, consider as loser
+                     ArenaTeam * winner_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
+                     ArenaTeam * loser_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(team));
+-                    if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team)
+-                        loser_arena_team->MemberLost(plr, GetArenaMatchmakerRating(GetOtherTeam(team)));
++                    if (winner_arena_team && loser_arena_team && winner_arena_team != loser_arena_team) 
++                        loser_arena_team->MemberLost(plr, GetArenaMatchmakerRating(GetOtherTeam(team)),winner_arena_team->GetRating());
+                 }
+             }
+             if (SendPacket)
+@@ -980,7 +986,7 @@
+                 ArenaTeam * others_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(GetOtherTeam(team)));
+                 ArenaTeam * players_arena_team = sObjectMgr.GetArenaTeamById(GetArenaTeamIdForTeam(team));
+                 if (others_arena_team && players_arena_team)
+-                    players_arena_team->OfflineMemberLost(guid, GetArenaMatchmakerRating(GetOtherTeam(team)));
++                    players_arena_team->OfflineMemberLost(guid, GetArenaMatchmakerRating(GetOtherTeam(team)), others_arena_team->GetRating());
+             }
+         }
+ 
+@@ -1856,6 +1862,11 @@
+ {
+ }
+ 
++void Battleground::CheckArenaAfterTimerConditions()
++{
++	EndBattleground(WINNER_NONE);
++}
++
+ void Battleground::CheckArenaWinConditions()
+ {
+     if (!GetAlivePlayersCountByTeam(ALLIANCE) && GetPlayersCountByTeam(HORDE))
+diff --git a/src/server/game/Battlegrounds/Battleground.h b/src/server/game/Battlegrounds/Battleground.h
+--- a/src/server/game/Battlegrounds/Battleground.h
++++ b/src/server/game/Battlegrounds/Battleground.h
+@@ -514,6 +514,7 @@
+         void SetArenaMatchmakerRating(uint32 Team, uint32 MMR){ m_ArenaTeamMMR[GetTeamIndexByTeamId(Team)] = MMR; }
+         uint32 GetArenaMatchmakerRating(uint32 Team)                { return m_ArenaTeamMMR[GetTeamIndexByTeamId(Team)]; }
+         void CheckArenaWinConditions();
++        void CheckArenaAfterTimerConditions();
+         void UpdateArenaWorldState();
+ 
+         /* Triggers handle */
+diff --git a/src/server/game/Battlegrounds/BattlegroundQueue.cpp b/src/server/game/Battlegrounds/BattlegroundQueue.cpp
+--- a/src/server/game/Battlegrounds/BattlegroundQueue.cpp
++++ b/src/server/game/Battlegrounds/BattlegroundQueue.cpp
+@@ -366,9 +366,9 @@
+             sLog.outDebug("UPDATING memberLost's personal arena rating for %u by opponents rating: %u", GUID_LOPART(guid), group->OpponentsTeamRating);
+             Player *plr = sObjectMgr.GetPlayer(guid);
+             if (plr)
+-                at->MemberLost(plr, group->OpponentsMatchmakerRating);
++                at->MemberLost(plr, group->OpponentsMatchmakerRating, group->OpponentsTeamRating);
+             else
+-                at->OfflineMemberLost(guid, group->OpponentsMatchmakerRating);
++                at->OfflineMemberLost(guid, group->OpponentsMatchmakerRating, group->OpponentsTeamRating);
+             at->SaveToDB();
+         }
+     }
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp
+@@ -48,10 +48,14 @@
+ {
+     Battleground::Update(diff);
+ 
+-    /*if (GetStatus() == STATUS_IN_PROGRESS)
++    if (GetStatus() == STATUS_IN_PROGRESS)
+     {
+-        // update something
+-    }*/
++        if (GetStartTime() >= 47*MINUTE*IN_MILLISECONDS) // after 47 minutes without one team loose the arena closes with no winner and no rating change
++		{
++			UpdateArenaWorldState();
++			CheckArenaAfterTimerConditions();
++		}
++    }
+ }
+ 
+ void BattlegroundBE::StartingEventCloseDoors()
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
+@@ -50,7 +50,16 @@
+ 
+ void BattlegroundDS::Update(uint32 diff)
+ {
+-    Battleground::Update(diff);
++        Battleground::Update(diff);
++
++    if (GetStatus() == STATUS_IN_PROGRESS)
++    {
++        if (GetStartTime() >= 47*MINUTE*IN_MILLISECONDS) // after 47 minutes without one team loose the arena closes with no winner and no rating change
++		{
++			UpdateArenaWorldState();
++			CheckArenaAfterTimerConditions();
++		}
++    }
+     if (getWaterFallTimer() < diff)
+     {
+         if (isWaterFallActive())
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp
+@@ -48,10 +48,14 @@
+ {
+     Battleground::Update(diff);
+ 
+-    /*if (GetStatus() == STATUS_IN_PROGRESS)
++    if (GetStatus() == STATUS_IN_PROGRESS)
+     {
+-        // update something
+-    }*/
++        if (GetStartTime() >= 47*MINUTE*IN_MILLISECONDS) // after 47 minutes without one team loose the arena closes with no winner and no rating change
++		{
++			UpdateArenaWorldState();
++			CheckArenaAfterTimerConditions();
++		}
++    }
+ }
+ 
+ void BattlegroundNA::StartingEventCloseDoors()
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp
+@@ -48,12 +48,17 @@
+ {
+     Battleground::Update(diff);
+ 
+-    /*if (GetStatus() == STATUS_IN_PROGRESS)
++    if (GetStatus() == STATUS_IN_PROGRESS)
+     {
+-        // update something
+-    }*/
++        if (GetStartTime() >= 47*MINUTE*IN_MILLISECONDS) // after 47 minutes without one team loose the arena closes with no winner and no rating change
++		{
++			UpdateArenaWorldState();
++			CheckArenaAfterTimerConditions();
++		}
++    }
+ }
+ 
++
+ void BattlegroundRL::StartingEventCloseDoors()
+ {
+     for (uint32 i = BG_RL_OBJECT_DOOR_1; i <= BG_RL_OBJECT_DOOR_2; ++i)
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp
+@@ -48,6 +48,15 @@
+ {
+     Battleground::Update(diff);
+ 
++    if (GetStatus() == STATUS_IN_PROGRESS)
++    {
++        if (GetStartTime() >= 47*MINUTE*IN_MILLISECONDS) // after 47 minutes without one team loose the arena closes with no winner and no rating change
++		{
++			UpdateArenaWorldState();
++			CheckArenaAfterTimerConditions();
++		}
++    }
++
+     if (getTimer() < diff)
+     {
+         uint32 i;
+diff --git a/src/server/game/Server/Protocol/Handlers/BattleGroundHandler.cpp b/src/server/game/Server/Protocol/Handlers/BattleGroundHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/BattleGroundHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/BattleGroundHandler.cpp
+@@ -487,7 +487,7 @@
+                 if (at)
+                 {
+                     sLog.outDebug("UPDATING memberLost's personal arena rating for %u by opponents rating: %u, because he has left queue!", GUID_LOPART(_player->GetGUID()), ginfo.OpponentsTeamRating);
+-                    at->MemberLost(_player, ginfo.OpponentsMatchmakerRating);
++                    at->MemberLost(_player, ginfo.OpponentsMatchmakerRating,ginfo.OpponentsTeamRating);
+                     at->SaveToDB();
+                 }
+             }

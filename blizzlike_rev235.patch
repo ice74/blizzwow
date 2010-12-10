@@ -1,0 +1,43 @@
+# HG changeset patch
+# User asniker
+# Date 1290433087 -18000
+# Node ID 1d2059a179f4e1e2fb49242da2b37f8661839e01
+# Parent  854cf6f9852c1c0adae094ae79531c0beace723f
+ядро: фикс радиус инвиза у рог
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -12434,17 +12434,14 @@
+             return true;
+ 
+     //Visible distance based on stealth value (stealth rank 4 300MOD, 10.5 - 3 = 7.5)
+-    float visibleDistance = 26.0f;
++    float visibleDistance = 10.5f - target->GetTotalAuraModifier(SPELL_AURA_MOD_STEALTH) / 100.0f;
+     //Visible distance is modified by -Level Diff (every level diff = 1.0f in visible distance)
+-    visibleDistance += float(getLevel() - getLevelForTarget(target)) * 2.5f - target->GetTotalAuraModifier(SPELL_AURA_MOD_STEALTH) / 5.0f;
++    visibleDistance += int32(getLevelForTarget(target)) - int32(target->getLevelForTarget(this));
+     //-Stealth Mod(positive like Master of Deception) and Stealth Detection(negative like paranoia)
+     //based on wowwiki every 5 mod we have 1 more level diff in calculation
+-    visibleDistance += GetTotalAuraModifier(SPELL_AURA_MOD_DETECT) / 2.0f - target->GetTotalAuraModifier(SPELL_AURA_MOD_STEALTH_LEVEL) / 2.0f;
++    visibleDistance += (float)(GetTotalAuraModifier(SPELL_AURA_MOD_DETECT) - target->GetTotalAuraModifier(SPELL_AURA_MOD_STEALTH_LEVEL)) / 5.0f;
+     visibleDistance = visibleDistance > MAX_PLAYER_STEALTH_DETECT_RANGE ? MAX_PLAYER_STEALTH_DETECT_RANGE : visibleDistance;
+ 
+-if (!HasInArc(M_PI, target)) //behind
+-        visibleDistance /= 3.0f;
+-
+ if (!HasInArc(M_PI/6, target))          // (M_PI/3 - M_PI/6) -75% detection distance
+       {
+ 		  if (!HasInArc(M_PI/3, target))      // (M_PI - M_PI/3) -50% detection distance
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -1471,7 +1471,7 @@
+             // I do not think this is a correct way to fix it. Sanctuary effect should make all delayed spells invalid
+             // for delayed spells ignore not visible explicit target
+             if (m_spellInfo->speed > 0.0f && unit == m_targets.getUnitTarget()
+-                && ((unit->m_invisibilityMask || m_caster->m_invisibilityMask) || unit->HasAuraTypeWithFamilyFlags(SPELL_AURA_MOD_STEALTH, SPELLFAMILY_ROGUE, SPELLFAMILYFLAG_ROGUE_VANISH))
++                && (unit->m_invisibilityMask || m_caster->m_invisibilityMask)
+                 && !m_caster->canSeeOrDetect(unit, true))
+             {
+                 // that was causing CombatLog errors

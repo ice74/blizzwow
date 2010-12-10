@@ -1,0 +1,154 @@
+# HG changeset patch
+# User asniker
+# Date 1290347736 -18000
+# Node ID 50d48c79dab36c15acc4e387f65935134c8d6b8b
+# Parent  d08b8e63e26b935cff525dca8b43a2ce9b978d91
+ядро: маленькое обновление цлк
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -1959,6 +1959,7 @@
+ UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10091,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37973,38400,38771,38772); -- Prince Taldaram
+ UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
+ UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
++UPDATE `creature_template` SET  `dynamicflags` = 8 WHERE entry IN (37970, 38401, 38784, 38785)
+ 
+ 
+ -- Spell
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
+@@ -113,6 +113,8 @@
+ INSERT INTO `creature_addon` (`guid`, `bytes1`) VALUES
+ (104365,0x03000000); -- Blood Queen Lana'Thel
+ 
++UPDATE `creature_template` SET  `dynamicflags` = 8 WHERE entry IN (37970, 38401, 38784, 38785)
+ 
+ 
+ 
++
+diff --git a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+--- a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
++++ b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+@@ -95,6 +95,7 @@
+ UPDATE `creature_template` SET `unit_flags`=536904000,`RegenHealth`=0,`equipment_id`=10091,`speed_run`=1.428571,`speed_walk`=1.6 WHERE `entry` IN (37973,38400,38771,38772); -- Prince Taldaram
+ UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
+ UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
++UPDATE `creature_template` SET  `dynamicflags` = 8 WHERE entry IN (37970, 38401, 38784, 38785)
+ 
+ 
+ -- Spell
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+@@ -129,19 +129,19 @@
+ 
+                 me->GetVehicleKit();
+ 
+-                if (pInstance && me->isAlive())
++                 if (pInstance)
+                     pInstance->SetData(DATA_SAURFANG_EVENT, NOT_STARTED);
+             }
+ 
+             void EnterCombat(Unit* /*pWho*/)
+             {
+-
+                 DoScriptText(SAY_AGGRO, me);
+ 
+                 DoCast(me, SPELL_BLOOD_LINK, true);
+                 DoCast(me, SPELL_BLOOD_POWER, true);
+                 DoCast(me, SPELL_FALLEN_CHAMPION_AURA, true);
+                 DoCast(me, SPELL_RUNE_OF_BLOOD_AURA, true);
++				pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_FALLEN_CHAMPION);
+ 
+                 if (pInstance)
+                     pInstance->SetData(DATA_SAURFANG_EVENT, IN_PROGRESS);
+@@ -203,24 +203,17 @@
+ 
+                 if (m_uiBoilingBloodTimer < uiDiff)
+                 {
+-                    if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                    {
++                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
+                         DoCast(pTarget, SPELL_BOILING_BLOOD);
+                         m_uiBoilingBloodTimer = 25000;
+-                    }
+                 } else m_uiBoilingBloodTimer -= uiDiff;
+ 
+                 if (m_uiBloodNovaTimer < uiDiff)
+                 {
+-                    uint32 count = RAID_MODE(1,3,1,3);
+-                    for (uint8 i = 1; i <= count; i++)
+-                    {
+-                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                        {
++                     for (uint8 i = 1; i <= RAID_MODE(1,3,1,3); ++i)
++						 if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
+                             DoCast(pTarget, SPELL_BLOOD_NOVA);
+                             m_uiBloodNovaTimer = 30000;
+-                        }
+-                    }
+                 } else m_uiBloodNovaTimer -= uiDiff;
+ 
+                 if (m_uiSummonBloodBeastTimer <= uiDiff)
+@@ -244,9 +237,7 @@
+ 
+                 if (me->GetPower(POWER_ENERGY) > 99)
+                 {
+-                    Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+-
+-                    if(pTarget && !pTarget->HasAura(SPELL_FALLEN_CHAMPION))
++                    if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_FALLEN_CHAMPION))
+                     {
+                         DoCast(pTarget, SPELL_FALLEN_CHAMPION);
+                         DoScriptText(SAY_MARK_OF_THE_FALLEN_CHAMPION, me);
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
+@@ -109,7 +109,7 @@
+                 m_uiStage = 0;
+                 m_uiFloodStage = 1;
+ 
+-                if(pInstance && me->isAlive())
++                if(pInstance)
+                     pInstance->SetData(DATA_ROTFACE_EVENT, NOT_STARTED);
+             }
+ 
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
+@@ -113,11 +113,8 @@
+ 
+                 bSwitch = false;
+                 bMystic = false;
+-
+-                if(!pInstance)
+-                    return;
+-
+-                pInstance->SetData(DATA_SINDRAGOSA_EVENT, NOT_STARTED);
++                     if(pInstance)
++						 pInstance->SetData(DATA_SINDRAGOSA_EVENT, NOT_STARTED);
+             }
+ 
+             void EnterCombat(Unit* /*who*/)
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -335,7 +335,7 @@
+                         }
+                         break;
+                     case CREATURE_DEFILE:
+-                        DoCast(summoned, SPELL_DEFILE);
++                        summoned->CastSpell(summoned, SPELL_DEFILE, true);
+                         summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                         break;
+                     case CREATURE_RAGING_SPIRIT:
+@@ -1222,6 +1222,7 @@
+                     {
+                         floor->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED);
+                         CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, pLichKing->AI())->NextPhase();
++						//CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, CAST_CRE(aurApp->GetBase()->GetCaster())->AI())->DoCast(SPELL_PLAGUE_SIPHON);
+                     }
+                 }
+             }

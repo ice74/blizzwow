@@ -1,0 +1,2270 @@
+# HG changeset patch
+# User asniker
+# Date 1289021385 -18000
+# Node ID 3dcf5a22eb6ae214a0a4568d81bb81ac446feaa6
+# Parent  ea6cda7a9e2fac34a1d69424b0169780dd30720f
+fix icecrown citadel
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -1862,8 +1862,6 @@
+ ('2797902','27979','0','0','100','5','4000','7000','7000','12000','11','59852','4','0','0','0','0','0','0','0','0','0','Forged Iron Trogg (Heroic) - Cast Lightning Shock');
+ 
+ 
+-
+-SET NAMES 'UTF8';
+ -- Cleanup
+ UPDATE `creature_template` SET `ScriptName`='' WHERE `entry` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
+ 
+@@ -1926,6 +1924,12 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_precious_icc' WHERE `entry` = 37217;
+ UPDATE `creature_template` SET `ScriptName`='npc_icc_combat_stalker' WHERE `entry` = 38752;
+ UPDATE `creature_template` SET `ScriptName`='npc_valithria_alternative' WHERE `entry` = 37950;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_council_controller' WHERE `entry`=38008;
++UPDATE `creature_template` SET `ScriptName`='npc_blood_queen_lana_thel' WHERE `entry`=38004;
++UPDATE `creature_template` SET `ScriptName`='npc_kinetic_bomb' WHERE `entry`=38454;
++UPDATE `creature_template` SET `ScriptName`='npc_dark_nucleus' WHERE `entry`=38369;
++UPDATE `creature_template` SET `ScriptName`='npc_ball_of_flame' WHERE `entry` IN (38332,38451);
++
+ 
+ -- Other
+ UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 14, `faction_H` = 14, `unit_flags` = 33554434, `type_flags` = 1024 WHERE `entry` = 36672;
+@@ -2078,6 +2082,16 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (68981,74270,74271,74272) AND `ScriptName`='spell_lich_king_winter';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70534) AND `ScriptName`='spell_vile_spirit_distance_check';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (69110) AND `ScriptName`='spell_ice_burst_distance_check';
++DELETE FROM `spell_script_names` WHERE `spell_id`=71598 AND `ScriptName`='spell_creature_permanent_feign_death';
++DELETE FROM `spell_script_names` WHERE `spell_id`=71806 AND `ScriptName`='spell_taldaram_glittering_sparks';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71718,72040) AND `ScriptName`='spell_taldaram_summon_flame_ball';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (55891,55947) AND `ScriptName`='spell_taldaram_flame_ball_visual';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72783) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72080 AND `ScriptName`='spell_valanar_kinetic_bomb';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
++DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72999 AND `ScriptName`='spell_blood_council_shadow_prison_damage';
++
+ 
+ 
+ 
+@@ -2121,7 +2135,22 @@
+ (74272,'spell_lich_king_winter'),
+ (70534,'spell_vile_spirit_distance_check'),
+ (69110,'spell_ice_burst_distance_check'),
+-(72262,'spell_lich_king_quake');
++(72262,'spell_lich_king_quake'),
++(71598,'spell_creature_permanent_feign_death'),
++(71806,'spell_taldaram_glittering_sparks'),
++(71718,'spell_taldaram_summon_flame_ball'),
++(72040,'spell_taldaram_summon_flame_ball'),
++(55891,'spell_taldaram_flame_ball_visual'),
++(55947,'spell_taldaram_flame_ball_visual'),
++(71756,'spell_taldaram_ball_of_inferno_flame'),
++(72782,'spell_taldaram_ball_of_inferno_flame'),
++(72783,'spell_taldaram_ball_of_inferno_flame'),
++(72784,'spell_taldaram_ball_of_inferno_flame'),
++(72080,'spell_valanar_kinetic_bomb'),
++(72087,'spell_valanar_kinetic_bomb_knockback'),
++(73001,'spell_blood_council_shadow_prison'),
++(72999,'spell_blood_council_shadow_prison_damage');
++
+ 
+ -- ***_scripts table
+ 
+@@ -2414,26 +2443,34 @@
+ 
+ 
+ # 8
+-INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+-(0,-1666035,'Foolish mortals. You thought us defeated so easily? The San''layn are the Lich King''s immortal soldiers! Now you shall face their might combined!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16795,1,0,0,''),
+-(0,-1666036,'Rise up, brothers, and destroy our enemies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666037,'Such wondrous power! The Darkfallen Orb has made me INVINCIBLE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666038,'Blood will flow!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666039,'Were you ever a threat?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666040,'Truth is found in death.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666041,'Prince Keleseth cackles maniacally!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0,''),
+-(0,-1666042,'My queen... they come...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666043,'Tremble before Taldaram, mortals, for the power of the orb flows through me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666044,'Delight in the pain!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666045,'Worm food.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666046,'Beg for mercy!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666047,'Prince Taldaram laughs.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0,''),
+-(0,-1666048,'Prince Taldaram gurgles and dies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0,''),
+-(0,-1666049,'Naxxanar was merely a setback! With the power of the orb, Valanar will have his vengeance!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16685,1,0,0,''),
+-(0,-1666050,'Dinner... is served.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16681,1,0,0,''),
+-(0,-1666051,'Do you see NOW the power of the Darkfallen?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16682,1,0,0,''),
+-(0,-1666052,'BOW DOWN BEFORE THE SAN''LAYN!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16684,1,0,0,''),
+-(0,-1666053,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'');
++DELETE FROM `script_texts` WHERE `entry` BETWEEN -1631139 AND -1631115;
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(38004,-1631115,'Foolish mortals. You thought us defeated so easily? The San''layn are the Lich King''s immortal soldiers! Now you shall face their might combined!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16795,1,0,1,'SAY_INTRO_1'),
++(38004,-1631116,'Rise up, brothers, and destroy our enemies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16796,1,0,0,'SAY_INTRO_2'),
++(37972,-1631117,'Such wondrous power! The Darkfallen Orb has made me INVINCIBLE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16727,1,0,0,'SAY_KELESETH_INVOCATION'),
++(37972,-1631118,'Invocation of Blood jumps to Prince Keleseth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_KELESETH_INVOCATION'),
++(37972,-1631119,'Blood will flow!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16728,1,0,0,'SAY_KELESETH_SPECIAL'),
++(37972,-1631120,'Were you ever a threat?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16723,1,0,0,'SAY_KELESETH_KILL_1'),
++(37972,-1631121,'Truth is found in death.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16724,1,0,0,'SAY_KELESETH_KILL_2'),
++(37972,-1631122,'%s cackles maniacally!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16726,2,0,0,'EMOTE_KELESETH_BERSERK'),
++(37972,-1631123,'My queen... they come...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16725,1,0,0,'SAY_KELESETH_DEATH'),
++(37973,-1631124,'Tremble before Taldaram, mortals, for the power of the orb flows through me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16857,1,0,0,'SAY_TALDARAM_INVOCATION'),
++(37973,-1631125,'Invocation of Blood jumps to Prince Taldaram!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_TALDARAM_INVOCATION'),
++(37973,-1631126,'Delight in the pain!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16858,1,0,0,'SAY_TALDARAM_SPECIAL'),
++(37973,-1631127,'Inferno Flames speed toward $N!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_TALDARAM_FLAME'),
++(37973,-1631128,'Worm food.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16853,1,0,0,'SAY_TALDARAM_KILL_1'),
++(37973,-1631129,'Beg for mercy!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16854,1,0,0,'SAY_TALDARAM_KILL_2'),
++(37973,-1631130,'%s laughs.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16856,2,0,0,'EMOTE_TALDARAM_BERSERK'),
++(37973,-1631131,'%s gurgles and dies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16855,2,0,0,'EMOTE_TALDARAM_DEATH'),
++(37970,-1631132,'Naxxanar was merely a setback! With the power of the orb, Valanar will have his vengeance!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16685,1,0,0,'SAY_VALANAR_INVOCATION'),
++(37970,-1631133,'Invocation of Blood jumps to Prince Valanar!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_VALANAR_INVOCATION'),
++(37970,-1631134,'My cup runneth over.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16686,1,0,0,'SAY_VALANAR_SPECIAL'),
++(37970,-1631135,'%s begins casting Empowered Schock Vortex!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_VALANAR_SHOCK_VORTEX'),
++(37970,-1631136,'Dinner... is served.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16681,1,0,0,'SAY_VALANAR_KILL_1'),
++(37970,-1631137,'Do you see NOW the power of the Darkfallen?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16682,1,0,0,'SAY_VALANAR_KILL_2'),
++(37970,-1631138,'BOW DOWN BEFORE THE SAN''LAYN!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16684,1,0,0,'SAY_VALANAR_BERSERK'),
++(37970,-1631139,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'SAY_VALANAR_DEATH');
++
+ 
+ # 9
+ INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+@@ -2715,7 +2752,7 @@
+ 
+ 
+ 
+-SET NAMES 'UTF8';
++
+ UPDATE gameobject_template SET size=2.151325 WHERE entry=195451;
+ UPDATE gameobject_template SET size=2.151325 WHERE entry=195452;
+ UPDATE gameobject_template SET size=3.163336 WHERE entry=195223;
+@@ -5741,7 +5778,7 @@
+ UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
+ UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
+ 
+-UPDATE `creature_template` SET `spell2` = ' ' WHERE `entry` = '37126';
++UPDATE `creature_template` SET `spell2` = '0' WHERE `entry` = '37126';
+ 
+ 
+ UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
+@@ -5756,3 +5793,9 @@
+ UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_keleset_icc' WHERE `entry` = 37972;
+ UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_taldaram_icc' WHERE `entry` = 37973;
+ 
++DELETE FROM `spell_bonus_data` WHERE `entry` IN ('50536');
++INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`, `ap_dot_bonus`, `comments`) VALUES
++('50536','0','0','0','0','Death Knight - Unholy Blight');
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/big fix.sql b/sql/Blizzlike@Sacred-core/new fix/big fix.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/big fix.sql	
+@@ -0,0 +1,79 @@
++﻿UPDATE `gossip_scripts` SET `datalong2`='1' WHERE (`id`='9647');
++UPDATE `gameobject_template` SET `data0`='0',`data3`='15745',`data5`='60',`data6`='0',`data7`='0',`ScriptName`='' WHERE (`entry`='175124');
++UPDATE `creature_template` SET `exp`='2' WHERE `entry` in (11948, 22644, 31818);
++DELETE FROM `npc_spellclick_spells` WHERE `npc_entry` IN (33842,33800,33790,33791,33792,33793,33794,33795,33796,33798,33799);
++INSERT INTO `npc_spellclick_spells` (`npc_entry`,`spell_id`,`quest_start`,`quest_start_active`,`quest_end`,`cast_flags`,`aura_required`,`aura_forbidden`,`user_type`) VALUES
++(33842, 63791, 13811, 1, 0, 1, 0, 0, 0), -- Stabled Sunreaver Hawkstrider 
++(33842, 63791, 13829, 1, 0, 1, 0, 0, 0),
++(33842, 63791, 13814, 1, 0, 1, 0, 0, 0),
++(33800, 62774, 13790, 1, 0, 1, 0, 0, 0), -- Stabled Stormwind Steed
++(33800, 62774, 13828, 1, 0, 1, 0, 0, 0),
++(33800, 62774, 13793, 1, 0, 1, 0, 0, 0),
++(33790, 62781, 13790, 1, 0, 1, 0, 0, 0), -- Stabled Exodar Elekk
++(33790, 62781, 13828, 1, 0, 1, 0, 0, 0),
++(33790, 62781, 13793, 1, 0, 1, 0, 0, 0),
++(33791, 62786, 13811, 1, 0, 1, 0, 0, 0), -- Stabled Silvermoon Hawkstrider
++(33791, 62786, 13829, 1, 0, 1, 0, 0, 0),
++(33791, 62786, 13814, 1, 0, 1, 0, 0, 0),
++(33792, 62785, 13811, 1, 0, 1, 0, 0, 0), -- Stabled Thunder Bluff Kodo
++(33792, 62785, 13829, 1, 0, 1, 0, 0, 0),
++(33792, 62785, 13814, 1, 0, 1, 0, 0, 0),
++(33793, 62780, 13790, 1, 0, 1, 0, 0, 0), -- Stabled Gnomeregan Mechanostrider
++(33793, 62780, 13828, 1, 0, 1, 0, 0, 0),
++(33793, 62780, 13793, 1, 0, 1, 0, 0, 0),
++(33794, 62782, 13790, 1, 0, 1, 0, 0, 0), -- Stabled Darnassian Nightsaber
++(33794, 62782, 13828, 1, 0, 1, 0, 0, 0),
++(33794, 62782, 13793, 1, 0, 1, 0, 0, 0),
++(33795, 62779, 13790, 1, 0, 1, 0, 0, 0), -- Stabled Ironforge Ram
++(33795, 62779, 13828, 1, 0, 1, 0, 0, 0),
++(33795, 62779, 13793, 1, 0, 1, 0, 0, 0),
++(33796, 62784, 13811, 1, 0, 1, 0, 0, 0), -- Stabled Darkspear Raptor
++(33796, 62784, 13829, 1, 0, 1, 0, 0, 0),
++(33796, 62784, 13814, 1, 0, 1, 0, 0, 0),
++(33798, 62787, 13811, 1, 0, 1, 0, 0, 0), -- Stabled Forsaken Warhorse
++(33798, 62787, 13829, 1, 0, 1, 0, 0, 0),
++(33798, 62787, 13814, 1, 0, 1, 0, 0, 0),
++(33799, 62783, 13811, 1, 0, 1, 0, 0, 0), -- Stabled Orgrimmar Wolf
++(33799, 62783, 13829, 1, 0, 1, 0, 0, 0),
++(33799, 62783, 13814, 1, 0, 1, 0, 0, 0);
++
++UPDATE `creature_template` SET `spell1`=68505,`spell2`=65147,`spell3`=63010,`spell4`=66482,`spell5`=66483, `speed_walk`=1,`speed_run`=2,`unit_flags`=`unit_flags`|32768,`VehicleId`=349 WHERE `entry` IN
++(
++   33840, -- 33843, Stabled Queldorei Steed
++   33319, -- 33794, Stabled Darnassian Nightsaber
++   33217, -- 33800, Stabled Stormwind Steed
++   33317, -- 33793, Stabled Gnomeregan Mechanostrider
++   33316, -- 33795, Stabled Ironfoge Ram
++   33318, -- 33790, Stabled Azuremyst Elekk
++   33841, -- 33842, Stabled Sunreaver Hawkstrider
++   33321, -- 33796, Stabled Darkspear Raptor
++   33324, -- 33798, Stabled Forsaken Warhorse
++   33320, -- 33799, Stabled Orgrimmar Wolf
++   33323, -- 33791, Stabled Silvermoon Hawksrider
++   33322  -- 33792  Stabled Thunder Bluff Kodo
++);
++
++UPDATE `creature_template` SET `VehicleId`=0 WHERE `entry` IN
++(
++   33843, -- Stabled Queldorei Steed
++   33794, -- Stabled Darnassian Nightsaber
++   33800, -- Stabled Stormwind Steed
++   33793, -- Stabled Gnomeregan Mechanostrider
++   33795, -- Stabled Ironfoge Ram
++   33790, -- Stabled Azuremyst Elekk
++   33842, -- Stabled Sunreaver Hawkstrider
++   33796, -- Stabled Darkspear Raptor
++   33798, -- Stabled Forsaken Warhorse
++   33799, -- Stabled Orgrimmar Wolf
++   33791, -- Stabled Silvermoon Hawksrider
++   33792  -- Stabled Thunder Bluff Kodo
++);
++
++DELETE FROM `spell_bonus_data` WHERE `entry` IN (53742, 31803);
++INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`, `ap_dot_bonus`, `comments`) VALUES
++(53742, -1, 0.013, -1, 0.025, 'Paladin - Blood Corruption'),
++(31803, -1, 0.013, -1, 0.025, 'Paladin - Holy Vengeance');
++
++UPDATE `quest_template` SET `ReqCreatureOrGOId1`='34956', `ReqSpellCast1`='0', `ReqCreatureOrGOId2`='34716' WHERE (`entry`='14096');
++UPDATE `quest_template` SET `ReqCreatureOrGOId1`='34956', `ReqSpellCast1`='0', `ReqCreatureOrGOId2`='34716' WHERE (`entry`='14142'); 
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql b/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql
+deleted file mode 100644
+--- a/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql	
++++ /dev/null
+@@ -1,15 +0,0 @@
+-﻿UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
+-DELETE FROM `creature` WHERE `entry` = '33115';
+-
+-
+-UPDATE `quest_template` SET `SkillOrClassMask` = '773' WHERE `entry` IN (12517,12518,12798,13311);
+-DELETE FROM `event_scripts` WHERE `id` = '8175';
+-DELETE FROM `db_script_string` WHERE `entry` = '2000000348';
+-
+-UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_valanar_icc' WHERE `entry` = 37970;
+-UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_keleset_icc' WHERE `entry` = 37972;
+-UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_taldaram_icc' WHERE `entry` = 37973;
+-
+-ALTER TABLE `corpse` ADD COLUMN `itemCache` text NOT NULL AFTER `displayID`;
+-
+-
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix frost fingers.sql b/sql/Blizzlike@Sacred-core/new fix/fix frost fingers.sql
+deleted file mode 100644
+--- a/sql/Blizzlike@Sacred-core/new fix/fix frost fingers.sql	
++++ /dev/null
+@@ -1,16 +0,0 @@
+-﻿DELETE FROM `spell_proc_event` WHERE `entry` IN ('44544','74396');
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger` in (44544,-44544);
+-
+-DELETE FROM `spell_dbc` WHERE `Id` IN ('199998');
+-INSERT INTO `spell_dbc` (`Id`, `Dispel`, `Mechanic`, `Attributes`, `AttributesEx`, `AttributesEx2`, `AttributesEx3`, `AttributesEx4`, `AttributesEx5`, `Stances`, `StancesNot`, `Targets`, `CastingTimeIndex`, `AuraInterruptFlags`, `ProcFlags`, `ProcChance`, `ProcCharges`, `MaxLevel`, `BaseLevel`, `SpellLevel`, `DurationIndex`, `RangeIndex`, `StackAmount`, `EquippedItemClass`, `EquippedItemSubClassMask`, `EquippedItemInventoryTypeMask`, `Effect1`, `Effect2`, `Effect3`, `EffectDieSides1`, `EffectDieSides2`, `EffectDieSides3`, `EffectRealPointsPerLevel1`, `EffectRealPointsPerLevel2`, `EffectRealPointsPerLevel3`, `EffectBasePoints1`, `EffectBasePoints2`, `EffectBasePoints3`, `EffectMechanic1`, `EffectMechanic2`, `EffectMechanic3`, `EffectImplicitTargetA1`, `EffectImplicitTargetA2`, `EffectImplicitTargetA3`, `EffectImplicitTargetB1`, `EffectImplicitTargetB2`, `EffectImplicitTargetB3`, `EffectRadiusIndex1`, `EffectRadiusIndex2`, `EffectRadiusIndex3`, `EffectApplyAuraName1`, `EffectApplyAuraName2`, `EffectApplyAuraName3`, `EffectAmplitude1`, `EffectAmplitude2`, `EffectAmplitude3`, `EffectMultipleValue1`, `EffectMultipleValue2`, `EffectMultipleValue3`, `EffectMiscValue1`, `EffectMiscValue2`, `EffectMiscValue3`, `EffectMiscValueB1`, `EffectMiscValueB2`, `EffectMiscValueB3`, `EffectTriggerSpell1`, `EffectTriggerSpell2`, `EffectTriggerSpell3`, `EffectSpellClassMaskA1`, `EffectSpellClassMaskA2`, `EffectSpellClassMaskA3`, `EffectSpellClassMaskB1`, `EffectSpellClassMaskB2`, `EffectSpellClassMaskB3`, `EffectSpellClassMaskC1`, `EffectSpellClassMaskC2`, `EffectSpellClassMaskC3`, `MaxTargetLevel`, `SpellFamilyName`, `SpellFamilyFlags1`, `SpellFamilyFlags2`, `SpellFamilyFlags3`, `MaxAffectedTargets`, `DmgClass`, `PreventionType`, `DmgMultiplier1`, `DmgMultiplier2`, `DmgMultiplier3`, `AreaGroupId`, `SchoolMask`, `Comment`) VALUES
+-('199998','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','0','0','0','1','0','-1','0','0','3','0','0','0','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','3','0','0','0','0','0','0','0','0','0','0','0','Frostbite Helper (SERVERSIDE)');
+-
+-
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger` in (12494);
+-INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+-('12494','199998','0','Frostbite');
+-
+-DELETE FROM `spell_proc_event` WHERE `entry` IN ('44543', '44545');
+-INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES
+-('44543','0','3','1049120','4096','0','65536','0','0','0','0'),
+-('44545','0','3','1049120','4096','0','65536','0','0','0','0');
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
+@@ -0,0 +1,65 @@
++﻿UPDATE `creature_template` SET `spell2` = '0' WHERE `entry` = '37126';
++
++UPDATE `creature_template` SET `ScriptName`='boss_blood_council_controller' WHERE `entry`=38008;
++UPDATE `creature_template` SET `ScriptName`='npc_blood_queen_lana_thel' WHERE `entry`=38004;
++UPDATE `creature_template` SET `ScriptName`='npc_kinetic_bomb' WHERE `entry`=38454;
++UPDATE `creature_template` SET `ScriptName`='npc_dark_nucleus' WHERE `entry`=38369;
++UPDATE `creature_template` SET `ScriptName`='npc_ball_of_flame' WHERE `entry` IN (38332,38451);
++
++
++DELETE FROM `spell_script_names` WHERE `spell_id`=71598 AND `ScriptName`='spell_creature_permanent_feign_death';
++DELETE FROM `spell_script_names` WHERE `spell_id`=71806 AND `ScriptName`='spell_taldaram_glittering_sparks';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71718,72040) AND `ScriptName`='spell_taldaram_summon_flame_ball';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (55891,55947) AND `ScriptName`='spell_taldaram_flame_ball_visual';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72783) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72080 AND `ScriptName`='spell_valanar_kinetic_bomb';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
++DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72999 AND `ScriptName`='spell_blood_council_shadow_prison_damage';
++
++
++INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
++(71598,'spell_creature_permanent_feign_death'),
++(71806,'spell_taldaram_glittering_sparks'),
++(71718,'spell_taldaram_summon_flame_ball'),
++(72040,'spell_taldaram_summon_flame_ball'),
++(55891,'spell_taldaram_flame_ball_visual'),
++(55947,'spell_taldaram_flame_ball_visual'),
++(71756,'spell_taldaram_ball_of_inferno_flame'),
++(72782,'spell_taldaram_ball_of_inferno_flame'),
++(72783,'spell_taldaram_ball_of_inferno_flame'),
++(72784,'spell_taldaram_ball_of_inferno_flame'),
++(72080,'spell_valanar_kinetic_bomb'),
++(72087,'spell_valanar_kinetic_bomb_knockback'),
++(73001,'spell_blood_council_shadow_prison'),
++(72999,'spell_blood_council_shadow_prison_damage');
++
++
++DELETE FROM `script_texts` WHERE `entry` BETWEEN -1631139 AND -1631115;
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(38004,-1631115,'Foolish mortals. You thought us defeated so easily? The San''layn are the Lich King''s immortal soldiers! Now you shall face their might combined!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16795,1,0,1,'SAY_INTRO_1'),
++(38004,-1631116,'Rise up, brothers, and destroy our enemies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16796,1,0,0,'SAY_INTRO_2'),
++(37972,-1631117,'Such wondrous power! The Darkfallen Orb has made me INVINCIBLE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16727,1,0,0,'SAY_KELESETH_INVOCATION'),
++(37972,-1631118,'Invocation of Blood jumps to Prince Keleseth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_KELESETH_INVOCATION'),
++(37972,-1631119,'Blood will flow!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16728,1,0,0,'SAY_KELESETH_SPECIAL'),
++(37972,-1631120,'Were you ever a threat?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16723,1,0,0,'SAY_KELESETH_KILL_1'),
++(37972,-1631121,'Truth is found in death.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16724,1,0,0,'SAY_KELESETH_KILL_2'),
++(37972,-1631122,'%s cackles maniacally!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16726,2,0,0,'EMOTE_KELESETH_BERSERK'),
++(37972,-1631123,'My queen... they come...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16725,1,0,0,'SAY_KELESETH_DEATH'),
++(37973,-1631124,'Tremble before Taldaram, mortals, for the power of the orb flows through me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16857,1,0,0,'SAY_TALDARAM_INVOCATION'),
++(37973,-1631125,'Invocation of Blood jumps to Prince Taldaram!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_TALDARAM_INVOCATION'),
++(37973,-1631126,'Delight in the pain!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16858,1,0,0,'SAY_TALDARAM_SPECIAL'),
++(37973,-1631127,'Inferno Flames speed toward $N!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_TALDARAM_FLAME'),
++(37973,-1631128,'Worm food.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16853,1,0,0,'SAY_TALDARAM_KILL_1'),
++(37973,-1631129,'Beg for mercy!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16854,1,0,0,'SAY_TALDARAM_KILL_2'),
++(37973,-1631130,'%s laughs.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16856,2,0,0,'EMOTE_TALDARAM_BERSERK'),
++(37973,-1631131,'%s gurgles and dies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16855,2,0,0,'EMOTE_TALDARAM_DEATH'),
++(37970,-1631132,'Naxxanar was merely a setback! With the power of the orb, Valanar will have his vengeance!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16685,1,0,0,'SAY_VALANAR_INVOCATION'),
++(37970,-1631133,'Invocation of Blood jumps to Prince Valanar!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_VALANAR_INVOCATION'),
++(37970,-1631134,'My cup runneth over.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16686,1,0,0,'SAY_VALANAR_SPECIAL'),
++(37970,-1631135,'%s begins casting Empowered Schock Vortex!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_VALANAR_SHOCK_VORTEX'),
++(37970,-1631136,'Dinner... is served.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16681,1,0,0,'SAY_VALANAR_KILL_1'),
++(37970,-1631137,'Do you see NOW the power of the Darkfallen?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16682,1,0,0,'SAY_VALANAR_KILL_2'),
++(37970,-1631138,'BOW DOWN BEFORE THE SAN''LAYN!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16684,1,0,0,'SAY_VALANAR_BERSERK'),
++(37970,-1631139,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'SAY_VALANAR_DEATH');
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql
+deleted file mode 100644
+--- a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql	
++++ /dev/null
+@@ -1,5 +0,0 @@
+-﻿UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37970';
+-UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
+-UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
+-
+-UPDATE `creature_template` SET `spell2` = '0' WHERE `entry` = '37126';
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+deleted file mode 100644
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ /dev/null
+@@ -1,40 +0,0 @@
+-﻿DELETE FROM `creature_questrelation` WHERE `quest` = 24710;
+-DELETE FROM `gameobject_questrelation` WHERE `quest` = 24710;
+-UPDATE `item_template` SET `StartQuest`=0 WHERE `StartQuest` = 24710;
+-INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (37591, 24710);
+-UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry` = 37591;
+-DELETE FROM `creature_involvedrelation` WHERE `quest` = 24710;
+-DELETE FROM `gameobject_involvedrelation` WHERE `quest` = 24710;
+-INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (38188, 24710);
+-UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=38188;
+-REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMask`, `MinLevel`, `MaxLevel`, `QuestLevel`, `Type`, `RequiredRaces`, `RequiredSkillValue`, `RepObjectiveFaction`, `RepObjectiveValue`, `RepObjectiveFaction2`, `RepObjectiveValue2`, `RequiredMinRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepFaction`, `RequiredMaxRepValue`, `SuggestedPlayers`, `LimitTime`, `QuestFlags`, `SpecialFlags`, `CharTitleId`, `PlayersSlain`, `BonusTalents`, `RewardArenaPoints`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `NextQuestInChain`, `RewXPId`, `SrcItemId`, `SrcItemCount`, `SrcSpell`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `RequestItemsText`, `EndText`, `CompletedText`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `ReqItemId1`, `ReqItemId2`, `ReqItemId3`, `ReqItemId4`, `ReqItemId5`, `ReqItemId6`, `ReqItemCount1`, `ReqItemCount2`, `ReqItemCount3`, `ReqItemCount4`, `ReqItemCount5`, `ReqItemCount6`, `ReqSourceId1`, `ReqSourceId2`, `ReqSourceId3`, `ReqSourceId4`, `ReqSourceCount1`, `ReqSourceCount2`, `ReqSourceCount3`, `ReqSourceCount4`, `ReqCreatureOrGOId1`, `ReqCreatureOrGOId2`, `ReqCreatureOrGOId3`, `ReqCreatureOrGOId4`, `ReqCreatureOrGOCount1`, `ReqCreatureOrGOCount2`, `ReqCreatureOrGOCount3`, `ReqCreatureOrGOCount4`, `ReqSpellCast1`, `ReqSpellCast2`, `ReqSpellCast3`, `ReqSpellCast4`, `RewChoiceItemId1`, `RewChoiceItemId2`, `RewChoiceItemId3`, `RewChoiceItemId4`, `RewChoiceItemId5`, `RewChoiceItemId6`, `RewChoiceItemCount1`, `RewChoiceItemCount2`, `RewChoiceItemCount3`, `RewChoiceItemCount4`, `RewChoiceItemCount5`, `RewChoiceItemCount6`, `RewItemId1`, `RewItemId2`, `RewItemId3`, `RewItemId4`, `RewItemCount1`, `RewItemCount2`, `RewItemCount3`, `RewItemCount4`, `RewRepFaction1`, `RewRepFaction2`, `RewRepFaction3`, `RewRepFaction4`, `RewRepFaction5`, `RewRepValueId1`, `RewRepValueId2`, `RewRepValueId3`, `RewRepValueId4`, `RewRepValueId5`, `RewRepValue1`, `RewRepValue2`, `RewRepValue3`, `RewRepValue4`, `RewRepValue5`, `RewHonorAddition`, `RewHonorMultiplier`, `unk0`, `RewOrReqMoney`, `RewMoneyMaxLevel`, `RewSpell`, `RewSpellCast`, `RewMailTemplateId`, `RewMailDelaySecs`, `PointMapId`, `PointX`, `PointY`, `PointOpt`, `DetailsEmote1`, `DetailsEmote2`, `DetailsEmote3`, `DetailsEmote4`, `DetailsEmoteDelay1`, `DetailsEmoteDelay2`, `DetailsEmoteDelay3`, `DetailsEmoteDelay4`, `IncompleteEmote`, `CompleteEmote`, `OfferRewardEmote1`, `OfferRewardEmote2`, `OfferRewardEmote3`, `OfferRewardEmote4`, `OfferRewardEmoteDelay1`, `OfferRewardEmoteDelay2`, `OfferRewardEmoteDelay3`, `OfferRewardEmoteDelay4`, `StartScript`, `CompleteScript`, `WDBVerified`) VALUES (24710, 2, 4813, 0, 78, 0, 80, 81, 1101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 24498, 24711, 0, 24711, 8, 0, 0, 0, 'Deliverance from the Pit', 'We need to make our way up the main path and through the cave to Tyrannus\' rise. There, he will be forced to confront us there lest we make our way into the citadel proper.$B$BGo now, $c. My men and I will be there to stand by you when the confrontation with Tyrannus comes.', 'Kill Scourgelord Tyrannus.', 'Such a senseless waste! Arthas goes too far! I can only hope what we find in the Halls of Reflection makes this somehow worth it.$b$bIf what that vile gnome said is to be trusted, Frostmourne should be there, and with it, answers to confronting Arthas.', '', '', 'Speak to Lady Jaina Proudmoore at the rear of the Pit of Saron.', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36658, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49426, 0, 0, 0, 2, 0, 0, 0, 1050, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296000, 264600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12340);
+-
+-
+-
+-DELETE FROM `creature_questrelation` WHERE `quest` = 24499;
+-DELETE FROM `gameobject_questrelation` WHERE `quest` = 24499;
+-UPDATE `item_template` SET `StartQuest`=0 WHERE `StartQuest` = 24499;
+-INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (37597, 24499);
+-UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry` = 37597;
+-DELETE FROM `creature_involvedrelation` WHERE `quest` = 24499;
+-DELETE FROM `gameobject_involvedrelation` WHERE `quest` = 24499;
+-INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (38160, 24499);
+-UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=38160;
+-REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMask`, `MinLevel`, `MaxLevel`, `QuestLevel`, `Type`, `RequiredRaces`, `RequiredSkillValue`, `RepObjectiveFaction`, `RepObjectiveValue`, `RepObjectiveFaction2`, `RepObjectiveValue2`, `RequiredMinRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepFaction`, `RequiredMaxRepValue`, `SuggestedPlayers`, `LimitTime`, `QuestFlags`, `SpecialFlags`, `CharTitleId`, `PlayersSlain`, `BonusTalents`, `RewardArenaPoints`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `NextQuestInChain`, `RewXPId`, `SrcItemId`, `SrcItemCount`, `SrcSpell`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `RequestItemsText`, `EndText`, `CompletedText`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `ReqItemId1`, `ReqItemId2`, `ReqItemId3`, `ReqItemId4`, `ReqItemId5`, `ReqItemId6`, `ReqItemCount1`, `ReqItemCount2`, `ReqItemCount3`, `ReqItemCount4`, `ReqItemCount5`, `ReqItemCount6`, `ReqSourceId1`, `ReqSourceId2`, `ReqSourceId3`, `ReqSourceId4`, `ReqSourceCount1`, `ReqSourceCount2`, `ReqSourceCount3`, `ReqSourceCount4`, `ReqCreatureOrGOId1`, `ReqCreatureOrGOId2`, `ReqCreatureOrGOId3`, `ReqCreatureOrGOId4`, `ReqCreatureOrGOCount1`, `ReqCreatureOrGOCount2`, `ReqCreatureOrGOCount3`, `ReqCreatureOrGOCount4`, `ReqSpellCast1`, `ReqSpellCast2`, `ReqSpellCast3`, `ReqSpellCast4`, `RewChoiceItemId1`, `RewChoiceItemId2`, `RewChoiceItemId3`, `RewChoiceItemId4`, `RewChoiceItemId5`, `RewChoiceItemId6`, `RewChoiceItemCount1`, `RewChoiceItemCount2`, `RewChoiceItemCount3`, `RewChoiceItemCount4`, `RewChoiceItemCount5`, `RewChoiceItemCount6`, `RewItemId1`, `RewItemId2`, `RewItemId3`, `RewItemId4`, `RewItemCount1`, `RewItemCount2`, `RewItemCount3`, `RewItemCount4`, `RewRepFaction1`, `RewRepFaction2`, `RewRepFaction3`, `RewRepFaction4`, `RewRepFaction5`, `RewRepValueId1`, `RewRepValueId2`, `RewRepValueId3`, `RewRepValueId4`, `RewRepValueId5`, `RewRepValue1`, `RewRepValue2`, `RewRepValue3`, `RewRepValue4`, `RewRepValue5`, `RewHonorAddition`, `RewHonorMultiplier`, `unk0`, `RewOrReqMoney`, `RewMoneyMaxLevel`, `RewSpell`, `RewSpellCast`, `RewMailTemplateId`, `RewMailDelaySecs`, `PointMapId`, `PointX`, `PointY`, `PointOpt`, `DetailsEmote1`, `DetailsEmote2`, `DetailsEmote3`, `DetailsEmote4`, `DetailsEmoteDelay1`, `DetailsEmoteDelay2`, `DetailsEmoteDelay3`, `DetailsEmoteDelay4`, `IncompleteEmote`, `CompleteEmote`, `OfferRewardEmote1`, `OfferRewardEmote2`, `OfferRewardEmote3`, `OfferRewardEmote4`, `OfferRewardEmoteDelay1`, `OfferRewardEmoteDelay2`, `OfferRewardEmoteDelay3`, `OfferRewardEmoteDelay4`, `StartScript`, `CompleteScript`, `WDBVerified`) VALUES (24499, 2, 4809, 0, 78, 0, 80, 81, 1101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 24510, 24683, 0, 24683, 8, 0, 0, 0, 'Echoes of Tortured Souls', 'I cannot thank you enough for coming. We\'re severely undermanned to be risking a venture into the citadel, but opportunities like this are too rare to pass up.$B$BI\'m awaiting the arrival of champions from the coliseum, but if your reputation holds true, you should be more than equipped to fight through the forge yourself. Clear the way to the far side and secure the passage to the Pit of Saron. We will need to hold it to move our men further into the citadel.$B$BPlease hurry, $n. We\'re counting on you.', 'Kill Bronjahm and the Devourer of Souls to secure access to the Pit of Saron.', 'Just in time! Thank you, $N.$B$BThe Pit of Saron lies ahead, and if our scouts are correct, past that will be the Halls of Reflection. It is there that Arthas lets his guard down, and it is there that we hope to find a clue to his weakness... or maybe, just maybe, his redemption.', '', '', 'Speak to Lady Jaina Proudmoore at the rear of the Forge of Souls.', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36497, 36502, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49426, 0, 0, 0, 2, 0, 0, 0, 1050, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296000, 264600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12340);
+-
+-
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 13679;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 24451;  
+- 
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11587;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11607;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11627;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11593;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11894;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11794;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11940;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11711;
+-
+-UPDATE `quest_template` SET `SrcItemId` = '49698' AND `SrcItemCount` = '1' WHERE `entry` = '24451';
+-
+diff --git a/sql/Blizzlike@Sacred-core/new fix/old/fix database errors.sql b/sql/Blizzlike@Sacred-core/new fix/old/fix database errors.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/old/fix database errors.sql	
+@@ -0,0 +1,15 @@
++﻿UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
++DELETE FROM `creature` WHERE `entry` = '33115';
++
++
++UPDATE `quest_template` SET `SkillOrClassMask` = '773' WHERE `entry` IN (12517,12518,12798,13311);
++DELETE FROM `event_scripts` WHERE `id` = '8175';
++DELETE FROM `db_script_string` WHERE `entry` = '2000000348';
++
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_valanar_icc' WHERE `entry` = 37970;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_keleset_icc' WHERE `entry` = 37972;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_taldaram_icc' WHERE `entry` = 37973;
++
++ALTER TABLE `corpse` ADD COLUMN `itemCache` text NOT NULL AFTER `displayID`;
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/old/fix frost fingers.sql b/sql/Blizzlike@Sacred-core/new fix/old/fix frost fingers.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/old/fix frost fingers.sql	
+@@ -0,0 +1,16 @@
++﻿DELETE FROM `spell_proc_event` WHERE `entry` IN ('44544','74396');
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger` in (44544,-44544);
++
++DELETE FROM `spell_dbc` WHERE `Id` IN ('199998');
++INSERT INTO `spell_dbc` (`Id`, `Dispel`, `Mechanic`, `Attributes`, `AttributesEx`, `AttributesEx2`, `AttributesEx3`, `AttributesEx4`, `AttributesEx5`, `Stances`, `StancesNot`, `Targets`, `CastingTimeIndex`, `AuraInterruptFlags`, `ProcFlags`, `ProcChance`, `ProcCharges`, `MaxLevel`, `BaseLevel`, `SpellLevel`, `DurationIndex`, `RangeIndex`, `StackAmount`, `EquippedItemClass`, `EquippedItemSubClassMask`, `EquippedItemInventoryTypeMask`, `Effect1`, `Effect2`, `Effect3`, `EffectDieSides1`, `EffectDieSides2`, `EffectDieSides3`, `EffectRealPointsPerLevel1`, `EffectRealPointsPerLevel2`, `EffectRealPointsPerLevel3`, `EffectBasePoints1`, `EffectBasePoints2`, `EffectBasePoints3`, `EffectMechanic1`, `EffectMechanic2`, `EffectMechanic3`, `EffectImplicitTargetA1`, `EffectImplicitTargetA2`, `EffectImplicitTargetA3`, `EffectImplicitTargetB1`, `EffectImplicitTargetB2`, `EffectImplicitTargetB3`, `EffectRadiusIndex1`, `EffectRadiusIndex2`, `EffectRadiusIndex3`, `EffectApplyAuraName1`, `EffectApplyAuraName2`, `EffectApplyAuraName3`, `EffectAmplitude1`, `EffectAmplitude2`, `EffectAmplitude3`, `EffectMultipleValue1`, `EffectMultipleValue2`, `EffectMultipleValue3`, `EffectMiscValue1`, `EffectMiscValue2`, `EffectMiscValue3`, `EffectMiscValueB1`, `EffectMiscValueB2`, `EffectMiscValueB3`, `EffectTriggerSpell1`, `EffectTriggerSpell2`, `EffectTriggerSpell3`, `EffectSpellClassMaskA1`, `EffectSpellClassMaskA2`, `EffectSpellClassMaskA3`, `EffectSpellClassMaskB1`, `EffectSpellClassMaskB2`, `EffectSpellClassMaskB3`, `EffectSpellClassMaskC1`, `EffectSpellClassMaskC2`, `EffectSpellClassMaskC3`, `MaxTargetLevel`, `SpellFamilyName`, `SpellFamilyFlags1`, `SpellFamilyFlags2`, `SpellFamilyFlags3`, `MaxAffectedTargets`, `DmgClass`, `PreventionType`, `DmgMultiplier1`, `DmgMultiplier2`, `DmgMultiplier3`, `AreaGroupId`, `SchoolMask`, `Comment`) VALUES
++('199998','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','0','0','0','1','0','-1','0','0','3','0','0','0','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','3','0','0','0','0','0','0','0','0','0','0','0','Frostbite Helper (SERVERSIDE)');
++
++
++DELETE FROM `spell_linked_spell` WHERE `spell_trigger` in (12494);
++INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
++('12494','199998','0','Frostbite');
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN ('44543', '44545');
++INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES
++('44543','0','3','1049120','4096','0','65536','0','0','0','0'),
++('44545','0','3','1049120','4096','0','65536','0','0','0','0');
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/old/fix icecrown_citadel.sql b/sql/Blizzlike@Sacred-core/new fix/old/fix icecrown_citadel.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/old/fix icecrown_citadel.sql	
+@@ -0,0 +1,5 @@
++﻿UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37970';
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
++
++UPDATE `creature_template` SET `spell2` = '0' WHERE `entry` = '37126';
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/old/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/old/fix quest.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/old/fix quest.sql	
+@@ -0,0 +1,40 @@
++﻿DELETE FROM `creature_questrelation` WHERE `quest` = 24710;
++DELETE FROM `gameobject_questrelation` WHERE `quest` = 24710;
++UPDATE `item_template` SET `StartQuest`=0 WHERE `StartQuest` = 24710;
++INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (37591, 24710);
++UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry` = 37591;
++DELETE FROM `creature_involvedrelation` WHERE `quest` = 24710;
++DELETE FROM `gameobject_involvedrelation` WHERE `quest` = 24710;
++INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (38188, 24710);
++UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=38188;
++REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMask`, `MinLevel`, `MaxLevel`, `QuestLevel`, `Type`, `RequiredRaces`, `RequiredSkillValue`, `RepObjectiveFaction`, `RepObjectiveValue`, `RepObjectiveFaction2`, `RepObjectiveValue2`, `RequiredMinRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepFaction`, `RequiredMaxRepValue`, `SuggestedPlayers`, `LimitTime`, `QuestFlags`, `SpecialFlags`, `CharTitleId`, `PlayersSlain`, `BonusTalents`, `RewardArenaPoints`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `NextQuestInChain`, `RewXPId`, `SrcItemId`, `SrcItemCount`, `SrcSpell`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `RequestItemsText`, `EndText`, `CompletedText`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `ReqItemId1`, `ReqItemId2`, `ReqItemId3`, `ReqItemId4`, `ReqItemId5`, `ReqItemId6`, `ReqItemCount1`, `ReqItemCount2`, `ReqItemCount3`, `ReqItemCount4`, `ReqItemCount5`, `ReqItemCount6`, `ReqSourceId1`, `ReqSourceId2`, `ReqSourceId3`, `ReqSourceId4`, `ReqSourceCount1`, `ReqSourceCount2`, `ReqSourceCount3`, `ReqSourceCount4`, `ReqCreatureOrGOId1`, `ReqCreatureOrGOId2`, `ReqCreatureOrGOId3`, `ReqCreatureOrGOId4`, `ReqCreatureOrGOCount1`, `ReqCreatureOrGOCount2`, `ReqCreatureOrGOCount3`, `ReqCreatureOrGOCount4`, `ReqSpellCast1`, `ReqSpellCast2`, `ReqSpellCast3`, `ReqSpellCast4`, `RewChoiceItemId1`, `RewChoiceItemId2`, `RewChoiceItemId3`, `RewChoiceItemId4`, `RewChoiceItemId5`, `RewChoiceItemId6`, `RewChoiceItemCount1`, `RewChoiceItemCount2`, `RewChoiceItemCount3`, `RewChoiceItemCount4`, `RewChoiceItemCount5`, `RewChoiceItemCount6`, `RewItemId1`, `RewItemId2`, `RewItemId3`, `RewItemId4`, `RewItemCount1`, `RewItemCount2`, `RewItemCount3`, `RewItemCount4`, `RewRepFaction1`, `RewRepFaction2`, `RewRepFaction3`, `RewRepFaction4`, `RewRepFaction5`, `RewRepValueId1`, `RewRepValueId2`, `RewRepValueId3`, `RewRepValueId4`, `RewRepValueId5`, `RewRepValue1`, `RewRepValue2`, `RewRepValue3`, `RewRepValue4`, `RewRepValue5`, `RewHonorAddition`, `RewHonorMultiplier`, `unk0`, `RewOrReqMoney`, `RewMoneyMaxLevel`, `RewSpell`, `RewSpellCast`, `RewMailTemplateId`, `RewMailDelaySecs`, `PointMapId`, `PointX`, `PointY`, `PointOpt`, `DetailsEmote1`, `DetailsEmote2`, `DetailsEmote3`, `DetailsEmote4`, `DetailsEmoteDelay1`, `DetailsEmoteDelay2`, `DetailsEmoteDelay3`, `DetailsEmoteDelay4`, `IncompleteEmote`, `CompleteEmote`, `OfferRewardEmote1`, `OfferRewardEmote2`, `OfferRewardEmote3`, `OfferRewardEmote4`, `OfferRewardEmoteDelay1`, `OfferRewardEmoteDelay2`, `OfferRewardEmoteDelay3`, `OfferRewardEmoteDelay4`, `StartScript`, `CompleteScript`, `WDBVerified`) VALUES (24710, 2, 4813, 0, 78, 0, 80, 81, 1101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 24498, 24711, 0, 24711, 8, 0, 0, 0, 'Deliverance from the Pit', 'We need to make our way up the main path and through the cave to Tyrannus\' rise. There, he will be forced to confront us there lest we make our way into the citadel proper.$B$BGo now, $c. My men and I will be there to stand by you when the confrontation with Tyrannus comes.', 'Kill Scourgelord Tyrannus.', 'Such a senseless waste! Arthas goes too far! I can only hope what we find in the Halls of Reflection makes this somehow worth it.$b$bIf what that vile gnome said is to be trusted, Frostmourne should be there, and with it, answers to confronting Arthas.', '', '', 'Speak to Lady Jaina Proudmoore at the rear of the Pit of Saron.', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36658, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49426, 0, 0, 0, 2, 0, 0, 0, 1050, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296000, 264600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12340);
++
++
++
++DELETE FROM `creature_questrelation` WHERE `quest` = 24499;
++DELETE FROM `gameobject_questrelation` WHERE `quest` = 24499;
++UPDATE `item_template` SET `StartQuest`=0 WHERE `StartQuest` = 24499;
++INSERT INTO `creature_questrelation` (`id`, `quest`) VALUES (37597, 24499);
++UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry` = 37597;
++DELETE FROM `creature_involvedrelation` WHERE `quest` = 24499;
++DELETE FROM `gameobject_involvedrelation` WHERE `quest` = 24499;
++INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (38160, 24499);
++UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=38160;
++REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMask`, `MinLevel`, `MaxLevel`, `QuestLevel`, `Type`, `RequiredRaces`, `RequiredSkillValue`, `RepObjectiveFaction`, `RepObjectiveValue`, `RepObjectiveFaction2`, `RepObjectiveValue2`, `RequiredMinRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepFaction`, `RequiredMaxRepValue`, `SuggestedPlayers`, `LimitTime`, `QuestFlags`, `SpecialFlags`, `CharTitleId`, `PlayersSlain`, `BonusTalents`, `RewardArenaPoints`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `NextQuestInChain`, `RewXPId`, `SrcItemId`, `SrcItemCount`, `SrcSpell`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `RequestItemsText`, `EndText`, `CompletedText`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `ReqItemId1`, `ReqItemId2`, `ReqItemId3`, `ReqItemId4`, `ReqItemId5`, `ReqItemId6`, `ReqItemCount1`, `ReqItemCount2`, `ReqItemCount3`, `ReqItemCount4`, `ReqItemCount5`, `ReqItemCount6`, `ReqSourceId1`, `ReqSourceId2`, `ReqSourceId3`, `ReqSourceId4`, `ReqSourceCount1`, `ReqSourceCount2`, `ReqSourceCount3`, `ReqSourceCount4`, `ReqCreatureOrGOId1`, `ReqCreatureOrGOId2`, `ReqCreatureOrGOId3`, `ReqCreatureOrGOId4`, `ReqCreatureOrGOCount1`, `ReqCreatureOrGOCount2`, `ReqCreatureOrGOCount3`, `ReqCreatureOrGOCount4`, `ReqSpellCast1`, `ReqSpellCast2`, `ReqSpellCast3`, `ReqSpellCast4`, `RewChoiceItemId1`, `RewChoiceItemId2`, `RewChoiceItemId3`, `RewChoiceItemId4`, `RewChoiceItemId5`, `RewChoiceItemId6`, `RewChoiceItemCount1`, `RewChoiceItemCount2`, `RewChoiceItemCount3`, `RewChoiceItemCount4`, `RewChoiceItemCount5`, `RewChoiceItemCount6`, `RewItemId1`, `RewItemId2`, `RewItemId3`, `RewItemId4`, `RewItemCount1`, `RewItemCount2`, `RewItemCount3`, `RewItemCount4`, `RewRepFaction1`, `RewRepFaction2`, `RewRepFaction3`, `RewRepFaction4`, `RewRepFaction5`, `RewRepValueId1`, `RewRepValueId2`, `RewRepValueId3`, `RewRepValueId4`, `RewRepValueId5`, `RewRepValue1`, `RewRepValue2`, `RewRepValue3`, `RewRepValue4`, `RewRepValue5`, `RewHonorAddition`, `RewHonorMultiplier`, `unk0`, `RewOrReqMoney`, `RewMoneyMaxLevel`, `RewSpell`, `RewSpellCast`, `RewMailTemplateId`, `RewMailDelaySecs`, `PointMapId`, `PointX`, `PointY`, `PointOpt`, `DetailsEmote1`, `DetailsEmote2`, `DetailsEmote3`, `DetailsEmote4`, `DetailsEmoteDelay1`, `DetailsEmoteDelay2`, `DetailsEmoteDelay3`, `DetailsEmoteDelay4`, `IncompleteEmote`, `CompleteEmote`, `OfferRewardEmote1`, `OfferRewardEmote2`, `OfferRewardEmote3`, `OfferRewardEmote4`, `OfferRewardEmoteDelay1`, `OfferRewardEmoteDelay2`, `OfferRewardEmoteDelay3`, `OfferRewardEmoteDelay4`, `StartScript`, `CompleteScript`, `WDBVerified`) VALUES (24499, 2, 4809, 0, 78, 0, 80, 81, 1101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 24510, 24683, 0, 24683, 8, 0, 0, 0, 'Echoes of Tortured Souls', 'I cannot thank you enough for coming. We\'re severely undermanned to be risking a venture into the citadel, but opportunities like this are too rare to pass up.$B$BI\'m awaiting the arrival of champions from the coliseum, but if your reputation holds true, you should be more than equipped to fight through the forge yourself. Clear the way to the far side and secure the passage to the Pit of Saron. We will need to hold it to move our men further into the citadel.$B$BPlease hurry, $n. We\'re counting on you.', 'Kill Bronjahm and the Devourer of Souls to secure access to the Pit of Saron.', 'Just in time! Thank you, $N.$B$BThe Pit of Saron lies ahead, and if our scouts are correct, past that will be the Halls of Reflection. It is there that Arthas lets his guard down, and it is there that we hope to find a clue to his weakness... or maybe, just maybe, his redemption.', '', '', 'Speak to Lady Jaina Proudmoore at the rear of the Forge of Souls.', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36497, 36502, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49426, 0, 0, 0, 2, 0, 0, 0, 1050, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296000, 264600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12340);
++
++
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 13679;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 24451;  
++ 
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11587;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11607;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11627;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11593;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11894;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11794;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11940;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11711;
++
++UPDATE `quest_template` SET `SrcItemId` = '49698' AND `SrcItemCount` = '1' WHERE `entry` = '24451';
++
+diff --git a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+--- a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
++++ b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+@@ -1,5 +1,4 @@
+-﻿SET NAMES 'UTF8';
+--- Cleanup
++﻿-- Cleanup
+ UPDATE `creature_template` SET `ScriptName`='' WHERE `entry` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
+ 
+ -- GameObject
+@@ -61,6 +60,12 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_precious_icc' WHERE `entry` = 37217;
+ UPDATE `creature_template` SET `ScriptName`='npc_icc_combat_stalker' WHERE `entry` = 38752;
+ UPDATE `creature_template` SET `ScriptName`='npc_valithria_alternative' WHERE `entry` = 37950;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_council_controller' WHERE `entry`=38008;
++UPDATE `creature_template` SET `ScriptName`='npc_blood_queen_lana_thel' WHERE `entry`=38004;
++UPDATE `creature_template` SET `ScriptName`='npc_kinetic_bomb' WHERE `entry`=38454;
++UPDATE `creature_template` SET `ScriptName`='npc_dark_nucleus' WHERE `entry`=38369;
++UPDATE `creature_template` SET `ScriptName`='npc_ball_of_flame' WHERE `entry` IN (38332,38451);
++
+ 
+ -- Other
+ UPDATE `creature_template` SET `minlevel` = 82, `maxlevel` = 82, `faction_A` = 14, `faction_H` = 14, `unit_flags` = 33554434, `type_flags` = 1024 WHERE `entry` = 36672;
+@@ -213,6 +218,16 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (68981,74270,74271,74272) AND `ScriptName`='spell_lich_king_winter';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (70534) AND `ScriptName`='spell_vile_spirit_distance_check';
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (69110) AND `ScriptName`='spell_ice_burst_distance_check';
++DELETE FROM `spell_script_names` WHERE `spell_id`=71598 AND `ScriptName`='spell_creature_permanent_feign_death';
++DELETE FROM `spell_script_names` WHERE `spell_id`=71806 AND `ScriptName`='spell_taldaram_glittering_sparks';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71718,72040) AND `ScriptName`='spell_taldaram_summon_flame_ball';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (55891,55947) AND `ScriptName`='spell_taldaram_flame_ball_visual';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71756,72782,72783,72783) AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72080 AND `ScriptName`='spell_valanar_kinetic_bomb';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
++DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72999 AND `ScriptName`='spell_blood_council_shadow_prison_damage';
++
+ 
+ 
+ 
+@@ -256,7 +271,22 @@
+ (74272,'spell_lich_king_winter'),
+ (70534,'spell_vile_spirit_distance_check'),
+ (69110,'spell_ice_burst_distance_check'),
+-(72262,'spell_lich_king_quake');
++(72262,'spell_lich_king_quake'),
++(71598,'spell_creature_permanent_feign_death'),
++(71806,'spell_taldaram_glittering_sparks'),
++(71718,'spell_taldaram_summon_flame_ball'),
++(72040,'spell_taldaram_summon_flame_ball'),
++(55891,'spell_taldaram_flame_ball_visual'),
++(55947,'spell_taldaram_flame_ball_visual'),
++(71756,'spell_taldaram_ball_of_inferno_flame'),
++(72782,'spell_taldaram_ball_of_inferno_flame'),
++(72783,'spell_taldaram_ball_of_inferno_flame'),
++(72784,'spell_taldaram_ball_of_inferno_flame'),
++(72080,'spell_valanar_kinetic_bomb'),
++(72087,'spell_valanar_kinetic_bomb_knockback'),
++(73001,'spell_blood_council_shadow_prison'),
++(72999,'spell_blood_council_shadow_prison_damage');
++
+ 
+ -- ***_scripts table
+ 
+@@ -549,26 +579,34 @@
+ 
+ 
+ # 8
+-INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+-(0,-1666035,'Foolish mortals. You thought us defeated so easily? The San''layn are the Lich King''s immortal soldiers! Now you shall face their might combined!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16795,1,0,0,''),
+-(0,-1666036,'Rise up, brothers, and destroy our enemies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666037,'Such wondrous power! The Darkfallen Orb has made me INVINCIBLE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666038,'Blood will flow!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666039,'Were you ever a threat?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666040,'Truth is found in death.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666041,'Prince Keleseth cackles maniacally!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0,''),
+-(0,-1666042,'My queen... they come...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666043,'Tremble before Taldaram, mortals, for the power of the orb flows through me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666044,'Delight in the pain!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666045,'Worm food.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666046,'Beg for mercy!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0,''),
+-(0,-1666047,'Prince Taldaram laughs.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0,''),
+-(0,-1666048,'Prince Taldaram gurgles and dies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0,''),
+-(0,-1666049,'Naxxanar was merely a setback! With the power of the orb, Valanar will have his vengeance!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16685,1,0,0,''),
+-(0,-1666050,'Dinner... is served.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16681,1,0,0,''),
+-(0,-1666051,'Do you see NOW the power of the Darkfallen?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16682,1,0,0,''),
+-(0,-1666052,'BOW DOWN BEFORE THE SAN''LAYN!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16684,1,0,0,''),
+-(0,-1666053,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'');
++DELETE FROM `script_texts` WHERE `entry` BETWEEN -1631139 AND -1631115;
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(38004,-1631115,'Foolish mortals. You thought us defeated so easily? The San''layn are the Lich King''s immortal soldiers! Now you shall face their might combined!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16795,1,0,1,'SAY_INTRO_1'),
++(38004,-1631116,'Rise up, brothers, and destroy our enemies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16796,1,0,0,'SAY_INTRO_2'),
++(37972,-1631117,'Such wondrous power! The Darkfallen Orb has made me INVINCIBLE!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16727,1,0,0,'SAY_KELESETH_INVOCATION'),
++(37972,-1631118,'Invocation of Blood jumps to Prince Keleseth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_KELESETH_INVOCATION'),
++(37972,-1631119,'Blood will flow!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16728,1,0,0,'SAY_KELESETH_SPECIAL'),
++(37972,-1631120,'Were you ever a threat?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16723,1,0,0,'SAY_KELESETH_KILL_1'),
++(37972,-1631121,'Truth is found in death.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16724,1,0,0,'SAY_KELESETH_KILL_2'),
++(37972,-1631122,'%s cackles maniacally!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16726,2,0,0,'EMOTE_KELESETH_BERSERK'),
++(37972,-1631123,'My queen... they come...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16725,1,0,0,'SAY_KELESETH_DEATH'),
++(37973,-1631124,'Tremble before Taldaram, mortals, for the power of the orb flows through me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16857,1,0,0,'SAY_TALDARAM_INVOCATION'),
++(37973,-1631125,'Invocation of Blood jumps to Prince Taldaram!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_TALDARAM_INVOCATION'),
++(37973,-1631126,'Delight in the pain!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16858,1,0,0,'SAY_TALDARAM_SPECIAL'),
++(37973,-1631127,'Inferno Flames speed toward $N!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_TALDARAM_FLAME'),
++(37973,-1631128,'Worm food.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16853,1,0,0,'SAY_TALDARAM_KILL_1'),
++(37973,-1631129,'Beg for mercy!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16854,1,0,0,'SAY_TALDARAM_KILL_2'),
++(37973,-1631130,'%s laughs.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16856,2,0,0,'EMOTE_TALDARAM_BERSERK'),
++(37973,-1631131,'%s gurgles and dies.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16855,2,0,0,'EMOTE_TALDARAM_DEATH'),
++(37970,-1631132,'Naxxanar was merely a setback! With the power of the orb, Valanar will have his vengeance!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16685,1,0,0,'SAY_VALANAR_INVOCATION'),
++(37970,-1631133,'Invocation of Blood jumps to Prince Valanar!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_VALANAR_INVOCATION'),
++(37970,-1631134,'My cup runneth over.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16686,1,0,0,'SAY_VALANAR_SPECIAL'),
++(37970,-1631135,'%s begins casting Empowered Schock Vortex!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_VALANAR_SHOCK_VORTEX'),
++(37970,-1631136,'Dinner... is served.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16681,1,0,0,'SAY_VALANAR_KILL_1'),
++(37970,-1631137,'Do you see NOW the power of the Darkfallen?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16682,1,0,0,'SAY_VALANAR_KILL_2'),
++(37970,-1631138,'BOW DOWN BEFORE THE SAN''LAYN!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16684,1,0,0,'SAY_VALANAR_BERSERK'),
++(37970,-1631139,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'SAY_VALANAR_DEATH');
++
+ 
+ # 9
+ INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_rat_des_blutes.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_rat_des_blutes.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_rat_des_blutes.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_rat_des_blutes.cpp
+@@ -1,152 +1,1471 @@
+ ﻿/*
+-* Copyright (C) 2009 - 2010 TrinityCore <http://www.trinitycore.org/>
+-*
+-* This program is free software; you can redistribute it and/or modify
+-* it under the terms of the GNU General Public License as published by
+-* the Free Software Foundation; either version 2 of the License, or
+-* (at your option) any later version.
+-*
+-* This program is distributed in the hope that it will be useful,
+-* but WITHOUT ANY WARRANTY; without even the implied warranty of
+-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-* GNU General Public License for more details.
+-*
+-* You should have received a copy of the GNU General Public License
+-* along with this program; if not, write to the Free Software
+-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-*/
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
+ 
+-#include "ScriptPCH.h"
++#include "ScriptMgr.h"
++#include "ScriptedCreature.h"
++#include "SpellScript.h"
++#include "SpellAuraEffects.h"
+ #include "icecrown_citadel.h"
+ 
+-/*HACK*/
+-class boss_blood_elf_valanar_icc : public CreatureScript
++enum eTexts
++{
++    // Blood Queen Lana'Thel
++    SAY_INTRO_1                 = -1631115,
++    SAY_INTRO_2                 = -1631116,
++
++    // Prince Keleseth
++    SAY_KELESETH_INVOCATION     = -1631117,
++    EMOTE_KELESETH_INVOCATION   = -1631118,
++    SAY_KELESETH_SPECIAL        = -1631119,
++    SAY_KELESETH_KILL_1         = -1631120,
++    SAY_KELESETH_KILL_2         = -1631121,
++    EMOTE_KELESETH_BERSERK      = -1631122,
++    SAY_KELESETH_DEATH          = -1631123,
++
++    // Prince Taldaram
++    SAY_TALDARAM_INVOCATION     = -1631124,
++    EMOTE_TALDARAM_INVOCATION   = -1631125,
++    SAY_TALDARAM_SPECIAL        = -1631126,
++    EMOTE_TALDARAM_FLAME        = -1631127,
++    SAY_TALDARAM_KILL_1         = -1631128,
++    SAY_TALDARAM_KILL_2         = -1631129,
++    EMOTE_TALDARAM_BERSERK      = -1631130,
++    EMOTE_TALDARAM_DEATH        = -1631131,
++
++    // Prince Valanar
++    SAY_VALANAR_INVOCATION      = -1631132,
++    EMOTE_VALANAR_INVOCATION    = -1631133,
++    SAY_VALANAR_SPECIAL         = -1631134,
++    EMOTE_VALANAR_SHOCK_VORTEX  = -1631135,
++    SAY_VALANAR_KILL_1          = -1631136,
++    SAY_VALANAR_KILL_2          = -1631137,
++    SAY_VALANAR_BERSERK         = -1631138,
++    SAY_VALANAR_DEATH           = -1631139
++};
++
++enum Spells
++{
++    SPELL_FEIGN_DEATH                   = 71598,
++    SPELL_OOC_INVOCATION_VISUAL         = 70934,
++    SPELL_INVOCATION_VISUAL_ACTIVE      = 71596,
++
++    // Heroic mode
++    SPELL_SHADOW_PRISON                 = 72998,
++    SPELL_SHADOW_PRISON_DAMAGE          = 72999,
++    SPELL_SHADOW_PRISON_DUMMY           = 73001,
++
++    // Prince Keleseth
++    SPELL_INVOCATION_OF_BLOOD_KELESETH  = 70981,
++    SPELL_SHADOW_RESONANCE              = 71943,
++    SPELL_SHADOW_LANCE                  = 71405,
++    SPELL_EMPOWERED_SHADOW_LANCE        = 71815,
++
++    // Dark Nucleus
++    SPELL_SHADOW_RESONANCE_AURA         = 72980,
++    SPELL_SHADOW_RESONANCE_RESIST       = 71822,
++
++    // Prince Taldaram
++    SPELL_INVOCATION_OF_BLOOD_TALDARAM  = 70982,
++    SPELL_GLITTERING_SPARKS             = 71806,
++    SPELL_CONJURE_FLAME                 = 71718,
++    SPELL_CONJURE_EMPOWERED_FLAME       = 72040,
++
++    // Ball of Flame
++    SPELL_FLAME_SPHERE_SPAWN_EFFECT     = 55891, // cast from creature_template_addon (needed cast before entering world)
++    SPELL_BALL_OF_FLAMES_VISUAL         = 71706,
++    SPELL_BALL_OF_FLAMES                = 71714,
++    SPELL_FLAMES                        = 71393,
++    SPELL_FLAME_SPHERE_DEATH_EFFECT     = 55947,
++
++    // Ball of Inferno Flame
++    SPELL_BALL_OF_FLAMES_PROC           = 71756,
++    SPELL_BALL_OF_FLAMES_PERIODIC       = 71709,
++
++    // Prince Valanar
++    SPELL_INVOCATION_OF_BLOOD_VALANAR   = 70952,
++    SPELL_KINETIC_BOMB_TARGET           = 72053,
++    SPELL_KINETIC_BOMB                  = 72080,
++    SPELL_SHOCK_VORTEX                  = 72037,
++    SPELL_EMPOWERED_SHOCK_VORTEX        = 72039,
++
++    // Kinetic Bomb
++    SPELL_UNSTABLE                      = 72059,
++    SPELL_KINETIC_BOMB_VISUAL           = 72054,
++    SPELL_KINETIC_BOMB_EXPLOSION        = 72052,
++
++    // Shock Vortex
++    SPELL_SHOCK_VORTEX_PERIODIC         = 71945,
++    SPELL_SHOCK_VORTEX_DUMMY            = 72633,
++};
++
++enum eEvents
++{
++    EVENT_INTRO_1               = 1,
++    EVENT_INTRO_2               = 2,
++
++    EVENT_INVOCATION_OF_BLOOD   = 3,
++    EVENT_BERSERK               = 4,
++
++    // Keleseth
++    EVENT_SHADOW_RESONANCE      = 5,
++    EVENT_SHADOW_LANCE          = 6,
++
++    // Taldaram
++    EVENT_GLITTERING_SPARKS     = 7,
++    EVENT_CONJURE_FLAME         = 8,
++
++    // Valanar
++    EVENT_KINETIC_BOMB          = 9,
++    EVENT_SHOCK_VORTEX          = 10,
++    EVENT_BOMB_DESPAWN          = 11,
++    EVENT_CONTINUE_FALLING      = 12,
++};
++
++enum eActions
++{
++    ACTION_STAND_UP             = 1,
++    ACTION_CAST_INVOCATION      = 2,
++    ACTION_REMOVE_INVOCATION    = 3,
++    ACTION_KINETIC_BOMB_JUMP    = 4,
++    ACTION_FLAME_BALL_CHASE     = 5,
++};
++
++enum ePoints
++{
++    POINT_INTRO_DESPAWN         = 380040,
++    POINT_KINETIC_BOMB_IMPACT   = 384540,
++};
++
++enum eDisplays
++{
++    DISPLAY_KINETIC_BOMB        = 31095,
++};
++
++class StandUpEvent : public BasicEvent
+ {
+     public:
+-        boss_blood_elf_valanar_icc() : CreatureScript("boss_blood_elf_valanar_icc") { }
++        StandUpEvent(Creature& owner) : BasicEvent(), m_owner(owner) { }
++        bool Execute(uint64 /*eventTime*/, uint32 /*diff*/)
++        {
++            m_owner.HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
++            return true;
++        }
+ 
+-        struct boss_blood_elf_valanar_iccAI : public BossAI
++    private:
++        Creature& m_owner;
++};
++
++static const Position introFinalPos = {4660.490f, 2769.200f, 430.0000f, 0.000000f};
++static const Position triggerPos    = {4680.231f, 2769.134f, 379.9256f, 3.121708f};
++static const Position triggerEndPos = {4680.180f, 2769.150f, 365.5000f, 3.121708f};
++
++class boss_blood_council_controller : public CreatureScript
++{
++    public:
++        boss_blood_council_controller() : CreatureScript("boss_blood_council_controller") { }
++
++        struct boss_blood_council_controllerAI : public BossAI
+         {
+-            boss_blood_elf_valanar_iccAI(Creature* pCreature) : BossAI(pCreature, DATA_PRINCE_VALANAR_ICC)
++            boss_blood_council_controllerAI(Creature* pCreature) : BossAI(pCreature, DATA_BLOOD_PRINCES_CONTROL)
+             {
+-                pInstance = me->GetInstanceScript();
++                pInstance = pCreature->GetInstanceScript();
+             }
+ 
+             void Reset()
+             {
+-                if(pInstance && me->isAlive())
++                events.Reset();
++                me->SetReactState(REACT_PASSIVE);
++                invocationStage = 0;
++
++                if(pInstance)
+                     pInstance->SetData(DATA_BLOOD_PRINCE_COUNCIL_EVENT, NOT_STARTED);
+             }
+ 
+-            void JustDied(Unit* /*pKiller*/)
++            void EnterCombat(Unit* who)
+             {
+-                if(pInstance)
+-                    pInstance->SetData(DATA_BLOOD_PRINCE_COUNCIL_EVENT, DONE);
+-            }
++                if(!pInstance)
++                    return;
+ 
+-            void EnterCombat(Unit* /*who*/)
+-            {
+-                if(pInstance)
+-                    pInstance->SetData(DATA_BLOOD_PRINCE_COUNCIL_EVENT, IN_PROGRESS);
++                pInstance->SetData(DATA_BLOOD_PRINCE_COUNCIL_EVENT, IN_PROGRESS);
++
++                DoCast(me, SPELL_INVOCATION_OF_BLOOD_VALANAR);
++
++                if (Creature* keleseth = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PRINCE_KELESETH_ICC)))
++                    if (!keleseth->isInCombat())
++                        DoZoneInCombat(keleseth);
++
++                if (Creature* taldaram = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PRINCE_TALDARAM_ICC)))
++                    if (!taldaram->isInCombat())
++                        DoZoneInCombat(taldaram);
++
++                if (Creature* valanar = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PRINCE_VALANAR_ICC)))
++                    if (!valanar->isInCombat())
++                        DoZoneInCombat(valanar);
++
++                events.ScheduleEvent(EVENT_INVOCATION_OF_BLOOD, 30000);
++
++                invocationOrder[0] = InvocationData(pInstance->GetData(DATA_PRINCE_VALANAR_ICC), SPELL_INVOCATION_OF_BLOOD_VALANAR, EMOTE_VALANAR_INVOCATION, 71070);
++                if (urand(0, 1))
++                {
++                    invocationOrder[1] = InvocationData(instance->GetData64(DATA_PRINCE_TALDARAM_ICC), SPELL_INVOCATION_OF_BLOOD_TALDARAM, EMOTE_TALDARAM_INVOCATION, 71081);
++                    invocationOrder[2] = InvocationData(instance->GetData64(DATA_PRINCE_KELESETH_ICC), SPELL_INVOCATION_OF_BLOOD_KELESETH, EMOTE_KELESETH_INVOCATION, 71080);
++                }
++                else
++                {
++                    invocationOrder[1] = InvocationData(pInstance->GetData64(DATA_PRINCE_KELESETH_ICC), SPELL_INVOCATION_OF_BLOOD_KELESETH, EMOTE_KELESETH_INVOCATION, 71080);
++                    invocationOrder[2] = InvocationData(pInstance->GetData64(DATA_PRINCE_TALDARAM_ICC), SPELL_INVOCATION_OF_BLOOD_TALDARAM, EMOTE_TALDARAM_INVOCATION, 71081);
++                }
++
++                if (IsHeroic())
++                {
++                    Map::PlayerList const &PlList = me->GetMap()->GetPlayers();
++                    if (PlList.isEmpty())
++                        return;
++
++                    for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
++                    {
++                        if (Player* player = i->getSource())
++                        {
++                            if (player->isGameMaster())
++                                continue;
++
++                            if (player->isAlive())
++                                player->AddAura(SPELL_SHADOW_PRISON_DUMMY, player);
++                        }
++                    }
++                }
+             }
+ 
+             void JustReachedHome()
+             {
+                 if(pInstance)
+-                    pInstance->SetData(DATA_BLOOD_PRINCE_COUNCIL_EVENT, FAIL);
++                    instance->SetBossState(DATA_BLOOD_PRINCE_COUNCIL_EVENT, FAIL);
+             }
+ 
+-            void KilledUnit(Unit* /*victim*/) { }
++            void JustDied(Unit* /*killer*/)
++            {
++                _JustDied();
++                // kill the other 2 princes too
++                for (uint8 i = 0; i < 2; ++i)
++                {
++                    if (++invocationStage == 3)
++                        invocationStage = 0;
++
++                    if (Creature* prince = ObjectAccessor::GetCreature(*me, invocationOrder[invocationStage].guid))
++                        prince->Kill(prince);
++                }
++            }
+ 
+             void UpdateAI(const uint32 diff)
+             {
+-                if (!UpdateVictim())
++                if (!UpdateVictim() || me->hasUnitState(UNIT_STAT_CASTING))
+                     return;
+ 
+-                DoMeleeAttackIfReady();
++                events.Update(diff);
++
++                while (uint32 eventId = events.ExecuteEvent())
++                {
++                    switch (eventId)
++                    {
++                        case EVENT_INVOCATION_OF_BLOOD:
++                        {
++                            Creature* oldPrince = ObjectAccessor::GetCreature(*me, invocationOrder[invocationStage].guid);
++                            if (++invocationStage == 3)
++                                invocationStage = 0;
++
++                            Creature* newPrince = ObjectAccessor::GetCreature(*me, invocationOrder[invocationStage].guid);
++                            if (oldPrince)
++                            {
++                                oldPrince->AI()->DoAction(ACTION_REMOVE_INVOCATION);
++                                if (newPrince)
++                                    oldPrince->CastSpell(newPrince, invocationOrder[invocationStage].visualSpell, true);
++                            }
++
++                            if (newPrince)
++                                newPrince->SetHealth(me->GetHealth());
++
++                            DoCast(me, invocationOrder[invocationStage].spellId);
++                            DoScriptText(invocationOrder[invocationStage].textId, me);
++                            events.ScheduleEvent(EVENT_INVOCATION_OF_BLOOD, 30000);
++                            break;
++                        }
++                        default:
++                            break;
++                    }
++                }
+             }
++
+         private:
++            struct InvocationData
++            {
++                uint64 guid;
++                uint32 spellId;
++                int32  textId;
++                uint32 visualSpell;
++
++                InvocationData(uint64 _guid, uint32 _spellId, int32 _textId, uint32 _visualSpell)
++                {
++                    guid = _guid;
++                    spellId = _spellId;
++                    textId = _textId;
++                    visualSpell = _visualSpell;
++                }
++
++                InvocationData() : guid(0), spellId(0), textId(0), visualSpell(0) { }
++            } invocationOrder[3];
++            uint8 invocationStage;
+             InstanceScript* pInstance;
+         };
+ 
+         CreatureAI* GetAI(Creature* pCreature) const
+         {
+-            return new boss_blood_elf_valanar_iccAI(pCreature);
++            return new boss_blood_council_controllerAI(pCreature);
+         }
+ };
+ 
+-class boss_blood_elf_taldaram_icc : public CreatureScript
++class boss_prince_keleseth_icc : public CreatureScript
+ {
+     public:
+-        boss_blood_elf_taldaram_icc() : CreatureScript("boss_blood_elf_taldaram_icc") { }
++        boss_prince_keleseth_icc() : CreatureScript("boss_blood_elf_keleset_icc") { }
+ 
+-        struct boss_blood_elf_taldaram_iccAI : public BossAI
++        struct boss_prince_kelesethAI : public BossAI
+         {
+-            boss_blood_elf_taldaram_iccAI(Creature* pCreature) : BossAI(pCreature, DATA_PRINCE_TALDARAM_ICC)
++            boss_prince_kelesethAI(Creature* pCreature) : BossAI(pCreature, DATA_PRINCE_KELESETH_ICC)
+             {
+-                pInstance = me->GetInstanceScript();
++                bIsEmpowered = false;
++                spawnHealth = pCreature->GetMaxHealth();
++                pInstance = pCreature->GetInstanceScript();
+             }
+ 
+-            void Reset() { }
++            void InitializeAI()
++            {
++                if (CreatureData const* data = sObjectMgr.GetCreatureData(me->GetDBTableGUIDLow()))
++                    if (data->curhealth)
++                        spawnHealth = data->curhealth;
+ 
+-            void EnterCombat(Unit* /*who*/) { }
++                me->SetReactState(REACT_DEFENSIVE);
++            }
+ 
+-            void KilledUnit(Unit* /*victim*/) { }
++            void Reset()
++            {
++                events.Reset();
++                summons.DespawnAll();
++
++                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                bIsEmpowered = false;
++                me->SetHealth(spawnHealth);
++                me->SetReactState(REACT_DEFENSIVE);
++                if (IsHeroic())
++                    DoCast(me, SPELL_SHADOW_PRISON);
++            }
++
++            void MoveInLineOfSight(Unit* /*who*/)
++            {
++            }
++
++            void EnterCombat(Unit* /*who*/)
++            {
++                if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_BLOOD_PRINCES_CONTROL)))
++                    if (!controller->isInCombat())
++                        DoZoneInCombat(controller);
++
++                events.ScheduleEvent(EVENT_BERSERK, 600000);
++                events.ScheduleEvent(EVENT_SHADOW_RESONANCE, urand(10000, 15000));
++                events.ScheduleEvent(EVENT_SHADOW_LANCE, 2000);
++            }
++
++            void JustDied(Unit* /*killer*/)
++            {
++                DoScriptText(SAY_KELESETH_DEATH, me);
++            }
++
++            void JustRespawned()
++            {
++                DoCast(me, SPELL_FEIGN_DEATH);
++                me->SetHealth(spawnHealth);
++            }
++
++            void SpellHit(Unit* /*caster*/, SpellEntry const* spell)
++            {
++                if (spell->Id == SPELL_INVOCATION_OF_BLOOD_KELESETH)
++                    DoAction(ACTION_CAST_INVOCATION);
++            }
++
++            void JustSummoned(Creature* summon)
++            {
++                summons.Summon(summon);
++            }
++
++            void DamageTaken(Unit* /*attacker*/, uint32& damage)
++            {
++                if (!bIsEmpowered)
++                    damage = 0;
++            }
++
++            void KilledUnit(Unit *victim)
++            {
++                if (victim->GetTypeId() == TYPEID_PLAYER)
++                    DoScriptText(RAND(SAY_KELESETH_KILL_1, SAY_KELESETH_KILL_2), me);
++            }
++
++            void DoAction(const int32 action)
++            {
++                switch (action)
++                {
++                    case ACTION_STAND_UP:
++                        me->RemoveAurasDueToSpell(SPELL_FEIGN_DEATH);
++                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
++                        me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
++                        me->ForceValuesUpdateAtIndex(UNIT_NPC_FLAGS);   // was in sniff. don't ask why
++                        me->m_Events.AddEvent(new StandUpEvent(*me), me->m_Events.CalculateTime(1000));
++                        break;
++                    case ACTION_CAST_INVOCATION:
++                        DoScriptText(SAY_KELESETH_INVOCATION, me);
++                        DoCast(me, SPELL_INVOCATION_VISUAL_ACTIVE, true);
++                        bIsEmpowered = true;
++                        break;
++                    case ACTION_REMOVE_INVOCATION:
++                        me->SetHealth(spawnHealth);
++                        me->RemoveAurasDueToSpell(SPELL_INVOCATION_VISUAL_ACTIVE);
++                        me->RemoveAurasDueToSpell(SPELL_INVOCATION_OF_BLOOD_KELESETH);
++                        bIsEmpowered = false;
++                        break;
++                    default:
++                        break;
++                }
++            }
+ 
+             void UpdateAI(const uint32 diff)
+             {
+-                if (!UpdateVictim())
++                if (!UpdateVictim() || !CheckInRoom() || me->hasUnitState(UNIT_STAT_CASTING))
+                     return;
+ 
+-                DoMeleeAttackIfReady();
++                events.Update(diff);
++
++                while (uint32 eventId = events.ExecuteEvent())
++                {
++                    switch (eventId)
++                    {
++                        case EVENT_BERSERK:
++                            DoCast(me, SPELL_BERSERK);
++                            DoScriptText(EMOTE_KELESETH_BERSERK, me);
++                            break;
++                        case EVENT_SHADOW_RESONANCE:
++                            DoScriptText(SAY_KELESETH_SPECIAL, me);
++                            DoCast(me, SPELL_SHADOW_RESONANCE);
++                            events.ScheduleEvent(EVENT_SHADOW_RESONANCE, urand(10000, 15000));
++                            break;
++                        case EVENT_SHADOW_LANCE:
++                            if (bIsEmpowered)
++                                DoCastVictim(SPELL_EMPOWERED_SHADOW_LANCE);
++                            else
++                                DoCastVictim(SPELL_SHADOW_LANCE);
++                            events.ScheduleEvent(EVENT_SHADOW_LANCE, 2000);
++                            break;
++                        default:
++                            break;
++                    }
++                }
++
++                // does not melee
+             }
++
+         private:
++            bool bIsEmpowered;  // bool check faster than map lookup
++            uint32 spawnHealth;
+             InstanceScript* pInstance;
+         };
+ 
+         CreatureAI* GetAI(Creature* pCreature) const
+         {
+-            return new boss_blood_elf_taldaram_iccAI(pCreature);
++            return new boss_prince_kelesethAI(pCreature);
+         }
+ };
+ 
+-class boss_blood_elf_keleset_icc : public CreatureScript
++class boss_prince_taldaram_icc : public CreatureScript
+ {
+     public:
+-    boss_blood_elf_keleset_icc() : CreatureScript("boss_blood_elf_keleset_icc") { }
++        boss_prince_taldaram_icc() : CreatureScript("boss_blood_elf_taldaram_icc") { }
+ 
+-    struct boss_blood_elf_keleset_iccAI : public BossAI
+-    {
+-        boss_blood_elf_keleset_iccAI(Creature* pCreature) : BossAI(pCreature, DATA_PRINCE_KELESETH_ICC)
++        struct boss_prince_taldaramAI : public BossAI
+         {
+-            pInstance = me->GetInstanceScript();
++            boss_prince_taldaramAI(Creature* pCreature) : BossAI(pCreature, DATA_PRINCE_TALDARAM_ICC)
++            {
++                bIsEmpowered = false;
++                spawnHealth = pCreature->GetMaxHealth();
++                pInstance = pCreature->GetInstanceScript();
++            }
++
++            void InitializeAI()
++            {
++                if (CreatureData const* data = sObjectMgr.GetCreatureData(me->GetDBTableGUIDLow()))
++                    if (data->curhealth)
++                        spawnHealth = data->curhealth;
++
++                me->SetReactState(REACT_DEFENSIVE);
++            }
++
++            void Reset()
++            {
++                events.Reset();
++                summons.DespawnAll();
++
++                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                bIsEmpowered = false;
++                me->SetHealth(spawnHealth);
++                me->SetReactState(REACT_DEFENSIVE);
++                if (IsHeroic())
++                    DoCast(me, SPELL_SHADOW_PRISON);
++            }
++
++            void EnterCombat(Unit* /*who*/)
++            {
++                if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_BLOOD_PRINCES_CONTROL)))
++                    if (!controller->isInCombat())
++                        DoZoneInCombat(controller);
++
++                events.ScheduleEvent(EVENT_BERSERK, 600000);
++                events.ScheduleEvent(EVENT_GLITTERING_SPARKS, urand(12000,15000));
++                events.ScheduleEvent(EVENT_CONJURE_FLAME, 20000);
++            }
++
++            void JustDied(Unit* /*killer*/)
++            {
++                DoScriptText(EMOTE_TALDARAM_DEATH, me);
++            }
++
++            void JustRespawned()
++            {
++                DoCast(me, SPELL_FEIGN_DEATH);
++                me->SetHealth(spawnHealth);
++            }
++
++            void SpellHit(Unit* /*caster*/, SpellEntry const* spell)
++            {
++                if (spell->Id == SPELL_INVOCATION_OF_BLOOD_TALDARAM)
++                    DoAction(ACTION_CAST_INVOCATION);
++            }
++
++            void JustSummoned(Creature* summon)
++            {
++                summons.Summon(summon);
++                Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, -10.0f, true); // first try at distance
++                if (!target)
++                    target = SelectTarget(SELECT_TARGET_RANDOM, 0/*1*/, 0.0f, true);     // too bad for you raiders, its going to boom
++
++                if (summon->GetEntry() == CREATURE_BALL_OF_INFERNO_FLAME)
++                    DoScriptText(EMOTE_TALDARAM_FLAME, summon, target);             // safe, has NULL checks
++
++                if (target)
++                    summon->AI()->SetGUID(target->GetGUID());
++            }
++
++            void DamageTaken(Unit* /*attacker*/, uint32& damage)
++            {
++                if (!bIsEmpowered)
++                    damage = 0;
++            }
++
++            void KilledUnit(Unit *victim)
++            {
++                if (victim->GetTypeId() == TYPEID_PLAYER)
++                    DoScriptText(RAND(SAY_TALDARAM_KILL_1, SAY_TALDARAM_KILL_2), me);
++            }
++
++            void DoAction(const int32 action)
++            {
++                switch (action)
++                {
++                    case ACTION_STAND_UP:
++                        me->RemoveAurasDueToSpell(SPELL_FEIGN_DEATH);
++                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
++                        me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
++                        me->ForceValuesUpdateAtIndex(UNIT_NPC_FLAGS);   // was in sniff. don't ask why
++                        me->m_Events.AddEvent(new StandUpEvent(*me), me->m_Events.CalculateTime(1000));
++                        break;
++                    case ACTION_CAST_INVOCATION:
++                        DoScriptText(SAY_TALDARAM_INVOCATION, me);
++                        DoCast(me, SPELL_INVOCATION_VISUAL_ACTIVE, true);
++                        bIsEmpowered = true;
++                        break;
++                    case ACTION_REMOVE_INVOCATION:
++                        me->SetHealth(spawnHealth);
++                        me->RemoveAurasDueToSpell(SPELL_INVOCATION_VISUAL_ACTIVE);
++                        me->RemoveAurasDueToSpell(SPELL_INVOCATION_OF_BLOOD_TALDARAM);
++                        bIsEmpowered = false;
++                        break;
++                    default:
++                        break;
++                }
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                if (!UpdateVictim() || !CheckInRoom() || me->hasUnitState(UNIT_STAT_CASTING))
++                    return;
++
++                events.Update(diff);
++
++                while (uint32 eventId = events.ExecuteEvent())
++                {
++                    switch (eventId)
++                    {
++                        case EVENT_BERSERK:
++                            DoCast(me, SPELL_BERSERK);
++                            DoScriptText(EMOTE_TALDARAM_BERSERK, me);
++                            break;
++                        case EVENT_GLITTERING_SPARKS:
++                            DoCastVictim(SPELL_GLITTERING_SPARKS);
++                            events.ScheduleEvent(EVENT_GLITTERING_SPARKS, urand(15000, 50000));
++                            break;
++                        case EVENT_CONJURE_FLAME:
++                            if (bIsEmpowered)
++                            {
++                                DoCast(me, SPELL_CONJURE_EMPOWERED_FLAME);
++                                events.ScheduleEvent(EVENT_CONJURE_FLAME, urand(15000, 25000));
++                            }
++                            else
++                            {
++                                DoCast(me, SPELL_CONJURE_FLAME);
++                                events.ScheduleEvent(EVENT_CONJURE_FLAME, urand(20000, 30000));
++                            }
++                            DoScriptText(SAY_TALDARAM_SPECIAL, me);
++                            break;
++                        default:
++                            break;
++                    }
++                }
++
++                DoMeleeAttackIfReady();
++            }
++
++        private:
++            bool bIsEmpowered;  // bool check faster than map lookup
++            uint32 spawnHealth;
++            InstanceScript* pInstance;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new boss_prince_taldaramAI(pCreature);
++        }
++};
++
++class boss_prince_valanar_icc : public CreatureScript
++{
++    public:
++        boss_prince_valanar_icc() : CreatureScript("boss_blood_elf_valanar_icc") { }
++
++        struct boss_prince_valanarAI : public BossAI
++        {
++            boss_prince_valanarAI(Creature* pCreature) : BossAI(pCreature, DATA_PRINCE_VALANAR_ICC)
++            {
++                bIsEmpowered = false;
++                spawnHealth = pCreature->GetMaxHealth();
++                pInstance = pCreature->GetInstanceScript();
++            }
++
++            void InitializeAI()
++            {
++                if (CreatureData const* data = sObjectMgr.GetCreatureData(me->GetDBTableGUIDLow()))
++                    if (data->curhealth)
++                        spawnHealth = data->curhealth;
++
++                me->SetReactState(REACT_DEFENSIVE);
++            }
++
++            void Reset()
++            {
++                events.Reset();
++                summons.DespawnAll();
++
++                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                bIsEmpowered = false;
++                me->SetHealth(me->GetMaxHealth());
++                me->SetReactState(REACT_DEFENSIVE);
++                if (IsHeroic())
++                    DoCast(me, SPELL_SHADOW_PRISON);
++            }
++
++            void EnterCombat(Unit* /*who*/)
++            {
++                if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_BLOOD_PRINCES_CONTROL)))
++                    if (!controller->isInCombat())
++                        DoZoneInCombat(controller);
++
++                events.ScheduleEvent(EVENT_BERSERK, 600000);
++                events.ScheduleEvent(EVENT_KINETIC_BOMB, urand(18000, 24000));
++                events.ScheduleEvent(EVENT_SHOCK_VORTEX, urand(15000, 20000));
++            }
++
++            void JustDied(Unit* /*killer*/)
++            {
++                DoScriptText(SAY_VALANAR_DEATH, me);
++            }
++
++            void JustRespawned()
++            {
++                DoCast(me, SPELL_FEIGN_DEATH);
++                me->SetHealth(spawnHealth);
++            }
++
++            void JustSummoned(Creature* summon)
++            {
++                switch (summon->GetEntry())
++                {
++                    case CREATURE_KINETIC_BOMB_TARGET:
++                        summon->SetReactState(REACT_PASSIVE);
++                        summon->CastSpell(summon, SPELL_KINETIC_BOMB, true, NULL, NULL, me->GetGUID());
++                        break;
++                    case CREATURE_KINETIC_BOMB:
++                    {
++                        float x, y, z;
++                        summon->GetPosition(x, y, z);
++                        float ground_Z = summon->GetMap()->GetHeight(x, y, z, true, 500.0f);
++                        summon->GetMotionMaster()->MovePoint(POINT_KINETIC_BOMB_IMPACT, x, y, ground_Z);
++                        break;
++                    }
++                    case CREATURE_SHOCK_VORTEX:
++                        summon->CastSpell(summon, SPELL_SHOCK_VORTEX_DUMMY, true);
++                        summon->CastSpell(summon, SPELL_SHOCK_VORTEX_PERIODIC, true);
++                        break;
++                }
++                summons.Summon(summon);
++                if (me->isInCombat())
++                    DoZoneInCombat(summon);
++            }
++
++            void SpellHit(Unit* /*caster*/, SpellEntry const* spell)
++            {
++                if (spell->Id == SPELL_INVOCATION_OF_BLOOD_VALANAR)
++                    DoAction(ACTION_CAST_INVOCATION);
++            }
++
++            void DamageTaken(Unit* /*attacker*/, uint32& damage)
++            {
++                if (!bIsEmpowered)
++                    damage = 0;
++            }
++
++            void KilledUnit(Unit *victim)
++            {
++                if (victim->GetTypeId() == TYPEID_PLAYER)
++                    DoScriptText(RAND(SAY_VALANAR_KILL_1, SAY_VALANAR_KILL_2), me);
++            }
++
++            void DoAction(const int32 action)
++            {
++                switch (action)
++                {
++                    case ACTION_STAND_UP:
++                        me->RemoveAurasDueToSpell(SPELL_FEIGN_DEATH);
++                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
++                        me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
++                        me->ForceValuesUpdateAtIndex(UNIT_NPC_FLAGS);   // was in sniff. don't ask why
++                        me->m_Events.AddEvent(new StandUpEvent(*me), me->m_Events.CalculateTime(1000));
++                        break;
++                    case ACTION_CAST_INVOCATION:
++                        DoScriptText(SAY_VALANAR_INVOCATION, me);
++                        DoCast(me, SPELL_INVOCATION_VISUAL_ACTIVE, true);
++                        bIsEmpowered = true;
++                        break;
++                    case ACTION_REMOVE_INVOCATION:
++                        me->SetHealth(spawnHealth);
++                        me->RemoveAurasDueToSpell(SPELL_INVOCATION_VISUAL_ACTIVE);
++                        me->RemoveAurasDueToSpell(SPELL_INVOCATION_OF_BLOOD_VALANAR);
++                        bIsEmpowered = false;
++                        break;
++                    default:
++                        break;
++                }
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                if (!UpdateVictim() || !CheckInRoom() || me->hasUnitState(UNIT_STAT_CASTING))
++                    return;
++
++                events.Update(diff);
++
++                while (uint32 eventId = events.ExecuteEvent())
++                {
++                    switch (eventId)
++                    {
++                        case EVENT_BERSERK:
++                            DoCast(me, SPELL_BERSERK);
++                            DoScriptText(SAY_VALANAR_BERSERK, me);
++                            break;
++                        case EVENT_KINETIC_BOMB:
++                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
++                            {
++                                DoCast(target, SPELL_KINETIC_BOMB_TARGET);
++                                DoScriptText(SAY_VALANAR_SPECIAL, me);
++                            }
++                            events.ScheduleEvent(EVENT_KINETIC_BOMB, urand(18000, 24000));
++                            break;
++                        case EVENT_SHOCK_VORTEX:
++                            if (bIsEmpowered)
++                            {
++                                DoCast(me, SPELL_EMPOWERED_SHOCK_VORTEX);
++                                DoScriptText(EMOTE_VALANAR_SHOCK_VORTEX, me);
++                                events.ScheduleEvent(EVENT_SHOCK_VORTEX, 30000);
++                            }
++                            else
++                            {
++                                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
++                                    DoCast(target, SPELL_SHOCK_VORTEX);
++                                events.ScheduleEvent(EVENT_SHOCK_VORTEX, urand(18000, 23000));
++                            }
++                            break;
++                        default:
++                            break;
++                    }
++                }
++
++                DoMeleeAttackIfReady();
++            }
++
++        private:
++            bool bIsEmpowered;  // bool check faster than map lookup
++            uint32 spawnHealth;
++            InstanceScript* pInstance;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new boss_prince_valanarAI(pCreature);
++        }
++};
++
++class npc_blood_queen_lana_thel : public CreatureScript
++{
++    public:
++        npc_blood_queen_lana_thel() : CreatureScript("npc_blood_queen_lana_thel") { }
++
++        struct npc_blood_queen_lana_thelAI : public ScriptedAI
++        {
++            npc_blood_queen_lana_thelAI(Creature* pCreature) : ScriptedAI(pCreature)
++            {
++                bIntroDone = false;
++                instance = pCreature->GetInstanceScript();
++            }
++
++            void Reset()
++            {
++                events.Reset();
++                me->SetVisibility(VISIBILITY_ON);
++                me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
++            }
++
++            void MoveInLineOfSight(Unit* who)
++            {
++                if (bIntroDone)
++                    return;
++
++                if (!me->IsWithinDistInMap(who, 35.0f))
++                    return;
++
++                bIntroDone = true;
++                DoScriptText(SAY_INTRO_1, me);
++                events.SetPhase(1);
++                events.ScheduleEvent(EVENT_INTRO_1, 14000);
++                // summon a visual trigger
++                if (Creature* summon = DoSummon(CREATURE_FLOATING_TRIGGER, triggerPos, 15000, TEMPSUMMON_TIMED_DESPAWN))
++                {
++                    summon->CastSpell(summon, SPELL_OOC_INVOCATION_VISUAL, true);
++                    summon->SetSpeed(MOVE_FLIGHT, 0.15f, true);
++                    summon->GetMotionMaster()->MovePoint(0, triggerEndPos);
++                }
++            }
++
++            void MovementInform(uint32 type, uint32 id)
++            {
++                if (type == POINT_MOTION_TYPE && id == POINT_INTRO_DESPAWN)
++                    me->SetVisibility(VISIBILITY_OFF);
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                if (!events.GetPhaseMask() || !instance)
++                    return;
++
++                events.Update(diff);
++
++                if (events.ExecuteEvent() == EVENT_INTRO_1)
++                {
++                    DoScriptText(SAY_INTRO_2, me);
++                    me->GetMotionMaster()->MovePoint(POINT_INTRO_DESPAWN, introFinalPos);
++                    events.Reset();
++
++                    // remove Feign Death from princes
++                    if (Creature* keleseth = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PRINCE_KELESETH_ICC)))
++                        keleseth->AI()->DoAction(ACTION_STAND_UP);
++
++                    if (Creature* taldaram = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PRINCE_TALDARAM_ICC)))
++                        taldaram->AI()->DoAction(ACTION_STAND_UP);
++
++                    if (Creature* valanar = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_PRINCE_VALANAR_ICC)))
++                    {
++                        valanar->AI()->DoAction(ACTION_STAND_UP);
++                        valanar->SetHealth(valanar->GetMaxHealth());
++                    }
++                }
++            }
++
++        private:
++            bool bIntroDone;
++            EventMap events;
++            InstanceScript* instance;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_blood_queen_lana_thelAI(pCreature);
++        }
++};
++
++class npc_ball_of_flame : public CreatureScript
++{
++    public:
++        npc_ball_of_flame() : CreatureScript("npc_ball_of_flame") { }
++
++        struct npc_ball_of_flameAI : public ScriptedAI
++        {
++            npc_ball_of_flameAI(Creature* pCreature) : ScriptedAI(pCreature)
++            {
++                despawnTimer = 0;
++            }
++
++            void Reset()
++            {
++                me->CastSpell(me, SPELL_BALL_OF_FLAMES_VISUAL, true);
++                if (me->GetEntry() == CREATURE_BALL_OF_INFERNO_FLAME)
++                {
++                    me->CastSpell(me, SPELL_BALL_OF_FLAMES_PROC, true);
++                    me->CastSpell(me, SPELL_BALL_OF_FLAMES_PERIODIC, true);
++                }
++            }
++
++            void MovementInform(uint32 type, uint32 id)
++            {
++                if (type == TARGETED_MOTION_TYPE && id == GUID_LOPART(chaseGUID) && chaseGUID)
++                {
++                    me->RemoveAurasDueToSpell(SPELL_BALL_OF_FLAMES_PERIODIC);
++                    DoCastAOE(SPELL_FLAMES);
++                    despawnTimer = 1000;
++                    chaseGUID = 0;
++                }
++            }
++
++            void SetGUID(const uint64& guid, int32 /*type*/)
++            {
++                chaseGUID = guid;
++            }
++
++            void DoAction(const int32 action)
++            {
++                if (action == ACTION_FLAME_BALL_CHASE)
++                    if (Player* target = ObjectAccessor::GetPlayer(*me, chaseGUID))
++                    {
++                        // need to clear states now because this call is before AuraEffect is fully removed
++                        me->clearUnitState(UNIT_STAT_CASTING | UNIT_STAT_STUNNED);
++                        if (target && me->Attack(target, true))
++                            me->GetMotionMaster()->MoveChase(target, 1.0f);
++                    }
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                if (!despawnTimer)
++                    return;
++
++                if (despawnTimer <= diff)
++                {
++                    despawnTimer = 0;
++                    DoCast(me, SPELL_FLAME_SPHERE_DEATH_EFFECT);
++                }
++                else
++                    despawnTimer -= diff;
++            }
++
++        private:
++            uint32 despawnTimer;
++            uint64 chaseGUID;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_ball_of_flameAI(pCreature);
++        }
++};
++
++class npc_kinetic_bomb : public CreatureScript
++{
++    public:
++        npc_kinetic_bomb() : CreatureScript("npc_kinetic_bomb") { }
++
++        struct npc_kinetic_bombAI : public ScriptedAI
++        {
++            npc_kinetic_bombAI(Creature* pCreature) : ScriptedAI(pCreature) { }
++
++            void Reset()
++            {
++                events.Reset();
++                me->SetDisplayId(DISPLAY_KINETIC_BOMB);
++                me->CastSpell(me, SPELL_UNSTABLE, true);
++                me->CastCustomSpell(SPELL_KINETIC_BOMB_VISUAL, SPELLVALUE_BASE_POINT0, 0x7FFFFFFF, me, true);
++                me->SetReactState(REACT_PASSIVE);
++                me->SetSpeed(MOVE_FLIGHT, IsHeroic() ? 0.3f : 0.15f, true);
++                me->GetPosition(x, y, groundZ);
++                groundZ = me->GetMap()->GetHeight(x, y, groundZ, true, 500.0f);
++            }
++
++            void DoAction(const int32 action)
++            {
++                if (action == SPELL_KINETIC_BOMB_EXPLOSION)
++                    events.ScheduleEvent(EVENT_BOMB_DESPAWN, 1000);
++                else if (action == ACTION_KINETIC_BOMB_JUMP)
++                {
++                    me->GetMotionMaster()->Clear();
++                    me->GetMotionMaster()->MoveJump(x, y, me->GetPositionZ()+7.0f, 1.0f, 7.0f);
++                    events.ScheduleEvent(EVENT_CONTINUE_FALLING, 700);
++                }
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                events.Update(diff);
++
++                while (uint32 eventId = events.ExecuteEvent())
++                {
++                    switch (eventId)
++                    {
++                        case EVENT_BOMB_DESPAWN:
++                            me->SetVisibility(VISIBILITY_OFF);
++                            break;
++                        case EVENT_CONTINUE_FALLING:
++                            me->GetMotionMaster()->Clear();
++                            me->GetMotionMaster()->MovePoint(POINT_KINETIC_BOMB_IMPACT, x, y, groundZ);
++                            break;
++                        default:
++                            break;
++                    }
++                }
++            }
++
++        private:
++            EventMap events;
++            float x, y, groundZ;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_kinetic_bombAI(pCreature);
++        }
++};
++
++class npc_dark_nucleus : public CreatureScript
++{
++    public:
++        npc_dark_nucleus() : CreatureScript("npc_dark_nucleus") { }
++
++        struct npc_dark_nucleusAI : public ScriptedAI
++        {
++            npc_dark_nucleusAI(Creature* pCreature) : ScriptedAI(pCreature)
++            {
++                lockedTarget = false;
++                targetAuraCheck = 0;
++            }
++
++            void Reset()
++            {
++                me->SetReactState(REACT_PASSIVE);
++                me->CastSpell(me, SPELL_SHADOW_RESONANCE_AURA, true);
++            }
++
++            void EnterCombat(Unit* who)
++            {
++                targetAuraCheck = 1000;
++                if (me->GetDistance(who) >= 15.0f)
++                {
++                    DoStartMovement(who);
++                    return;
++                }
++
++                DoCast(who, SPELL_SHADOW_RESONANCE_RESIST);
++                me->clearUnitState(UNIT_STAT_CASTING);
++            }
++
++            void MoveInLineOfSight(Unit* who)
++            {
++                if (me->GetDistance(who) >= 15.0f)
++                    return;
++
++                ScriptedAI::MoveInLineOfSight(who);
++            }
++
++            void DamageTaken(Unit* attacker, uint32& /*damage*/)
++            {
++                if (attacker == me)
++                    return;
++
++                if (!lockedTarget)
++                    if (me->getVictim() == attacker)
++                        lockedTarget = true;
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                if (!me->isInCombat())
++                    return;
++
++                if (targetAuraCheck <= diff)
++                {
++                    targetAuraCheck = 1000;
++                    if (Unit *victim = me->getVictim())
++                        if (me->GetDistance(victim) < 15.0f &&
++                            !victim->HasAura(SPELL_SHADOW_RESONANCE_RESIST, me->GetGUID()))
++                        {
++                            DoCast(victim, SPELL_SHADOW_RESONANCE_RESIST);
++                            me->clearUnitState(UNIT_STAT_CASTING);
++                        }
++                }
++                else
++                    targetAuraCheck -= diff;
++
++                if (!lockedTarget)
++                {
++                    if (Unit *victim = me->SelectVictim())
++                    {
++                        if (me->getVictim() && me->getVictim() != victim)
++                        {
++                            me->getVictim()->RemoveAurasDueToSpell(SPELL_SHADOW_RESONANCE_RESIST, me->GetGUID());
++                            lockedTarget = true;
++                        }
++
++                        lockedTarget = true;
++                        AttackStart(victim);
++                        DoCast(victim, SPELL_SHADOW_RESONANCE_RESIST);
++                        me->clearUnitState(UNIT_STAT_CASTING);
++                    }
++                }
++            }
++
++        private:
++            uint32 targetAuraCheck; // no point for EventMap with only one timer
++            bool lockedTarget;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_dark_nucleusAI(pCreature);
++        }
++};
++
++class spell_taldaram_glittering_sparks : public SpellScriptLoader
++{
++    public:
++        spell_taldaram_glittering_sparks() : SpellScriptLoader("spell_taldaram_glittering_sparks") { }
++
++        class spell_taldaram_glittering_sparks_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_taldaram_glittering_sparks_SpellScript);
++
++            void HandleScript(SpellEffIndex effIndex)
++            {
++                PreventHitDefaultEffect(effIndex);
++                GetCaster()->CastSpell(GetCaster(), GetEffectValue(), true);
++            }
++
++            void Register()
++            {
++                OnEffect += SpellEffectFn(spell_taldaram_glittering_sparks_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_taldaram_glittering_sparks_SpellScript();
++        }
++};
++
++class spell_taldaram_summon_flame_ball : public SpellScriptLoader
++{
++    public:
++        spell_taldaram_summon_flame_ball() : SpellScriptLoader("spell_taldaram_summon_flame_ball") { }
++
++        class spell_taldaram_summon_flame_ball_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_taldaram_summon_flame_ball_SpellScript);
++
++            void HandleScript(SpellEffIndex effIndex)
++            {
++                PreventHitDefaultEffect(effIndex);
++                GetCaster()->CastSpell(GetCaster(), GetEffectValue(), true);
++            }
++
++            void Register()
++            {
++                OnEffect += SpellEffectFn(spell_taldaram_summon_flame_ball_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_DUMMY);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_taldaram_summon_flame_ball_SpellScript();
++        }
++};
++
++class spell_taldaram_flame_ball_visual : public SpellScriptLoader
++{
++    public:
++        spell_taldaram_flame_ball_visual() : SpellScriptLoader("spell_taldaram_flame_ball_visual") { }
++
++        class spell_flame_ball_visual_AuraScript : public AuraScript
++        {
++            PrepareAuraScript(spell_flame_ball_visual_AuraScript);
++
++            bool Load()
++            {
++                if (GetCaster()->GetEntry() == CREATURE_BALL_OF_FLAME || GetCaster()->GetEntry() == CREATURE_BALL_OF_INFERNO_FLAME)
++                    return true;
++                return false;
++            }
++
++            void OnRemove(AuraEffect const* /*aurEff*/, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
++            {
++                Creature* target = aurApp->GetTarget()->ToCreature();
++                if (!target)
++                    return;
++
++                // SPELL_FLAME_SPHERE_SPAWN_EFFECT
++                if (GetSpellProto()->Id == SPELL_FLAME_SPHERE_SPAWN_EFFECT)
++                {
++                    target->CastSpell(target, SPELL_BALL_OF_FLAMES, true);
++                    target->AI()->DoAction(ACTION_FLAME_BALL_CHASE);
++                }
++                else // SPELL_FLAME_SPHERE_DEATH_EFFECT
++                {
++                    if (TempSummon* summ = target->ToTempSummon())
++                        summ->UnSummon();
++                    else
++                        target->ForcedDespawn();
++                }
++            }
++
++            void Register()
++            {
++                OnEffectRemove += AuraEffectRemoveFn(spell_flame_ball_visual_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
++            }
++        };
++
++        AuraScript* GetAuraScript() const
++        {
++            return new spell_flame_ball_visual_AuraScript();
++        }
++};
++
++class spell_taldaram_ball_of_inferno_flame : public SpellScriptLoader
++{
++    public:
++        spell_taldaram_ball_of_inferno_flame() : SpellScriptLoader("spell_taldaram_ball_of_inferno_flame") { }
++
++        class spell_taldaram_ball_of_inferno_flame_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_taldaram_ball_of_inferno_flame_SpellScript);
++
++            void ModAuraStack()
++            {
++                if (Aura* aur = GetHitAura())
++                    aur->SetStackAmount(GetSpellInfo()->StackAmount);
++            }
++
++            void Register()
++            {
++                AfterHit += SpellHitFn(spell_taldaram_ball_of_inferno_flame_SpellScript::ModAuraStack);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_taldaram_ball_of_inferno_flame_SpellScript();
++        }
++};
++
++class spell_valanar_kinetic_bomb : public SpellScriptLoader
++{
++    public:
++        spell_valanar_kinetic_bomb() : SpellScriptLoader("spell_valanar_kinetic_bomb") { }
++
++        class spell_valanar_kinetic_bomb_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_valanar_kinetic_bomb_SpellScript);
++
++            void ChangeSummonPos(SpellEffIndex /*effIndex*/)
++            {
++                WorldLocation* summonPos = GetTargetDest();
++                Position offset = {0.0f, 0.0f, 20.0f, 0.0f};
++                summonPos->RelocateOffset(offset);  // +20 in height
++            }
++
++            void Register()
++            {
++                OnEffect += SpellEffectFn(spell_valanar_kinetic_bomb_SpellScript::ChangeSummonPos, EFFECT_0, SPELL_EFFECT_SUMMON);
++            }
++        };
++
++        class spell_valanar_kinetic_bomb_AuraScript : public AuraScript
++        {
++            PrepareAuraScript(spell_valanar_kinetic_bomb_AuraScript);
++
++            void HandleDummyTick(AuraEffect const* /*aurEff*/, AuraApplication const* aurApp)
++            {
++                Unit* target = aurApp->GetTarget();
++                if (target->GetTypeId() != TYPEID_UNIT)
++                    return;
++
++                if (Creature* bomb = target->FindNearestCreature(CREATURE_KINETIC_BOMB, 1.0f, true))
++                {
++                    bomb->CastSpell(bomb, SPELL_KINETIC_BOMB_EXPLOSION, true);
++                    bomb->RemoveAurasDueToSpell(SPELL_KINETIC_BOMB_VISUAL);
++                    target->RemoveAura(const_cast<AuraApplication*>(aurApp));
++                    bomb->AI()->DoAction(SPELL_KINETIC_BOMB_EXPLOSION);
++                }
++            }
++
++            void Register()
++            {
++                OnEffectPeriodic += AuraEffectPeriodicFn(spell_valanar_kinetic_bomb_AuraScript::HandleDummyTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_valanar_kinetic_bomb_SpellScript();
+         }
+ 
+-        void Reset() { }
++        AuraScript* GetAuraScript() const
++        {
++            return new spell_valanar_kinetic_bomb_AuraScript();
++        }
++};
+ 
+-        void EnterCombat(Unit* /*who*/) { }
++class spell_valanar_kinetic_bomb_knockback : public SpellScriptLoader
++{
++    public:
++        spell_valanar_kinetic_bomb_knockback() : SpellScriptLoader("spell_valanar_kinetic_bomb_knockback") { }
+ 
+-        void KilledUnit(Unit* /*victim*/) { }
++        class spell_valanar_kinetic_bomb_knockback_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_valanar_kinetic_bomb_knockback_SpellScript);
+ 
+-        void UpdateAI(const uint32 diff)
++            void KnockIntoAir()
++            {
++                if (Creature* target = GetHitCreature())
++                    target->AI()->DoAction(ACTION_KINETIC_BOMB_JUMP);
++            }
++
++            void Register()
++            {
++                AfterHit += SpellHitFn(spell_valanar_kinetic_bomb_knockback_SpellScript::KnockIntoAir);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
+         {
+-            if (!UpdateVictim())
+-                return;
+-            DoMeleeAttackIfReady();
++            return new spell_valanar_kinetic_bomb_knockback_SpellScript();
+         }
+-    private:
+-        InstanceScript* pInstance;
+-    };
++};
+ 
+-    CreatureAI* GetAI(Creature* pCreature) const
+-    {
+-        return new boss_blood_elf_keleset_iccAI(pCreature);
+-    }
++class spell_blood_council_shadow_prison : public SpellScriptLoader
++{
++    public:
++        spell_blood_council_shadow_prison() : SpellScriptLoader("spell_blood_council_shadow_prison") { }
++
++        class spell_blood_council_shadow_prison_AuraScript : public AuraScript
++        {
++            PrepareAuraScript(spell_blood_council_shadow_prison_AuraScript);
++
++            void HandleDummyTick(AuraEffect const* aurEff, AuraApplication const* aurApp)
++            {
++                if(aurApp)
++                    if (aurApp->GetTarget()->isMoving())
++                        aurApp->GetTarget()->CastSpell(aurApp->GetTarget(), SPELL_SHADOW_PRISON_DAMAGE, true, NULL, aurEff);
++            }
++
++            void Register()
++            {
++                OnEffectPeriodic += AuraEffectPeriodicFn(spell_blood_council_shadow_prison_AuraScript::HandleDummyTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++            }
++        };
++
++        AuraScript* GetAuraScript() const
++        {
++            return new spell_blood_council_shadow_prison_AuraScript();
++        }
++};
++
++class spell_blood_council_shadow_prison_damage : public SpellScriptLoader
++{
++    public:
++        spell_blood_council_shadow_prison_damage() : SpellScriptLoader("spell_blood_council_shadow_prison_damage") { }
++
++        class spell_blood_council_shadow_prison_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_blood_council_shadow_prison_SpellScript);
++
++            void AddExtraDamage()
++            {
++                if (Aura* aur = GetHitUnit()->GetAura(GetSpellInfo()->Id))
++                    if (AuraEffect const* eff = aur->GetEffect(1))
++                        SetHitDamage(GetHitDamage()+eff->GetAmount());
++            }
++
++            void Register()
++            {
++                OnHit += SpellHitFn(spell_blood_council_shadow_prison_SpellScript::AddExtraDamage);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_blood_council_shadow_prison_SpellScript();
++        }
+ };
+ 
+ void AddSC_boss_rat_des_blutes()
+ {
+-    new boss_blood_elf_valanar_icc();
+-    new boss_blood_elf_taldaram_icc();
+-    new boss_blood_elf_keleset_icc();
+-}
+\ No newline at end of file
++    new boss_blood_council_controller();
++    new boss_prince_keleseth_icc();
++    new boss_prince_taldaram_icc();
++    new boss_prince_valanar_icc();
++    new npc_blood_queen_lana_thel();
++    new npc_ball_of_flame();
++    new npc_kinetic_bomb();
++    new npc_dark_nucleus();
++    new spell_taldaram_glittering_sparks();
++    new spell_taldaram_summon_flame_ball();
++    new spell_taldaram_flame_ball_visual();
++    new spell_taldaram_ball_of_inferno_flame();
++    new spell_valanar_kinetic_bomb();
++    new spell_valanar_kinetic_bomb_knockback();
++    new spell_blood_council_shadow_prison();
++    new spell_blood_council_shadow_prison_damage();
++}
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -1115,6 +1115,9 @@
+ 
+             void OnPereodic(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
++			if(!aurApp->GetTarget() || !aurApp->GetBase()->GetOwner() || !aurApp)
++			return;
++			
+                 if (InstanceScript* instance = aurApp->GetTarget()->GetInstanceScript())
+                     if (GameObject* floor = GameObject::GetGameObject((*aurApp->GetBase()->GetOwner()), instance->GetData64(DATA_PLATFORM)))
+                         if(floor->HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED))
+@@ -1123,6 +1126,9 @@
+ 
+             void OnRemove(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
++			if(!aurApp)
++			return;
++			
+                 if (Unit* caster = aurApp->GetBase()->GetCaster())
+                 {
+                     caster->CastSpell(caster, SPELL_QUAKE, true);
+@@ -1155,7 +1161,7 @@
+ 
+             void OnRemove(AuraEffect const* aurEff, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
+-                if(!aurApp->GetBase()->GetCaster())
++                if(!aurApp->GetBase()->GetCaster() || !aurApp->GetBase()->GetOwner() || !aurApp)
+                     return;
+ 
+                 if (InstanceScript* instance = aurApp->GetTarget()->GetInstanceScript())
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
+--- a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
++++ b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
+@@ -100,7 +100,8 @@
+     DATA_ALL_YOU_CAN_EAT,
+     DATA_BEEN_WAITING,
+     DATA_NECK_DEEP,
+-    DATA_PLATFORM
++    DATA_PLATFORM,
++    DATA_BLOOD_PRINCES_CONTROL
+ };
+ 
+ enum eCreatures
+@@ -142,6 +143,14 @@
+     CREATURE_PRINCE_VALANAR_ICC      = 37970,
+     CREATURE_PRINCE_KELESETH_ICC     = 37972,
+     CREATURE_PRINCE_TALDARAM_ICC     = 37973,
++	CREATURE_BLOOD_ORB_CONTROLLER    = 38008,
++	CREATURE_FLOATING_TRIGGER        = 30298,
++	CREATURE_DARK_NUCLEUS            = 38369,
++	CREATURE_BALL_OF_FLAME           = 38332,
++	CREATURE_BALL_OF_INFERNO_FLAME   = 38451,
++	CREATURE_KINETIC_BOMB_TARGET     = 38458,
++	CREATURE_KINETIC_BOMB            = 38454,
++	CREATURE_SHOCK_VORTEX            = 38422,
+     CREATURE_BLOOD_QUEEN_LANATHEL    = 37955,
+     CREATURE_SWARMING_SHADOWS        = 38163,
+     CREATURE_VALITHRIA_DREAMWALKER   = 36789,
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+@@ -61,6 +61,7 @@
+                 uiSpawn                 = 0;
+                 uiBoned                 = 0;
+                 uiAllYouCanEat          = 0;
++				uiBloodCouncilController = 0;
+                 uiBeenWaiting           = 0;
+                 uiNeckDeep              = 0;
+                 uiIceWall1              = 0;
+@@ -161,6 +162,9 @@
+                     case CREATURE_PRINCE_TALDARAM_ICC:
+                         uiPrinceTaldaram = pCreature->GetGUID();
+                         break;
++					case CREATURE_BLOOD_ORB_CONTROLLER:
++						uiBloodCouncilController = pCreature->GetGUID();
++						break;
+                     case CREATURE_BLOOD_QUEEN_LANATHEL:
+                         uiBloodQueenLanathel = pCreature->GetGUID();
+                         break;
+@@ -418,6 +422,7 @@
+                     case DATA_BEEN_WAITING:           return uiBeenWaiting;
+                     case DATA_NECK_DEEP:              return uiNeckDeep;
+                     case DATA_PLATFORM:               return uiArthasPlatform;
++					case DATA_BLOOD_PRINCES_CONTROL:  return uiBloodCouncilController;
+                 }
+                 return 0;
+             }
+@@ -888,6 +893,7 @@
+             uint64 uiCitadelTp;
+             uint64 uiSindragossaTp;
+             uint64 uiLichTp;
++			uint64 uiBloodCouncilController;
+             uint8 uiDifficulty;
+             uint8 uiBoned;
+             uint8 uiSpawn;

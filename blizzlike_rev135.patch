@@ -1,0 +1,348 @@
+# HG changeset patch
+# User asniker
+# Date 1288853761 -18000
+# Node ID 780c114607fa33507ed1f6efea45bc3b3279fc4c
+# Parent  f0e11f63a635a62d16546f856c3829bd28565545
+fix icecrown citdel
+fix full sql
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5695,7 +5695,8 @@
+ REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMask`, `MinLevel`, `MaxLevel`, `QuestLevel`, `Type`, `RequiredRaces`, `RequiredSkillValue`, `RepObjectiveFaction`, `RepObjectiveValue`, `RepObjectiveFaction2`, `RepObjectiveValue2`, `RequiredMinRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepFaction`, `RequiredMaxRepValue`, `SuggestedPlayers`, `LimitTime`, `QuestFlags`, `SpecialFlags`, `CharTitleId`, `PlayersSlain`, `BonusTalents`, `RewardArenaPoints`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `NextQuestInChain`, `RewXPId`, `SrcItemId`, `SrcItemCount`, `SrcSpell`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `RequestItemsText`, `EndText`, `CompletedText`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `ReqItemId1`, `ReqItemId2`, `ReqItemId3`, `ReqItemId4`, `ReqItemId5`, `ReqItemId6`, `ReqItemCount1`, `ReqItemCount2`, `ReqItemCount3`, `ReqItemCount4`, `ReqItemCount5`, `ReqItemCount6`, `ReqSourceId1`, `ReqSourceId2`, `ReqSourceId3`, `ReqSourceId4`, `ReqSourceCount1`, `ReqSourceCount2`, `ReqSourceCount3`, `ReqSourceCount4`, `ReqCreatureOrGOId1`, `ReqCreatureOrGOId2`, `ReqCreatureOrGOId3`, `ReqCreatureOrGOId4`, `ReqCreatureOrGOCount1`, `ReqCreatureOrGOCount2`, `ReqCreatureOrGOCount3`, `ReqCreatureOrGOCount4`, `ReqSpellCast1`, `ReqSpellCast2`, `ReqSpellCast3`, `ReqSpellCast4`, `RewChoiceItemId1`, `RewChoiceItemId2`, `RewChoiceItemId3`, `RewChoiceItemId4`, `RewChoiceItemId5`, `RewChoiceItemId6`, `RewChoiceItemCount1`, `RewChoiceItemCount2`, `RewChoiceItemCount3`, `RewChoiceItemCount4`, `RewChoiceItemCount5`, `RewChoiceItemCount6`, `RewItemId1`, `RewItemId2`, `RewItemId3`, `RewItemId4`, `RewItemCount1`, `RewItemCount2`, `RewItemCount3`, `RewItemCount4`, `RewRepFaction1`, `RewRepFaction2`, `RewRepFaction3`, `RewRepFaction4`, `RewRepFaction5`, `RewRepValueId1`, `RewRepValueId2`, `RewRepValueId3`, `RewRepValueId4`, `RewRepValueId5`, `RewRepValue1`, `RewRepValue2`, `RewRepValue3`, `RewRepValue4`, `RewRepValue5`, `RewHonorAddition`, `RewHonorMultiplier`, `unk0`, `RewOrReqMoney`, `RewMoneyMaxLevel`, `RewSpell`, `RewSpellCast`, `RewMailTemplateId`, `RewMailDelaySecs`, `PointMapId`, `PointX`, `PointY`, `PointOpt`, `DetailsEmote1`, `DetailsEmote2`, `DetailsEmote3`, `DetailsEmote4`, `DetailsEmoteDelay1`, `DetailsEmoteDelay2`, `DetailsEmoteDelay3`, `DetailsEmoteDelay4`, `IncompleteEmote`, `CompleteEmote`, `OfferRewardEmote1`, `OfferRewardEmote2`, `OfferRewardEmote3`, `OfferRewardEmote4`, `OfferRewardEmoteDelay1`, `OfferRewardEmoteDelay2`, `OfferRewardEmoteDelay3`, `OfferRewardEmoteDelay4`, `StartScript`, `CompleteScript`, `WDBVerified`) VALUES (24499, 2, 4809, 0, 78, 0, 80, 81, 1101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 24510, 24683, 0, 24683, 8, 0, 0, 0, 'Echoes of Tortured Souls', 'I cannot thank you enough for coming. We\'re severely undermanned to be risking a venture into the citadel, but opportunities like this are too rare to pass up.$B$BI\'m awaiting the arrival of champions from the coliseum, but if your reputation holds true, you should be more than equipped to fight through the forge yourself. Clear the way to the far side and secure the passage to the Pit of Saron. We will need to hold it to move our men further into the citadel.$B$BPlease hurry, $n. We\'re counting on you.', 'Kill Bronjahm and the Devourer of Souls to secure access to the Pit of Saron.', 'Just in time! Thank you, $N.$B$BThe Pit of Saron lies ahead, and if our scouts are correct, past that will be the Halls of Reflection. It is there that Arthas lets his guard down, and it is there that we hope to find a clue to his weakness... or maybe, just maybe, his redemption.', '', '', 'Speak to Lady Jaina Proudmoore at the rear of the Forge of Souls.', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36497, 36502, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49426, 0, 0, 0, 2, 0, 0, 0, 1050, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296000, 264600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12340);
+ 
+ 
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701; 
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 13679; 
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 24451; 
+ 
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11587;
+@@ -5731,4 +5732,24 @@
+ DELETE FROM `spell_proc_event` WHERE `entry` IN ('44543', '44545');
+ INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES
+ ('44543','0','3','1049120','4096','0','65536','0','0','0','0'),
+-('44545','0','3','1049120','4096','0','65536','0','0','0','0');
+\ No newline at end of file
++('44545','0','3','1049120','4096','0','65536','0','0','0','0');
++
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37970';
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
++
++UPDATE `creature_template` SET `spell2` = ' ' WHERE `entry` = '37126';
++
++
++UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
++DELETE FROM `creature` WHERE `entry` = '33115';
++
++
++UPDATE `quest_template` SET `SkillOrClassMask` = '773' WHERE `entry` IN (12517,12518,12798,13311);
++DELETE FROM `event_scripts` WHERE `id` = '8175';
++DELETE FROM `db_script_string` WHERE `entry` = '2000000348';
++
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_valanar_icc' WHERE `entry` = 37970;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_keleset_icc' WHERE `entry` = 37972;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_taldaram_icc' WHERE `entry` = 37973;
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql	
+@@ -1,3 +1,5 @@
+ ﻿UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37970';
+ UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
+-UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
+\ No newline at end of file
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
++
++UPDATE `creature_template` SET `spell2` = ' ' WHERE `entry` = '37126';
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
+@@ -24,7 +24,8 @@
+ 
+ 
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701;
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 13679; 
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 13679;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 24451;  
+  
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11587;
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11607;
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
+@@ -86,7 +86,6 @@
+                 me->ApplySpellImmune(SPELL_FROST_BOLT, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, false);
+                 bIntro = false;
+                 bFirstSummon = false;
+-                m_uiCount = RAID_MODE(0,1,1,3);
+             }
+ 
+             void Reset()
+@@ -167,7 +166,7 @@
+             {
+                 DoCast(pSummon, SPELL_PORT_VISUAL);
+ 
+-                if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
++               if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 120.0f, true))
+                     pSummon->AI()->AttackStart(pTarget);
+ 
+                 summons.Summon(pSummon);
+@@ -287,14 +286,12 @@
+ 
+                 if (m_uiDominateMindTimer < uiDiff)
+                 {
+-                    for (uint8 i = 1; i <= m_uiCount; i++)
++                    for (uint8 i = 1; i <= RAID_MODE(0,1,1,3); ++i)
+                     {
+-                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                        {
+-                            DoCast(pTarget, SPELL_DOMINATE_MIND);
+-                            DoScriptText(SAY_DOMINATE_MIND, me);
+-                        }
++                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_DOMINATE_MIND))
++                            DoCast(pTarget, SPELL_DOMINATE_MIND);               
+                     }
++					DoScriptText(SAY_DOMINATE_MIND, me);
+                     m_uiDominateMindTimer = 15000;
+                 } else m_uiDominateMindTimer -= uiDiff;
+ 
+@@ -371,7 +368,6 @@
+             uint8 m_uiPhase;
+             uint8 m_uiIntroPhase;
+             uint8 m_uiStage;
+-            uint8 m_uiCount;
+             uint32 m_uiDominateMindTimer;
+             uint32 m_uiSummonWaveTimer;
+             uint32 m_uiDeathandDecayTimer;
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
+@@ -89,7 +89,6 @@
+             boss_sindragosaAI(Creature* pCreature) : BossAI(pCreature, DATA_SINDRAGOSA)
+             {
+                 pInstance = me->GetInstanceScript();
+-                count = RAID_MODE(2,5,2,5);
+             }
+ 
+             void Reset()
+@@ -184,34 +183,30 @@
+                     {
+                         for (uint8 i = 1; i <= urand(2, 4); ++i)
+                         {
+-                            if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, -10.0f, true, -SPELL_UNCHAINED_MAGIC))
+-                            {
+-                                DoScriptText(SAY_UNCHAIND_MAGIC, me);
+-                                DoCast(pTarget, SPELL_UNCHAINED_MAGIC);
+-                                m_uiUnchainedMagicTimer = 12000;
+-                            }
++                            if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, -10.0f, true, -SPELL_UNCHAINED_MAGIC))                           
++                                DoCast(pTarget, SPELL_UNCHAINED_MAGIC);                                
+                         }
++						 DoScriptText(SAY_UNCHAIND_MAGIC, me);
++						 m_uiUnchainedMagicTimer = 12000;
+                     } else m_uiUnchainedMagicTimer -= uiDiff;
+ 
+                     if (m_uiPermatingChilTimer <= uiDiff)
+                     {
+-                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 10.0f, true, -SPELL_PERMEATING_CHILL))
+-                        {
+-                            DoCast(pTarget, SPELL_PERMEATING_CHILL);
+-                        }
++                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 10.0f, true, -SPELL_PERMEATING_CHILL))                      
++                            DoCast(pTarget, SPELL_PERMEATING_CHILL);                        
+                         m_uiPermatingChilTimer = 20000;
+                     } else m_uiPermatingChilTimer -= uiDiff;
+ 
+                     if (m_uiBreathTimer <= uiDiff)
+                     {
+                         DoScriptText(SAY_BREATH, me);
+-                        DoCast(SPELL_FROST_BREATH);
++                         DoCastVictim(SPELL_FROST_BREATH);
+                         m_uiBreathTimer = 15000;
+                     } else m_uiBreathTimer -= uiDiff;
+ 
+                     if (m_uiCleaveTimer <= uiDiff)
+                     {
+-                        DoCast(me, SPELL_CLEAVE);
++                        DoCastVictim(SPELL_CLEAVE);
+                         m_uiCleaveTimer = 6000;
+                     } else m_uiCleaveTimer -= uiDiff;
+ 
+@@ -234,7 +229,7 @@
+                 {
+                     if (m_uiMarkTimer < uiDiff)
+                     {
+-                        for (uint8 i = 1; i <= count; i++)
++                        for (uint8 i = 1; i <= RAID_MODE(2,5,2,5); ++i)
+                         {
+                             if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_FROST_BEACON))
+                                 DoCast(pTarget, SPELL_FROST_BEACON);
+@@ -254,7 +249,7 @@
+                 {
+                     if (m_uiMarkTimer < uiDiff)
+                     {
+-                        for (uint8 i = 1; i <= count; ++i)
++                        for (uint8 i = 1; i <= RAID_MODE(2,5,2,5); ++i)
+                         {
+                             if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_FROST_BEACON))
+                                 DoCast(pTarget, SPELL_FROST_BEACON);
+@@ -285,18 +280,19 @@
+ 
+                 if (m_uiChangePhaseTimer < uiDiff)
+                 {
+-                    if(!bSwitch)
+-                    {
+-                        if(m_uiPhase == 1)
++                    if(bSwitch)
++						return;
++
++					 switch (m_uiPhase)
+                         {
+-                            DoScriptText(SAY_AIR_PHASE, me);
+-                            m_uiPhase = 2;
+-                        }
+-                        if(m_uiPhase == 2)
+-                        {
+-                            m_uiPhase = 1;
+-                        }
+-                    }
++                            case 1:
++								 DoScriptText(SAY_AIR_PHASE, me);
++								 m_uiPhase = 2;
++								 break;
++							case 2:
++								m_uiPhase = 1;
++								break;
++                        }                      
+                     m_uiChangePhaseTimer = 110000;
+                 } else m_uiChangePhaseTimer -= uiDiff;
+ 
+@@ -313,12 +309,10 @@
+             uint32 m_uiBlisteringColdTimer;
+             uint32 m_uiBerserkTimer;
+             uint32 m_uiMarkTimer;
+-            uint32 m_uiFlyTimer;
+             uint32 m_uiPermatingChilTimer;
+             uint32 m_uiChangePhaseTimer;
+             uint32 m_uiUnchainedMagicTimer;
+-            uint32 m_uiBombTimer;
+-            uint8 count;
++            uint32 m_uiBombTimer;          
+ 
+             bool bSwitch;
+             bool bMystic;
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -28,7 +28,7 @@
+ Long have I waited for this day, hero. Are you and your allies prepared to bring the Lich King to justice? We charge on your command!
+  We are prepared, Highlord. Let us battle for the fate of Azeroth! For the light of dawn!
+ */
+-#define GOSSIP_START_EVENT "We are prepared, Highlord. Let us battle for the fate of Azeroth! For the light of dawn!"
++#define GOSSIP_START_EVENT "Мы готовы, Верховный Лорд. Давайте вступи в бой за судьбу Азерота! За свет зари!"
+ 
+ enum Yells
+ {
+@@ -217,11 +217,17 @@
+                     me->GetMotionMaster()->MovementExpired();
+ 
+                 if(SpellEntry* spellRevive = GET_SPELL(SPELL_SUMMON_DEFILE))
++				{
+                     spellRevive->DurationIndex = 3;
+-                if(SpellEntry* spell = GET_SPELL(SPELL_ICEBLOCK_TRIGGER))
+-                    spell->Targets = 6; //target chain damage
+-                if(SpellEntry* spell = GET_SPELL(SPELL_SOUL_REAPER_HASTE_AURA))
+-                    spell->Targets = 1;
++				}
++				if(SpellEntry* lock = GET_SPELL(SPELL_ICEBLOCK_TRIGGER))
++				{
++					lock->Targets = 6; //target chain damage
++				}
++				if(SpellEntry* reaper = GET_SPELL(SPELL_SOUL_REAPER_HASTE_AURA))
++				{
++					reaper->Targets = 1;
++				}
+             }
+ 
+             void EnterCombat(Unit* /*pWho*/)
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+@@ -108,24 +108,24 @@
+                     pInstance->SetData(DATA_VALITHRIA_DREAMWALKER_EVENT, FAIL);
+             }
+ 
+-            void UpdateAI(const uint32 diff)
++            void DamageTaken(Unit* /*done_by*/, uint32& /*damage*/)
+             {
+                 if (!pInstance || pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) == DONE)
+                     return;
+ 
+-                if (!bAboveHP && (HealthAbovePct(74)))
++                if (!bAboveHP && HealthAbovePct(74))
+                 {
+                     DoScriptText(SAY_ABOVE_75, me);
+                     bAboveHP = true;
+                 }
+ 
+-                if (!bBelowHP && (HealthBelowPct(26)))
++                if (!bBelowHP && HealthBelowPct(26))
+                 {
+                     DoScriptText(SAY_BELOW_25, me);
+                     bBelowHP = true;
+                 }
+ 
+-                if ((HealthAbovePct(99)) && !bEnd)
++                if (!bEnd && HealthAbovePct(99))
+                 {
+                     DoScriptText(SAY_END, me);
+                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+@@ -133,8 +133,14 @@
+                     me->RemoveAurasDueToSpell(SPELL_CORRUPTION);
+                     bEnd = true;
+                 }
++			}
+ 
+-                if (bEnd && m_uiEndTimer <= diff)
++             void UpdateAI(const uint32 diff)
++			 {
++				 if (!bEnd || !pInstance || pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) == DONE)
++					 return;
++
++				  if (m_uiEndTimer <= diff)
+                 {
+                     switch(m_uiStage)
+                     {
+@@ -301,10 +307,10 @@
+ 
+             void MoveInLineOfSight(Unit *who)
+             {
+-                if (me->IsWithinDistInMap(who, 5.0f))
+-                {
++                if (me->IsWithinDistInMap(who, 5.0f))             
+                     DoCast(SPELL_VIGOR);
+-                }
++
++				ScriptedAI::MoveInLineOfSight(who);
+             }
+         };
+ 
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.cpp b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.cpp
+@@ -110,10 +110,7 @@
+ 
+             void UpdateAI(const uint32 uiDiff)
+             {
+-                if (!UpdateVictim())
+-                    return;
+-
+-                if (me->hasUnitState(UNIT_STAT_CASTING))
++                if (!UpdateVictim() || me->hasUnitState(UNIT_STAT_CASTING))
+                     return;
+ 
+                 if((me->GetEntry() == CREATURE_ADHERENT) || (me->GetEntry() == CREATURE_EMPOWERED_ADHERENT) || (me->GetEntry() == CREATURE_REANIMATED_ADHERENT))

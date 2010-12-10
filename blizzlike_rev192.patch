@@ -1,0 +1,41 @@
+# HG changeset patch
+# User asniker
+# Date 1289989664 -18000
+# Node ID 426563870f6a1d33137ed0440c2bc5ba8d48bb6d
+# Parent  6cfb8ca5e1c6f66e3ff9d9049c50bb5f3d6bc29a
+fix spell 45223
+
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -3808,6 +3808,11 @@
+             spellInfo->MaxAffectedTargets = 4;
+             count++;
+             break;
++		case 45223: //Shoot
++           spellInfo->AttributesEx1 |= SPELL_ATTR_EX_NO_INITIAL_AGGRO;
++           spellInfo->SpellFamilyFlags[2] = 0x01;
++             count++;
++             break; 
+         case 42005: // Bloodboil
+         case 38296: // Spitfire Totem
+         case 37676: // Insidious Whisper
+diff --git a/src/server/shared/SystemConfig.h b/src/server/shared/SystemConfig.h
+--- a/src/server/shared/SystemConfig.h
++++ b/src/server/shared/SystemConfig.h
+@@ -35,12 +35,12 @@
+ 
+ #if PLATFORM == PLATFORM_WINDOWS
+ # ifdef _WIN64
+-#  define _FULLVERSION _PACKAGENAME "Revision: " _REVISION " " _BUILD_DIRECTIVE " Last update: " _HASH " (Win64," _ENDIAN_STRING ")"
++#  define _FULLVERSION _PACKAGENAME "Revision: " _REVISION " Last update: " _HASH " (Win64," _ENDIAN_STRING ")"
+ # else
+-#  define _FULLVERSION _PACKAGENAME "Revision: " _REVISION " " _BUILD_DIRECTIVE " Last update: " _HASH " (Win32," _ENDIAN_STRING ")"
++#  define _FULLVERSION _PACKAGENAME "Revision: " _REVISION " Last update: " _HASH " (Win32," _ENDIAN_STRING ")"
+ # endif
+ #else
+-#  define _FULLVERSION _PACKAGENAME "Revision: " _REVISION " " _BUILD_DIRECTIVE " Last update: " _HASH " (Unix," _ENDIAN_STRING ")"
++#  define _FULLVERSION _PACKAGENAME "Revision: " _REVISION " Last update: " _HASH " (Unix," _ENDIAN_STRING ")"
+ #endif
+ #endif
+ 

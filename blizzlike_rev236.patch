@@ -1,0 +1,148 @@
+# HG changeset patch
+# User asniker
+# Date 1290523725 -18000
+# Node ID 66a1a81ac40e2a16fde8ee74db94f8419daee369
+# Parent  1d2059a179f4e1e2fb49242da2b37f8661839e01
+Ядро/Предметы: Пофикшены предметы: Символ Охотника, Символ Страха, Символ Демона Бездны.
+Ядро/Заклинания: Пофикшены заклинания: Призыв Инфернала, Призыв стражника ужаса.
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -6037,3 +6037,14 @@
+ UPDATE `creature_template` SET `unit_flags`=`unit_flags`|33554432 WHERE `entry`=27893;
+ UPDATE `creature_template` SET `mindmg`=250,`maxdmg`=450,`attackpower` = ROUND((`mindmg` + `maxdmg`) / 4 * 7),`mindmg`= ROUND(`mindmg` - `attackpower` / 7),`maxdmg` = ROUND(`maxdmg` - `attackpower` / 7),`baseattacktime`=3000  WHERE `entry`=27893;
+ 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (57264); 
++INSERT INTO `spell_proc_event` VALUES (57264, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0); 
++
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (57262); 
++INSERT INTO `spell_proc_event` VALUES (57262, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0); 
++
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (57277); 
++INSERT INTO `spell_proc_event` VALUES (57277, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0);
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix spell.sql b/sql/Blizzlike@Sacred-core/new fix/fix spell.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix spell.sql	
+@@ -0,0 +1,10 @@
++п»їDELETE FROM `spell_proc_event` WHERE `entry` IN (57264); 
++INSERT INTO `spell_proc_event` VALUES (57264, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0); 
++
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (57262); 
++INSERT INTO `spell_proc_event` VALUES (57262, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0); 
++
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (57277); 
++INSERT INTO `spell_proc_event` VALUES (57277, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0);
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -6283,6 +6283,28 @@
+                     triggered_spell_id = 37378;
+                     break;
+                 }
++				//Glyph of Felhunter 
++				case 57264: 
++				{ 
++					triggered_spell_id = 56249; 
++                    break; 
++				} 
++				//Glyph of Fear 
++				case 42458: 
++				{ 
++					triggered_spell_id = 56244; 
++                    break; 
++				}
++				case 1122: 
++				{ 
++					triggered_spell_id = 22703; 
++                    break; 
++				} 
++				case 18540: 
++				{ 
++					triggered_spell_id = 60478; 
++                    break; 
++				}
+             }
+             break;
+         }
+@@ -8300,6 +8322,16 @@
+                     case 33896:             // Desperate Defense (Stonescythe Whelp, Stonescythe Alpha, Stonescythe Ambusher)
+                         trigger_spell_id = 33898;
+                         break;
++						//Glyph of Voidwalker   
++                    case 57277:   
++                    {   
++						if (auraSpellInfo->SpellIconID == 2557)
++						{   
++                         float stat = 0.0f;   
++                         if (GetStat(STAT_STAMINA) > stat) { trigger_spell_id = 56247;stat = GetStat(STAT_STAMINA); }   
++                       }   
++                        break;   
++                     }
+                     case 43820:             // Charm of the Witch Doctor (Amani Charm of the Witch Doctor trinket)
+                         // Pct value stored in dummy
+                         basepoints0 = pVictim->GetCreateHealth() * SpellMgr::CalculateSpellEffectAmount(auraSpellInfo, 1) / 100;
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -7229,11 +7229,51 @@
+     float radius = 5.0f;
+     uint32 amount = damage > 0 ? damage : 1;
+     int32 duration = GetSpellDuration(m_spellInfo);
++	Map *map = caster->GetMap(); 
++    uint32 count = 0; 
++    Position pos; 
++        GetSummonPosition(i, pos, radius, count); 
++  TempSummon *summon = map->SummonCreature(entry, pos, properties, duration, caster); 
++        if (!summon) 
++            return;
+     switch (m_spellInfo->Id)
+     {
+-        case 1122: // Inferno
+-            amount = 1;
+-            break;
++        case 1122: // Inferno 
++    { 
++        amount = 1; 
++        for (count = 0; count < amount; ++count) 
++    { 
++                    
++  if(summon->GetEntry() == 89) 
++  { 
++   if (uint32 weapon = m_caster->GetUInt32Value(PLAYER_VISIBLE_ITEM_16_ENTRYID)) 
++            { 
++                summon->SetDisplayId(169); 
++                summon->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, weapon); 
++            } 
++            else 
++                summon->SetDisplayId(1691); 
++        } 
++         break; 
++   case 60478: 
++    { 
++  amount = 1; 
++  for (count = 0; count < amount; ++count) 
++    { 
++                    
++  if(summon->GetEntry() == 11859) 
++  { 
++   if (uint32 weapon = m_caster->GetUInt32Value(PLAYER_VISIBLE_ITEM_16_ENTRYID)) 
++            { 
++                summon->SetDisplayId(1912); 
++                summon->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, weapon); 
++            } 
++            else 
++                summon->SetDisplayId(1916); 
++        } 
++              
++          break; 
++    }
+         case 49028: // Dancing Rune Weapon
+             if (AuraEffect *aurEff = m_originalCaster->GetAuraEffect(63330, 0)) // glyph of Dancing Rune Weapon
+                 duration += aurEff->GetAmount();

@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1286618249 -21600
+# Node ID b58dc33e3505bc708698af95491e2017f662eea1
+# Parent  37b78c02343d9242acf54ced15d6c376e0db9362
+add pvp-zone
+
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -7075,7 +7075,7 @@
+     }
+ 
+     pvpInfo.inNoPvPArea = false;
+-    if (zone->IsSanctuary())       // in sanctuary
++    if (zone->IsSanctuary() || GetZoneId() == 15)       // in sanctuary
+     {
+         SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_SANCTUARY);
+         pvpInfo.inNoPvPArea = true;

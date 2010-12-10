@@ -1,0 +1,56 @@
+# HG changeset patch
+# User asniker
+# Date 1291135043 -18000
+# Node ID fab8ed69833032fd1b1c8f11e31f9d2f6cd4a8e6
+# Parent  375ce21203085c0887d32256833486708af6b3f9
+ядро/Ѕаза: фикс €мы
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -3426,10 +3426,6 @@
+ DELETE FROM creature WHERE guid=4462841;
+ DELETE FROM creature WHERE guid=4462837;
+ 
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4581275','38189','658','2','64','0','1290','1189.8','338.68','627.621','3.86021','300','0','0','6972500','85160','0','0','0','0','0');
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4530433','38189','658','1','64','0','1290','1188.36','339.351','627.621','3.49227','300','0','0','6972500','85160','0','0','0','0','0');
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4583729','37221','658','2','128','0','1221','1189.83','338.681','627.621','3.84057','300','0','0','5040000','881400','0','0','0','0','0');
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4583330','37221','658','1','128','0','1221','1188.07','339.471','627.621','3.77303','300','0','0','5040000','881400','0','0','0','0','0');
+ 
+ SET NAMES 'UTF8';
+ DELETE FROM `creature_template` WHERE `entry`=100003;
+diff --git a/sql/Blizzlike@Sacred-core/world/PitOfSaron.sql b/sql/Blizzlike@Sacred-core/world/PitOfSaron.sql
+--- a/sql/Blizzlike@Sacred-core/world/PitOfSaron.sql
++++ b/sql/Blizzlike@Sacred-core/world/PitOfSaron.sql
+@@ -197,7 +197,3 @@
+ DELETE FROM creature WHERE guid=4462841;
+ DELETE FROM creature WHERE guid=4462837;
+ 
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4581275','38189','658','2','64','0','1290','1189.8','338.68','627.621','3.86021','300','0','0','6972500','85160','0','0','0','0','0');
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4530433','38189','658','1','64','0','1290','1188.36','339.351','627.621','3.49227','300','0','0','6972500','85160','0','0','0','0','0');
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4583729','37221','658','2','128','0','1221','1189.83','338.681','627.621','3.84057','300','0','0','5040000','881400','0','0','0','0','0');
+-Insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('4583330','37221','658','1','128','0','1221','1188.07','339.471','627.621','3.77303','300','0','0','5040000','881400','0','0','0','0','0');
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp b/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp
+--- a/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp
++++ b/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp
+@@ -150,6 +150,19 @@
+                 pInstance->SetData(DATA_TYRANNUS_EVENT, DONE);
+                 if (Creature* pRimefang = GetRimefang())
+                     pRimefang->ForcedDespawn();
++					
++					Creature* pJainaOrSylvanas = NULL;
++					Position spawnPoint = { 993.056f, 206.891f, 628.156f, 5.059f };
++					if (pInstance->GetData(DATA_TEAM_IN_INSTANCE) == TEAM_ALLIANCE)
++					{
++					if (Creature* pJainaOrSylvanas = me->SummonCreature(NPC_JAINA_PART2, spawnPoint, TEMPSUMMON_MANUAL_DESPAWN))
++					DoScriptText(SAY_JAYNA_OUTRO_4, pJainaOrSylvanas);
++					}
++					else
++					{
++					if (Creature* pJainaOrSylvanas = me->SummonCreature(NPC_SYLVANAS_PART2, spawnPoint, TEMPSUMMON_MANUAL_DESPAWN))
++					DoScriptText(SAY_SYLVANAS_OUTRO_4, pJainaOrSylvanas);
++					}
+             }
+         }
+ 

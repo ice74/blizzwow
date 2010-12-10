@@ -1,0 +1,32 @@
+# HG changeset patch
+# User asniker
+# Date 1289385963 -18000
+# Node ID b1a1c7deed6367282de36de2a0378aab50f08192
+# Parent  7a5a6a8c9273994fabc438565817f243e6e39fce
+fix some quest
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5802,6 +5802,8 @@
+ UPDATE `world`.`quest_template` SET `ReqCreatureOrGOId1` = '0',
+ `ReqCreatureOrGOCount1` = '0' WHERE `quest_template`.`entry` =14142;
+ 
+-
+-
+-
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12856;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12432;
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
+@@ -31,3 +31,6 @@
+ `ReqSpellCast1` = '0' WHERE `quest_template`.`entry` =14096;
+ UPDATE `world`.`quest_template` SET `ReqCreatureOrGOId1` = '0',
+ `ReqCreatureOrGOCount1` = '0' WHERE `quest_template`.`entry` =14142;
++
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12856;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12432;

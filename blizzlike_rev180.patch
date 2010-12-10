@@ -1,0 +1,23 @@
+# HG changeset patch
+# User asniker
+# Date 1289723081 -18000
+# Node ID fbb566fbf0664ad57aaffda496c3aa84bd59c2f0
+# Parent  48d61e0eaa83e26e04d880a5832c222ea037bea8
+fix oculus
+
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp b/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp
+@@ -85,9 +85,9 @@
+         void Reset()
+         {
+             lSummons.DespawnAll();
+-            uiMagicPullTimer = 15000;
+-            uiStompTimer = 17000;
+-            uiBombSummonTimer = 3000;
++            uiMagicPullTimer = 13000;
++            uiStompTimer = 19000;
++            uiBombSummonTimer = 5000;
+ 
+             bPostPull = false;
+ 

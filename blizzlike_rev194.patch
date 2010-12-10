@@ -1,0 +1,122 @@
+# HG changeset patch
+# User asniker
+# Date 1289990080 -18000
+# Node ID 6be479ab9676655b219afe1e6750e02c58a84ea1
+# Parent  aab11ab0c0dd583e61eff0acf79353f1e7633210
+fix crash at IOC
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5982,12 +5982,11 @@
+ (250186, 23472, 628, 3, 1, 0, 0, 430.61, -857.491, 48.198, 0.074609, 300, 0, 0, 4120, 0, 0, 0);
+ 
+ UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;
+-
+-
+-
+-
+-
+-
+-
+-
+-
++UPDATE `creature_template` SET `ScriptName`='npc_savage_worg' WHERE `entry`=29735;
++UPDATE `creature_template` SET `ScriptName`='npc_dark_ranger_marrah' WHERE `entry`=24137;
++
++
++
++
++
++
+diff --git a/src/server/scripts/Northrend/isle_of_conquest.cpp b/src/server/scripts/Northrend/isle_of_conquest.cpp
+--- a/src/server/scripts/Northrend/isle_of_conquest.cpp
++++ b/src/server/scripts/Northrend/isle_of_conquest.cpp
+@@ -69,49 +69,44 @@
+ 		}
+ 
+ 		void UpdateAI(const uint32 diff)
+-		{
+-			if (!UpdateVictim())
+-				return;
+-
+-			if (uiMortalStrikeTimer < diff)
+-			{
+-				DoCast(me->getVictim(), SPELL_MORTAL_STRIKE);
+-				uiMortalStrikeTimer = urand(10*IN_MILLISECONDS,20*IN_MILLISECONDS);
+-			} else uiMortalStrikeTimer -= diff;
+-
+-			if (uiDaggerThrowTimer < diff)
+-			{
+-				if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
+-					DoCast(pTarget, RAID_MODE(SPELL_DAGGER_THROW_1, SPELL_DAGGER_THROW_2));
+-				uiDaggerThrowTimer = urand(7*IN_MILLISECONDS,12*IN_MILLISECONDS);
+-			} else uiDaggerThrowTimer -= diff;
+-
+-			if (uiCrushingLeapTimer < diff)
+-			{
+-				if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
+-					DoCast(pTarget, SPELL_CRUSHING_LEAP);
+-				uiCrushingLeapTimer = urand(12*IN_MILLISECONDS,16*IN_MILLISECONDS);
+-			} else uiCrushingLeapTimer -= diff;
+-
+-			// check if creature is not outside of building
+-			if (uiResetTimer < diff)
+-			{
+-				float x,y;
+-				me->GetPosition(x,y);
+-				if(me->GetEntry()==34922 && (x>1348 || x<1283 || y<-800 || y>-730)){
+-					me->Kill(me->getVictim());
+-					EnterEvadeMode();
+-				}
+-				if(me->GetEntry()==34924 && (x>288 || x<216 || y<-863 || y>-800))
+-				{
+-					EnterEvadeMode();
+-					me->Kill(me->getVictim());
+-				}
+-				uiResetTimer = 200;
+-			} else uiResetTimer -= diff;
+-
+-			DoMeleeAttackIfReady();
+-		}
++		 {
++                        if (!UpdateVictim())
++                                return;
++ 
++                        if (uiMortalStrikeTimer < diff)
++                        {
++                                DoCast(me->getVictim(), SPELL_MORTAL_STRIKE);
++                                uiMortalStrikeTimer = urand(10*IN_MILLISECONDS,20*IN_MILLISECONDS);
++                        } else uiMortalStrikeTimer -= diff;
++ 
++                        if (uiDaggerThrowTimer < diff)
++                        {
++                                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
++                                        DoCast(pTarget, RAID_MODE(SPELL_DAGGER_THROW_1, SPELL_DAGGER_THROW_2));
++                                uiDaggerThrowTimer = urand(7*IN_MILLISECONDS,12*IN_MILLISECONDS);
++                        } else uiDaggerThrowTimer -= diff;
++ 
++                        if (uiCrushingLeapTimer < diff)
++                        {
++                                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
++                                        DoCast(pTarget, SPELL_CRUSHING_LEAP);
++                                uiCrushingLeapTimer = urand(12*IN_MILLISECONDS,16*IN_MILLISECONDS);
++                        } else uiCrushingLeapTimer -= diff;
++ 
++                        // check if creature is not outside of building
++                        if (uiResetTimer < diff)
++                        {
++                                float x,y;
++                                me->GetPosition(x,y);
++                                if (me->GetEntry()==34922 && (x>1348 || x<1283 || y<-800 || y>-730))
++                                        EnterEvadeMode();
++                                if (me->GetEntry()==34924 && (x>288 || x<216 || y<-863 || y>-800))
++                                        EnterEvadeMode();
++                                uiResetTimer = 200;
++                        } else uiResetTimer -= diff;
++ 
++                        DoMeleeAttackIfReady();
++                }
+ 	};
+     CreatureAI *GetAI(Creature *creature) const
+     {

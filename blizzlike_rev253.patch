@@ -1,0 +1,20 @@
+# HG changeset patch
+# User asniker
+# Date 1291349531 -18000
+# Node ID cb44fccf4e2139e26b27a9e9517f3d0999149cca
+# Parent  acca9ad6920274f58dad58d241374f59fda669e8
+ядро/ Druid T10 Balance 2P Bonus
+
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -640,6 +640,9 @@
+                         if (unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00200000, 0, 0))
+                             damage = int32(damage*(100.0f+aurEff->GetAmount())/100.0f);
+                 }
++				// Item - Druid T10 Balance 2P Bonus
++				if (m_spellInfo->Id == 16870 && m_caster->HasAura(70718))
++					m_caster->CastSpell(m_caster, 70721, true);
+                 break;
+             }
+             case SPELLFAMILY_ROGUE:

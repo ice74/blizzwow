@@ -1,0 +1,977 @@
+# HG changeset patch
+# User asniker
+# Date 1286687224 -21600
+# Node ID b587e60bb6b47584bd818479b4b3e4f2b89da166
+# Parent  14d9fe4d078208aae60efbd44f710f5c08decb34
+fix icecrown, ruby sanctum warnings
+
+diff --git a/src/server/game/DungeonFinding/LFGMgr.cpp b/src/server/game/DungeonFinding/LFGMgr.cpp
+--- a/src/server/game/DungeonFinding/LFGMgr.cpp
++++ b/src/server/game/DungeonFinding/LFGMgr.cpp
+@@ -1609,10 +1609,7 @@
+ 
+         // Teleport Player
+         for (LfgPlayerList::const_iterator it = players.begin(); it != players.end(); ++it)
+-        {
+-            (*it)->CastSpell(*it, LFG_SPELL_DUNGEON_COOLDOWN, false);
+             TeleportPlayer(*it, false);
+-        }
+ 
+         for (LfgProposalPlayerMap::const_iterator it = pProposal->players.begin(); it != pProposal->players.end(); ++it)
+             delete it->second;
+@@ -1889,10 +1886,7 @@
+                     plr->SetBattlegroundEntryPoint();
+ 
+                 if (plr->TeleportTo(mapid, x, y, z, orientation))
+-                {
+                     plr->RemoveAurasByType(SPELL_AURA_MOUNTED);
+-                    plr->CastSpell(plr, LFG_SPELL_LUCK_OF_THE_DRAW, false);
+-                }
+                 else
+                 {
+                     error = LFG_TELEPORTERROR_INVALID_LOCATION;
+diff --git a/src/server/game/Globals/ObjectMgr.cpp b/src/server/game/Globals/ObjectMgr.cpp
+--- a/src/server/game/Globals/ObjectMgr.cpp
++++ b/src/server/game/Globals/ObjectMgr.cpp
+@@ -7871,7 +7871,7 @@
+                 uint32 loot_id = goInfo->GetLootId();
+ 
+                 // find quest loot for GO
+-                if (LootTemplates_Gameobject.HaveQuestLootFor(loot_id))
++                if (goInfo->chest.questId || LootTemplates_Gameobject.HaveQuestLootFor(loot_id))
+                 {
+                     mGameObjectForQuestSet.insert(go_entry);
+                     ++count;
+diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
+--- a/src/server/game/Scripting/ScriptLoader.cpp
++++ b/src/server/game/Scripting/ScriptLoader.cpp
+@@ -468,7 +468,7 @@
+ void AddSC_boss_blood_queen_lanathel();
+ void AddSC_icecrown_citadel_teleport();
+ void AddSC_boss_gunship_battle();
+-void AddSC_boss_baltharus(); // Ruby Sancrum
++void AddSC_boss_baltharus();	//RubySanctum
+ void AddSC_boss_halion();
+ void AddSC_boss_ragefire();
+ void AddSC_boss_zarithrian();
+@@ -1152,7 +1152,7 @@
+     AddSC_boss_blood_queen_lanathel();
+     AddSC_icecrown_citadel_teleport();
+ 	AddSC_boss_gunship_battle();
+-	AddSC_boss_baltharus(); // Ruby Sancrum
++	AddSC_boss_baltharus();	//RubySanctum
+     AddSC_boss_halion();
+     AddSC_boss_ragefire();
+     AddSC_boss_zarithrian();
+diff --git a/src/server/game/Spells/SpellScript.cpp b/src/server/game/Spells/SpellScript.cpp
+--- a/src/server/game/Spells/SpellScript.cpp
++++ b/src/server/game/Spells/SpellScript.cpp
+@@ -168,6 +168,16 @@
+     (spellScript->*pEffectHandlerScript)(effIndex);
+ }
+ 
++SpellScript::HitHandler::HitHandler(SpellHitFnType _pHitHandlerScript)
++{
++    pHitHandlerScript = _pHitHandlerScript;
++}
++
++void SpellScript::HitHandler::Call(SpellScript * spellScript)
++{
++    (spellScript->*pHitHandlerScript)();
++}
++
+ bool SpellScript::_Validate(SpellEntry const * entry)
+ {
+     for (std::list<EffectHandler>::iterator itr = OnEffect.begin(); itr != OnEffect.end();  ++itr)
+diff --git a/src/server/game/Spells/SpellScript.h b/src/server/game/Spells/SpellScript.h
+--- a/src/server/game/Spells/SpellScript.h
++++ b/src/server/game/Spells/SpellScript.h
+@@ -132,8 +132,11 @@
+     // internal use classes & functions
+     // DO NOT OVERRIDE THESE IN SCRIPTS
+     public:
+-        typedef void(SpellScript::*SpellEffectFnType)(SpellEffIndex);
+-        typedef void(SpellScript::*SpellHitFnType)();
++        #define SPELLSCRIPT_FUNCTION_TYPE_DEFINES(CLASSNAME) \
++            typedef void(CLASSNAME::*SpellEffectFnType)(SpellEffIndex); \
++            typedef void(CLASSNAME::*SpellHitFnType)(); \
++
++        SPELLSCRIPT_FUNCTION_TYPE_DEFINES(SpellScript)
+ 
+         class EffectHandler : public  _SpellScript::EffectNameCheck, public _SpellScript::EffectHook
+         {
+@@ -145,7 +148,21 @@
+             private:
+                 SpellEffectFnType pEffectHandlerScript;
+         };
+-        typedef SpellHitFnType HitHandler;
++
++        class HitHandler
++        {
++            public:
++                HitHandler(SpellHitFnType _pHitHandlerScript);
++                void Call(SpellScript * spellScript);
++            private:
++                SpellHitFnType pHitHandlerScript;
++        };
++
++        #define SPELLSCRIPT_FUNCTION_CAST_DEFINES(CLASSNAME) \
++        class EffectHandlerFunction : public SpellScript::EffectHandler { public: EffectHandlerFunction(SpellEffectFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName) : SpellScript::EffectHandler((SpellScript::SpellEffectFnType)_pEffectHandlerScript, _effIndex, _effName) {} }; \
++        class HitHandlerFunction : public SpellScript::HitHandler { public: HitHandlerFunction(SpellHitFnType _pHitHandlerScript) : SpellScript::HitHandler((SpellScript::SpellHitFnType)_pHitHandlerScript) {} }; \
++
++        #define PrepareSpellScript(CLASSNAME) SPELLSCRIPT_FUNCTION_TYPE_DEFINES(CLASSNAME) SPELLSCRIPT_FUNCTION_CAST_DEFINES(CLASSNAME)
+     public:
+         bool _Validate(SpellEntry const * entry);
+         bool _Load(Spell * spell);
+@@ -168,7 +185,7 @@
+         // example: OnEffect += SpellEffectFn(class::function, EffectIndexSpecifier, EffectNameSpecifier);
+         // where function is void function(SpellEffIndex effIndex)
+         HookList<EffectHandler> OnEffect;
+-        #define SpellEffectFn(F, I, N) EffectHandler((SpellEffectFnType)&F, I, N)
++        #define SpellEffectFn(F, I, N) EffectHandlerFunction(&F, I, N)
+ 
+         // example: BeforeHit += SpellHitFn(class::function);
+         HookList<HitHandler> BeforeHit;
+@@ -177,7 +194,7 @@
+         // example: AfterHit += SpellHitFn(class::function);
+         HookList<HitHandler> AfterHit;
+         // where function is: void function()
+-        #define SpellHitFn(F) (SpellHitFnType)&F
++        #define SpellHitFn(F) HitHandlerFunction(&F)
+ 
+         // hooks are executed in following order, at specified event of spell:
+         // 1. BeforeHit - executed just before spell hits a target
+@@ -277,12 +294,16 @@
+     // internal use classes & functions
+     // DO NOT OVERRIDE THESE IN SCRIPTS
+     public:
+-        typedef void(AuraScript::*AuraEffectApplicationModeFnType)(AuraEffect const *, AuraApplication const *, AuraEffectHandleModes mode);
+-        typedef void(AuraScript::*AuraEffectPeriodicFnType)(AuraEffect const *, AuraApplication const *);
+-        typedef void(AuraScript::*AuraEffectUpdatePeriodicFnType)(AuraEffect *);
+-        typedef void(AuraScript::*AuraEffectCalcAmountFnType)(AuraEffect const *, int32 &, bool &);
+-        typedef void(AuraScript::*AuraEffectCalcPeriodicFnType)(AuraEffect const *, bool &, int32 &);
+-        typedef void(AuraScript::*AuraEffectCalcSpellModFnType)(AuraEffect const *, SpellModifier *&);
++
++    #define AURASCRIPT_FUNCTION_TYPE_DEFINES(CLASSNAME) \
++        typedef void(CLASSNAME::*AuraEffectApplicationModeFnType)(AuraEffect const *, AuraApplication const *, AuraEffectHandleModes mode); \
++        typedef void(CLASSNAME::*AuraEffectPeriodicFnType)(AuraEffect const *, AuraApplication const *); \
++        typedef void(CLASSNAME::*AuraEffectUpdatePeriodicFnType)(AuraEffect *); \
++        typedef void(CLASSNAME::*AuraEffectCalcAmountFnType)(AuraEffect const *, int32 &, bool &); \
++        typedef void(CLASSNAME::*AuraEffectCalcPeriodicFnType)(AuraEffect const *, bool &, int32 &); \
++        typedef void(CLASSNAME::*AuraEffectCalcSpellModFnType)(AuraEffect const *, SpellModifier *&); \
++
++        AURASCRIPT_FUNCTION_TYPE_DEFINES(AuraScript)
+ 
+         class EffectBase : public  _SpellScript::EffectAuraNameCheck, public _SpellScript::EffectHook
+         {
+@@ -340,6 +361,17 @@
+                 AuraEffectApplicationModeFnType pEffectHandlerScript;
+                 AuraEffectHandleModes mode;
+         };
++
++        #define AURASCRIPT_FUNCTION_CAST_DEFINES(CLASSNAME) \
++        class EffectPeriodicHandlerFunction : public AuraScript::EffectPeriodicHandler { public: EffectPeriodicHandlerFunction(AuraEffectPeriodicFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName) : AuraScript::EffectPeriodicHandler((AuraScript::AuraEffectPeriodicFnType)_pEffectHandlerScript, _effIndex, _effName) {} }; \
++        class EffectUpdatePeriodicHandlerFunction : public AuraScript::EffectUpdatePeriodicHandler { public: EffectUpdatePeriodicHandlerFunction(AuraEffectUpdatePeriodicFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName) : AuraScript::EffectUpdatePeriodicHandler((AuraScript::AuraEffectUpdatePeriodicFnType)_pEffectHandlerScript, _effIndex, _effName) {} }; \
++        class EffectCalcAmountHandlerFunction : public AuraScript::EffectCalcAmountHandler { public: EffectCalcAmountHandlerFunction(AuraEffectCalcAmountFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName) : AuraScript::EffectCalcAmountHandler((AuraScript::AuraEffectCalcAmountFnType)_pEffectHandlerScript, _effIndex, _effName) {} }; \
++        class EffectCalcPeriodicHandlerFunction : public AuraScript::EffectCalcPeriodicHandler { public: EffectCalcPeriodicHandlerFunction(AuraEffectCalcPeriodicFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName) : AuraScript::EffectCalcPeriodicHandler((AuraScript::AuraEffectCalcPeriodicFnType)_pEffectHandlerScript, _effIndex, _effName) {} }; \
++        class EffectCalcSpellModHandlerFunction : public AuraScript::EffectCalcSpellModHandler { public: EffectCalcSpellModHandlerFunction(AuraEffectCalcSpellModFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName) : AuraScript::EffectCalcSpellModHandler((AuraScript::AuraEffectCalcSpellModFnType)_pEffectHandlerScript, _effIndex, _effName) {} }; \
++        class EffectApplyHandlerFunction : public AuraScript::EffectApplyHandler { public: EffectApplyHandlerFunction(AuraEffectApplicationModeFnType _pEffectHandlerScript,uint8 _effIndex, uint16 _effName, AuraEffectHandleModes _mode) : AuraScript::EffectApplyHandler((AuraScript::AuraEffectApplicationModeFnType)_pEffectHandlerScript, _effIndex, _effName, _mode) {} }; \
++
++        #define PrepareAuraScript(CLASSNAME) AURASCRIPT_FUNCTION_TYPE_DEFINES(CLASSNAME) AURASCRIPT_FUNCTION_CAST_DEFINES(CLASSNAME)
++
+     public:
+         bool _Validate(SpellEntry const * entry);
+         bool _Load(Aura * aura);
+@@ -357,43 +389,43 @@
+         // executed when periodic aura effect is applied with specified mode to target
+         // example: OnEffectApply += AuraEffectApplyFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier, AuraEffectHandleModes);
+         HookList<EffectApplyHandler> OnEffectApply;
+-        #define AuraEffectApplyFn(F, I, N, M) EffectApplyHandler((AuraEffectApplicationModeFnType)&F, I, N, M)
++        #define AuraEffectApplyFn(F, I, N, M) EffectApplyHandlerFunction((AuraEffectApplicationModeFnType)&F, I, N, M)
+ 
+         // executed when periodic aura effect is removed with specified mode from target
+         // example: OnEffectRemove += AuraEffectRemoveFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier, AuraEffectHandleModes);
+         // where function is: void function (AuraEffect const * aurEff, AuraApplication const * aurApp, AuraEffectHandleModes mode);
+         HookList<EffectApplyHandler> OnEffectRemove;
+-        #define AuraEffectRemoveFn(F, I, N, M) EffectApplyHandler((AuraEffectApplicationModeFnType)&F, I, N, M)
++        #define AuraEffectRemoveFn(F, I, N, M) EffectApplyHandlerFunction((AuraEffectApplicationModeFnType)&F, I, N, M)
+ 
+         // executed when periodic aura effect ticks on target
+         // example: OnEffectPeriodic += AuraEffectPeriodicFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier);
+         // where function is: void function (AuraEffect const * aurEff, AuraApplication const * aurApp, AuraEffectHandleModes mode);
+         HookList<EffectPeriodicHandler> OnEffectPeriodic;
+-        #define AuraEffectPeriodicFn(F, I, N) EffectPeriodicHandler((AuraEffectPeriodicFnType)&F, I, N)
++        #define AuraEffectPeriodicFn(F, I, N) EffectPeriodicHandlerFunction((AuraEffectPeriodicFnType)&F, I, N)
+ 
+         // executed when periodic aura effect is updated
+         // example: OnEffectUpdatePeriodic += AuraEffectUpdatePeriodicFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier);
+         // where function is: void function (AuraEffect const * aurEff, AuraApplication const * aurApp);
+         HookList<EffectUpdatePeriodicHandler> OnEffectUpdatePeriodic;
+-        #define AuraEffectUpdatePeriodicFn(F, I, N) EffectUpdatePeriodicHandler((AuraEffectUpdatePeriodicFnType)&F, I, N)
++        #define AuraEffectUpdatePeriodicFn(F, I, N) EffectUpdatePeriodicHandlerFunction((AuraEffectUpdatePeriodicFnType)&F, I, N)
+ 
+         // executed when aura effect calculates amount
+         // example: OnEffectCalcAmount += AuraEffectCalcAmounFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier);
+         // where function is: void function (AuraEffect * aurEff, int32 & amount, bool & canBeRecalculated);
+         HookList<EffectCalcAmountHandler> OnEffectCalcAmount;
+-        #define AuraEffectCalcAmountFn(F, I, N) EffectCalcAmountHandler((AuraEffectCalcAmountFnType)&F, I, N)
++        #define AuraEffectCalcAmountFn(F, I, N) EffectCalcAmountHandlerFunction((AuraEffectCalcAmountFnType)&F, I, N)
+ 
+         // executed when aura effect calculates periodic data
+         // example: OnEffectCalcPeriodic += AuraEffectCalcPeriodicFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier);
+         // where function is: void function (AuraEffect const * aurEff, bool & isPeriodic, int32 & amplitude);
+         HookList<EffectCalcPeriodicHandler> OnEffectCalcPeriodic;
+-        #define AuraEffectCalcPeriodicFn(F, I, N) EffectCalcPeriodicHandler((AuraEffectCalcPeriodicFnType)&F, I, N)
++        #define AuraEffectCalcPeriodicFn(F, I, N) EffectCalcPeriodicHandlerFunction((AuraEffectCalcPeriodicFnType)&F, I, N)
+ 
+         // executed when aura effect calculates spellmod
+         // example: OnEffectCalcSpellMod += AuraEffectCalcSpellModFn(class::function, EffectIndexSpecifier, EffectAuraNameSpecifier);
+         // where function is: void function (AuraEffect const * aurEff, SpellModifier *& spellMod);
+         HookList<EffectCalcSpellModHandler> OnEffectCalcSpellMod;
+-        #define AuraEffectCalcSpellModFn(F, I, N) EffectCalcSpellModHandler((AuraEffectCalcSpellModFnType)&F, I, N)
++        #define AuraEffectCalcSpellModFn(F, I, N) EffectCalcSpellModHandlerFunction((AuraEffectCalcSpellModFnType)&F, I, N)
+ 
+         // AuraScript interface - hook/effect execution manipulators
+ 
+diff --git a/src/server/scripts/Examples/example_spell.cpp b/src/server/scripts/Examples/example_spell.cpp
+--- a/src/server/scripts/Examples/example_spell.cpp
++++ b/src/server/scripts/Examples/example_spell.cpp
+@@ -33,6 +33,10 @@
+ 
+         class spell_ex_5581SpellScript : public SpellScript
+         {
++            // initialize script, this macro does compile time check for type of the function - prevents possible issues
++            // if you have assigned wrong type of function to a hook you'll receive type conversion error during build
++            // this line is required, otherwise you'll get XXXHandlerFunction - identifier not found errors
++            PrepareSpellScript(spell_ex_5581SpellScript)
+             enum Spells
+             {
+                 SPELL_TRIGGERED = 18282
+@@ -100,6 +104,7 @@
+             {
+                 // we're registering our function here
+                 // function HandleDummy will be called when unit is hit by spell, just before default effect 0 handler
++                //OnEffect += SpellEffectFn(spell_ex_5581SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                 OnEffect += SpellEffectFn(spell_ex_5581SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                 // this will prompt an error on startup because effect 0 of spell 49375 is set to SPELL_EFFECT_DUMMY, not SPELL_EFFECT_APPLY_AURA
+                 //OnEffect += SpellEffectFn(spell_gen_49375SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+@@ -130,6 +135,7 @@
+ 
+         class spell_ex_66244AuraScript : public AuraScript
+         {
++            PrepareAuraScript(spell_ex_66244AuraScript)
+             enum Spells
+             {
+                 SPELL_TRIGGERED = 18282
+@@ -265,6 +271,7 @@
+ 
+         class spell_ex_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_ex_SpellScript)
+             //bool Validate(SpellEntry const * spellEntry){return true;}
+             //bool Load(){return true;}
+             //void Unload(){}
+@@ -291,6 +298,7 @@
+ 
+         class spell_ex_AuraScript : public AuraScript
+         {
++            PrepareAuraScript(spell_ex)
+             //bool Validate(SpellEntry const * spellEntry){return true;}
+             //bool Load(){return true;}
+             //void Unload(){}
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+@@ -904,6 +904,7 @@
+ 
+         class spell_deathbringer_blood_link_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_deathbringer_blood_link_SpellScript)
+             bool Validate(SpellEntry const* /*spellInfo*/)
+             {
+                 if (!sSpellStore.LookupEntry(SPELL_BLOOD_LINK_POWER))
+@@ -949,6 +950,7 @@
+ 
+         class spell_deathbringer_blood_link_AuraScript : public AuraScript
+         {
++			PrepareAuraScript(spell_deathbringer_blood_link_AuraScript)
+             bool Validate(SpellEntry const* /*spellInfo*/)
+             {
+                 if (!sSpellStore.LookupEntry(SPELL_MARK_OF_THE_FALLEN_CHAMPION))
+@@ -991,6 +993,7 @@
+ 
+         class spell_deathbringer_blood_power_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_deathbringer_blood_power_SpellScript)
+             void ModAuraValue()
+             {
+                 if (Aura* aura = GetHitAura())
+@@ -1005,6 +1008,8 @@
+ 
+         class spell_deathbringer_blood_power_AuraScript : public AuraScript
+         {
++               PrepareAuraScript(spell_deathbringer_blood_power_AuraScript)
++				 
+             void RecalculateHook(AuraEffect const* /*aurEffect*/, int32& amount, bool& canBeRecalculated)
+             {
+                 amount = GetUnitOwner()->GetPower(POWER_ENERGY);
+@@ -1043,6 +1048,7 @@
+ 
+         class spell_deathbringer_rune_of_blood_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_deathbringer_rune_of_blood_SpellScript)
+             bool Validate(SpellEntry const* /*spellInfo*/)
+             {
+                 if (!sSpellStore.LookupEntry(SPELL_BLOOD_LINK_DUMMY))
+@@ -1076,6 +1082,7 @@
+ 
+         class spell_deathbringer_blood_nova_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_deathbringer_blood_nova_SpellScript)
+             bool Validate(SpellEntry const* /*spellInfo*/)
+             {
+                 if (!sSpellStore.LookupEntry(SPELL_BLOOD_LINK_DUMMY))
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_festergut.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_festergut.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_festergut.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_festergut.cpp
+@@ -329,6 +329,7 @@
+ 
+         class spell_festergut_pungent_blight_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_festergut_pungent_blight_SpellScript)
+             void HandleScript(SpellEffIndex /*effIndex*/)
+             {
+                 SpellEntry const* spellInfo = sSpellStore.LookupEntry(GetEffectValue());
+@@ -362,6 +363,7 @@
+ 
+         class spell_festergut_gastric_bloat_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_festergut_gastric_bloat_SpellScript)
+             void HandleScript(SpellEffIndex /*effIndex*/)
+             {
+                 Aura const* aura = GetHitUnit()->GetAura(GetSpellInfo()->Id);
+@@ -399,6 +401,7 @@
+ 
+         class spell_festergut_blighted_spores_AuraScript : public AuraScript
+         {
++			PrepareAuraScript(spell_festergut_blighted_spores_AuraScript)
+             void ExtraEffect(AuraEffect const* /*aurEff*/, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
+                 if (!GetCaster()->IsAIEnabled || GetCaster()->GetTypeId() != TYPEID_UNIT)
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
+@@ -748,6 +748,7 @@
+ 
+         class spell_deathwhisper_mana_barrier_AuraScript : public AuraScript
+         {
++			PrepareAuraScript(spell_deathwhisper_mana_barrier_AuraScript)
+             void HandlePeriodicTick(AuraEffect const * /*aurEff*/, AuraApplication const * /*aurApp*/)
+             {
+                 Unit* caster = GetCaster();
+@@ -776,6 +777,7 @@
+ 
+         class spell_cultist_dark_martyrdom_SpellScript : public SpellScript
+         {
++				PrepareSpellScript(spell_cultist_dark_martyrdom_SpellScript)
+             bool Validate(SpellEntry const* /*spellEntry*/)
+             {
+                 if (uint32 scriptId = sObjectMgr.GetScriptId("boss_lady_deathwhisper"))
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+@@ -407,6 +407,7 @@
+ 
+         class spell_marrowgar_coldflame_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_marrowgar_coldflame_SpellScript)
+             void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+             {
+                 Unit* caster = GetCaster();
+@@ -444,6 +445,7 @@
+ 
+         class spell_marrowgar_bone_spike_graveyard_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_marrowgar_bone_spike_graveyard_SpellScript)
+             void HandleApplyAura(SpellEffIndex /*effIndex*/)
+             {
+                 CreatureAI* marrowgarAI = GetCaster()->ToCreature()->AI();
+@@ -493,6 +495,7 @@
+ 
+         class spell_marrowgar_bone_storm_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_marrowgar_bone_storm_SpellScript)
+             void RecalculateDamage(SpellEffIndex /*effIndex*/)
+             {
+                 int32 dmg = GetHitDamage();
+diff --git a/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp b/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
+--- a/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
++++ b/src/server/scripts/Northrend/RubySanctum/boss_halion.cpp
+@@ -592,6 +592,7 @@
+ 
+         class spell_halion_portal_SpellScript : public SpellScript
+         {
++			PrepareSpellScript(spell_halion_portal_SpellScript)
+             void HandleScript(SpellEffIndex /*effIndex*/)
+             {
+                 PreventHitDefaultEffect(EFFECT_0);
+diff --git a/src/server/scripts/Spells/spell_dk.cpp b/src/server/scripts/Spells/spell_dk.cpp
+--- a/src/server/scripts/Spells/spell_dk.cpp
++++ b/src/server/scripts/Spells/spell_dk.cpp
+@@ -40,6 +40,7 @@
+ 
+     class spell_dk_corpse_explosion_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_dk_corpse_explosion_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(DK_SPELL_CORPSE_EXPLOSION_TRIGGERED))
+@@ -86,6 +87,7 @@
+ 
+     class spell_dk_runic_power_feed_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_dk_runic_power_feed_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(DK_SPELL_SUMMON_GARGOYLE))
+@@ -125,6 +127,7 @@
+ 
+     class spell_dk_scourge_strike_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_dk_scourge_strike_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(DK_SPELL_SCOURGE_STRIKE_TRIGGERED))
+diff --git a/src/server/scripts/Spells/spell_druid.cpp b/src/server/scripts/Spells/spell_druid.cpp
+--- a/src/server/scripts/Spells/spell_druid.cpp
++++ b/src/server/scripts/Spells/spell_druid.cpp
+@@ -38,6 +38,7 @@
+ 
+     class spell_dru_glyph_of_starfire_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_dru_glyph_of_starfire_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(DRUID_INCREASED_MOONFIRE_DURATION))
+diff --git a/src/server/scripts/Spells/spell_generic.cpp b/src/server/scripts/Spells/spell_generic.cpp
+--- a/src/server/scripts/Spells/spell_generic.cpp
++++ b/src/server/scripts/Spells/spell_generic.cpp
+@@ -33,6 +33,7 @@
+ 
+     class spell_gen_aura_of_anger_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_gen_aura_of_anger_AuraScript)
+         void HandleEffectPeriodicUpdate(AuraEffect * aurEff)
+         {
+             if (AuraEffect * aurEff1 = aurEff->GetBase()->GetEffect(EFFECT_1))
+@@ -60,6 +61,7 @@
+ 
+     class spell_gen_burn_brutallus_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_gen_burn_brutallus_AuraScript)
+         void HandleEffectPeriodicUpdate(AuraEffect * aurEff)
+         {
+             if (aurEff->GetTickNumber() % 11 == 0)
+@@ -92,6 +94,7 @@
+ 
+     class spell_gen_parachute_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_gen_parachute_AuraScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_PARACHUTE))
+@@ -138,6 +141,7 @@
+ 
+     class spell_gen_pet_summonedSpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_gen_pet_summonedSpellScript)
+         void HandleScript(SpellEffIndex /*effIndex*/)
+         {
+             Unit *caster = GetCaster();
+@@ -194,6 +198,7 @@
+ 
+     class spell_gen_remove_flight_auras_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_gen_remove_flight_auras_SpellScript)
+         void HandleScript(SpellEffIndex /*effIndex*/)
+         {
+             Unit *target = GetHitUnit();
+@@ -229,6 +234,7 @@
+ 
+     class spell_gen_leeching_swarm_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_gen_leeching_swarm_AuraScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_LEECHING_SWARM_DMG))
+@@ -287,6 +293,7 @@
+ 
+     class spell_gen_trick_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_gen_trick_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_PIRATE_COSTUME_MALE))
+@@ -357,6 +364,7 @@
+ 
+     class spell_gen_trick_or_treat_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_gen_trick_or_treat_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_TRICK))
+@@ -396,6 +404,7 @@
+ 
+         class spell_creature_permanent_feign_deathAuraScript : public AuraScript
+         {
++            PrepareAuraScript(spell_creature_permanent_feign_deathAuraScript)
+             void HandleEffectApply(AuraEffect const * /*aurEff*/, AuraApplication const * aurApp, AuraEffectHandleModes /*mode*/)
+             {
+                 Unit* pTarget = aurApp->GetTarget();
+@@ -431,6 +440,7 @@
+ 
+     class spell_pvp_trinket_wotf_shared_cd_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_pvp_trinket_wotf_shared_cd_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_WILL_OF_THE_FORSAKEN_COOLDOWN_TRIGGER))
+diff --git a/src/server/scripts/Spells/spell_hunter.cpp b/src/server/scripts/Spells/spell_hunter.cpp
+--- a/src/server/scripts/Spells/spell_hunter.cpp
++++ b/src/server/scripts/Spells/spell_hunter.cpp
+@@ -48,6 +48,7 @@
+ 
+     class spell_hun_chimera_shot_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_chimera_shot_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(HUNTER_SPELL_CHIMERA_SHOT_SERPENT))
+@@ -143,6 +144,7 @@
+ 
+     class spell_hun_invigoration_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_invigoration_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(HUNTER_SPELL_INVIGORATION_TRIGGERED))
+@@ -177,6 +179,7 @@
+ 
+     class spell_hun_last_stand_pet_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_last_stand_pet_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(HUNTER_PET_SPELL_LAST_STAND_TRIGGERED))
+@@ -211,6 +214,7 @@
+ 
+     class spell_hun_masters_call_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_masters_call_SpellScript)
+         bool Validate(SpellEntry const * spellEntry)
+         {
+             if (!sSpellStore.LookupEntry(HUNTER_SPELL_MASTERS_CALL_TRIGGERED))
+@@ -258,6 +262,7 @@
+ 
+     class spell_hun_readiness_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_readiness_SpellScript)
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+             Unit *caster = GetCaster();
+@@ -301,6 +306,7 @@
+ 
+     class spell_hun_scatter_shot_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_scatter_shot_SpellScript)
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+             Unit* caster = GetCaster();
+@@ -339,6 +345,7 @@
+ 
+     class spell_hun_sniper_training_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_hun_sniper_training_AuraScript)
+         bool Validate(SpellEntry const * /*entry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_SNIPER_TRAINING_R1))
+@@ -398,6 +405,7 @@
+ 
+     class spell_hun_pet_heart_of_the_phoenix_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_pet_heart_of_the_phoenix_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(HUNTER_PET_HEART_OF_THE_PHOENIX_TRIGGERED))
+@@ -443,6 +451,7 @@
+ 
+     class spell_hun_pet_carrion_feeder_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_hun_pet_carrion_feeder_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(HUNTER_PET_SPELL_CARRION_FEEDER_TRIGGERED))
+diff --git a/src/server/scripts/Spells/spell_item.cpp b/src/server/scripts/Spells/spell_item.cpp
+--- a/src/server/scripts/Spells/spell_item.cpp
++++ b/src/server/scripts/Spells/spell_item.cpp
+@@ -34,6 +34,7 @@
+ 
+     class spell_item_trigger_spell_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_item_trigger_spell_SpellScript)
+     private:
+         uint32 _triggeredSpellId;
+ 
+@@ -83,6 +84,7 @@
+ 
+     class spell_item_deviate_fish_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_item_deviate_fish_SpellScript)
+     public:
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+@@ -131,6 +133,7 @@
+     class spell_item_flask_of_the_north_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_flask_of_the_north_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_FLASK_OF_THE_NORTH_SP))
+@@ -206,6 +209,7 @@
+     class spell_item_gnomish_death_ray_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_gnomish_death_ray_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_GNOMISH_DEATH_RAY_SELF))
+@@ -258,6 +262,7 @@
+     class spell_item_make_a_wish_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_make_a_wish_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_MR_PINCHYS_BLESSING))
+@@ -311,6 +316,7 @@
+ 
+     class spell_item_mingos_fortune_generator_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_item_mingos_fortune_generator_SpellScript)
+         void HandleDummy(SpellEffIndex effIndex)
+         {
+             // Selecting one from Bloodstained Fortune item
+@@ -373,6 +379,7 @@
+     class spell_item_net_o_matic_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_net_o_matic_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_NET_O_MATIC_TRIGGERED1))
+@@ -428,6 +435,7 @@
+     class spell_item_noggenfogger_elixir_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_noggenfogger_elixir_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_NOGGENFOGGER_ELIXIR_TRIGGERED1))
+@@ -485,6 +493,7 @@
+     class spell_item_savory_deviate_delight_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_savory_deviate_delight_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             for (uint32 spellId = SPELL_FLIP_OUT_MALE; spellId <= SPELL_YAAARRRR_FEMALE; ++spellId)
+@@ -542,6 +551,7 @@
+     class spell_item_six_demon_bag_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_six_demon_bag_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_FROSTBOLT))
+@@ -620,6 +630,7 @@
+     class spell_item_underbelly_elixir_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_item_underbelly_elixir_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_UNDERBELLY_ELIXIR_TRIGGERED1))
+@@ -673,6 +684,7 @@
+     class spell_item_shadowmourne_AuraScript : public AuraScript
+     {
+     public:
++        PrepareAuraScript(spell_item_shadowmourne_AuraScript)
+         spell_item_shadowmourne_AuraScript() : AuraScript() { }
+ 
+         bool Validate(SpellEntry const* /*spellEntry*/)
+diff --git a/src/server/scripts/Spells/spell_mage.cpp b/src/server/scripts/Spells/spell_mage.cpp
+--- a/src/server/scripts/Spells/spell_mage.cpp
++++ b/src/server/scripts/Spells/spell_mage.cpp
+@@ -45,6 +45,7 @@
+ 
+         class spell_mage_cold_snap_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_mage_cold_snap_SpellScript)
+             void HandleDummy(SpellEffIndex /*effIndex*/)
+             {
+                 Unit *caster = GetCaster();
+@@ -89,6 +90,7 @@
+ 
+         class spell_mage_polymorph_cast_visual_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_mage_polymorph_cast_visual_SpellScript)
+             static const uint32 spell_list[6];
+ 
+             bool Validate(SpellEntry const * /*spellEntry*/)
+@@ -137,6 +139,7 @@
+ 
+         class spell_mage_summon_water_elemental_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_mage_summon_water_elemental_SpellScript)
+             bool Validate(SpellEntry const * /*spellEntry*/)
+             {
+                 if (!sSpellStore.LookupEntry(SPELL_MAGE_GLYPH_OF_ETERNAL_WATER))
+@@ -180,6 +183,7 @@
+ 
+         class spell_mage_blast_wave_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_mage_blast_wave_SpellScript)
+             bool Validate(SpellEntry const * /*spellEntry*/)
+             {
+                 if (!sSpellStore.LookupEntry(SPELL_MAGE_GLYPH_OF_BLAST_WAVE))
+diff --git a/src/server/scripts/Spells/spell_paladin.cpp b/src/server/scripts/Spells/spell_paladin.cpp
+--- a/src/server/scripts/Spells/spell_paladin.cpp
++++ b/src/server/scripts/Spells/spell_paladin.cpp
+@@ -46,6 +46,7 @@
+ 
+     class spell_pal_blessing_of_faith_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_pal_blessing_of_faith_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_BLESSING_OF_LOWER_CITY_DRUID))
+@@ -99,6 +100,7 @@
+ 
+     class spell_pal_blessing_of_sanctuary_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_pal_blessing_of_sanctuary_AuraScript)
+         bool Validate(SpellEntry const* /*entry*/)
+         {
+             if (!sSpellStore.LookupEntry(PALADIN_SPELL_BLESSING_OF_SANCTUARY_BUFF))
+@@ -141,6 +143,7 @@
+ 
+     class spell_pal_guarded_by_the_light_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_pal_guarded_by_the_light_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(PALADIN_SPELL_DIVINE_PLEA))
+@@ -174,6 +177,7 @@
+ 
+     class spell_pal_holy_shock_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_pal_holy_shock_SpellScript)
+         bool Validate(SpellEntry const *spellEntry)
+         {
+             if (!sSpellStore.LookupEntry(PALADIN_SPELL_HOLY_SHOCK_R1))
+@@ -227,6 +231,7 @@
+ 
+     class spell_pal_judgement_of_command_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_pal_judgement_of_command_SpellScript)
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+             if (Unit *unitTarget = GetHitUnit())
+diff --git a/src/server/scripts/Spells/spell_priest.cpp b/src/server/scripts/Spells/spell_priest.cpp
+--- a/src/server/scripts/Spells/spell_priest.cpp
++++ b/src/server/scripts/Spells/spell_priest.cpp
+@@ -38,6 +38,7 @@
+ 
+         class spell_pri_mana_burn_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_pri_mana_burn_SpellScript)
+             bool Validate(SpellEntry const * /*spellEntry*/)
+             {
+                 return true;
+@@ -72,6 +73,7 @@
+         // 47948 Pain and Suffering (proc)
+         class spell_pri_pain_and_suffering_proc_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_pri_pain_and_suffering_proc_SpellScript)
+             void HandleEffectScriptEffect(SpellEffIndex /*effIndex*/)
+             {
+                 // Refresh Shadow Word: Pain on target
+@@ -99,6 +101,7 @@
+ 
+         class spell_pri_penance_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_pri_penance_SpellScript)
+             bool Validate(SpellEntry const * spellEntry)
+             {
+                 if (!sSpellStore.LookupEntry(PRIEST_SPELL_PENANCE_R1))
+diff --git a/src/server/scripts/Spells/spell_quest.cpp b/src/server/scripts/Spells/spell_quest.cpp
+--- a/src/server/scripts/Spells/spell_quest.cpp
++++ b/src/server/scripts/Spells/spell_quest.cpp
+@@ -25,6 +25,7 @@
+ 
+ class spell_generic_quest_update_entry_SpellScript : public SpellScript
+ {
++    PrepareSpellScript(spell_generic_quest_update_entry_SpellScript)
+ private:
+     uint32 _spellEffect;
+     uint8 _effIndex;
+@@ -92,6 +93,7 @@
+ 
+     class spell_q5206_test_fetid_skull_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_q5206_test_fetid_skull_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_CREATE_RESONATING_SKULL))
+@@ -142,6 +144,7 @@
+ 
+     class spell_q6124_6129_apply_salve_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_q6124_6129_apply_salve_SpellScript)
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+             if (GetCastItem())
+@@ -234,6 +237,7 @@
+ 
+     class spell_q11587_arcane_prisoner_rescue_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_q11587_arcane_prisoner_rescue_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_SUMMON_ARCANE_PRISONER_MALE))
+@@ -294,6 +298,7 @@
+ 
+     class spell_q11730_ultrasonic_screwdriver_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_q11730_ultrasonic_screwdriver_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_SUMMON_SCAVENGEBOT_004A8))
+@@ -375,6 +380,7 @@
+     class spell_q12459_seeds_of_natures_wrath_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_q12459_seeds_of_natures_wrath_SpellScript)
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+             if (Creature* pCreatureTarget = GetHitCreature())
+@@ -421,6 +427,7 @@
+     class spell_q12634_despawn_fruit_tosser_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_q12634_despawn_fruit_tosser_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_BANANAS_FALL_TO_GROUND))
+@@ -470,6 +477,7 @@
+     class spell_q12683_take_sputum_sample_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_q12683_take_sputum_sample_SpellScript)
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+             uint32 reqAuraId = SpellMgr::CalculateSpellEffectAmount(GetSpellInfo(), 1);
+@@ -510,6 +518,7 @@
+     class spell_q12937_relief_for_the_fallen_SpellScript : public SpellScript
+     {
+     public:
++        PrepareSpellScript(spell_q12937_relief_for_the_fallen_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SPELL_TRIGGER_AID_OF_THE_EARTHEN))
+diff --git a/src/server/scripts/Spells/spell_rogue.cpp b/src/server/scripts/Spells/spell_rogue.cpp
+--- a/src/server/scripts/Spells/spell_rogue.cpp
++++ b/src/server/scripts/Spells/spell_rogue.cpp
+@@ -37,6 +37,7 @@
+ 
+         class spell_rog_preparation_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_rog_preparation_SpellScript)
+             bool Validate(SpellEntry const * /*spellEntry*/)
+             {
+                 if (!sSpellStore.LookupEntry(ROGUE_SPELL_GLYPH_OF_PREPARATION))
+@@ -100,6 +101,7 @@
+ 
+     class spell_rog_prey_on_the_weak_AuraScript : public AuraScript
+     {
++        PrepareAuraScript(spell_rog_prey_on_the_weak_AuraScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(ROGUE_SPELL_PREY_ON_THE_WEAK))
+@@ -145,6 +147,7 @@
+ 
+         class spell_rog_shiv_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_rog_shiv_SpellScript)
+             bool Validate(SpellEntry const * /*spellEntry*/)
+             {
+                 if (!sSpellStore.LookupEntry(ROGUE_SPELL_SHIV_TRIGGERED))
+diff --git a/src/server/scripts/Spells/spell_shaman.cpp b/src/server/scripts/Spells/spell_shaman.cpp
+--- a/src/server/scripts/Spells/spell_shaman.cpp
++++ b/src/server/scripts/Spells/spell_shaman.cpp
+@@ -40,6 +40,7 @@
+ 
+     class spell_sha_fire_nova_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_sha_fire_nova_SpellScript)
+         bool Validate(SpellEntry const * spellEntry)
+         {
+             if (!sSpellStore.LookupEntry(SHAMAN_SPELL_FIRE_NOVA_R1))
+@@ -89,6 +90,7 @@
+ 
+     class spell_sha_mana_tide_totem_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_sha_mana_tide_totem_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(SHAMAN_SPELL_GLYPH_OF_MANA_TIDE))
+diff --git a/src/server/scripts/Spells/spell_warlock.cpp b/src/server/scripts/Spells/spell_warlock.cpp
+--- a/src/server/scripts/Spells/spell_warlock.cpp
++++ b/src/server/scripts/Spells/spell_warlock.cpp
+@@ -44,6 +44,7 @@
+ 
+     class spell_warl_demonic_empowerment_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_warl_demonic_empowerment_SpellScript)
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(WARLOCK_DEMONIC_EMPOWERMENT_SUCCUBUS))
+@@ -113,6 +114,7 @@
+ 
+     class spell_warl_everlasting_affliction_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_warl_everlasting_affliction_SpellScript)
+         void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+         {
+             if (Unit* unitTarget = GetHitUnit())
+@@ -141,6 +143,7 @@
+ 
+     class spell_warl_create_healthstone_SpellScript : public SpellScript
+     {
++        PrepareSpellScript(spell_warl_create_healthstone_SpellScript)
+         static uint32 const iTypes[8][3];
+ 
+         bool Validate(SpellEntry const * /*spellEntry*/)
+diff --git a/src/server/scripts/Spells/spell_warrior.cpp b/src/server/scripts/Spells/spell_warrior.cpp
+--- a/src/server/scripts/Spells/spell_warrior.cpp
++++ b/src/server/scripts/Spells/spell_warrior.cpp
+@@ -35,6 +35,8 @@
+ 
+         class spell_warr_last_stand_SpellScript : public SpellScript
+         {
++            PrepareSpellScript(spell_warr_last_stand_SpellScript)
++
+             bool Validate(SpellEntry const * /*spellEntry*/)
+             {
+                 if (!sSpellStore.LookupEntry(WARRIOR_SPELL_LAST_STAND_TRIGGERED))

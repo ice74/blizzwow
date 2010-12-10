@@ -1,0 +1,67 @@
+# HG changeset patch
+# User asniker
+# Date 1289722602 -18000
+# Node ID 32eae123e04567e1ee264f118441afb39d4c6bde
+# Parent  a864897f6de29750ec794a1803f5647e63b70672
+fix trinket
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5805,5 +5805,27 @@
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12856;
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12432;
+ 
+-
+-
++DELETE FROM `spell_script_names` WHERE `spell_id`=46221 AND `ScriptName`='spell_gen_animal_blood';
++INSERT INTO `spell_script_names` (`spell_id`,`ScriptName`) VALUES
++(46221,'spell_gen_animal_blood');
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (12281, 12812, 12813, 12814, 12815); 
++INSERT INTO `spell_proc_event` (`entry`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `procFlags`, `procEx`, `ppmRate`, `CustomChance`, `Cooldown`) VALUES  	
++( 12281, 0x00,   4, 0xAA600444, 0x00400105, 0x00000000, 0x00000000, 0x00000000,   0,   0,  6), -- Sword Specialization (Rank 1) 
++( 12812, 0x00,   4, 0xAA600444, 0x00400105, 0x00000000, 0x00000000, 0x00000000,   0,   0,  6), -- Sword Specialization (Rank 2) 	
++( 12813, 0x00,   4, 0xAA600444, 0x00400105, 0x00000000, 0x00000000, 0x00000000,   0,   0,  6), -- Sword Specialization (Rank 3) 	
++( 12814, 0x00,   4, 0xAA600444, 0x00400105, 0x00000000, 0x00000000, 0x00000000,   0,   0,  6), -- Sword Specialization (Rank 4)
++( 12815, 0x00,   4, 0xAA600444, 0x00400105, 0x00000000, 0x00000000, 0x00000000,   0,   0,  6); -- Sword Specialization (Rank 5)
++
++
++DELETE FROM `spell_bonus_data` WHERE `entry` = 53600;
++INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`, `ap_dot_bonus`, `comments`) VALUES
++(53600, 0, 0, 0, 0 ,'Paladin - Shield of Righteousness');
++
++INSERT INTO `spell_proc_event` VALUES
++(75481, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
++(75475, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
++
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql b/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql	
+@@ -0,0 +1,4 @@
++﻿INSERT INTO `spell_proc_event` VALUES
++(75481, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
++(75475, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
++
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -9091,6 +9091,14 @@
+             basepoints0 = int32(GetTotalAttackPowerValue(BASE_ATTACK) * triggerAmount / 100.0f);
+             break;
+         }
++		// Petrified Twilight Scale
++		case 75481:
++		case 75475:
++        {
++            if (GetHealth() - damage > GetMaxHealth() * triggerAmount / 100)
++                return false;
++            break;
++        }
+         // Body and Soul
+         case 64128:
+         case 65081:

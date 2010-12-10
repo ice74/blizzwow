@@ -1,0 +1,148 @@
+# HG changeset patch
+# User asniker
+# Date 1291129060 -18000
+# Node ID 31491eae63328af0f60c7d6091935f8aca556d2d
+# Parent  90a42bde11a8e9fd93856ae5d829b23ecaf3058a
+ядро: фикс краша у лорда в цлк
+
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+@@ -38,90 +38,12 @@
+ {
+     SPELL_SABER_SLASH        = 69055,
+     SPELL_COLD_FLAME         = 69146,
+-    SPELL_BONE_SPIKE         = 73142,
+     SPELL_SPIKE_IMPALING     = 69065,
+     SPELL_BONE_STORM         = 69076,
+     SPELL_COLD_FLAME_SPAWN   = 69138,
+     SPELL_COLD_FLAME_SPAWN_B = 72701
+ };
+ 
+-class npc_bone_spike : public CreatureScript
+-{
+-    public:
+-        npc_bone_spike() : CreatureScript("npc_bone_spike") { }
+-
+-        struct npc_bone_spikeAI : public Scripted_NoMovementAI
+-        {
+-            npc_bone_spikeAI(Creature *pCreature) : Scripted_NoMovementAI(pCreature), vehicle(pCreature->GetVehicleKit())
+-            {
+-                ASSERT(vehicle);
+-                BoneSpikeGUID = 0;
+-                pInstance = pCreature->GetInstanceScript();
+-            }
+-
+-            void SetPrisoner(const uint64& guid)
+-            {
+-                BoneSpikeGUID = guid;
+-                if (Player* boned = ObjectAccessor::GetPlayer(*me, BoneSpikeGUID))
+-                    boned->EnterVehicle(vehicle, 0);
+-            }
+-
+-            void Reset()
+-            {
+-                BoneSpikeGUID = 0;
+-            }
+-
+-            void JustDied(Unit* /*pKiller*/)
+-            {
+-                if (Player* boned = ObjectAccessor::GetPlayer(*me, BoneSpikeGUID))
+-                    boned->RemoveAurasDueToSpell(SPELL_SPIKE_IMPALING);
+-            }
+-
+-            void KilledUnit(Unit* /*pVictim*/)
+-            {
+-                me->Kill(me);
+-            }
+-
+-            void PassengerBoarded(Unit * who, int8 /*seatId*/, bool apply)
+-            {
+-                if (!apply)
+-                    return;
+-
+-                who->AddAura(SPELL_SPIKE_IMPALING, who);
+-                m_uiAchievBonedTimer = 8000;
+-            }
+-
+-            void UpdateAI(const uint32 uiDiff)
+-            {
+-                if (!BoneSpikeGUID || !pInstance)
+-                    return;
+-
+-                if (Player* boned = ObjectAccessor::GetPlayer(*me, BoneSpikeGUID))
+-                    if (!boned->HasAura(SPELL_SPIKE_IMPALING))
+-                        me->Kill(me);
+-
+-                if (m_uiAchievBonedTimer <= uiDiff)
+-                {
+-                    pInstance->SetData(DATA_BONED, FAIL);
+-                    m_uiAchievBonedTimer = 8000;
+-                } else m_uiAchievBonedTimer -= uiDiff;
+-            }
+-
+-        private:
+-            InstanceScript* pInstance;
+-
+-            uint64 BoneSpikeGUID;
+-            uint32 m_uiAchievBonedTimer;
+-
+-            Vehicle* vehicle;
+-        };
+-
+-        CreatureAI* GetAI(Creature* pCreature) const
+-        {
+-            return new npc_bone_spikeAI(pCreature);
+-        }
+-};
+-
+ class npc_cold_flame : public CreatureScript
+ {
+     public:
+@@ -143,7 +65,7 @@
+                     spell->EffectRadiusIndex[0] = 16; //prevent stack damage
+                 DoCast(me, SPELL_COLD_FLAME);
+ 
+-                me->SetVisibility(VISIBILITY_OFF);
++                me->SetVisibility(VISIBILITY_ON);
+                 DoStartNoMovement(me->getVictim());
+ 
+                 m_uiStage = 1;
+@@ -319,26 +241,7 @@
+                     DoScriptText(SAY_BERSERK, me);
+                     DoCast(SPELL_BERSERK);
+                     m_uiBerserkTimer = 600000;
+-                } else m_uiBerserkTimer -= uiDiff;
+-
+-                if (IsHeroic() || !me->HasAura(SPELL_BONE_STORM))
+-                {
+-                    if (m_uiBoneSpikeGraveyardTimer < uiDiff)
+-                    {
+-                        for (uint8 i = 1; i <= m_uiBoneCount; ++i)
+-                        {
+-                            if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true, -SPELL_SPIKE_IMPALING))
+-                            {
+-                                Creature* pBone = me->SummonCreature(CREATURE_BONE_SPIKE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 999999);
+-                                CAST_AI(npc_bone_spike::npc_bone_spikeAI, pBone->AI())->SetPrisoner(pTarget->GetGUID());
+-							    pTarget->AddAura(SPELL_SPIKE_IMPALING, pTarget);
+-								
+-                            }
+-                        }
+-                        DoScriptText(RAND(SAY_SPIKE_1,SAY_SPIKE_2,SAY_SPIKE_3), me);
+-                        m_uiBoneSpikeGraveyardTimer = 15000;
+-                    } else m_uiBoneSpikeGraveyardTimer -= uiDiff;
+-                }
++                } else m_uiBerserkTimer -= uiDiff;              
+ 
+                 if (!me->HasAura(SPELL_BONE_STORM))
+                 {
+@@ -466,8 +369,7 @@
+ 
+ 
+ void AddSC_boss_lord_marrowgar()
+-{
+-    new npc_bone_spike();
++{   
+     new npc_cold_flame();
+     new boss_lord_marrowgar();
+ 	new spell_lord_marrowgar_bone_storm();

@@ -1,0 +1,75 @@
+# HG changeset patch
+# User asniker
+# Date 1286640810 -21600
+# Node ID ebbf534ea241a2669daa2bbc0dd2581a5d9e9a35
+# Parent  b58dc33e3505bc708698af95491e2017f662eea1
+fix wintergrasp warnings
+
+diff --git a/src/server/game/World/World.h b/src/server/game/World/World.h
+--- a/src/server/game/World/World.h
++++ b/src/server/game/World/World.h
+@@ -165,19 +165,7 @@
+     CONFIG_AUTOBROADCAST,
+     CONFIG_OUTDOORPVP_WINTERGRASP_ENABLED,
+     CONFIG_OUTDOORPVP_WINTERGRASP_CUSTOM_HONOR,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_SAVESTATE_PERIOD,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_START_TIME,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_BATTLE_TIME,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_INTERVAL,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_WIN_BATTLE,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_LOSE_BATTLE,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_DAMAGED_TOWER,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_DESTROYED_TOWER,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_DAMAGED_BUILDING,
+-	CONFIG_OUTDOORPVP_WINTERGRASP_INTACT_BUILDING,
+ 	CONFIG_CONFIG_OUTDOORPVP_WINTERGRASP_ANTIFARM_ENABLE,
+-	CONFIG_CONFIG_OUTDOORPVP_WINTERGRASP_ANTIFARM_ATK,
+-	CONFIG_CONFIG_OUTDOORPVP_WINTERGRASP_ANTIFARM_DEF,
+     BOOL_CONFIG_VALUE_COUNT
+ };
+ 
+@@ -323,6 +311,18 @@
+     CONFIG_AUTOBROADCAST_INTERVAL,
+     CONFIG_MAX_RESULTS_LOOKUP_COMMANDS,
+     CONFIG_DB_PING_INTERVAL,
++	CONFIG_OUTDOORPVP_WINTERGRASP_DAMAGED_BUILDING,
++	CONFIG_OUTDOORPVP_WINTERGRASP_INTACT_BUILDING,
++	CONFIG_OUTDOORPVP_WINTERGRASP_SAVESTATE_PERIOD,
++	CONFIG_CONFIG_OUTDOORPVP_WINTERGRASP_ANTIFARM_ATK,
++	CONFIG_CONFIG_OUTDOORPVP_WINTERGRASP_ANTIFARM_DEF,
++	CONFIG_OUTDOORPVP_WINTERGRASP_START_TIME,
++	CONFIG_OUTDOORPVP_WINTERGRASP_BATTLE_TIME,
++	CONFIG_OUTDOORPVP_WINTERGRASP_WIN_BATTLE,
++	CONFIG_OUTDOORPVP_WINTERGRASP_LOSE_BATTLE,
++	CONFIG_OUTDOORPVP_WINTERGRASP_DAMAGED_TOWER,
++	CONFIG_OUTDOORPVP_WINTERGRASP_DESTROYED_TOWER,
++	CONFIG_OUTDOORPVP_WINTERGRASP_INTERVAL,
+     INT_CONFIG_VALUE_COUNT
+ };
+ 
+diff --git a/src/server/scripts/CMakeLists.txt b/src/server/scripts/CMakeLists.txt
+--- a/src/server/scripts/CMakeLists.txt
++++ b/src/server/scripts/CMakeLists.txt
+@@ -144,9 +144,8 @@
+   ${MYSQL_INCLUDE_DIR}
+ )
+ 
+-add_library(scripts STATIC ${scripts_STAT_SRCS})
+-
+-add_dependencies(scripts revision.h)
++add_library(scripts STATIC 
++${scripts_STAT_SRCS})
+ 
+ # Generate precompiled header
+ if( USE_SCRIPTPCH )
+diff --git a/src/server/scripts/Northrend/CMakeLists.txt b/src/server/scripts/Northrend/CMakeLists.txt
+--- a/src/server/scripts/Northrend/CMakeLists.txt
++++ b/src/server/scripts/Northrend/CMakeLists.txt
+@@ -80,7 +80,6 @@
+   Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
+   Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_twin_valkyr.cpp
+   Northrend/CrusadersColiseum/TrialOfTheCrusader/instance_trial_of_the_crusader.cpp
+-
+ Northrend/CrusadersColiseum/TrialOfTheCrusader/boss_beasts_of_northrend.cpp
+   
+ Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.h

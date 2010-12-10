@@ -1,0 +1,35 @@
+# HG changeset patch
+# User asniker
+# Date 1291350799 -18000
+# Node ID 9b3f071f0f6617376926b093e2999042be93b09d
+# Parent  79184dee76e4c8e116fdc4ecaaa6e87a6228a24c
+ядро: фикс инста
+
+diff --git a/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_fathomlord_karathress.cpp b/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_fathomlord_karathress.cpp
+--- a/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_fathomlord_karathress.cpp
++++ b/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_fathomlord_karathress.cpp
+@@ -209,7 +209,10 @@
+             DoScriptText(SAY_DEATH, me);
+ 
+             if (pInstance)
++			{
+                 pInstance->SetData(DATA_FATHOMLORDKARATHRESSEVENT, DONE);
++				pInstance->SetData(DATA_KARATHRESSEVENT, DONE);
++			}
+ 
+             //support for quest 10944
+             me->SummonCreature(SEER_OLUM, OLUM_X, OLUM_Y, OLUM_Z, OLUM_O, TEMPSUMMON_TIMED_DESPAWN, 3600000);
+diff --git a/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_lurker_below.cpp b/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_lurker_below.cpp
+--- a/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_lurker_below.cpp
++++ b/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/boss_lurker_below.cpp
+@@ -149,7 +149,10 @@
+         void JustDied(Unit* /*Killer*/)
+         {
+             if (pInstance)
++			{
+                 pInstance->SetData(DATA_THELURKERBELOWEVENT, DONE);
++				pInstance->SetData(DATA_STRANGE_POOL, DONE);
++			}
+ 
+             Summons.DespawnAll();
+         }

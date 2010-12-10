@@ -1,0 +1,15 @@
+# HG changeset patch
+# User asniker
+# Date 1290427870 -18000
+# Node ID 0d2e7111f6697d5fd0a27cccc86a5462ff40ae4e
+# Parent  a95a87e2840f2c30aa9a270ede9bdaeb4a191582
+забытое
+
+diff --git a/sql/updates/10490_world_scriptname.sql b/sql/updates/10490_world_scriptname.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10490_world_scriptname.sql
+@@ -0,0 +1,2 @@
++-- ScriptName for Captured Frog
++UPDATE `item_template` SET `ScriptName`= 'item_captured_frog' WHERE `entry`=53510;
+\ No newline at end of file

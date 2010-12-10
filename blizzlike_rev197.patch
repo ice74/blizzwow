@@ -1,0 +1,2813 @@
+# HG changeset patch
+# User asniker
+# Date 1289991153 -18000
+# Node ID 0b12cf8fe000ee027a7424592235f584f48ae4c3
+# Parent  0d0db438181ba0b6848600f46a118c0516d31f72
+Ядро: добавл скрипты на крепость утгард
+
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_ingvar_the_plunderer.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -209,7 +213,7 @@
+                 if (!me->hasUnitState(UNIT_STAT_CASTING))
+                 {
+                     if (bIsUndead)
+-                        DoCast(me->getVictim(), SPELL_WOE_STRIKE);
++                    DoCast(me->getVictim(), DUNGEON_MODE(SPELL_WOE_STRIKE,H_SPELL_WOE_STRIKE));
+                     else
+                         DoCast(me->getVictim(), SPELL_CLEAVE);
+                     uiCleaveTimer = rand()%5000 + 2000;
+@@ -223,7 +227,7 @@
+                     if (bIsUndead)
+                         DoCast(me->getVictim(), SPELL_DARK_SMASH);
+                     else
+-                        DoCast(me->getVictim(), SPELL_SMASH);
++                    DoCast(me->getVictim(), DUNGEON_MODE(SPELL_SMASH,H_SPELL_SMASH));
+                     uiSmashTimer = 10000;
+                 }
+             } else uiSmashTimer -= diff;
+@@ -232,7 +236,7 @@
+             {
+                 if (uiEnrageTimer <= diff)
+                 {
+-                    DoCast(me, SPELL_ENRAGE);
++                DoCast(me, DUNGEON_MODE(SPELL_ENRAGE,H_SPELL_ENRAGE));
+                     uiEnrageTimer = 10000;
+                 } else uiEnrageTimer -= diff;
+             } else // In Undead form used to summon weapon
+@@ -259,9 +263,9 @@
+                 if (!me->hasUnitState(UNIT_STAT_CASTING))
+                 {
+                     if (bIsUndead)
+-                        DoCast(me, SPELL_DREADFUL_ROAR);
++                    DoCast(me, DUNGEON_MODE(SPELL_DREADFUL_ROAR,H_SPELL_DREADFUL_ROAR));
+                     else
+-                        DoCast(me, SPELL_STAGGERING_ROAR);
++                    DoCast(me, DUNGEON_MODE(SPELL_STAGGERING_ROAR,H_SPELL_STAGGERING_ROAR));
+                     uiRoarTimer = 10000;
+                 }
+             } else uiRoarTimer -= diff;
+@@ -422,7 +426,7 @@
+             Unit *pTarget = me->FindNearestCreature(ENTRY_THROW_TARGET,50);
+             if (pTarget)
+             {
+-                DoCast(me, SPELL_SHADOW_AXE_DAMAGE);
++            DoCast(me, DUNGEON_MODE(SPELL_SHADOW_AXE_DAMAGE,H_SPELL_SHADOW_AXE_DAMAGE));
+                 float x,y,z;
+                 pTarget->GetPosition(x,y,z);
+                 me->GetMotionMaster()->MovePoint(0,x,y,z);
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_keleseth.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_keleseth.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_keleseth.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_keleseth.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_skarvald_dalronn.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_skarvald_dalronn.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_skarvald_dalronn.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/boss_skarvald_dalronn.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -90,6 +94,8 @@
+             Dalronn_isDead = false;
+             Check_Timer = 5000;
+ 
++            me->RemoveLootMode(1);
++
+             ghost = (me->GetEntry() == MOB_SKARVALD_GHOST);
+             if (!ghost && pInstance)
+             {
+@@ -132,7 +138,8 @@
+                     {
+                         DoScriptText(YELL_SKARVALD_SKA_DIEDFIRST,me);
+ 
+-                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
++                        dalronn->ToCreature()->AddLootMode(1);
++                        //me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                         //DoCast(me, SPELL_SUMMON_SKARVALD_GHOST, true);
+                         Creature* temp = me->SummonCreature(MOB_SKARVALD_GHOST,me->GetPositionX(),me->GetPositionY(),me->GetPositionZ(),0,TEMPSUMMON_CORPSE_DESPAWN,5000);
+                         if (temp)
+@@ -248,6 +255,8 @@
+             Skarvald_isDead = false;
+             AggroYell_Timer = 0;
+ 
++            me->RemoveLootMode(1);
++
+             ghost = me->GetEntry() == MOB_DALRONN_GHOST;
+             if (!ghost && pInstance)
+             {
+@@ -292,7 +301,8 @@
+                     {
+                         DoScriptText(YELL_DALRONN_DAL_DIEDFIRST,me);
+ 
+-                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
++                        skarvald->ToCreature()->AddLootMode(1);
++                        //me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                         //DoCast(me, SPELL_SUMMON_DALRONN_GHOST, true);
+                         Creature* temp = me->SummonCreature(MOB_DALRONN_GHOST,me->GetPositionX(),me->GetPositionY(),me->GetPositionZ(),0,TEMPSUMMON_CORPSE_DESPAWN,5000);
+                         if (temp)
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/instance_utgarde_keep.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/instance_utgarde_keep.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/instance_utgarde_keep.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/instance_utgarde_keep.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -155,8 +159,104 @@
+ 
+ };
+ 
++/*######
++## npc_dark_ranger_marrah
++######*/
++#define SPELL_RANGER_STEALTH   34189
++
++class npc_dark_ranger_marrah : public CreatureScript
++{
++public:
++    npc_dark_ranger_marrah() : CreatureScript("npc_dark_ranger_marrah") { }
++
++    CreatureAI* GetAI(Creature* pCreature) const
++    {
++        return new  npc_dark_ranger_marrahAI(pCreature);
++    }
++
++    struct npc_dark_ranger_marrahAI : public ScriptedAI
++    {
++        npc_dark_ranger_marrahAI(Creature *c) : ScriptedAI(c) { }
++
++        void Reset()
++        {
++            DoCast(me,SPELL_RANGER_STEALTH);
++        }
++        void MoveInLineOfSight(Unit *who)
++        {
++            if(!who || who->GetTypeId() != TYPEID_PLAYER)
++                return;
++
++            if(who->ToPlayer()->GetTeamId() == TEAM_HORDE)
++            {
++                if(who->GetDistance2d(me) <= 5)
++                    me->RemoveAurasDueToSpell(SPELL_RANGER_STEALTH);
++            }else
++            {
++                me->SetVisibility(VISIBILITY_OFF);
++            }
++
++            return;
++        }
++        void AttackStart(Unit *who) { return; }
++        void EnterCombat(Unit *who) { }
++    };
++
++};
++
++#define SPELL_ENRAGE            42745
++#define SPELL_POUNCE            55077
++
++class npc_savage_worg : public CreatureScript
++{
++public:
++    npc_savage_worg() : CreatureScript("npc_savage_worg") { }
++
++    struct npc_savage_worgAI : public ScriptedAI
++    {
++        npc_savage_worgAI(Creature *c) : ScriptedAI(c) { }
++
++        uint32 uiPounceTimer;
++
++        void Reset()
++        {
++            uiPounceTimer=0;
++        }
++
++        void EnterCombat(Unit *who) 
++        {
++            me->CallForHelp(15);
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiPounceTimer<=diff)
++            {
++                if (Unit* player = SelectTarget(SELECT_TARGET_FARTHEST,1,100,true))
++                    DoCast(player,SPELL_POUNCE);
++                uiPounceTimer=30000;
++            } else uiPounceTimer-=diff;
++
++            if (HealthBelowPct(40))
++                DoCast(me,SPELL_ENRAGE);
++
++            DoMeleeAttackIfReady();
++        }
++    };
++
++    CreatureAI* GetAI(Creature* pCreature) const
++    {
++        return new npc_savage_worgAI(pCreature);
++    }
++
++};
+ 
+ void AddSC_utgarde_keep()
+ {
++    new npc_dark_ranger_marrah();
+     new npc_dragonflayer_forge_master();
++    new npc_savage_worg();
+ }
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.h b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.h
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.h
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardeKeep/utgarde_keep.h
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_palehoof.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_palehoof.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_palehoof.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_palehoof.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -46,10 +50,10 @@
+ //not in db
+ enum Yells
+ {
+-    SAY_AGGRO                                = -1575000,
+-    SAY_SLAY_1                               = -1575001,
+-    SAY_SLAY_2                               = -1575002,
+-    SAY_DEATH                                = -1575003
++    SAY_AGGRO                                = -1575015,
++    SAY_SLAY_1                               = -1575016,
++    SAY_SLAY_2                               = -1575017,
++    SAY_DEATH                                = -1575018
+ };
+ 
+ enum Creatures
+@@ -61,7 +65,7 @@
+ {
+     float x, y, z;
+ };
+-
++ 
+ struct Locations moveLocs[]=
+ {
+     {261.6f,-449.3f,109.5f},
+@@ -71,7 +75,7 @@
+     {310.0f,-453.4f,109.5f},
+     {238.6f,-460.7f,109.5f}
+ };
+-
++ 
+ enum Phase
+ {
+     PHASE_FRENZIED_WORGEN,
+@@ -107,44 +111,53 @@
+         uint8 AddCount;
+         bool DoneAdds[4];
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+-            uiArcingSmashTimer = 15000;
+-            uiImpaleTimer = 12000;
+-            uiWhiteringRoarTimer = 10000;
++            uiArcingSmashTimer = 7*IN_MILLISECONDS;
++            uiImpaleTimer = 10*IN_MILLISECONDS;
++            uiWhiteringRoarTimer = 15*IN_MILLISECONDS;
+ 
+-            me->GetMotionMaster()->MoveTargetedHome();
+-
+-            for (uint32 i = 0; i < 4; i++)
+-                DoneAdds[i] = false;
+-            AddCount = 0;
+-
+-            currentPhase = PHASE_NONE;
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++            me->SetStandState(UNIT_STAND_STATE_STAND);
++            DoCast(me, SPELL_FREEZE);
++        
++            me->SetReactState(REACT_DEFENSIVE);
++ 
++            for(uint32 i=0;i<4;i++)
++                DoneAdds[i]=false;
++            AddCount=0;
++ 
++            currentPhase=PHASE_NONE;
+ 
+             if (pInstance)
+             {
+                 pInstance->SetData(DATA_GORTOK_PALEHOOF_EVENT, NOT_STARTED);
+ 
+-                Creature* pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_FRENZIED_WORGEN));
+-                if (pTemp && !pTemp->isAlive())
++                Creature* pTemp;
++                if ((pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_FRENZIED_WORGEN))) && !pTemp->isAlive())
++                {
+                     pTemp->Respawn();
++                    pTemp->AI()->EnterEvadeMode();
++                }
++                if ((pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_FEROCIOUS_RHINO))) && !pTemp->isAlive())
++                {
++                    pTemp->Respawn();
++                    pTemp->AI()->EnterEvadeMode();
++                }
++                if ((pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_MASSIVE_JORMUNGAR))) && !pTemp->isAlive())
++                {
++                    pTemp->Respawn();
++                    pTemp->AI()->EnterEvadeMode();
++                }
++                if ((pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_RAVENOUS_FURBOLG))) && !pTemp->isAlive())
++                {
++                    pTemp->Respawn();
++                    pTemp->AI()->EnterEvadeMode();
++                }
+ 
+-                pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_FEROCIOUS_RHINO));
+-                if (pTemp && !pTemp->isAlive())
+-                    pTemp->Respawn();
+-
+-                pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_MASSIVE_JORMUNGAR));
+-                if (pTemp && !pTemp->isAlive())
+-                    pTemp->Respawn();
+-
+-                pTemp = Unit::GetCreature((*me), pInstance->GetData64(DATA_MOB_RAVENOUS_FURBOLG));
+-                if (pTemp && !pTemp->isAlive())
+-                    pTemp->Respawn();
+-
+-                GameObject* pGo = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_GORTOK_PALEHOOF_SPHERE));
+-                if (pGo)
++                if (GameObject* pGo = pInstance->instance->GetGameObject(pInstance->GetData64(DATA_GORTOK_PALEHOOF_SPHERE)))
+                 {
+                     pGo->SetGoState(GO_STATE_READY);
+                     pGo->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+@@ -152,64 +165,66 @@
+             }
+         }
+ 
+-        void EnterCombat(Unit* /*who*/)
++        void SetInCombat()
+         {
+-            DoScriptText(SAY_AGGRO, me);
+-        }
+-
+-        void AttackStart(Unit* who)
+-        {
+-            if (!who)
++            Map *map = me->GetMap();
++            if (!map->IsDungeon())
+                 return;
+ 
+-            if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+-                return;
+-
+-            if (me->Attack(who, true))
++            Map::PlayerList const &PlayerList = map->GetPlayers();
++            for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+             {
+-                me->AddThreat(who, 0.0f);
+-                me->SetInCombatWith(who);
+-                who->SetInCombatWith(me);
+-                DoStartMovement(who);
++                if (Player* i_pl = i->getSource())
++                    if (!i_pl->isGameMaster() && i_pl->isAlive() && me->GetDistance(i_pl) <= 100)
++                    {
++                        me->SetInCombatWith(i_pl);
++                        i_pl->SetInCombatWith(me);
++                        me->AddThreat(i_pl, 1.0f);
++                    }
+             }
+         }
+ 
++        void EnterCombat(Unit* who)
++        {
++            DoScriptText(SAY_AGGRO, me);
++            SetInCombat();
++        }
++ 
+         void UpdateAI(const uint32 diff)
+         {
+-            if (currentPhase != PHASE_GORTOK_PALEHOOF)
++            if(currentPhase!=PHASE_GORTOK_PALEHOOF)
+                 return;
+-
+             //Return since we have no target
+             if (!UpdateVictim())
+                 return;
+-
++        
+             Creature* pTemp = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_ORB) : 0);
+             if (pTemp && pTemp->isAlive())
+                 pTemp->DisappearAndDie();
+-
++        
+             if (uiArcingSmashTimer <= diff)
+             {
+                 DoCast(me, SPELL_ARCING_SMASH);
+-                uiArcingSmashTimer = urand(13000,17000);
++                uiArcingSmashTimer = urand(9*IN_MILLISECONDS, 12*IN_MILLISECONDS);
+             } else uiArcingSmashTimer -= diff;
+-
++        
+             if (uiImpaleTimer <= diff)
+             {
+               if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                  DoCast(pTarget, SPELL_IMPALE);
+-              uiImpaleTimer = urand(8000,12000);
++                  DoCast(pTarget, DUNGEON_MODE(SPELL_IMPALE, H_SPELL_IMPALE));
++              uiImpaleTimer = urand(9*IN_MILLISECONDS, 12*IN_MILLISECONDS);
+             } else uiImpaleTimer -= diff;
+-
++        
+             if (uiWhiteringRoarTimer <= diff)
+             {
+-                DoCast(me, SPELL_WITHERING_ROAR);
+-                uiWhiteringRoarTimer = urand(8000,12000);
++                DoCast(me, DUNGEON_MODE(SPELL_WITHERING_ROAR, H_SPELL_WITHERING_ROAR));
++                uiWhiteringRoarTimer = urand(12*IN_MILLISECONDS, 16*IN_MILLISECONDS);
+             } else uiWhiteringRoarTimer -= diff;
+-
++        
+             DoMeleeAttackIfReady();
+         }
+ 
+-        void JustDied(Unit* /*killer*/)
++        void JustDied(Unit* killer)
+         {
+             DoScriptText(SAY_DEATH, me);
+             if (pInstance)
+@@ -219,70 +234,62 @@
+                 pTemp->DisappearAndDie();
+         }
+ 
+-        void KilledUnit(Unit * /*victim*/)
++        void KilledUnit(Unit *victim)
+         {
+-            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
++            DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
+         }
+ 
+         void NextPhase()
+         {
+-            if (currentPhase == PHASE_NONE)
++            if(currentPhase == PHASE_NONE)
+             {
+                 pInstance->SetData(DATA_GORTOK_PALEHOOF_EVENT, IN_PROGRESS);
+-                me->SummonCreature(MOB_STASIS_CONTROLLER, moveLocs[5].x, moveLocs[5].y, moveLocs[5].z, 0, TEMPSUMMON_CORPSE_DESPAWN);
++                me->SummonCreature(MOB_STASIS_CONTROLLER,moveLocs[5].x,moveLocs[5].y,moveLocs[5].z,0,TEMPSUMMON_CORPSE_DESPAWN);
+             }
+             Phase move = PHASE_NONE;
+-            if (AddCount >= DUNGEON_MODE(2, 4))
++            if (AddCount >= DUNGEON_MODE(2,4))
+                 move = PHASE_GORTOK_PALEHOOF;
+             else
+             {
+                 //select random not yet defeated add
+-                uint8 next = urand(0, 3);
+-                for (uint8 i = 0; i < 16; i++)
++                uint8 next = urand(0,3);
++                for(uint8 i=0; i < 16; i++)
+                 {
+-                    if (!DoneAdds[i % 4])
++                    if(!DoneAdds[i%4] && next == 0)
+                     {
+-                        if (next == 0)
+-                        {
+-                            move = (Phase)(i % 4);
+-                            break;
+-                        }
+-                        else if (next > 0)
+-                            --next;
++                        move = (Phase)(i%4);
++                        break;
++                    } else if (!DoneAdds[i%4] && next > 0)
++                    {
++                        --next;
+                     }
+                 }
+                 ++AddCount;
+                 DoneAdds[move] = true;
+-                move = (Phase)(move % 4);
++                move = (Phase)(move%4);
+             }
+             //send orb to summon spot
+             Creature *pOrb = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_ORB) : 0);
+             if (pOrb && pOrb->isAlive())
+             {
+-                if (currentPhase == PHASE_NONE)
+-                    pOrb->CastSpell(me, SPELL_ORB_VISUAL, true);
+-                pOrb->GetMotionMaster()->MovePoint(move, moveLocs[move].x, moveLocs[move].y, moveLocs[move].z);
++                if(currentPhase == PHASE_NONE)
++                    pOrb->CastSpell(me,SPELL_ORB_VISUAL,true);
++                pOrb->GetMotionMaster()->MovePoint(move,moveLocs[move].x,moveLocs[move].y,moveLocs[move].z);
+             }
+             currentPhase = move;
+         }
+-
+-        void JustReachedHome()
+-        {
+-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-            me->SetStandState(UNIT_STAND_STATE_STAND);
+-            DoCast(me, SPELL_FREEZE);
+-        }
+     };
+ 
+ };
+ 
+-
+ //ravenous furbolg's spells
+ enum RavenousSpells
+ {
+     SPELL_CHAIN_LIGHTING                        = 48140,
+     H_SPELL_CHAIN_LIGHTING                      = 59273,
+     SPELL_CRAZED                                = 48139,
++    SPELL_CRAZED_SCRIPT                         = 48146,
++    SPELL_CRAZED_TAUNT                          = 48147,
+     SPELL_TERRIFYING_ROAR                       = 48144
+ };
+ 
+@@ -307,18 +314,22 @@
+         uint32 uiCrazedTimer;
+         uint32 uiTerrifyingRoarTimer;
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+-            uiChainLightingTimer = 5000;
+-            uiCrazedTimer = 10000;
+-            uiTerrifyingRoarTimer = 15000;
++            uiChainLightingTimer = 5*IN_MILLISECONDS;
++            uiCrazedTimer = 10*IN_MILLISECONDS;
++            uiTerrifyingRoarTimer = 15*IN_MILLISECONDS;
+ 
+-            me->GetMotionMaster()->MoveTargetedHome();
+-
++            me->SetReactState(REACT_DEFENSIVE);
++        
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++            me->SetStandState(UNIT_STAND_STATE_STAND);
++            DoCast(me, SPELL_FREEZE);
++ 
+             if (pInstance)
+-                if (pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
++                if(pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT)==IN_PROGRESS)
+                 {
+                     Creature *pPalehoof = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0);
+                     if (pPalehoof && pPalehoof->isAlive())
+@@ -326,6 +337,12 @@
+                 }
+         }
+ 
++        void SpellHitTarget(Unit* pTarget, const SpellEntry* spell)
++        {
++            if (spell->Id == SPELL_CRAZED_SCRIPT)
++                pTarget->CastSpell(me, SPELL_CRAZED_TAUNT, true);
++        }
++
+         void UpdateAI(const uint32 diff)
+         {
+             //Return since we have no target
+@@ -334,43 +351,30 @@
+ 
+             if (uiChainLightingTimer <= diff)
+             {
+-                DoCast(me->getVictim(), SPELL_CHAIN_LIGHTING);
+-                uiChainLightingTimer = 5000 + rand() % 5000;
++                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                    DoCast(pTarget, DUNGEON_MODE(SPELL_CHAIN_LIGHTING, H_SPELL_CHAIN_LIGHTING));
++                uiChainLightingTimer = 5*IN_MILLISECONDS + rand()%5*IN_MILLISECONDS;
+             } else uiChainLightingTimer -=  diff;
+ 
+             if (uiCrazedTimer <= diff)
+             {
+-                DoCast(me, SPELL_CRAZED);
+-                uiCrazedTimer = 8000 + rand() % 4000;
++                if (!me->IsNonMeleeSpellCasted(false))
++                {
++                    DoCast(me, SPELL_CRAZED);
++                    uiCrazedTimer = 20*IN_MILLISECONDS;
++                }
+             } else uiCrazedTimer -=  diff;
+ 
+             if (uiTerrifyingRoarTimer <= diff)
+             {
+                 DoCast(me, SPELL_TERRIFYING_ROAR);
+-                uiTerrifyingRoarTimer = 10000 + rand() % 10000;
++                uiTerrifyingRoarTimer = 15*IN_MILLISECONDS + rand()%5*IN_MILLISECONDS;
+             } else uiTerrifyingRoarTimer -=  diff;
+ 
+             DoMeleeAttackIfReady();
+         }
+ 
+-        void AttackStart(Unit* who)
+-        {
+-            if (!who)
+-                return;
+-
+-            if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+-                return;
+-
+-            if (me->Attack(who, true))
+-            {
+-                me->AddThreat(who, 0.0f);
+-                me->SetInCombatWith(who);
+-                who->SetInCombatWith(me);
+-                DoStartMovement(who);
+-            }
+-        }
+-
+-        void JustDied(Unit* /*killer*/)
++        void JustDied(Unit* killer)
+         {
+             if (pInstance)
+             {
+@@ -379,18 +383,10 @@
+                     CAST_AI(boss_palehoof::boss_palehoofAI, pPalehoof->AI())->NextPhase();
+             }
+         }
+-
+-        void JustReachedHome()
+-        {
+-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-            me->SetStandState(UNIT_STAND_STATE_STAND);
+-            DoCast(me, SPELL_FREEZE);
+-        }
+     };
+ 
+ };
+ 
+-
+ //frenzied worgen's spells
+ enum FrenziedSpells
+ {
+@@ -419,20 +415,24 @@
+ 
+         uint32 uiMortalWoundTimer;
+         uint32 uiEnrage1Timer;
+-        uint32 uiEnrage2Timer;
++        bool uiEnraged;
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+-            uiMortalWoundTimer = 5000;
+-            uiEnrage1Timer = 15000;
+-            uiEnrage2Timer = 10000;
++            uiMortalWoundTimer = 5*IN_MILLISECONDS;
++            uiEnrage1Timer = 10*IN_MILLISECONDS;
++            uiEnraged = false;
+ 
+-            me->GetMotionMaster()->MoveTargetedHome();
+-
++            me->SetReactState(REACT_DEFENSIVE);
++     
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++            me->SetStandState(UNIT_STAND_STATE_STAND);
++            DoCast(me, SPELL_FREEZE);
++ 
+             if (pInstance)
+-                if (pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
++                if(pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT)==IN_PROGRESS)
+                 {
+                     Creature *pPalehoof = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0);
+                     if (pPalehoof && pPalehoof->isAlive())
+@@ -448,45 +448,26 @@
+ 
+             if (uiMortalWoundTimer <= diff)
+             {
+-                DoCast(me->getVictim(), SPELL_MORTAL_WOUND);
+-                uiMortalWoundTimer = 3000 + rand() % 4000;
++                DoCast(me->getVictim(), DUNGEON_MODE(SPELL_MORTAL_WOUND, H_SPELL_MORTAL_WOUND));
++                uiMortalWoundTimer = 5*IN_MILLISECONDS + rand()%4*IN_MILLISECONDS;
+             } else uiMortalWoundTimer -= diff;
+ 
+             if (uiEnrage1Timer <= diff)
+             {
+                 DoCast(me, SPELL_ENRAGE_1);
+-                uiEnrage1Timer = 15000;
++                uiEnrage1Timer = 15*IN_MILLISECONDS;
+             } else uiEnrage1Timer -= diff;
+ 
+-            if (uiEnrage2Timer <= diff)
++            if (!uiEnraged && (HealthBelowPct(33)))
+             {
+                 DoCast(me, SPELL_ENRAGE_2);
+-                uiEnrage2Timer = 10000;
+-            } else uiEnrage2Timer -= diff;
++                uiEnraged = true;
++            }
+ 
+             DoMeleeAttackIfReady();
+         }
+ 
+-        void AttackStart(Unit* who)
+-        {
+-            if (!who)
+-                return;
+-
+-            if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+-                return;
+-
+-            if (me->Attack(who, true))
+-            {
+-                me->AddThreat(who, 0.0f);
+-                me->SetInCombatWith(who);
+-                who->SetInCombatWith(me);
+-                DoStartMovement(who);
+-            }
+-            if (pInstance)
+-                pInstance->SetData(DATA_GORTOK_PALEHOOF_EVENT, IN_PROGRESS);
+-        }
+-
+-        void JustDied(Unit* /*killer*/)
++        void JustDied(Unit* killer)
+         {
+             if (pInstance)
+             {
+@@ -495,18 +476,10 @@
+                     CAST_AI(boss_palehoof::boss_palehoofAI, pPalehoof->AI())->NextPhase();
+             }
+         }
+-
+-        void JustReachedHome()
+-        {
+-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-            me->SetStandState(UNIT_STAND_STATE_STAND);
+-            DoCast(me, SPELL_FREEZE);
+-        }
+     };
+ 
+ };
+ 
+-
+ //ferocious rhino's spells
+ enum FerociousSpells
+ {
+@@ -538,18 +511,22 @@
+         uint32 uiGoreTimer;
+         uint32 uiGrievousWoundTimer;
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+-            uiStompTimer = 10000;
+-            uiGoreTimer = 15000;
+-            uiGrievousWoundTimer = 20000;
++            uiStompTimer = 5*IN_MILLISECONDS;
++            uiGoreTimer = 10*IN_MILLISECONDS;
++            uiGrievousWoundTimer = 12*IN_MILLISECONDS;
++        
++            me->SetReactState(REACT_DEFENSIVE);
+ 
+-            me->GetMotionMaster()->MoveTargetedHome();
+-
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++            me->SetStandState(UNIT_STAND_STATE_STAND);
++            DoCast(me, SPELL_FREEZE);
++ 
+             if (pInstance)
+-                if (pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
++                if(pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT)==IN_PROGRESS)
+                 {
+                     Creature *pPalehoof = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0);
+                     if (pPalehoof && pPalehoof->isAlive())
+@@ -566,43 +543,26 @@
+             if (uiStompTimer <= diff)
+             {
+                 DoCast(me->getVictim(), SPELL_STOMP);
+-                uiStompTimer = 8000 + rand() % 4000;
++                uiStompTimer = 8*IN_MILLISECONDS + rand()%4*IN_MILLISECONDS;
+             } else uiStompTimer -= diff;
+ 
+             if (uiGoreTimer <= diff)
+             {
+-                DoCast(me->getVictim(), SPELL_GORE);
+-                uiGoreTimer = 13000 + rand() % 4000;
++                DoCast(me->getVictim(), DUNGEON_MODE(SPELL_GORE, H_SPELL_GORE));
++                uiGoreTimer = 12*IN_MILLISECONDS + rand()%3*IN_MILLISECONDS;
+             } else uiGoreTimer -= diff;
+ 
+             if (uiGrievousWoundTimer <= diff)
+             {
+                 if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_GRIEVOUS_WOUND);
+-                uiGrievousWoundTimer = 18000 + rand() % 4000;
++                    DoCast(pTarget, DUNGEON_MODE(SPELL_GRIEVOUS_WOUND, H_SPELL_GRIEVOUS_WOUND));
++                uiGrievousWoundTimer = 12*IN_MILLISECONDS + rand()%3*IN_MILLISECONDS;
+             } else uiGrievousWoundTimer -= diff;
+ 
+             DoMeleeAttackIfReady();
+         }
+ 
+-        void AttackStart(Unit* who)
+-        {
+-            if (!who)
+-                return;
+-
+-            if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+-                return;
+-
+-            if (me->Attack(who, true))
+-            {
+-                me->AddThreat(who, 0.0f);
+-                me->SetInCombatWith(who);
+-                who->SetInCombatWith(me);
+-                DoStartMovement(who);
+-            }
+-        }
+-
+-        void JustDied(Unit* /*killer*/)
++        void JustDied(Unit* killer)
+         {
+             if (pInstance)
+             {
+@@ -611,18 +571,10 @@
+                     CAST_AI(boss_palehoof::boss_palehoofAI, pPalehoof->AI())->NextPhase();
+             }
+         }
+-
+-        void JustReachedHome()
+-        {
+-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-            me->SetStandState(UNIT_STAND_STATE_STAND);
+-            DoCast(me, SPELL_FREEZE);
+-        }
+     };
+ 
+ };
+ 
+-
+ //massive jormungar's spells
+ enum MassiveSpells
+ {
+@@ -635,7 +587,7 @@
+ 
+ enum MassiveAdds
+ {
+-  CREATURE_JORMUNGAR_WORM                     = 27228
++  CREATURE_JORMUNGAR_WORM                       = 27228
+ };
+ 
+ class mob_massive_jormungar : public CreatureScript
+@@ -659,18 +611,22 @@
+         uint32 uiAcidSplatterTimer;
+         uint32 uiPoisonBreathTimer;
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+-            uiAcidSpitTimer = 3000;
+-            uiAcidSplatterTimer = 12000;
+-            uiPoisonBreathTimer = 10000;
++            uiAcidSpitTimer = 5*IN_MILLISECONDS;
++            uiAcidSplatterTimer = 12*IN_MILLISECONDS;
++            uiPoisonBreathTimer = 15*IN_MILLISECONDS;
++        
++            me->SetReactState(REACT_DEFENSIVE);
+ 
+-            me->GetMotionMaster()->MoveTargetedHome();
+-
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++            me->SetStandState(UNIT_STAND_STATE_STAND);
++            DoCast(me, SPELL_FREEZE);
++ 
+             if (pInstance)
+-                if (pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
++                if(pInstance->GetData(DATA_GORTOK_PALEHOOF_EVENT) == IN_PROGRESS)
+                 {
+                     Creature *pPalehoof = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0);
+                     if (pPalehoof && pPalehoof->isAlive())
+@@ -686,45 +642,35 @@
+ 
+             if (uiAcidSpitTimer <= diff)
+             {
+-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_ACID_SPIT);
+-                uiAcidSpitTimer = 2000 + rand() % 2000;
++                DoCast(me->getVictim(), SPELL_ACID_SPIT);
++                uiAcidSpitTimer = 5*IN_MILLISECONDS + rand()%3*IN_MILLISECONDS;
+             } else uiAcidSpitTimer -= diff;
+ 
+             if (uiAcidSplatterTimer <= diff)
+             {
+-                DoCast(me, SPELL_POISON_BREATH);
+-                uiAcidSplatterTimer = 10000 + rand() % 4000;
++                if (!me->IsNonMeleeSpellCasted(false))
++                {
++                    DoCast(me, DUNGEON_MODE(SPELL_ACID_SPLATTER, H_SPELL_ACID_SPLATTER)); //for 2 seconds only?
++                    uiAcidSplatterTimer = 25*IN_MILLISECONDS + rand()%5*IN_MILLISECONDS;
++                    for (uint8 i = 0; i < 6; ++i)
++                        DoSpawnCreature(CREATURE_JORMUNGAR_WORM, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
++                }
+             } else uiAcidSplatterTimer -= diff;
+ 
+             if (uiPoisonBreathTimer <= diff)
+             {
+-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_POISON_BREATH);
+-                uiPoisonBreathTimer = 8000 + rand() % 4000;
++                if (!me->IsNonMeleeSpellCasted(false))
++                {
++                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                        DoCast(pTarget, DUNGEON_MODE(SPELL_POISON_BREATH, H_SPELL_POISON_BREATH));
++                    uiPoisonBreathTimer = 15*IN_MILLISECONDS + rand()%5*IN_MILLISECONDS;
++                }
+             } else uiPoisonBreathTimer -= diff;
+ 
+             DoMeleeAttackIfReady();
+         }
+ 
+-        void AttackStart(Unit* who)
+-        {
+-            if (!who)
+-                return;
+-
+-            if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+-                return;
+-
+-            if (me->Attack(who, true))
+-            {
+-                me->AddThreat(who, 0.0f);
+-                me->SetInCombatWith(who);
+-                who->SetInCombatWith(me);
+-                DoStartMovement(who);
+-            }
+-        }
+-
+-        void JustDied(Unit* /*killer*/)
++        void JustDied(Unit* killer)
+         {
+             if (pInstance)
+             {
+@@ -733,13 +679,6 @@
+                     CAST_AI(boss_palehoof::boss_palehoofAI,pPalehoof->AI())->NextPhase();
+             }
+         }
+-
+-        void JustReachedHome()
+-        {
+-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-            me->SetStandState(UNIT_STAND_STATE_STAND);
+-            DoCast(me, SPELL_FREEZE);
+-        }
+     };
+ 
+ };
+@@ -761,29 +700,51 @@
+             pInstance = c->GetInstanceScript();
+         }
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
+         uint32 SummonTimer;
+         Phase currentPhase;
+ 
+         void Reset()
+         {
+-            currentPhase = PHASE_NONE;
+-            SummonTimer = 5000;
++            currentPhase=PHASE_NONE;
++            SummonTimer=5*IN_MILLISECONDS;
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++            me->SetDisplayId(11686);
+             me->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
+             me->RemoveAurasDueToSpell(SPELL_ORB_VISUAL);
+-            me->SetSpeed(MOVE_FLIGHT, 0.5f);
++            me->SetSpeed(MOVE_FLIGHT , 0.5f);
++            me->SetReactState(REACT_PASSIVE);
++        }
++
++        void SetInCombat()
++        {
++            Map *map = me->GetMap();
++            if (!map->IsDungeon())
++                return;
++
++            Map::PlayerList const &PlayerList = map->GetPlayers();
++            for(Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
++            {
++                if (Player* i_pl = i->getSource())
++                    if (!i_pl->isGameMaster() && i_pl->isAlive() && me->GetDistance(i_pl) <= 100)
++                    {
++                        me->SetInCombatWith(i_pl);
++                        i_pl->SetInCombatWith(me);
++                        me->AddThreat(i_pl, 1.0f);
++                    }
++            }
+         }
+ 
+         void UpdateAI(const uint32 diff)
+         {
+-            if (currentPhase == PHASE_NONE)
++            if(currentPhase==PHASE_NONE)
+                 return;
+ 
+-            if (SummonTimer <= diff)
++            if(SummonTimer<=diff)
+             {
+-                if (currentPhase<5&&currentPhase >= 0)
++                if(currentPhase<5&&currentPhase>=0)
+                 {
+-                   Creature *pNext = NULL;
++                   Creature *pNext;
+                    switch(currentPhase)
+                    {
+                         case PHASE_FRENZIED_WORGEN: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_FRENZIED_WORGEN) : 0); break;
+@@ -791,30 +752,30 @@
+                         case PHASE_MASSIVE_JORMUNGAR: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_MASSIVE_JORMUNGAR) : 0); break;
+                         case PHASE_FEROCIOUS_RHINO: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_FEROCIOUS_RHINO) : 0); break;
+                         case PHASE_GORTOK_PALEHOOF: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0); break;
+-                        default: break;
+                    }
+ 
+                    if (pNext)
+                    {
+                         pNext->RemoveAurasDueToSpell(SPELL_FREEZE);
+-                        pNext->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-                        pNext->SetStandState(UNIT_STAND_STATE_STAND);
+-                        pNext->SetInCombatWithZone();
+-                        pNext->Attack(pNext->SelectNearestTarget(100),true);
+-
++                        pNext->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_OOC_NOT_ATTACKABLE);
++                        ((Unit*)pNext)->SetStandState(UNIT_STAND_STATE_STAND);
++                        pNext->SetReactState(REACT_AGGRESSIVE);
++                        if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                            pNext->AI()->AttackStart(pTarget);
+                    }
+-                   currentPhase = PHASE_NONE;
++                   currentPhase=PHASE_NONE;
+                 }
+-            } else SummonTimer -= diff;
++            } else SummonTimer-=diff;
+         }
+ 
+         void MovementInform(uint32 type, uint32 id)
+         {
+             if (type != POINT_MOTION_TYPE)
+                 return;
+-            if (id > 4)
++            if(id<0 || id>4)
+                 return;
+-            Creature *pNext = NULL;
++            Creature *pNext;
++            me->SetSpeed(MOVE_FLIGHT , 3.0f);
+             switch(id)
+             {
+                 case PHASE_FRENZIED_WORGEN: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_FRENZIED_WORGEN) : 0); break;
+@@ -822,29 +783,32 @@
+                 case PHASE_MASSIVE_JORMUNGAR: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_MASSIVE_JORMUNGAR) : 0); break;
+                 case PHASE_FEROCIOUS_RHINO: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_MOB_FEROCIOUS_RHINO) : 0); break;
+                 case PHASE_GORTOK_PALEHOOF: pNext = Unit::GetCreature((*me), pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0); break;
+-                default: break;
+             }
+-            if (pNext)
+-                DoCast(pNext, SPELL_ORB_CHANNEL, false);
+-            currentPhase = (Phase)id;
+-            SummonTimer = 5000;
++            if(pNext)
++                DoCast(pNext, SPELL_ORB_CHANNEL, false); //cant cast on not attackable unit?
++
++            currentPhase=(Phase)id;
++            SummonTimer=5*IN_MILLISECONDS;
++            SetInCombat();
+         }
+     };
+ 
+ };
+ 
++
+ class go_palehoof_sphere : public GameObjectScript
+ {
+ public:
+     go_palehoof_sphere() : GameObjectScript("go_palehoof_sphere") { }
+ 
+-    bool OnGossipHello(Player * /*pPlayer*/, GameObject *pGO)
++    bool OnGossipHello(Player *pPlayer, GameObject *pGO)
+     {
+-        InstanceScript *pInstance = pGO->GetInstanceScript();
++        InstanceScript* pInstance = pGO->GetInstanceScript();
+ 
+         Creature *pPalehoof = Unit::GetCreature(*pGO, pInstance ? pInstance->GetData64(DATA_GORTOK_PALEHOOF) : 0);
+         if (pPalehoof && pPalehoof->isAlive())
+         {
++            // maybe these are hacks :(
+             pGO->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+             pGO->SetGoState(GO_STATE_ACTIVE);
+ 
+@@ -855,6 +819,7 @@
+ 
+ };
+ 
++
+ void AddSC_boss_palehoof()
+ {
+     new boss_palehoof();
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_skadi.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_skadi.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_skadi.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_skadi.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -119,9 +123,10 @@
+     {335.879f, -516.674f, 104.628f, 0},         //67
+     {329.871f, -515.92f, 104.711f, 0},          //68
+     // Breach Zone
+-    {485.4577f, -511.2515f, 115.3011f, 0},      //69
+-    {435.1892f, -514.5232f, 118.6719f, 0},      //70
+-    {413.9327f, -540.9407f, 138.2614f, 0},      //71
++    {491.2511f, -503.3972f, 115.3011f, 0},      //69
++    {485.9489f, -522.4509f, 115.3011f, 0},      //70
++    {435.1892f, -514.5232f, 118.6719f, 0},      //71
++    {413.9327f, -540.9407f, 138.2614f, 0},      //72
+ };
+ 
+ enum eCombatPhase
+@@ -130,15 +135,28 @@
+     SKADI
+ };
+ 
++enum eSide
++{
++    LEFT,
++    RIGHT,
++    NONE
++};
++
+ enum eSpells
+ {
+     //Skadi Spells
+-    SPELL_CRUSH             = 50234,
+-    SPELL_POISONED_SPEAR    = 50225, //isn't being casted =/
+-    SPELL_WHIRLWIND         = 50228, //random target, but not the tank approx. every 20s
+-    SPELL_RAPID_FIRE        = 56570,
+-    SPELL_HARPOON_DAMAGE    = 56578,
+-    SPELL_FREEZING_CLOUD    = 47579,
++    SPELL_CRUSH                 = 50234,
++    H_SPELL_CRUSH               = 59330,
++    SPELL_POISONED_SPEAR        = 50255,
++    H_SPELL_POISONED_SPEAR      = 59331,
++    SPELL_POISONED_SPEAR_DOT    = 50258,
++    H_SPELL_POISONED_SPEAR_DOT  = 59334,
++    SPELL_WHIRLWIND             = 50228, //random target, but not the tank approx. every 20s
++    H_SPELL_WHIRLWIND           = 59322,
++    SPELL_RAPID_FIRE            = 56570,
++    SPELL_HARPOON_DAMAGE        = 56578,
++    SPELL_FREEZING_CLOUD        = 47579,
++    H_SPELL_FREEZING_CLOUD      = 60020
+ };
+ 
+ enum eCreature
+@@ -153,7 +171,10 @@
+ 
+ enum eAchievments
+ {
+-    ACHIEV_TIMED_START_EVENT                      = 17726,
++    ACHIEV_TIMED_START_EVENT       = 17726,
++    ACHIEV_MY_GIRL_LOVES_TO_SKADI  = 2156,
++    MAX_HIT_COUNT                  = 4,         //needed harpoon hits
++    H_MAX_HIT_COUNT                = 6          //heroic
+ };
+ 
+ class boss_skadi : public CreatureScript
+@@ -175,19 +196,24 @@
+ 
+         InstanceScript* m_pInstance;
+         SummonList Summons;
+-        uint64 m_uiGraufGUID;
+         std::vector<uint64> triggersGUID;
+ 
++        uint64 m_uiWhirlGUID;
++        uint64 m_uiGraufGUID;
+         uint32 m_uiCrushTimer;
++        uint32 m_uiSpawnTriggerTimer;
+         uint32 m_uiPoisonedSpearTimer;
+         uint32 m_uiWhirlwindTimer;
+         uint32 m_uiWaypointId;
+         uint32 m_uiMovementTimer;
+         uint32 m_uiMountTimer;
+         uint32 m_uiSummonTimer;
+-        uint8  m_uiSpellHitCount;
+-        bool   m_bSaidEmote;
++        uint8 m_uiSpellHitCount;
++        uint8 m_Start, m_End, m_LocNr, m_LocCount;
++        bool m_bSaidEmote;
++        bool m_isWhirling;
+ 
++        eSide BreathSide;
+         eCombatPhase Phase;
+ 
+         void Reset()
+@@ -200,14 +226,19 @@
+             m_uiMountTimer = 3000;
+             m_uiWaypointId = 0;
+             m_bSaidEmote = false;
++            m_isWhirling = false;
++            m_uiWhirlGUID = 0;
+             m_uiSpellHitCount = 0;
+ 
+             Phase = SKADI;
++            BreathSide = NONE;
+ 
+             Summons.DespawnAll();
+             me->SetSpeed(MOVE_FLIGHT, 3.0f);
++            me->SetReactState(REACT_AGGRESSIVE);
++            //me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
+             if ((Unit::GetCreature((*me), m_uiGraufGUID) == NULL) && !me->IsMounted())
+-                 me->SummonCreature(CREATURE_GRAUF, Location[0].GetPositionX(), Location[0].GetPositionY(), Location[0].GetPositionZ(), 3.0f);
++                 me->SummonCreature(CREATURE_GRAUF,Location[0].GetPositionX(),Location[0].GetPositionY(),Location[0].GetPositionZ(),3.0f);
+             if (m_pInstance)
+             {
+                 m_pInstance->SetData(DATA_SKADI_THE_RUTHLESS_EVENT, NOT_STARTED);
+@@ -221,7 +252,7 @@
+             me->Unmount();
+             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+             if (Unit::GetCreature((*me), m_uiGraufGUID) == NULL)
+-                me->SummonCreature(CREATURE_GRAUF, Location[0].GetPositionX(), Location[0].GetPositionY(), Location[0].GetPositionZ(), 3.0f);
++                me->SummonCreature(CREATURE_GRAUF,Location[0].GetPositionX(),Location[0].GetPositionY(),Location[0].GetPositionZ(),3.0f);
+         }
+ 
+         void EnterCombat(Unit* /*who*/)
+@@ -229,6 +260,7 @@
+             DoScriptText(SAY_AGGRO, me);
+ 
+             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
++            me->SetReactState(REACT_PASSIVE);
+ 
+             Phase = FLYING;
+ 
+@@ -262,7 +294,7 @@
+                         pSummoned->AI()->AttackStart(pTarget);
+                     break;
+                 case CREATURE_TRIGGER:
+-                    pSummoned->CastSpell((Unit*)NULL, SPELL_FREEZING_CLOUD, true);
++                    pSummoned->CastSpell((Unit*)NULL, DUNGEON_MODE(SPELL_FREEZING_CLOUD, H_SPELL_FREEZING_CLOUD), true);
+                     pSummoned->ForcedDespawn(10*IN_MILLISECONDS);
+                     break;
+             }
+@@ -278,30 +310,42 @@
+ 
+         void SpellHit(Unit * /*caster*/, const SpellEntry *spell)
+         {
+-            if (spell->Id == SPELL_HARPOON_DAMAGE)
++            if (spell->Id == SPELL_HARPOON_DAMAGE && Phase == FLYING)
+             {
+                 m_uiSpellHitCount++;
+-                if (m_uiSpellHitCount >= 3)
++                if (m_uiSpellHitCount >= DUNGEON_MODE(MAX_HIT_COUNT, H_MAX_HIT_COUNT))
+                 {
+                     Phase = SKADI;
+                     me->SetFlying(false);
++                    //me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
+                     me->Unmount();
+                     if(Creature* pGrauf = me->SummonCreature(CREATURE_GRAUF, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3*IN_MILLISECONDS))
+                     {
+                         pGrauf->GetMotionMaster()->MoveFall(0);
+                         pGrauf->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
+                     }
++
++                    me->SetReactState(REACT_AGGRESSIVE);
++                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
++                    {
++                        me->AI()->AttackStart(pTarget);
++                        me->GetMotionMaster()->MoveChase(pTarget);
++                    }
+                     me->GetMotionMaster()->MoveJump(Location[4].GetPositionX(), Location[4].GetPositionY(), Location[4].GetPositionZ(), 5.0f, 10.0f);
+                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                     DoScriptText(SAY_DRAKE_DEATH, me);
+-                    m_uiCrushTimer = 8000;
+-                    m_uiPoisonedSpearTimer = 10000;
+-                    m_uiWhirlwindTimer = 20000;
+-                    me->AI()->AttackStart(SelectTarget(SELECT_TARGET_RANDOM));
++                    m_uiCrushTimer = 10000;
++                    m_uiPoisonedSpearTimer = 8000;
++                    m_uiWhirlwindTimer = 4000;
+                 }
+             }
+         }
+ 
++        void SpellHitTarget(Unit *pTarget, const SpellEntry *spell) 
++        {
++            if (spell->Id == DUNGEON_MODE(SPELL_POISONED_SPEAR, H_SPELL_POISONED_SPEAR))
++                pTarget->CastSpell(pTarget, DUNGEON_MODE(SPELL_POISONED_SPEAR_DOT, H_SPELL_POISONED_SPEAR_DOT), true);
++        }
+ 
+         void UpdateAI(const uint32 diff)
+         {
+@@ -311,7 +355,7 @@
+                     if (!UpdateVictim())
+                         return;
+ 
+-                    if (me->GetPositionX() >= 519)
++                    if (me->GetPositionX() >= 515)
+                     {
+                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+                         if (!m_bSaidEmote)
+@@ -339,6 +383,16 @@
+                         m_uiSummonTimer = 25000;
+                     } else m_uiSummonTimer -= diff;
+ 
++                    if (BreathSide != NONE)
++                        if (m_uiSpawnTriggerTimer <= diff)
++                        {
++                            me->SummonCreature(CREATURE_TRIGGER,Location[m_LocCount]);
++                            m_uiSpawnTriggerTimer = 125;
++                            m_LocCount++;
++                            if (m_LocCount > m_End)
++                                BreathSide = NONE;
++                        } else m_uiSpawnTriggerTimer -= diff;
++
+                     if (m_uiMovementTimer <= diff)
+                     {
+                         switch(m_uiWaypointId)
+@@ -356,19 +410,36 @@
+                                 m_uiMovementTimer = 15000;
+                                 break;
+                             case 3:
+-                                me->GetMotionMaster()->MovePoint(0, Location[69].GetPositionX(), Location[69].GetPositionY(), Location[69].GetPositionZ());
++                                switch (urand(0,1))
++                                {
++                                    case 0: 
++                                        BreathSide = LEFT; 
++                                        m_Start = 8;
++                                        m_End = 37;
++                                        m_LocNr = 69;
++                                        break;
++                                    case 1: 
++                                        BreathSide = RIGHT;
++                                        m_Start = 38;
++                                        m_End = 68;
++                                        m_LocNr = 70; 
++                                        break;
++                                }
++                                me->GetMotionMaster()->MovePoint(0, Location[m_LocNr].GetPositionX(), Location[m_LocNr].GetPositionY(), Location[m_LocNr].GetPositionZ());
+                                 DoScriptText(RAND(SAY_DRAKE_BREATH_1,SAY_DRAKE_BREATH_2), me);
+                                 DoScriptText(EMOTE_BREATH, me);
+                                 m_uiMovementTimer = 2500;
++                                m_uiSpawnTriggerTimer = 3000;
++                                m_LocCount = m_Start;
+                                 break;
+                             case 4:
+-                                me->GetMotionMaster()->MovePoint(0, Location[70].GetPositionX(), Location[70].GetPositionY(), Location[70].GetPositionZ());
++                                me->GetMotionMaster()->MovePoint(0, Location[71].GetPositionX(), Location[71].GetPositionY(), Location[71].GetPositionZ());
+                                 m_uiMovementTimer = 2000;
+-                                SpawnTrigger();
++                                //SpawnTrigger();
+                                 break;
+                             case 5:
+-                                me->GetMotionMaster()->MovePoint(0, Location[71].GetPositionX(), Location[71].GetPositionY(), Location[71].GetPositionZ());
+-                                m_uiMovementTimer = 3000;
++                                me->GetMotionMaster()->MovePoint(0, Location[72].GetPositionX(), Location[72].GetPositionY(), Location[72].GetPositionZ());
++                                m_uiMovementTimer = 15000;
+                                 break;
+                             case 6:
+                                 me->GetMotionMaster()->MovePoint(0, Location[3].GetPositionX(), Location[3].GetPositionY(), Location[3].GetPositionZ());
+@@ -384,24 +455,76 @@
+                     if (!UpdateVictim())
+                         return;
+ 
+-                    if (m_uiCrushTimer <= diff)
++                    if (!me->HasAura(DUNGEON_MODE(SPELL_WHIRLWIND, H_SPELL_WHIRLWIND)))
+                     {
+-                        DoCastVictim(SPELL_CRUSH);
+-                        m_uiCrushTimer = 8000;
+-                    } else m_uiCrushTimer -= diff;
++                        if (m_isWhirling)
++                        {
++                            m_isWhirling = false;
++                            me->GetMotionMaster()->Clear();
++                            me->GetMotionMaster()->MoveChase(me->getVictim());
++                            m_uiWhirlwindTimer = 13000;
++                        }
+ 
+-                    if (m_uiPoisonedSpearTimer <= diff)
++                        if (m_uiCrushTimer <= diff)
++                        {
++                            if(!me->IsNonMeleeSpellCasted(false))
++                            {
++                                DoCastVictim(DUNGEON_MODE(SPELL_CRUSH, H_SPELL_CRUSH));
++                                m_uiCrushTimer = urand(8000, 12000);
++                            }
++                        } else m_uiCrushTimer -= diff;
++
++                        if (m_uiPoisonedSpearTimer <= diff)
++                        {
++                            if(!me->IsNonMeleeSpellCasted(false))
++                            {
++                                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
++                                    DoCast(pTarget, DUNGEON_MODE(SPELL_POISONED_SPEAR, H_SPELL_POISONED_SPEAR));
++                                m_uiPoisonedSpearTimer = urand(10000, 12000);
++                            }
++                        } else m_uiPoisonedSpearTimer -= diff;
++                    }
++
++                    if (!m_isWhirling)
+                     {
+-                        if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
+-                            DoCast(pTarget, SPELL_POISONED_SPEAR);
+-                        m_uiPoisonedSpearTimer = 10000;
+-                    } else m_uiPoisonedSpearTimer -= diff;
++                        if (m_uiWhirlwindTimer <= diff)
++                        {
++                            if(!me->IsNonMeleeSpellCasted(false))
++                            {
++                                if (Unit *newTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
++                                    m_uiWhirlGUID = newTarget->GetGUID();
+ 
+-                    if (m_uiWhirlwindTimer <= diff)
++                                DoCast(DUNGEON_MODE(SPELL_WHIRLWIND, H_SPELL_WHIRLWIND));
++                                m_isWhirling = true;
++                            }
++                        } else m_uiWhirlwindTimer -= diff;
++                    }
++
++                    if (m_isWhirling)  //somewhat hacky to get skadi move during whirlwind
+                     {
+-                        DoCastAOE(SPELL_WHIRLWIND);
+-                        m_uiWhirlwindTimer = 20000;
+-                    } else m_uiWhirlwindTimer -= diff;
++                        if (m_uiWhirlwindTimer <= diff)
++                        {
++                            Unit *whirlTarget = Unit::GetUnit(*me, m_uiWhirlGUID);
++                            if (whirlTarget && whirlTarget->isAlive())
++                            {
++                                me->GetMotionMaster()->Clear();
++                                me->GetMotionMaster()->MovePoint(0,whirlTarget->GetPositionX(),whirlTarget->GetPositionY(),whirlTarget->GetPositionZ());
++                            } 
++                            else if (Unit *newTarget = SelectUnit(SELECT_TARGET_RANDOM, 1)) //whirl target died
++                            {
++                                me->GetMotionMaster()->Clear();
++                                m_uiWhirlGUID = newTarget->GetGUID();
++                                me->GetMotionMaster()->MovePoint(0,newTarget->GetPositionX(),newTarget->GetPositionY(),newTarget->GetPositionZ());
++                            }
++                            else                                                            //only 1 target left
++                            {
++                                me->GetMotionMaster()->Clear();
++                                me->GetMotionMaster()->MoveChase(me->getVictim());
++                            }
++
++                            m_uiWhirlwindTimer = 500;
++                        } else m_uiWhirlwindTimer -= diff;
++                    }
+ 
+                     DoMeleeAttackIfReady();
+                     break;
+@@ -427,9 +550,9 @@
+             {
+                 switch (urand(0,2))
+                 {
+-                    case 0: me->SummonCreature(CREATURE_YMIRJAR_WARRIOR, SpawnLoc.GetPositionX()+rand()%5, SpawnLoc.GetPositionY()+rand()%5, SpawnLoc.GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000); break;
+-                    case 1: me->SummonCreature(CREATURE_YMIRJAR_WITCH_DOCTOR, SpawnLoc.GetPositionX()+rand()%5, SpawnLoc.GetPositionY()+rand()%5, SpawnLoc.GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000); break;
+-                    case 2: me->SummonCreature(CREATURE_YMIRJAR_HARPOONER, SpawnLoc.GetPositionX()+rand()%5, SpawnLoc.GetPositionY()+rand()%5, SpawnLoc.GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000); break;
++                    case 0: me->SummonCreature(CREATURE_YMIRJAR_WARRIOR, SpawnLoc.GetPositionX()+rand()%5, SpawnLoc.GetPositionY()+rand()%5, SpawnLoc.GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3000); break;
++                    case 1: me->SummonCreature(CREATURE_YMIRJAR_WITCH_DOCTOR, SpawnLoc.GetPositionX()+rand()%5, SpawnLoc.GetPositionY()+rand()%5, SpawnLoc.GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3000); break;
++                    case 2: me->SummonCreature(CREATURE_YMIRJAR_HARPOONER, SpawnLoc.GetPositionX()+rand()%5, SpawnLoc.GetPositionY()+rand()%5, SpawnLoc.GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3000); break;
+                 }
+             }
+         }
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_svala.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_svala.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_svala.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_svala.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -15,53 +19,69 @@
+  * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
++/* Script Data Start
++SDName: Boss svala
++SDAuthor: Tartalo
++SD%Complete:
++SDComment:
++SDCategory:
++Script Data End */
++
+ #include "ScriptPCH.h"
+ #include "utgarde_pinnacle.h"
+ 
+ enum Spells
+ {
+-    SPELL_CALL_FLAMES                             = 48258,
+-    SPELL_RITUAL_OF_THE_SWORD                     = 48276, //Effect #1 Teleport,  Effect #2 Dummy
+-    SPELL_SINSTER_STRIKE                          = 15667,
+-    H_SPELL_SINSTER_STRIKE                        = 59409,
+-    SPELL_SVALA_TRANSFORMING1                     = 54140,
+-    SPELL_SVALA_TRANSFORMING2                     = 54205
++    SPELL_CALL_FLAMES                        = 48258,
++    SPELL_RITUAL_OF_THE_SWORD                = 48276, //Effect #1 Teleport,  Effect #2 Dummy
++    SPELL_RITUAL_OF_THE_SWORD_DISARM         = 54159,
++    SPELL_SINISTER_STRIKE                    = 15667,
++    H_SPELL_SINISTER_STRIKE                  = 59409,
++    SPELL_SVALA_TRANSFORMING1                = 54140,
++    SPELL_SVALA_TRANSFORMING2                = 54205,
++    SPELL_BALL_OF_FLAME                      = 48246,
++    SPELL_TRANSFORMING_CHANNEL               = 54142,
++    SPELL_RITUAL_STRIKE                      = 48277,
++    SPELL_RITUAL_STRIKE_DOT                  = 59930,
++    SPELL_RITUAL_STRIKE_TRIGGER              = 48331,
++    SPELL_ARTHAS_VISUAL                      = 54134,
+ };
+ //not in db
+ enum Yells
+ {
+-    SAY_DIALOG_WITH_ARTHAS_1                      = -1575015,
+-    SAY_DIALOG_WITH_ARTHAS_2                      = -1575016,
+-    SAY_DIALOG_WITH_ARTHAS_3                      = -1575017,
+-    SAY_AGGRO                                     = -1575018,
+-    SAY_SLAY_1                                    = -1575019,
+-    SAY_SLAY_2                                    = -1575020,
+-    SAY_SLAY_3                                    = -1575021,
+-    SAY_DEATH                                     = -1575022,
+-    SAY_SACRIFICE_PLAYER_1                        = -1575023,
+-    SAY_SACRIFICE_PLAYER_2                        = -1575024,
+-    SAY_SACRIFICE_PLAYER_3                        = -1575025,
+-    SAY_SACRIFICE_PLAYER_4                        = -1575026,
+-    SAY_SACRIFICE_PLAYER_5                        = -1575027,
+-    SAY_DIALOG_OF_ARTHAS_1                        = -1575028,
+-    SAY_DIALOG_OF_ARTHAS_2                        = -1575029
++    SAY_DIALOG_WITH_ARTHAS_1                 = -1575000,
++    SAY_DIALOG_OF_ARTHAS_1                   = -1575001,
++    SAY_DIALOG_WITH_ARTHAS_2                 = -1575002,
++    SAY_DIALOG_OF_ARTHAS_2                   = -1575003,
++    SAY_DIALOG_WITH_ARTHAS_3                 = -1575004,
++    SAY_AGGRO                                = -1575005,
++    SAY_SLAY_1                               = -1575006,
++    SAY_SLAY_2                               = -1575007,
++    SAY_SLAY_3                               = -1575008,
++    SAY_SACRIFICE_PLAYER_1                   = -1575009,
++    SAY_SACRIFICE_PLAYER_2                   = -1575010,
++    SAY_SACRIFICE_PLAYER_3                   = -1575011,
++    SAY_SACRIFICE_PLAYER_4                   = -1575012,
++    SAY_SACRIFICE_PLAYER_5                   = -1575013,
++    SAY_DEATH                                = -1575014
+ };
+ enum Creatures
+ {
+-    CREATURE_ARTHAS                               = 24266, // Image of Arthas
+-    CREATURE_SVALA_SORROWGRAVE                    = 26668, // Svala after transformation
+-    CREATURE_SVALA                                = 29281, // Svala before transformation
+-    CREATURE_RITUAL_CHANNELER                     = 27281
++    CREATURE_ARTHAS                          = 29280, // Image of Arthas
++    CREATURE_SVALA_SORROWGRAVE               = 26668, // Svala after transformation
++    CREATURE_SVALA                           = 29281, // Svala before transformation
++    CREATURE_RITUAL_CHANNELER                = 27281,
++    CREATURE_SCOURGE_HULK                    = 26555,
+ };
+ enum ChannelerSpells
+ {
+     //ritual channeler's spells
+-    SPELL_PARALYZE                                = 48278,
+-    SPELL_SHADOWS_IN_THE_DARK                     = 59407
++    SPELL_PARALYZE                           = 48278,
++    SPELL_SHADOWS_IN_THE_DARK                = 59407
+ };
+ enum Misc
+ {
+-    DATA_SVALA_DISPLAY_ID                         = 25944
++    DATA_SVALA_DISPLAY_ID                    = 25944,
+ };
+ enum IntroPhase
+ {
+@@ -74,15 +94,20 @@
+     NORMAL,
+     SACRIFICING
+ };
+-
++enum DisplayIds
++{
++    DISPLAY_SVALA_WITH_SWORD                = 26096,
++};
++enum Achievements
++{
++    ACHIEV_INCREDIBLE_HULK                   = 2043
++};
+ static Position RitualChannelerPos[]=
+ {
+-    {296.42f, -355.01f, 90.94f, 0.0f},
+-    {302.36f, -352.01f, 90.54f, 0.0f},
+-    {291.39f, -350.89f, 90.54f, 0.0f}
++    {296.42f, -355.01f, 90.94f},
++    {302.36f, -352.01f, 90.54f},
++    {291.39f, -350.89f, 90.54f}
+ };
+-static Position ArthasPos = { 295.81f, -366.16f, 92.57f, 1.58f };
+-static Position SvalaPos = { 296.632f, -346.075f, 90.6307f, 1.58f };
+ 
+ class boss_svala : public CreatureScript
+ {
+@@ -96,6 +121,8 @@
+ 
+     struct boss_svalaAI : public ScriptedAI
+     {
++        uint64 uiDoodadMirror;
++    
+         boss_svalaAI(Creature *c) : ScriptedAI(c)
+         {
+             pInstance = c->GetInstanceScript();
+@@ -105,22 +132,31 @@
+ 
+         uint8 uiIntroPhase;
+ 
++        uint64 uiSvalaGuid;
++        uint64 uiArthas;
++
+         IntroPhase Phase;
+ 
+-        TempSummon* pArthas;
+-        uint64 uiArthasGUID;
+-
+         InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+             Phase = IDLE;
+-            uiIntroTimer = 1 * IN_MILLISECONDS;
++            uiIntroTimer = 1*IN_MILLISECONDS;
+             uiIntroPhase = 0;
+-            uiArthasGUID = 0;
++            uiArthas = 0;
++
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
+ 
+             if (pInstance)
+-                pInstance->SetData(DATA_SVALA_SORROWGRAVE_EVENT, NOT_STARTED);
++                if (pInstance->GetData(DATA_SVALA_SORROWGRAVE_EVENT) != DONE)
++                {
++                    pInstance->SetData(DATA_SVALA_SORROWGRAVE_EVENT, NOT_STARTED);
++                }
++                else 
++                    Phase = FINISHED;
++
++            uiDoodadMirror = pInstance? pInstance->GetData64(DATA_DOODAD_UTGARDE_MIRROR_FX01) : NULL;
+         }
+ 
+         void MoveInLineOfSight(Unit* pWho)
+@@ -128,21 +164,24 @@
+             if (!pWho)
+                 return;
+ 
++
+             if (Phase == IDLE && pWho->isTargetableForAttack() && me->IsHostileTo(pWho) && me->IsWithinDistInMap(pWho, 40))
+             {
+                 Phase = INTRO;
+                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+ 
+-                if (Creature *pArthas = me->SummonCreature(CREATURE_ARTHAS, ArthasPos, TEMPSUMMON_MANUAL_DESPAWN))
++                if (Creature* pArthas = me->SummonCreature(CREATURE_ARTHAS, 295.81f, -366.16f, 92.57f, 1.58f, TEMPSUMMON_MANUAL_DESPAWN))
+                 {
+-                    pArthas->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+-                    pArthas->SetFloatValue(OBJECT_FIELD_SCALE_X, 5);
+-                    uiArthasGUID = pArthas->GetGUID();
++                    pArthas->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_DISABLE_MOVE);
++                    uiArthas = pArthas->GetGUID();
++                    if (GameObject* go = GameObject::GetGameObject(*me, uiDoodadMirror))
++                        go->Use(me);
+                 }
++            
+             }
+         }
+ 
+-        void AttackStart(Unit* /*who*/) {}
++        void AttackStart(Unit* who) {}
+ 
+         void UpdateAI(const uint32 diff)
+         {
+@@ -151,55 +190,73 @@
+ 
+             if (uiIntroTimer <= diff)
+             {
+-                Creature *pArthas = Unit::GetCreature(*me, uiArthasGUID);
+-                if (!pArthas)
+-                    return;
+-
+                 switch (uiIntroPhase)
+                 {
+                     case 0:
+                         DoScriptText(SAY_DIALOG_WITH_ARTHAS_1, me);
+                         ++uiIntroPhase;
+-                        uiIntroTimer = 3500;
++                        uiIntroTimer = 8*IN_MILLISECONDS;
+                         break;
+                     case 1:
+-                        DoScriptText(SAY_DIALOG_OF_ARTHAS_1, pArthas);
++                        if (Creature* pArthas = Creature::GetCreature(*me, uiArthas))
++                            DoScriptText(SAY_DIALOG_OF_ARTHAS_1, pArthas);
+                         ++uiIntroPhase;
+-                        uiIntroTimer = 3500;
++                        uiIntroTimer = 10*IN_MILLISECONDS;
+                         break;
+                     case 2:
+-                        DoScriptText(SAY_DIALOG_WITH_ARTHAS_2, me);
++                        DoCast(me, SPELL_SVALA_TRANSFORMING1);
++                        if (Creature* pArthas = Creature::GetCreature(*me, uiArthas))
++                            pArthas->CastSpell(me, SPELL_TRANSFORMING_CHANNEL, false);
++                        me->GetMotionMaster()->MovePoint(0, 296.0, -346.0, 95.0);
+                         ++uiIntroPhase;
+-                        uiIntroTimer = 3500;
++                        uiIntroTimer = 8*IN_MILLISECONDS;
+                         break;
+                     case 3:
+-                        DoScriptText(SAY_DIALOG_OF_ARTHAS_2, pArthas);
+-                        ++uiIntroPhase;
+-                        uiIntroTimer = 3500;
+-                        break;
+-                    case 4:
+-                        DoScriptText(SAY_DIALOG_WITH_ARTHAS_3, me);
+-                        DoCast(me, SPELL_SVALA_TRANSFORMING1);
+-                        ++uiIntroPhase;
+-                        uiIntroTimer = 2800;
+-                        break;
+-                    case 5:
+                         DoCast(me, SPELL_SVALA_TRANSFORMING2);
+                         ++uiIntroPhase;
+                         uiIntroTimer = 200;
+                         break;
++                    case 4:
++                        if (Creature* pSvalaSorrowgrave = me->SummonCreature(CREATURE_SVALA_SORROWGRAVE, 296.632f, -346.075f, 95.6307f, 1.58f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60*IN_MILLISECONDS))
++                        {
++                            if (Creature* pArthas = Creature::GetCreature(*me, uiArthas))
++                                pArthas->CastStop();
++                            uiSvalaGuid = pSvalaSorrowgrave->GetGUID();
++                            pSvalaSorrowgrave->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
++                            me->SetDisplayId(DATA_SVALA_DISPLAY_ID);
++                            me->SetVisibility(VISIBILITY_OFF);
++                            DoScriptText(SAY_DIALOG_WITH_ARTHAS_2, pSvalaSorrowgrave);
++                            ++uiIntroPhase;
++                            uiIntroTimer = 12*IN_MILLISECONDS;
++                        }
++                        else 
++                           Reset();
++                        break;
++                    case 5:
++                        if (Creature* pArthas = Creature::GetCreature(*me, uiArthas))
++                            DoScriptText(SAY_DIALOG_OF_ARTHAS_2, pArthas);
++                        ++uiIntroPhase;
++                        uiIntroTimer = 9*IN_MILLISECONDS;
++                        break;
++
+                     case 6:
+-                        if (me->SummonCreature(CREATURE_SVALA_SORROWGRAVE, SvalaPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60*IN_MILLISECONDS))
++                         if (Creature* pSvalaSorrowgrave = Creature::GetCreature(*me, uiSvalaGuid))
++                         {
++                             DoScriptText(SAY_DIALOG_WITH_ARTHAS_3, pSvalaSorrowgrave);
++                         }
++                         if (Creature* pArthas = Creature::GetCreature(*me, uiArthas))
++                            pArthas->SetVisibility(VISIBILITY_OFF);
++                         ++uiIntroPhase;
++                         uiIntroTimer = 15*IN_MILLISECONDS;
++                         break;
++                    case 7:
++                        if (Creature* pSvalaSorrowgrave = Creature::GetCreature(*me, uiSvalaGuid))
+                         {
+-                            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+-                            me->SetDisplayId(DATA_SVALA_DISPLAY_ID);
+-                            pArthas->ToTempSummon()->UnSummon();
+-                            uiArthasGUID = 0;
+-                            Phase = FINISHED;
++                            pSvalaSorrowgrave->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
+                         }
+-                        else
+-                            Reset();
+-                        break;
++                        if (Creature* pArthas = Creature::GetCreature(*me, uiArthas))
++                            pArthas->DisappearAndDie();
++                        Phase = FINISHED;
+                 }
+             } else uiIntroTimer -= diff;
+         }
+@@ -217,6 +274,7 @@
+         return new mob_ritual_channelerAI(pCreature);
+     }
+ 
++
+     struct mob_ritual_channelerAI : public Scripted_NoMovementAI
+     {
+         mob_ritual_channelerAI(Creature *c) :Scripted_NoMovementAI(c)
+@@ -228,19 +286,17 @@
+ 
+         void Reset()
+         {
+-            DoCast(me, SPELL_SHADOWS_IN_THE_DARK);
++    	    if (IsHeroic())
++                DoCast(me, SPELL_SHADOWS_IN_THE_DARK);
+         }
+ 
+         // called by svala sorrowgrave to set guid of victim
+-        void DoAction(uint32 /*action*/)
++        void SetGUID(const uint64 &guid, int32 id) 
+         {
+-            if (pInstance)
+-                if (Unit *pVictim = me->GetUnit(*me, pInstance->GetData64(DATA_SACRIFICED_PLAYER)))
+-                    DoCast(pVictim, SPELL_PARALYZE);
+-        }
+-
+-        void EnterCombat(Unit* /*who*/)
+-        {
++            if (Unit *pVictim = me->GetUnit(*me, guid))
++            {
++                DoCast(pVictim, SPELL_PARALYZE);
++            }
+         }
+     };
+ 
+@@ -262,49 +318,69 @@
+         {
+             pInstance = c->GetInstanceScript();
+         }
+-
++    
++        bool bFlames;
++        bool bMove;
++    
++        uint64 uiFlameBrazier_1;
++        uint64 uiFlameBrazier_2;
++        uint64 uiRitualTarget;
+         uint32 uiSinsterStrikeTimer;
+         uint32 uiCallFlamesTimer;
+-        uint32 uiRitualOfSwordTimer;
++        uint8 uiFlamesCount;
+         uint32 uiSacrificeTimer;
++        uint32 uiMoveTimer;
++        uint32 uiHealthAmountModifier;
++    
++        uint64 uiDoodadMirror;
+ 
+         CombatPhase Phase;
+ 
+         SummonList summons;
+-
+-        bool bSacrificed;
+-
++        Unit* pSacrificeTarget;
++    
+         InstanceScript* pInstance;
+ 
+         void Reset()
+         {
+-            uiSinsterStrikeTimer = 7 * IN_MILLISECONDS;
+-            uiCallFlamesTimer = 10 * IN_MILLISECONDS;
+-            uiRitualOfSwordTimer = 20 * IN_MILLISECONDS;
+-            uiSacrificeTimer = 8 * IN_MILLISECONDS;
+-
+-            bSacrificed = false;
++            me->CastStop();
++            me->SetReactState(REACT_DEFENSIVE);
++            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED);
++            uiFlameBrazier_1 = pInstance? pInstance->GetData64(DATA_FLAME_BRAZIER_1) : NULL;
++            uiFlameBrazier_2 = pInstance? pInstance->GetData64(DATA_FLAME_BRAZIER_2) : NULL;
++            uiRitualTarget = pInstance? pInstance->GetData64(DATA_RITUAL_TARGET) : NULL;
++            uiDoodadMirror   = pInstance? pInstance->GetData64(DATA_DOODAD_UTGARDE_MIRROR_FX01) : NULL;
++            uiSinsterStrikeTimer = 7*IN_MILLISECONDS;
++            uiCallFlamesTimer = 10*IN_MILLISECONDS;
++            uiSacrificeTimer = 2*IN_MILLISECONDS;
++            uiFlamesCount = 0;
++            uiHealthAmountModifier = 1;
++            uiMoveTimer = 23*IN_MILLISECONDS;
++        
++            bFlames = false;
++            bMove = true;
+ 
+             Phase = NORMAL;
+ 
+-            DoTeleportTo(296.632f, -346.075f, 90.6307f);
+-            me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
++            me->SetUnitMovementFlags(MOVEMENTFLAG_LEVITATING);
+ 
+             summons.DespawnAll();
++            pSacrificeTarget = NULL;
+ 
+             if (pInstance)
+-            {
+                 pInstance->SetData(DATA_SVALA_SORROWGRAVE_EVENT, NOT_STARTED);
+-                pInstance->SetData64(DATA_SACRIFICED_PLAYER,0);
+-            }
+         }
+ 
+-        void EnterCombat(Unit* /*who*/)
++        void EnterCombat(Unit* who)
+         {
++            me->SetReactState(REACT_AGGRESSIVE);
+             DoScriptText(SAY_AGGRO, me);
+ 
+             if (pInstance)
+                 pInstance->SetData(DATA_SVALA_SORROWGRAVE_EVENT, IN_PROGRESS);
++            
++            if (GameObject* go = GameObject::GetGameObject(*me, uiDoodadMirror))
++                go->ResetDoorOrButton();
+         }
+ 
+         void JustSummoned(Creature *summon)
+@@ -316,55 +392,100 @@
+         {
+             summons.Despawn(summon);
+         }
++    
++        void SpellHitTarget(Unit *pTarget, const SpellEntry *spell) 
++        {
++            if (spell->Id == SPELL_RITUAL_STRIKE_DOT)
++                if (IsHeroic())
++                    pTarget->RemoveAurasDueToSpell(SPELL_RITUAL_STRIKE);
++                else
++                    pTarget->RemoveAurasDueToSpell(SPELL_RITUAL_STRIKE_DOT);
++        }
++    
++        void KilledUnit(Unit* who)
++        {
++            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2, SAY_SLAY_3), me);
++            if (IsHeroic() && who->GetEntry() == CREATURE_SCOURGE_HULK)
++                pInstance->DoCompleteAchievement(ACHIEV_INCREDIBLE_HULK);
++        }
+ 
+         void UpdateAI(const uint32 diff)
+         {
+             if (Phase == NORMAL)
+             {
++                if (!bMove && uiMoveTimer > diff)
++                {
++                    uiMoveTimer -= diff;
++                    return;
++                }
++                else if (!bMove)
++                {
++                    DoStartMovement(me->getVictim());
++                    pSacrificeTarget = NULL;
++                    bMove = true;
++                }
+                 //Return since we have no target
+                 if (!UpdateVictim())
+                     return;
+ 
+                 if (uiSinsterStrikeTimer <= diff)
+                 {
+-                    DoCast(me->getVictim(), SPELL_SINSTER_STRIKE);
+-                    uiSinsterStrikeTimer = urand(5 * IN_MILLISECONDS, 9 * IN_MILLISECONDS);
++                    DoCast(me->getVictim(), DUNGEON_MODE(SPELL_SINISTER_STRIKE, H_SPELL_SINISTER_STRIKE));
++                    uiSinsterStrikeTimer = urand(5*IN_MILLISECONDS, 9*IN_MILLISECONDS);
+                 } else uiSinsterStrikeTimer -= diff;
+ 
+-                if (uiCallFlamesTimer <= diff)
++                if (uiCallFlamesTimer <= diff) //move to send event scripts?
+                 {
+                     if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                     {
+-                        DoCast(pTarget, SPELL_CALL_FLAMES);
+-                        uiCallFlamesTimer = urand(8 * IN_MILLISECONDS, 12 * IN_MILLISECONDS);
++                        if (!bFlames)
++                        {
++                            DoCast(pTarget, SPELL_CALL_FLAMES);
++                            bFlames = true;
++                        }
++
++                        if (uiFlamesCount < 3)
++                        {
++                            if (Creature* pBrazier = Creature::GetCreature(*me, RAND(uiFlameBrazier_1, uiFlameBrazier_2))) 
++                            {
++                                if (IsHeroic())   // find correct spell
++                                {
++                                    int dmg = 3825 + rand()%1350;
++                                    pBrazier->CastCustomSpell(pBrazier, SPELL_BALL_OF_FLAME, &dmg, 0, 0, true);
++                                }
++                                else
++                                    pBrazier->CastSpell(pBrazier, SPELL_BALL_OF_FLAME, true);
++                            }
++                            uiCallFlamesTimer = 1*IN_MILLISECONDS;
++                            ++uiFlamesCount;
++                        }
++                        else
++                        { 
++                            bFlames = false;
++                            uiCallFlamesTimer = urand(8*IN_MILLISECONDS, 12*IN_MILLISECONDS);
++                            uiFlamesCount = 0;
++                        }
+                     }
+                 } else uiCallFlamesTimer -= diff;
+ 
+-                if (!bSacrificed)
++                if ((me->GetHealth()*100 / me->GetMaxHealth()) < (100-(25*uiHealthAmountModifier)))
+                 {
+-                    if (uiRitualOfSwordTimer <= diff)
++                    ++uiHealthAmountModifier;
++
++                    pSacrificeTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
++                    if (pSacrificeTarget)
+                     {
+-                        if (Unit* pSacrificeTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                        {
+-                            DoScriptText(RAND(SAY_SACRIFICE_PLAYER_1, SAY_SACRIFICE_PLAYER_2, SAY_SACRIFICE_PLAYER_3, SAY_SACRIFICE_PLAYER_4, SAY_SACRIFICE_PLAYER_5), me);
+-                            DoCast(pSacrificeTarget, SPELL_RITUAL_OF_THE_SWORD);
+-                            //Spell doesn't teleport
+-                            DoTeleportPlayer(pSacrificeTarget, 296.632f, -346.075f, 90.63f, 4.6f);
+-                            me->SetUnitMovementFlags(MOVEMENTFLAG_CAN_FLY);
+-                            DoTeleportTo(296.632f, -346.075f, 120.85f);
+-                            Phase = SACRIFICING;
+-                            if (pInstance)
+-                            {
+-                                pInstance->SetData64(DATA_SACRIFICED_PLAYER,pSacrificeTarget->GetGUID());
++                        DoScriptText(RAND(SAY_SACRIFICE_PLAYER_1, SAY_SACRIFICE_PLAYER_2, SAY_SACRIFICE_PLAYER_3, SAY_SACRIFICE_PLAYER_4, SAY_SACRIFICE_PLAYER_5), me);
++                        me->GetMotionMaster()->Clear();
++                        DoCast(pSacrificeTarget, SPELL_RITUAL_OF_THE_SWORD);
++                        DoTeleportPlayer(pSacrificeTarget, 296.632f, -346.075f, 90.63f, 4.6f);
++                        Phase = SACRIFICING;
+ 
+-                                for (uint8 i = 0; i < 3; ++i)
+-                                    if (Creature* pSummon = me->SummonCreature(CREATURE_RITUAL_CHANNELER, RitualChannelerPos[i], TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 360000))
+-                                        pSummon->AI()->DoAction(0);
+-                            }
+-
+-                            bSacrificed = true;
+-                        }
+-                    } else uiRitualOfSwordTimer -= diff;
++                        for (uint8 i = 0; i < 3; ++i)
++                            if (Creature* pRitualChanneler = me->SummonCreature(CREATURE_RITUAL_CHANNELER, RitualChannelerPos[i], TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 100*HOUR))
++                                if (pRitualChanneler->AI())
++                                    pRitualChanneler->AI()->SetGUID(pSacrificeTarget->GetGUID());
++                    }
+                 }
+ 
+                 DoMeleeAttackIfReady();
+@@ -373,28 +494,23 @@
+             {
+                 if (uiSacrificeTimer <= diff)
+                 {
+-                    Unit* pSacrificeTarget = pInstance ? Unit::GetUnit(*me, pInstance->GetData64(DATA_SACRIFICED_PLAYER)) : NULL;
+-                    if (pInstance && !summons.empty() && pSacrificeTarget && pSacrificeTarget->isAlive())
+-                        me->Kill(pSacrificeTarget, false); // durability damage?
+-
+-                    //go down
++                    Creature* pTarget = Creature::GetCreature(*me, uiRitualTarget);
++                    if (pTarget)
++                    {
++                        DoCast(me, SPELL_RITUAL_STRIKE_TRIGGER, true);
++                        DoCast(me, SPELL_RITUAL_OF_THE_SWORD_DISARM, true);
++                    }
++                    bMove = false;
+                     Phase = NORMAL;
+-                    pSacrificeTarget = NULL;
+-                    me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
+-                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                        me->GetMotionMaster()->MoveChase(pTarget);
+-
+-                    uiSacrificeTimer = 8 * IN_MILLISECONDS;
++                    uiMoveTimer = 23*IN_MILLISECONDS;
++                    uiSacrificeTimer = 2*IN_MILLISECONDS;
++                    uiSinsterStrikeTimer = urand(10*IN_MILLISECONDS, 15*IN_MILLISECONDS);
++                    uiCallFlamesTimer = urand(13*IN_MILLISECONDS, 18*IN_MILLISECONDS);
+                 }
+                 else uiSacrificeTimer -= diff;
+             }
+         }
+ 
+-        void KilledUnit(Unit* /*pVictim*/)
+-        {
+-            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2, SAY_SLAY_3), me);
+-        }
+-
+         void JustDied(Unit* pKiller)
+         {
+             if (pInstance)
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_ymiron.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_ymiron.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_ymiron.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/boss_ymiron.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -30,6 +34,7 @@
+ {
+     SPELL_BANE                                = 48294,
+     H_SPELL_BANE                              = 59301,
++    SPELL_BANE_TRIGGERED                      = 59302,
+     SPELL_DARK_SLASH                          = 48292,
+     SPELL_FETID_ROT                           = 48291,
+     H_SPELL_FETID_ROT                         = 59300,
+@@ -38,7 +43,7 @@
+     H_SPELL_SPIRIT_BURST                      = 59305,
+     SPELL_SPIRIT_STRIKE                       = 48423,
+     H_SPELL_SPIRIT_STRIKE                     = 59304,
+-    SPELL_ANCESTORS_VENGEANCE                 = 16939,
++    SPELL_WITHER                              = 48584,
+ 
+     SPELL_SUMMON_AVENGING_SPIRIT              = 48592,
+     SPELL_SUMMON_SPIRIT_FOUNT                 = 48386,
+@@ -53,16 +58,17 @@
+ //not in db
+ enum Yells
+ {
+-    SAY_AGGRO                               = -1575028,
+-    SAY_SLAY_1                              = -1575029,
+-    SAY_SLAY_2                              = -1575030,
+-    SAY_SLAY_3                              = -1575031,
+-    SAY_SLAY_4                              = -1575032,
+-    SAY_DEATH                               = -1575033,
+-    SAY_SUMMON_BJORN                        = -1575034,
+-    SAY_SUMMON_HALDOR                       = -1575035,
+-    SAY_SUMMON_RANULF                       = -1575036,
+-    SAY_SUMMON_TORGYN                       = -1575037
++    SAY_AGGRO                               = -1575031,
++    SAY_SUMMON_BJORN                        = -1575032,
++    SAY_SUMMON_HALDOR                       = -1575033,
++    SAY_SUMMON_RANULF                       = -1575034,
++    SAY_SUMMON_TORGYN                       = -1575035,
++    SAY_SLAY_1                              = -1575036,
++    SAY_SLAY_2                              = -1575037,
++    SAY_SLAY_3                              = -1575038,
++    SAY_SLAY_4                              = -1575039,
++    SAY_DEATH                               = -1575040,
++
+ };
+ 
+ enum Creatures
+@@ -78,11 +84,15 @@
+     CREATURE_SPIRIT_FOUNT                   = 27339,
+     CREATURE_AVENGING_SPIRIT                = 27386
+ };
++enum Achievements
++{
++    ACHIEV_KINGS_BANE                       = 2157
++};
+ 
+ struct ActiveBoatStruct
+ {
+     uint32 npc;
+-    int32 say;
++    uint32 say;
+     float MoveX,MoveY,MoveZ,SpawnX,SpawnY,SpawnZ,SpawnO;
+ };
+ 
+@@ -106,14 +116,14 @@
+ 
+     struct boss_ymironAI : public ScriptedAI
+     {
+-        boss_ymironAI(Creature *c) : ScriptedAI(c)
++        boss_ymironAI(Creature *c) : ScriptedAI(c), summons(c)
+         {
+             pInstance = c->GetInstanceScript();
+             for (int i = 0; i < 4; ++i)
+                 m_uiActiveOrder[i] = i;
+             for (int i = 0; i < 3; ++i)
+             {
+-                int r = i + (rand() % (4 - i));
++                int r = i + (rand()%(4-i));
+                 int temp = m_uiActiveOrder[i];
+                 m_uiActiveOrder[i] = m_uiActiveOrder[r];
+                 m_uiActiveOrder[r] = temp;
+@@ -126,6 +136,7 @@
+         bool m_bIsActiveWithHALDOR;
+         bool m_bIsActiveWithRANULF;
+         bool m_bIsActiveWithTORGYN;
++        bool m_bAchievement;
+ 
+         uint8 m_uiActiveOrder[4];
+         uint8 m_uiActivedNumber;
+@@ -133,7 +144,6 @@
+         uint32 m_uiFetidRot_Timer;
+         uint32 m_uiBane_Timer;
+         uint32 m_uiDarkSlash_Timer;
+-        uint32 m_uiAncestors_Vengeance_Timer;
+ 
+         uint32 m_uiAbility_BJORN_Timer;
+         uint32 m_uiAbility_HALDOR_Timer;
+@@ -144,24 +154,29 @@
+         uint32 m_uiHealthAmountModifier;
+         uint32 m_uiHealthAmountMultipler;
+ 
++        uint32 m_uiCheckSkadiTimer;
++
+         uint64 m_uiActivedCreatureGUID;
+         uint64 m_uiOrbGUID;
+ 
+-        InstanceScript *pInstance;
++        InstanceScript* pInstance;
++        SummonList summons;
+ 
+         void Reset()
+         {
+             m_bIsPause = false;
++            m_bIsWalking = false;
++            m_bAchievement = true;
+             m_bIsActiveWithBJORN = false;
+             m_bIsActiveWithHALDOR = false;
+             m_bIsActiveWithRANULF = false;
+             m_bIsActiveWithTORGYN = false;
+ 
+-            m_uiFetidRot_Timer            = urand(8000, 13000);
+-            m_uiBane_Timer                = urand(18000, 23000);
+-            m_uiDarkSlash_Timer           = urand(28000, 33000);
+-            m_uiAncestors_Vengeance_Timer = DUNGEON_MODE(60000, 45000);
++            m_uiFetidRot_Timer            = urand(5*IN_MILLISECONDS,8*IN_MILLISECONDS);
++            m_uiBane_Timer                = urand(20*IN_MILLISECONDS,22*IN_MILLISECONDS);
++            m_uiDarkSlash_Timer           = urand(10*IN_MILLISECONDS,15*IN_MILLISECONDS);
+             m_uiPause_Timer               = 0;
++            m_uiCheckSkadiTimer           = 10*IN_MILLISECONDS;
+ 
+             m_uiAbility_BJORN_Timer  = 0;
+             m_uiAbility_HALDOR_Timer = 0;
+@@ -170,16 +185,18 @@
+ 
+             m_uiActivedNumber        = 0;
+             m_uiHealthAmountModifier = 1;
+-            m_uiHealthAmountMultipler = DUNGEON_MODE(20, 25);
++            m_uiHealthAmountMultipler = DUNGEON_MODE(33,20);
+ 
+             DespawnBoatGhosts(m_uiActivedCreatureGUID);
+             DespawnBoatGhosts(m_uiOrbGUID);
+ 
++            summons.DespawnAll();
++
+             if (pInstance)
+                 pInstance->SetData(DATA_KING_YMIRON_EVENT, NOT_STARTED);
+         }
+ 
+-        void EnterCombat(Unit* /*who*/)
++        void EnterCombat(Unit* who)
+         {
+             DoScriptText(SAY_AGGRO, me);
+ 
+@@ -187,8 +204,32 @@
+                 pInstance->SetData(DATA_KING_YMIRON_EVENT, IN_PROGRESS);
+         }
+ 
++        void JustSummoned(Creature *summon)
++        {
++            summons.Summon(summon);
++        }
++
+         void UpdateAI(const uint32 diff)
+-        {
++        { 
++            if (m_uiCheckSkadiTimer <= diff)
++            {
++                if (pInstance)
++                {
++                    // try to prevent a possible exploit
++                    if ((pInstance->GetData(DATA_SKADI_THE_RUTHLESS_EVENT) < DONE) && ((me->GetVisibility() != VISIBILITY_OFF) || (me->getFaction() != 35)))
++                    {
++                        me->SetVisibility(VISIBILITY_OFF);
++                        me->setFaction(35);
++                    }
++                    else if ((pInstance->GetData(DATA_SKADI_THE_RUTHLESS_EVENT) >= DONE) && ((me->GetVisibility() != VISIBILITY_ON) || (me->getFaction() == 35)))
++                    {
++                        me->RestoreFaction();
++                        me->SetVisibility(VISIBILITY_ON);
++                    }
++                }
++                m_uiCheckSkadiTimer = 10*IN_MILLISECONDS;
++            } else m_uiCheckSkadiTimer -= diff;
++
+             if (m_bIsWalking)
+             {
+                 if (m_uiPause_Timer <= diff)
+@@ -199,7 +240,8 @@
+                     {
+                         m_uiActivedCreatureGUID = pTemp->GetGUID();
+                         pTemp->CastSpell(me, SPELL_CHANNEL_SPIRIT_TO_YMIRON, true);
+-                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
++                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
++                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                         pTemp->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+                         switch(m_uiActiveOrder[m_uiActivedNumber])
+                         {
+@@ -212,7 +254,7 @@
+ 
+                     m_bIsPause = true;
+                     m_bIsWalking = false;
+-                    m_uiPause_Timer = 3000;
++                    m_uiPause_Timer = 3*IN_MILLISECONDS;
+                 } else m_uiPause_Timer -= diff;
+                 return;
+             }
+@@ -220,10 +262,10 @@
+             {
+                 if (m_uiPause_Timer <= diff)
+                 {
+-                    m_uiAbility_BJORN_Timer = 5000;
+-                    m_uiAbility_HALDOR_Timer = 5000;
+-                    m_uiAbility_RANULF_Timer = 5000;
+-                    m_uiAbility_TORGYN_Timer = 5000;
++                    m_uiAbility_BJORN_Timer = 5*IN_MILLISECONDS;
++                    m_uiAbility_HALDOR_Timer = 5*IN_MILLISECONDS;
++                    m_uiAbility_RANULF_Timer = 5*IN_MILLISECONDS;
++                    m_uiAbility_TORGYN_Timer = 5*IN_MILLISECONDS;
+ 
+                     m_bIsPause = false;
+                     m_uiPause_Timer = 0;
+@@ -240,38 +282,45 @@
+                 // Normal spells ------------------------------------------------------------------------
+                 if (m_uiBane_Timer <= diff)
+                 {
+-                    DoCast(me, SPELL_BANE);
+-                    m_uiBane_Timer = urand(20000, 25000);
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        DoCast(me, DUNGEON_MODE(SPELL_BANE, H_SPELL_BANE));
++                        m_uiBane_Timer = urand(20*IN_MILLISECONDS,22*IN_MILLISECONDS);
++                    }
+                 } else m_uiBane_Timer -= diff;
+ 
+                 if (m_uiFetidRot_Timer <= diff)
+                 {
+-                    DoCast(me->getVictim(), SPELL_FETID_ROT);
+-                    m_uiFetidRot_Timer = urand(10000, 15000);
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 200, true))
++                            DoCast(pTarget, DUNGEON_MODE(SPELL_FETID_ROT, H_SPELL_FETID_ROT));
++                        m_uiFetidRot_Timer = urand(10*IN_MILLISECONDS,15*IN_MILLISECONDS);
++                    }
+                 } else m_uiFetidRot_Timer -= diff;
+ 
+                 if (m_uiDarkSlash_Timer <= diff)
+                 {
+-                    DoCast(me->getVictim(), SPELL_DARK_SLASH);
+-                    m_uiDarkSlash_Timer = urand(30000, 35000);
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        int dmg = int(me->getVictim()->GetHealth()*0.5);
++                        me->CastCustomSpell(me->getVictim(), SPELL_DARK_SLASH, &dmg, 0, 0, false);
++                        m_uiDarkSlash_Timer = urand(15*IN_MILLISECONDS,18*IN_MILLISECONDS);
++                    }
+                 } else m_uiDarkSlash_Timer -= diff;
+ 
+-                if (m_uiAncestors_Vengeance_Timer <= diff)
+-                {
+-                    DoCast(me, SPELL_ANCESTORS_VENGEANCE);
+-                    m_uiAncestors_Vengeance_Timer = DUNGEON_MODE(urand(60000, 65000), urand(45000, 50000));
+-                } else m_uiAncestors_Vengeance_Timer -= diff;
+-
+                 // Abilities ------------------------------------------------------------------------------
+                 if (m_bIsActiveWithBJORN && m_uiAbility_BJORN_Timer <= diff)
+                 {
+                     //DoCast(me, SPELL_SUMMON_SPIRIT_FOUNT); // works fine, but using summon has better control
+-                    if (Creature* pTemp = me->SummonCreature(CREATURE_SPIRIT_FOUNT, 385.0f + rand() % 10, -330.0f + rand() % 10, 104.756f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 180000))
++                    if (Creature* pTemp = me->SummonCreature(CREATURE_SPIRIT_FOUNT, float(385+rand()%10), float(-330+rand()%10), 104.756f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 180*IN_MILLISECONDS))
+                     {
+                         pTemp->SetSpeed(MOVE_RUN, 0.4f);
+                         pTemp->CastSpell(pTemp, DUNGEON_MODE(SPELL_SPIRIT_FOUNT, H_SPELL_SPIRIT_FOUNT), true);
+-                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
++                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
++                        pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                         pTemp->SetDisplayId(11686);
++                        pTemp->GetMotionMaster()->MoveChase(me->getVictim());
+                         m_uiOrbGUID = pTemp->GetGUID();
+                     }
+                     m_bIsActiveWithBJORN = false; // only one orb
+@@ -279,14 +328,20 @@
+ 
+                 if (m_bIsActiveWithHALDOR && m_uiAbility_HALDOR_Timer <= diff)
+                 {
+-                    DoCast(me->getVictim(), SPELL_SPIRIT_STRIKE);
+-                    m_uiAbility_HALDOR_Timer = 5000; // overtime
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        DoCast(me->getVictim(), DUNGEON_MODE(SPELL_SPIRIT_STRIKE, H_SPELL_SPIRIT_STRIKE));
++                        m_uiAbility_HALDOR_Timer = 5*IN_MILLISECONDS; // overtime
++                    }
+                 } else m_uiAbility_HALDOR_Timer -= diff;
+ 
+                 if (m_bIsActiveWithRANULF && m_uiAbility_RANULF_Timer <= diff)
+                 {
+-                    DoCast(me, SPELL_SPIRIT_BURST);
+-                    m_uiAbility_RANULF_Timer = 10000; // overtime
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        DoCast(me, DUNGEON_MODE(SPELL_SPIRIT_BURST, H_SPELL_SPIRIT_BURST));
++                        m_uiAbility_RANULF_Timer = 10*IN_MILLISECONDS; // overtime
++                    }
+                 } else m_uiAbility_RANULF_Timer -= diff;
+ 
+                 if (m_bIsActiveWithTORGYN && m_uiAbility_TORGYN_Timer <= diff)
+@@ -298,8 +353,10 @@
+                     for (uint8 i = 0; i < 4; ++i)
+                     {
+                         //DoCast(me, SPELL_SUMMON_AVENGING_SPIRIT); // works fine, but using summon has better control
+-                        if (Creature* pTemp = me->SummonCreature(CREATURE_AVENGING_SPIRIT, x + rand() % 10, y + rand() % 10, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
++                        if (Creature* pTemp = me->SummonCreature(CREATURE_AVENGING_SPIRIT, x+rand()%10, y+rand()%10, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30*IN_MILLISECONDS))
+                         {
++                            pTemp->CastSpell(pTemp, SPELL_WITHER, true);
++
+                             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                             {
+                                 pTemp->AddThreat(pTarget, 0.0f);
+@@ -307,9 +364,11 @@
+                             }
+                         }
+                     }
+-                    m_uiAbility_TORGYN_Timer = 15000; // overtime
++                    m_uiAbility_TORGYN_Timer = 15*IN_MILLISECONDS; // overtime
+                 } else m_uiAbility_TORGYN_Timer -= diff;
+ 
++                DoMeleeAttackIfReady();
++
+                 // Health check -----------------------------------------------------------------------------
+                 if (me->HealthBelowPct(100 - m_uiHealthAmountMultipler * m_uiHealthAmountModifier))
+                 {
+@@ -331,21 +390,19 @@
+                     m_bIsActiveWithRANULF = false;
+                     m_bIsActiveWithTORGYN = false;
+ 
+-                    m_uiBane_Timer                += 8000;
+-                    m_uiFetidRot_Timer            += 8000;
+-                    m_uiDarkSlash_Timer           += 8000;
+-                    m_uiAncestors_Vengeance_Timer += 8000;
++                    m_uiBane_Timer                = urand(20*IN_MILLISECONDS,22*IN_MILLISECONDS);
++                    m_uiFetidRot_Timer            += 3*IN_MILLISECONDS;
++                    m_uiDarkSlash_Timer           += 3*IN_MILLISECONDS;
+ 
+                     m_uiActivedNumber = m_uiOrder;
+                     m_bIsWalking = true;
+-                    m_uiPause_Timer = 2000;
++                    m_uiPause_Timer = 3*IN_MILLISECONDS;
+                     return;
+                 }
+-                DoMeleeAttackIfReady();
+             }
+         }
+ 
+-        void JustDied(Unit* /*killer*/)
++        void JustDied(Unit* killer)
+         {
+             DoScriptText(SAY_DEATH, me);
+ 
+@@ -353,18 +410,28 @@
+             DespawnBoatGhosts(m_uiOrbGUID);
+ 
+             if (pInstance)
++            {
++                if (IsHeroic() && m_bAchievement)
++                    pInstance->DoCompleteAchievement(ACHIEV_KINGS_BANE);
+                 pInstance->SetData(DATA_KING_YMIRON_EVENT, DONE);
++            }
+         }
+ 
+-        void KilledUnit(Unit * /*victim*/)
++        void KilledUnit(Unit *victim)
+         {
+-            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2, SAY_SLAY_3, SAY_SLAY_4), me);
++            DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2,SAY_SLAY_3,SAY_SLAY_4), me);
++        }
++
++        void SpellHitTarget(Unit *pTarget, const SpellEntry *spell) 
++        {
++            if (spell->Id == SPELL_BANE_TRIGGERED)
++                m_bAchievement = false;
+         }
+ 
+         void DespawnBoatGhosts(uint64& m_uiCreatureGUID)
+         {
+             if (m_uiCreatureGUID)
+-                if (Creature* pTemp = Unit::GetCreature(*me, m_uiCreatureGUID))
++                if (Creature* pTemp = (Creature*)Unit::GetUnit(*me, m_uiCreatureGUID))
+                     pTemp->DisappearAndDie();
+ 
+             m_uiCreatureGUID = 0;
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/instance_pinnacle.cpp b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/instance_pinnacle.cpp
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/instance_pinnacle.cpp
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/instance_pinnacle.cpp
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -51,6 +55,7 @@
+         uint64 uiSvalaSorrowgrave;
+         uint64 uiGortokPalehoof;
+         uint64 uiSkadiTheRuthless;
++        uint64 uiGrauf;
+         uint64 uiKingYmiron;
+ 
+         uint64 uiSkadiTheRuthlessDoor;
+@@ -62,36 +67,23 @@
+         uint64 uiFerociousRhino;
+         uint64 uiMassiveJormungar;
+         uint64 uiPalehoofOrb;
++        uint64 uiRitualTarget;
+ 
+         uint64 uiSvala;
+-        uint64 uiSacrificedPlayer;
++        uint64 uiFlameBrazier_1;
++        uint64 uiFlameBrazier_2;
+ 
+         uint32 m_auiEncounter[MAX_ENCOUNTER];
++    
++        uint64 uiDoodad_Utgarde_Mirror_FX01;
+ 
+         std::string str_data;
+ 
+         void Initialize()
+         {
++            uiFlameBrazier_1 = 0;
+             for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+                m_auiEncounter[i] = NOT_STARTED;
+-
+-            uiSvalaSorrowgrave = 0;
+-            uiGortokPalehoof = 0;
+-            uiSkadiTheRuthless = 0;
+-            uiKingYmiron = 0;
+-
+-            uiSkadiTheRuthlessDoor = 0;
+-            uiKingYmironDoor = 0;
+-            uiGortokPalehoofSphere = 0;
+-
+-            uiFrenziedWorgen = 0;
+-            uiRavenousFurbolg = 0;
+-            uiFerociousRhino = 0;
+-            uiMassiveJormungar = 0;
+-            uiPalehoofOrb = 0;
+-
+-            uiSvala = 0;
+-            uiSacrificedPlayer = 0;
+         }
+ 
+         bool IsEncounterInProgress() const
+@@ -102,24 +94,29 @@
+             return false;
+         }
+ 
+-        void OnCreatureCreate(Creature* pCreature, bool /*add*/)
++        void OnCreatureCreate(Creature* pCreature, bool add)
+         {
+             switch(pCreature->GetEntry())
+             {
+-                case BOSS_SVALA_SORROWGRAVE:  uiSvalaSorrowgrave = pCreature->GetGUID();  break;
+-                case BOSS_GORTOK_PALEHOOF:    uiGortokPalehoof = pCreature->GetGUID();    break;
+-                case BOSS_SKADI_RUTHLESS:     uiSkadiTheRuthless = pCreature->GetGUID();  break;
+-                case BOSS_KING_YMIRON:        uiKingYmiron = pCreature->GetGUID();        break;
+-                case MOB_FRENZIED_WORGEN:     uiFrenziedWorgen = pCreature->GetGUID();    break;
+-                case MOB_RAVENOUS_FURBOLG:    uiRavenousFurbolg = pCreature->GetGUID();   break;
+-                case MOB_MASSIVE_JORMUNGAR:   uiMassiveJormungar = pCreature->GetGUID();  break;
+-                case MOB_FEROCIOUS_RHINO:     uiFerociousRhino = pCreature->GetGUID();    break;
+-                case MOB_SVALA:               uiSvala = pCreature->GetGUID();             break;
+-                case MOB_PALEHOOF_ORB:        uiPalehoofOrb = pCreature->GetGUID();       break;
++                case 26668:    uiSvalaSorrowgrave = pCreature->GetGUID();               break;
++                case 26687:    uiGortokPalehoof = pCreature->GetGUID();                 break;
++                case 26693:    uiSkadiTheRuthless = pCreature->GetGUID();               break;
++                case 26893:    uiGrauf = pCreature->GetGUID();                          break;
++                case 26861:    uiKingYmiron = pCreature->GetGUID();                     break;
++                case 26683:    uiFrenziedWorgen = pCreature->GetGUID();                 break;
++                case 26684:    uiRavenousFurbolg = pCreature->GetGUID();                break;
++                case 26685:    uiMassiveJormungar = pCreature->GetGUID();               break;
++                case 26686:    uiFerociousRhino = pCreature->GetGUID();                 break;
++                case 29281:    uiSvala = pCreature->GetGUID();                          break;
++                case 26688:    uiPalehoofOrb = pCreature->GetGUID();                    break;
++                case 27273:    
++                    (uiFlameBrazier_1 ? uiFlameBrazier_2 : uiFlameBrazier_1) =  pCreature->GetGUID();  
++                                                                                        break;
++                case 27327:    uiRitualTarget = pCreature->GetGUID();                   break;
+             }
+         }
+ 
+-        void OnGameObjectCreate(GameObject* pGo, bool /*add*/)
++        void OnGameObjectCreate(GameObject* pGo, bool add)
+         {
+             switch(pGo->GetEntry())
+             {
+@@ -139,6 +136,9 @@
+                         pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNK1);
+                     }
+                     break;
++                case 191745:
++                    uiDoodad_Utgarde_Mirror_FX01 = pGo->GetGUID();
++                    break;
+             }
+         }
+ 
+@@ -168,12 +168,6 @@
+                 SaveToDB();
+         }
+ 
+-        void SetData64(uint32 type, uint64 data)
+-        {
+-            if (type == DATA_SACRIFICED_PLAYER)
+-                uiSacrificedPlayer = data;
+-        }
+-
+         uint32 GetData(uint32 type)
+         {
+             switch(type)
+@@ -190,17 +184,22 @@
+         {
+             switch(identifier)
+             {
+-                case DATA_SVALA_SORROWGRAVE:      return uiSvalaSorrowgrave;
+-                case DATA_GORTOK_PALEHOOF:        return uiGortokPalehoof;
+-                case DATA_SKADI_THE_RUTHLESS:     return uiSkadiTheRuthless;
+-                case DATA_KING_YMIRON:            return uiKingYmiron;
+-                case DATA_MOB_FRENZIED_WORGEN:    return uiFrenziedWorgen;
+-                case DATA_MOB_RAVENOUS_FURBOLG:   return uiRavenousFurbolg;
+-                case DATA_MOB_MASSIVE_JORMUNGAR:  return uiMassiveJormungar;
+-                case DATA_MOB_FEROCIOUS_RHINO:    return uiFerociousRhino;
+-                case DATA_MOB_ORB:                return uiPalehoofOrb;
+-                case DATA_SVALA:                  return uiSvala;
+-                case DATA_GORTOK_PALEHOOF_SPHERE: return uiGortokPalehoofSphere;
++                case DATA_SVALA_SORROWGRAVE:           return uiSvalaSorrowgrave;
++                case DATA_GORTOK_PALEHOOF:             return uiGortokPalehoof;
++                case DATA_SKADI_THE_RUTHLESS:          return uiSkadiTheRuthless;
++                case DATA_GRAUF:                       return uiGrauf;
++                case DATA_KING_YMIRON:                 return uiKingYmiron;
++                case DATA_MOB_FRENZIED_WORGEN:         return uiFrenziedWorgen;
++                case DATA_MOB_RAVENOUS_FURBOLG:        return uiRavenousFurbolg;
++                case DATA_MOB_MASSIVE_JORMUNGAR:       return uiMassiveJormungar;
++                case DATA_MOB_FEROCIOUS_RHINO:         return uiFerociousRhino;
++                case DATA_MOB_ORB:                     return uiPalehoofOrb;
++                case DATA_SVALA:                       return uiSvala;
++                case DATA_GORTOK_PALEHOOF_SPHERE:      return uiGortokPalehoofSphere;
++                case DATA_FLAME_BRAZIER_1:             return uiFlameBrazier_1;
++                case DATA_FLAME_BRAZIER_2:             return uiFlameBrazier_2;
++                case DATA_DOODAD_UTGARDE_MIRROR_FX01:  return uiDoodad_Utgarde_Mirror_FX01;
++                case DATA_RITUAL_TARGET:               return uiRitualTarget;
+             }
+ 
+             return 0;
+@@ -217,7 +216,7 @@
+             str_data = saveStream.str();
+ 
+             OUT_SAVE_INST_DATA_COMPLETE;
+-            return str_data;
++           return str_data;
+         }
+ 
+         void Load(const char* in)
+@@ -236,7 +235,7 @@
+             std::istringstream loadStream(in);
+             loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2 >> data3;
+ 
+-            if (dataHead1 == 'U' && dataHead2 == 'P')
++            if (dataHead1 == 'U' && dataHead2 == 'K')
+             {
+                 m_auiEncounter[0] = data0;
+                 m_auiEncounter[1] = data1;
+@@ -252,6 +251,7 @@
+             OUT_LOAD_INST_DATA_COMPLETE;
+         }
+     };
++
+ };
+ 
+ void AddSC_instance_utgarde_pinnacle()
+diff --git a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/utgarde_pinnacle.h b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/utgarde_pinnacle.h
+--- a/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/utgarde_pinnacle.h
++++ b/src/server/scripts/Northrend/UtgardeKeep/UtgardePinnacle/utgarde_pinnacle.h
+@@ -1,5 +1,9 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -31,7 +35,7 @@
+     DATA_SVALA_SORROWGRAVE,
+     DATA_GORTOK_PALEHOOF,
+     DATA_SKADI_THE_RUTHLESS,
+-    DATA_MOB_GRAUF,
++    DATA_GRAUF,
+     DATA_KING_YMIRON,
+     DATA_MOB_FRENZIED_WORGEN,
+     DATA_MOB_RAVENOUS_FURBOLG,
+@@ -39,21 +43,10 @@
+     DATA_MOB_FEROCIOUS_RHINO,
+     DATA_MOB_ORB,
+     DATA_GORTOK_PALEHOOF_SPHERE,
+-    DATA_SACRIFICED_PLAYER
++    DATA_FLAME_BRAZIER_1,
++    DATA_FLAME_BRAZIER_2,
++    DATA_DOODAD_UTGARDE_MIRROR_FX01,
++    DATA_RITUAL_TARGET,
+ };
+ 
+-enum eCreatures
+-{
+-    BOSS_SVALA_SORROWGRAVE   = 26668,
+-    BOSS_GORTOK_PALEHOOF     = 26687,
+-    BOSS_SKADI_RUTHLESS      = 26693,
+-    BOSS_KING_YMIRON         = 26861,
+-    MOB_FRENZIED_WORGEN      = 26683,
+-    MOB_RAVENOUS_FURBOLG     = 26684,
+-    MOB_MASSIVE_JORMUNGAR    = 26685,
+-    MOB_FEROCIOUS_RHINO      = 26686,
+-    MOB_SVALA                = 29281,
+-    MOB_PALEHOOF_ORB         = 26688,
+-};
+-
+-#endif
++#endif
+\ No newline at end of file

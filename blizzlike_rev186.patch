@@ -1,0 +1,204 @@
+# HG changeset patch
+# User asniker
+# Date 1289726439 -18000
+# Node ID a7cf4f1ccbb3b9441ae60b6a8c17c352d0b2e996
+# Parent  7136fac37437c9234199ae601ad4adecd3bdd8fe
+fix IOC
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5926,10 +5926,66 @@
+ INSERT INTO `spell_proc_event` VALUES (51692, 0x00, 8, 0x00000204, 0x00000000, 
+ 0x00000000, 0x00000000, 0x00000000, 0.000000, 50.000000, 0);
+ 
+-
+-
+-
+-
+-
+-
+-
++UPDATE `creature_template` SET `spell1`=66518 WHERE `entry` =34929;
++UPDATE `creature_template` SET `spell1`=69495 WHERE `entry` =35410;
++
++UPDATE `creature_template` SET `spell1`=66529 WHERE `entry` =34935;
++UPDATE `creature_template` SET `spell1`=68825 WHERE `entry` =35427;
++
++UPDATE `creature_template` SET `spell1`=68170,`spell2`='66541' WHERE `entry` =34944;
++UPDATE `creature_template` SET `spell1`=67452,`spell2`='68169' WHERE `entry` =35429;
++
++UPDATE `creature_template` SET `spell1`=66218,`spell2`=66296 WHERE `entry`=34793;
++UPDATE `creature_template` SET `spell1`=66218,`spell2`=66296 WHERE `entry`=35413;
++
++UPDATE `creature_template` SET `spell1`='67440',`spell2`='67441' WHERE `entry` =34775;
++UPDATE `creature_template` SET `spell1`='68068',`spell2`='67442' WHERE `entry` =35415;
++
++UPDATE `creature_template` SET `spell1`=67796,`spell2`=67797 WHERE `entry`=34776;
++UPDATE `creature_template` SET `spell1`=67816,`spell2`=69502 WHERE `entry`=35431;
++
++UPDATE `creature_template` SET `spell1`=67796,`spell2`=67797 WHERE `entry`=35069;
++UPDATE `creature_template` SET `spell1`=67816,`spell2`=69502 WHERE `entry`=35433;
++
++UPDATE `creature_template` SET `spell1`=66456,`spell2`=67195 WHERE `entry`=34802;
++UPDATE `creature_template` SET `spell1`=68827,`spell2`=69515 WHERE `entry`=35419;
++
++UPDATE `creature_template` SET `spell1`=67034,`spell2`=67195 WHERE `entry`=35273;
++UPDATE `creature_template` SET `spell1`=68826,`spell2`=69515 WHERE `entry`=35421;
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =34778;
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =35417;
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36356;
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36358;
++
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=34777;
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=35436;
++
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36355;
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36357;
++
++
++INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
++(250194, 23472, 628, 3, 1, 0, 0, 1139.92, -780.212, 48.6757, 3.16908, 300, 0, 0, 4120, 0, 0, 0),
++(250214, 22515, 628, 3, 1, 0, 0, 323.214, -884.536, 48.9155, 1.59435, 300, 0, 0, 4120, 0, 0, 0),
++(250212, 22515, 628, 3, 1, 0, 0, 325.953, -782.401, 48.9163, 4.65741, 300, 0, 0, 4120, 0, 0, 0),
++(250210, 22515, 628, 3, 1, 0, 0, 393.258, -858.941, 48.9161, 3.22484, 300, 0, 0, 4120, 0, 0, 0),
++(250208, 22515, 628, 3, 1, 0, 0, 1233.08, -840.021, 48.9176, 1.51268, 300, 0, 0, 4120, 0, 0, 0),
++(250206, 22515, 628, 3, 1, 0, 0, 1162.9, -746.146, 48.6285, 6.1536, 300, 0, 0, 4120, 0, 0, 0),
++(250203, 22515, 628, 3, 1, 0, 0, 1235.15, -689.807, 49.1079, 1.52132, 300, 0, 0, 4120, 0, 0, 0),
++(250198, 23472, 628, 3, 1, 0, 0, 1235.61, -863.124, 48.9713, 4.7171, 300, 0, 0, 4120, 0, 0, 0),
++(250196, 23472, 628, 3, 1, 0, 0, 1236.6, -663.616, 47.8887, 3.00572, 300, 0, 0, 4120, 0, 0, 0),
++(250182, 23472, 628, 3, 1, 0, 0, 324.262, -745.282, 49.4923, 1.55901, 300, 0, 0, 4120, 0, 0, 0),
++(250180, 23472, 628, 3, 1, 0, 0, 311.937, -918.894, 48.6856, 4.76736, 300, 0, 0, 4120, 0, 0, 0),
++(250186, 23472, 628, 3, 1, 0, 0, 430.61, -857.491, 48.198, 0.074609, 300, 0, 0, 4120, 0, 0, 0);
++
++
++
++
++
++
++
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/isleofconquest.sql b/sql/Blizzlike@Sacred-core/new fix/isleofconquest.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/isleofconquest.sql	
+@@ -0,0 +1,53 @@
++﻿UPDATE `creature_template` SET `spell1`=66518 WHERE `entry` =34929;
++UPDATE `creature_template` SET `spell1`=69495 WHERE `entry` =35410;
++
++UPDATE `creature_template` SET `spell1`=66529 WHERE `entry` =34935;
++UPDATE `creature_template` SET `spell1`=68825 WHERE `entry` =35427;
++
++UPDATE `creature_template` SET `spell1`=68170,`spell2`='66541' WHERE `entry` =34944;
++UPDATE `creature_template` SET `spell1`=67452,`spell2`='68169' WHERE `entry` =35429;
++
++UPDATE `creature_template` SET `spell1`=66218,`spell2`=66296 WHERE `entry`=34793;
++UPDATE `creature_template` SET `spell1`=66218,`spell2`=66296 WHERE `entry`=35413;
++
++UPDATE `creature_template` SET `spell1`='67440',`spell2`='67441' WHERE `entry` =34775;
++UPDATE `creature_template` SET `spell1`='68068',`spell2`='67442' WHERE `entry` =35415;
++
++UPDATE `creature_template` SET `spell1`=67796,`spell2`=67797 WHERE `entry`=34776;
++UPDATE `creature_template` SET `spell1`=67816,`spell2`=69502 WHERE `entry`=35431;
++
++UPDATE `creature_template` SET `spell1`=67796,`spell2`=67797 WHERE `entry`=35069;
++UPDATE `creature_template` SET `spell1`=67816,`spell2`=69502 WHERE `entry`=35433;
++
++UPDATE `creature_template` SET `spell1`=66456,`spell2`=67195 WHERE `entry`=34802;
++UPDATE `creature_template` SET `spell1`=68827,`spell2`=69515 WHERE `entry`=35419;
++
++UPDATE `creature_template` SET `spell1`=67034,`spell2`=67195 WHERE `entry`=35273;
++UPDATE `creature_template` SET `spell1`=68826,`spell2`=69515 WHERE `entry`=35421;
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =34778;
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =35417;
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36356;
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36358;
++
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=34777;
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=35436;
++
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36355;
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36357;
++
++
++INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
++(250194, 23472, 628, 3, 1, 0, 0, 1139.92, -780.212, 48.6757, 3.16908, 300, 0, 0, 4120, 0, 0, 0),
++(250214, 22515, 628, 3, 1, 0, 0, 323.214, -884.536, 48.9155, 1.59435, 300, 0, 0, 4120, 0, 0, 0),
++(250212, 22515, 628, 3, 1, 0, 0, 325.953, -782.401, 48.9163, 4.65741, 300, 0, 0, 4120, 0, 0, 0),
++(250210, 22515, 628, 3, 1, 0, 0, 393.258, -858.941, 48.9161, 3.22484, 300, 0, 0, 4120, 0, 0, 0),
++(250208, 22515, 628, 3, 1, 0, 0, 1233.08, -840.021, 48.9176, 1.51268, 300, 0, 0, 4120, 0, 0, 0),
++(250206, 22515, 628, 3, 1, 0, 0, 1162.9, -746.146, 48.6285, 6.1536, 300, 0, 0, 4120, 0, 0, 0),
++(250203, 22515, 628, 3, 1, 0, 0, 1235.15, -689.807, 49.1079, 1.52132, 300, 0, 0, 4120, 0, 0, 0),
++(250198, 23472, 628, 3, 1, 0, 0, 1235.61, -863.124, 48.9713, 4.7171, 300, 0, 0, 4120, 0, 0, 0),
++(250196, 23472, 628, 3, 1, 0, 0, 1236.6, -663.616, 47.8887, 3.00572, 300, 0, 0, 4120, 0, 0, 0),
++(250182, 23472, 628, 3, 1, 0, 0, 324.262, -745.282, 49.4923, 1.55901, 300, 0, 0, 4120, 0, 0, 0),
++(250180, 23472, 628, 3, 1, 0, 0, 311.937, -918.894, 48.6856, 4.76736, 300, 0, 0, 4120, 0, 0, 0),
++(250186, 23472, 628, 3, 1, 0, 0, 430.61, -857.491, 48.198, 0.074609, 300, 0, 0, 4120, 0, 0, 0);
+diff --git a/sql/Blizzlike@Sacred-core/world/IoC.sql b/sql/Blizzlike@Sacred-core/world/IoC.sql
+--- a/sql/Blizzlike@Sacred-core/world/IoC.sql
++++ b/sql/Blizzlike@Sacred-core/world/IoC.sql
+@@ -97,3 +97,58 @@
+ (66549, 66550, 0, 'Isle of Conquest (IN>OUT)'),
+ (66550, -66549, 2, 'Isle of Conquest Teleport (OUT>IN) Debuff limit'),
+ (66550, -66548, 2, 'Isle of Conquest Teleport (IN>OUT) Debuff limit');
++
++
++UPDATE `creature_template` SET `spell1`=66518 WHERE `entry` =34929;
++UPDATE `creature_template` SET `spell1`=69495 WHERE `entry` =35410;
++
++UPDATE `creature_template` SET `spell1`=66529 WHERE `entry` =34935;
++UPDATE `creature_template` SET `spell1`=68825 WHERE `entry` =35427;
++
++UPDATE `creature_template` SET `spell1`=68170,`spell2`='66541' WHERE `entry` =34944;
++UPDATE `creature_template` SET `spell1`=67452,`spell2`='68169' WHERE `entry` =35429;
++
++UPDATE `creature_template` SET `spell1`=66218,`spell2`=66296 WHERE `entry`=34793;
++UPDATE `creature_template` SET `spell1`=66218,`spell2`=66296 WHERE `entry`=35413;
++
++UPDATE `creature_template` SET `spell1`='67440',`spell2`='67441' WHERE `entry` =34775;
++UPDATE `creature_template` SET `spell1`='68068',`spell2`='67442' WHERE `entry` =35415;
++
++UPDATE `creature_template` SET `spell1`=67796,`spell2`=67797 WHERE `entry`=34776;
++UPDATE `creature_template` SET `spell1`=67816,`spell2`=69502 WHERE `entry`=35431;
++
++UPDATE `creature_template` SET `spell1`=67796,`spell2`=67797 WHERE `entry`=35069;
++UPDATE `creature_template` SET `spell1`=67816,`spell2`=69502 WHERE `entry`=35433;
++
++UPDATE `creature_template` SET `spell1`=66456,`spell2`=67195 WHERE `entry`=34802;
++UPDATE `creature_template` SET `spell1`=68827,`spell2`=69515 WHERE `entry`=35419;
++
++UPDATE `creature_template` SET `spell1`=67034,`spell2`=67195 WHERE `entry`=35273;
++UPDATE `creature_template` SET `spell1`=68826,`spell2`=69515 WHERE `entry`=35421;
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =34778;
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =35417;
++
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36356;
++UPDATE `creature_template` SET `spell1`='68832' WHERE `entry` =36358;
++
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=34777;
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=35436;
++
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36355;
++UPDATE `creature_template` SET `spell1`=67462,`spell2`=69505 WHERE `entry`=36357;
++
++
++INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
++(250194, 23472, 628, 3, 1, 0, 0, 1139.92, -780.212, 48.6757, 3.16908, 300, 0, 0, 4120, 0, 0, 0),
++(250214, 22515, 628, 3, 1, 0, 0, 323.214, -884.536, 48.9155, 1.59435, 300, 0, 0, 4120, 0, 0, 0),
++(250212, 22515, 628, 3, 1, 0, 0, 325.953, -782.401, 48.9163, 4.65741, 300, 0, 0, 4120, 0, 0, 0),
++(250210, 22515, 628, 3, 1, 0, 0, 393.258, -858.941, 48.9161, 3.22484, 300, 0, 0, 4120, 0, 0, 0),
++(250208, 22515, 628, 3, 1, 0, 0, 1233.08, -840.021, 48.9176, 1.51268, 300, 0, 0, 4120, 0, 0, 0),
++(250206, 22515, 628, 3, 1, 0, 0, 1162.9, -746.146, 48.6285, 6.1536, 300, 0, 0, 4120, 0, 0, 0),
++(250203, 22515, 628, 3, 1, 0, 0, 1235.15, -689.807, 49.1079, 1.52132, 300, 0, 0, 4120, 0, 0, 0),
++(250198, 23472, 628, 3, 1, 0, 0, 1235.61, -863.124, 48.9713, 4.7171, 300, 0, 0, 4120, 0, 0, 0),
++(250196, 23472, 628, 3, 1, 0, 0, 1236.6, -663.616, 47.8887, 3.00572, 300, 0, 0, 4120, 0, 0, 0),
++(250182, 23472, 628, 3, 1, 0, 0, 324.262, -745.282, 49.4923, 1.55901, 300, 0, 0, 4120, 0, 0, 0),
++(250180, 23472, 628, 3, 1, 0, 0, 311.937, -918.894, 48.6856, 4.76736, 300, 0, 0, 4120, 0, 0, 0),
++(250186, 23472, 628, 3, 1, 0, 0, 430.61, -857.491, 48.198, 0.074609, 300, 0, 0, 4120, 0, 0, 0);

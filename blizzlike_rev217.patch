@@ -1,0 +1,20 @@
+# HG changeset patch
+# User asniker
+# Date 1290269431 -18000
+# Node ID d584ae455bc66cc5057ed65bb172594477562964
+# Parent  07d20c3dc026c00fe5511fc606a6c661d28f28ae
+ядро: фикс ошибки
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -3055,8 +3055,7 @@
+     else
+         crit += pVictim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_MELEE_CRIT_CHANCE);
+ 
+-    crit += pVictim->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
+-    crit += pVictim->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
++    crit += pVictim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
+ 
+      // reduce crit chance from Rating for players
+     if (attackType != RANGED_ATTACK)

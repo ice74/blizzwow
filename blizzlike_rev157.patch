@@ -1,0 +1,46 @@
+# HG changeset patch
+# User asniker
+# Date 1289021504 -18000
+# Node ID 0ed9f43e0c6c8eb0d8eafab711e4d4126d51d46a
+# Parent  3dcf5a22eb6ae214a0a4568d81bb81ac446feaa6
+fix vehicle teleport wintergrasp
+
+diff --git a/src/server/scripts/OutdoorPvP/OutdoorPvPWG.cpp b/src/server/scripts/OutdoorPvP/OutdoorPvPWG.cpp
+--- a/src/server/scripts/OutdoorPvP/OutdoorPvPWG.cpp
++++ b/src/server/scripts/OutdoorPvP/OutdoorPvPWG.cpp
+@@ -1425,7 +1425,7 @@
+                                     i->getSource()->ExitVehicle();
+                                     i->getSource()->NearTeleportTo(5141.191406f, 2841.045410f, 408.703217f, 3.163321f, true); // Out of the Fortress Gate
+                                     Old->SetVisibility(VISIBILITY_ON);
+-                                    Old->ForcedDespawn();
++                                    Old->ToTempSummon()->UnSummon();
+                                 }
+                                 else
+                                 {
+@@ -1444,7 +1444,7 @@
+                                 New->SetRespawnTime(Old->GetRespawnTime());
+                                 Old->GetVehicleKit()->Uninstall();
+                                 Old->SetVisibility(VISIBILITY_ON);
+-                                Old->ForcedDespawn();
++                                Old->ToTempSummon()->UnSummon();
+                                 Vehicle *vehicle = New->GetVehicleKit();
+                                 Driver->NearTeleportTo(5141.191406f, 2841.045410f, 408.703217f, 3.163321f, true); // Out of the Fortress Gate
+ 								Driver->EnterVehicle(vehicle, 0);
+@@ -1474,7 +1474,7 @@
+                                     i->getSource()->ExitVehicle();
+                                     i->getSource()->NearTeleportTo(5141.191406f, 2841.045410f, 408.703217f, 3.163321f, true); // Out of the Fortress Gate
+                                     Old->SetVisibility(VISIBILITY_ON);
+-                                    Old->ForcedDespawn();
++                                    Old->ToTempSummon()->UnSummon();
+                                 }
+                                 else
+                                 {
+@@ -1493,7 +1493,7 @@
+                                 New->SetRespawnTime(Old->GetRespawnTime());
+                                 Old->GetVehicleKit()->Uninstall();
+                                 Old->SetVisibility(VISIBILITY_ON);
+-                                Old->ForcedDespawn();
++                                Old->ToTempSummon()->UnSummon();
+                                 Vehicle *vehicle = New->GetVehicleKit();
+                                 Driver->NearTeleportTo(5141.191406f, 2841.045410f, 408.703217f, 3.163321f, true); // Out of the Fortress Gate
+ 								Driver->EnterVehicle(vehicle, 0);

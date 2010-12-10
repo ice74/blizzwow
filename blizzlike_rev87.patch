@@ -1,0 +1,939 @@
+# HG changeset patch
+# User asniker
+# Date 1287927266 -21600
+# Node ID 704d0eea5ca658fed0105d8464aaa4e33c322c58
+# Parent  44a29e68e3bd7bfd78b65ed4cb63830af7dec406
+реализация oculus 70% finish
+
+diff --git a/sql/Greedy-core/world/Ocolus.sql b/sql/Greedy-core/world/Ocolus.sql
+--- a/sql/Greedy-core/world/Ocolus.sql
++++ b/sql/Greedy-core/world/Ocolus.sql
+@@ -117,3 +117,21 @@
+ (27640, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+ (27639, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+ (28153, 1037, 1052, 7, 0, 25, 7, 0, 25, 1);
++
++UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_1' WHERE `entry` IN (189985);
++UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_2' WHERE `entry` IN (188715);
++
++DELETE FROM `gameobject_template` WHERE (`entry`=200000);
++INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200000, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_3');
++
++
++DELETE FROM `gameobject_template` WHERE (`entry`=200001);
++INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200001, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_4');
++
++DELETE FROM `gameobject_template` WHERE (`entry`=200002);
++INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200002, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_5');
++
++DELETE FROM `gameobject` WHERE `id` IN (200000,200001);
++INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
++(1000000, 200000, 578, 3, 1,  1210.128906, 971.459900, 526.811768, 3.915801, 0, 0, 0, 1, 180, 100, 1),
++(1000001, 200001, 578, 3, 1,  1323.944946, 1065.755493, 438.941132, 2.989029, 0, 0, 0, 1, 180, 100, 1);
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp b/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp
+@@ -227,8 +227,16 @@
+                 pInstance->SetData(DATA_EREGOS_EVENT, DONE);
+ 		    }
+ 		    lSummons.DespawnAll();
++
++
++ 
++
++			
++			
++			
+         }
+     };
++	
+ 
+     CreatureAI* GetAI(Creature* pCreature)
+     {
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp b/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp
+@@ -272,9 +272,19 @@
+             } else OUT_LOAD_INST_DATA_FAIL;
+ 
+             OUT_LOAD_INST_DATA_COMPLETE;
++
++			if (Data(DATA_EREGOS_EVENT)==DONE)
++                       
++                           
++			
++                            {
++                                if (GameObject* portal = instance->GetGameObject(GetData64(DATA_GO_PORTAL)))
++								portal->SummonGameObject(GO_PORTAL, 1081.047485f, 1091.057617f, 657.658203f, 4.475467f, 0, 0, 0, 1, 180 );
++							}
+         }
+     };
+ 
++
+     InstanceScript* GetInstanceScript(InstanceMap* pMap) const
+     {
+         return new instance_oculus_InstanceMapScript(pMap);
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp b/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp
+@@ -1,233 +1,300 @@
+-/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#include "ScriptPCH.h"
+-#include "oculus.h"
+-
+-#define GOSSIP_ITEM_DRAKES         "So where do we go from here?"
+-#define GOSSIP_ITEM_BELGARISTRASZ1 "I want to fly on the wings of the Red Flight"
+-#define GOSSIP_ITEM_BELGARISTRASZ2 "What abilities do Ruby Drakes have?"
+-#define GOSSIP_ITEM_VERDISA1       "I want to fly on the wings of the Green Flight"
+-#define GOSSIP_ITEM_VERDISA2       "What abilities do Emerald Drakes have?"
+-#define GOSSIP_ITEM_ETERNOS1       "I want to fly on the wings of the Bronze Flight"
+-#define GOSSIP_ITEM_ETERNOS2       "What abilities do Amber Drakes have?"
+-
+-#define HAS_ESSENCE(a) ((a)->HasItemCount(ITEM_EMERALD_ESSENCE,1) || (a)->HasItemCount(ITEM_AMBER_ESSENCE,1) || (a)->HasItemCount(ITEM_RUBY_ESSENCE,1))
+-
+-enum Drakes
+-{
+-    GOSSIP_TEXTID_DRAKES                          = 13267,
+-    GOSSIP_TEXTID_BELGARISTRASZ1                  = 12916,
+-    GOSSIP_TEXTID_BELGARISTRASZ2                  = 13466,
+-    GOSSIP_TEXTID_BELGARISTRASZ3                  = 13254,
+-    GOSSIP_TEXTID_VERDISA1                        = 1,
+-    GOSSIP_TEXTID_VERDISA2                        = 1,
+-    GOSSIP_TEXTID_VERDISA3                        = 1,
+-    GOSSIP_TEXTID_ETERNOS1                        = 1,
+-    GOSSIP_TEXTID_ETERNOS2                        = 1,
+-    GOSSIP_TEXTID_ETERNOS3                        = 13256,
+-
+-    ITEM_EMERALD_ESSENCE                          = 37815,
+-    ITEM_AMBER_ESSENCE                            = 37859,
+-    ITEM_RUBY_ESSENCE                             = 37860,
+-
+-	//spells
+-	SPELL_PARACHUTE								  = 61243    
+-};
+-
+-class mob_centrifige_construct : public CreatureScript
+-{
+-public:
+-    mob_centrifige_construct() : CreatureScript("mob_centrifige_construct") { }
+-
+-    struct mob_CentrifigeConstructAI : public ScriptedAI
+-    {
+-        mob_CentrifigeConstructAI(Creature *c) : ScriptedAI(c)
+-        {
+-            pInstance = c->GetInstanceScript();
+-        }
+-
+-        InstanceScript* pInstance;
+-
+-
+-	    void DismountPlayers()
+-	    {
+-		    std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
+-		    std::list<HostileReference*>::const_iterator i = m_threatlist.begin();
+-		    for (i = m_threatlist.begin(); i!= m_threatlist.end(); ++i)
+-		    {
+-			    Unit* pUnit = Unit::GetUnit((*me), (*i)->getUnitGuid());
+-			    if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER) )
+-			    {
+-				    Vehicle* v = pUnit->GetVehicle();
+-				    if(v)
+-				    {
+-					    pUnit->ExitVehicle();
+-					    v->Dismiss();
+-					    DoCast(pUnit,SPELL_PARACHUTE);					
+-				    }
+-			    }
+-		    }
+-	    }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            //Return since we have no target
+-            if (!UpdateVictim())
+-                return;
+-		    DismountPlayers();
+-            DoMeleeAttackIfReady();
+-        }
+-
+-        void JustDied(Unit* killer)
+-        {
+-            if (pInstance)
+-                pInstance->SetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT, pInstance->GetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT)+1);
+-        }
+-    };
+-
+-    CreatureAI* GetAI(Creature* pCreature) const
+-    {
+-        return new mob_CentrifigeConstructAI (pCreature);
+-    };
+-};
+-
+-class npc_oculus_drake : public CreatureScript
+-{
+-    public:
+-    npc_oculus_drake() : CreatureScript("npc_oculus_drake") { }
+-
+-    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+-    {
+-        if (pCreature->isQuestGiver())
+-            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+-
+-        if (pCreature->GetInstanceScript()->GetData(DATA_DRAKOS_EVENT) == DONE)
+-        {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_DRAKES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+-            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_DRAKES, pCreature->GetGUID());
+-        }
+-
+-        return true;
+-    };
+-
+-    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+-    {
+-        pPlayer->PlayerTalkClass->ClearMenus();
+-        switch(pCreature->GetEntry())
+-        {
+-        case NPC_VERDISA: //Verdisa
+-            switch(uiAction)
+-            {
+-            case GOSSIP_ACTION_INFO_DEF + 1:
+-                if (!HAS_ESSENCE(pPlayer))
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA1, pCreature->GetGUID());
+-                }
+-                else
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA2, pCreature->GetGUID());
+-                }
+-                break;
+-            case GOSSIP_ACTION_INFO_DEF + 2:
+-            {
+-                ItemPosCountVec dest;
+-                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_EMERALD_ESSENCE, 1);
+-                if (msg == EQUIP_ERR_OK)
+-                    pPlayer->StoreNewItem(dest, ITEM_EMERALD_ESSENCE, true);
+-                pPlayer->CLOSE_GOSSIP_MENU();
+-                break;
+-            }
+-            case GOSSIP_ACTION_INFO_DEF + 3:
+-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA3, pCreature->GetGUID());
+-                break;
+-            }
+-            break;
+-        case NPC_BELGARISTRASZ: //Belgaristrasz
+-            switch(uiAction)
+-            {
+-            case GOSSIP_ACTION_INFO_DEF + 1:
+-                if (!HAS_ESSENCE(pPlayer))
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ1, pCreature->GetGUID());
+-                }
+-                else
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ2, pCreature->GetGUID());
+-                }
+-                break;
+-            case GOSSIP_ACTION_INFO_DEF + 2:
+-            {
+-                ItemPosCountVec dest;
+-                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_RUBY_ESSENCE, 1);
+-                if (msg == EQUIP_ERR_OK)
+-                    pPlayer->StoreNewItem(dest, ITEM_RUBY_ESSENCE, true);
+-                pPlayer->CLOSE_GOSSIP_MENU();
+-                break;
+-            }
+-            case GOSSIP_ACTION_INFO_DEF + 3:
+-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ3, pCreature->GetGUID());
+-                break;
+-            }
+-            break;
+-        case NPC_ETERNOS: //Eternos
+-            switch(uiAction)
+-            {
+-            case GOSSIP_ACTION_INFO_DEF + 1:
+-                if (!HAS_ESSENCE(pPlayer))
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS1, pCreature->GetGUID());
+-                }
+-                else
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS2, pCreature->GetGUID());
+-                }
+-                break;
+-            case GOSSIP_ACTION_INFO_DEF + 2:
+-            {
+-                ItemPosCountVec dest;
+-                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_AMBER_ESSENCE, 1);
+-                if (msg == EQUIP_ERR_OK)
+-                    pPlayer->StoreNewItem(dest, ITEM_AMBER_ESSENCE, true);
+-                pPlayer->CLOSE_GOSSIP_MENU();
+-                break;
+-            }
+-            case GOSSIP_ACTION_INFO_DEF + 3:
+-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS3, pCreature->GetGUID());
+-                break;
+-            }
+-            break;
+-        }
+-
+-        return true;
+-    };
+-};
+-
+-void AddSC_oculus()
+-{
+-    new npc_oculus_drake;
+-    new mob_centrifige_construct;
+-}
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "ScriptPCH.h"
++#include "oculus.h"
++
++#define GOSSIP_ITEM_DRAKES         "So where do we go from here?"
++#define GOSSIP_ITEM_BELGARISTRASZ1 "I want to fly on the wings of the Red Flight"
++#define GOSSIP_ITEM_BELGARISTRASZ2 "What abilities do Ruby Drakes have?"
++#define GOSSIP_ITEM_VERDISA1       "I want to fly on the wings of the Green Flight"
++#define GOSSIP_ITEM_VERDISA2       "What abilities do Emerald Drakes have?"
++#define GOSSIP_ITEM_ETERNOS1       "I want to fly on the wings of the Bronze Flight"
++#define GOSSIP_ITEM_ETERNOS2       "What abilities do Amber Drakes have?"
++
++#define HAS_ESSENCE(a) ((a)->HasItemCount(ITEM_EMERALD_ESSENCE,1) || (a)->HasItemCount(ITEM_AMBER_ESSENCE,1) || (a)->HasItemCount(ITEM_RUBY_ESSENCE,1))
++
++enum Drakes
++{
++    GOSSIP_TEXTID_DRAKES                          = 13267,
++    GOSSIP_TEXTID_BELGARISTRASZ1                  = 12916,
++    GOSSIP_TEXTID_BELGARISTRASZ2                  = 13466,
++    GOSSIP_TEXTID_BELGARISTRASZ3                  = 13254,
++    GOSSIP_TEXTID_VERDISA1                        = 1,
++    GOSSIP_TEXTID_VERDISA2                        = 1,
++    GOSSIP_TEXTID_VERDISA3                        = 1,
++    GOSSIP_TEXTID_ETERNOS1                        = 1,
++    GOSSIP_TEXTID_ETERNOS2                        = 1,
++    GOSSIP_TEXTID_ETERNOS3                        = 13256,
++
++    ITEM_EMERALD_ESSENCE                          = 37815,
++    ITEM_AMBER_ESSENCE                            = 37859,
++    ITEM_RUBY_ESSENCE                             = 37860,
++
++	//spells
++	SPELL_PARACHUTE								  = 61243    
++};
++
++class mob_centrifige_construct : public CreatureScript
++{
++public:
++    mob_centrifige_construct() : CreatureScript("mob_centrifige_construct") { }
++
++    struct mob_CentrifigeConstructAI : public ScriptedAI
++    {
++        mob_CentrifigeConstructAI(Creature *c) : ScriptedAI(c)
++        {
++            pInstance = c->GetInstanceScript();
++        }
++
++        InstanceScript* pInstance;
++
++
++	    void DismountPlayers()
++	    {
++		    std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
++		    std::list<HostileReference*>::const_iterator i = m_threatlist.begin();
++		    for (i = m_threatlist.begin(); i!= m_threatlist.end(); ++i)
++		    {
++			    Unit* pUnit = Unit::GetUnit((*me), (*i)->getUnitGuid());
++			    if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER) )
++			    {
++				    Vehicle* v = pUnit->GetVehicle();
++				    if(v)
++				    {
++					    pUnit->ExitVehicle();
++					    v->Dismiss();
++					    DoCast(pUnit,SPELL_PARACHUTE);					
++				    }
++			    }
++		    }
++	    }
++
++        void UpdateAI(const uint32 diff)
++        {
++            //Return since we have no target
++            if (!UpdateVictim())
++                return;
++		    DismountPlayers();
++            DoMeleeAttackIfReady();
++        }
++
++        void JustDied(Unit* killer)
++        {
++            if (pInstance)
++                pInstance->SetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT, pInstance->GetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT)+1);
++        }
++    };
++
++    CreatureAI* GetAI(Creature* pCreature) const
++    {
++        return new mob_CentrifigeConstructAI (pCreature);
++    };
++};
++
++class npc_oculus_drake : public CreatureScript
++{
++    public:
++    npc_oculus_drake() : CreatureScript("npc_oculus_drake") { }
++
++    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
++    {
++        if (pCreature->isQuestGiver())
++            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
++
++        if (pCreature->GetInstanceScript()->GetData(DATA_DRAKOS_EVENT) == DONE)
++        {
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_DRAKES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
++            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_DRAKES, pCreature->GetGUID());
++        }
++
++        return true;
++    };
++
++    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
++    {
++        pPlayer->PlayerTalkClass->ClearMenus();
++        switch(pCreature->GetEntry())
++        {
++        case NPC_VERDISA: //Verdisa
++            switch(uiAction)
++            {
++            case GOSSIP_ACTION_INFO_DEF + 1:
++                if (!HAS_ESSENCE(pPlayer))
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA1, pCreature->GetGUID());
++                }
++                else
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA2, pCreature->GetGUID());
++                }
++                break;
++            case GOSSIP_ACTION_INFO_DEF + 2:
++            {
++                ItemPosCountVec dest;
++                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_EMERALD_ESSENCE, 1);
++                if (msg == EQUIP_ERR_OK)
++                    pPlayer->StoreNewItem(dest, ITEM_EMERALD_ESSENCE, true);
++                pPlayer->CLOSE_GOSSIP_MENU();
++                break;
++            }
++            case GOSSIP_ACTION_INFO_DEF + 3:
++                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA3, pCreature->GetGUID());
++                break;
++            }
++            break;
++        case NPC_BELGARISTRASZ: //Belgaristrasz
++            switch(uiAction)
++            {
++            case GOSSIP_ACTION_INFO_DEF + 1:
++                if (!HAS_ESSENCE(pPlayer))
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ1, pCreature->GetGUID());
++					pPlayer->TeleportTo(578, 1177.469971f, 937.721985f, 527.405029f, 2.216570f);
++                }
++                else
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ2, pCreature->GetGUID());
++                }
++                break;
++            case GOSSIP_ACTION_INFO_DEF + 2:
++            {
++                ItemPosCountVec dest;
++                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_RUBY_ESSENCE, 1);
++                if (msg == EQUIP_ERR_OK)
++                    pPlayer->StoreNewItem(dest, ITEM_RUBY_ESSENCE, true);
++                pPlayer->CLOSE_GOSSIP_MENU();
++                break;
++            }
++            case GOSSIP_ACTION_INFO_DEF + 3:
++                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ3, pCreature->GetGUID());
++                break;
++            }
++            break;
++        case NPC_ETERNOS: //Eternos
++            switch(uiAction)
++            {
++            case GOSSIP_ACTION_INFO_DEF + 1:
++                if (!HAS_ESSENCE(pPlayer))
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS1, pCreature->GetGUID());
++                }
++                else
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS2, pCreature->GetGUID());
++                }
++                break;
++            case GOSSIP_ACTION_INFO_DEF + 2:
++            {
++                ItemPosCountVec dest;
++                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_AMBER_ESSENCE, 1);
++                if (msg == EQUIP_ERR_OK)
++                    pPlayer->StoreNewItem(dest, ITEM_AMBER_ESSENCE, true);
++                pPlayer->CLOSE_GOSSIP_MENU();
++                break;
++            }
++            case GOSSIP_ACTION_INFO_DEF + 3:
++                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS3, pCreature->GetGUID());
++                break;
++            }
++            break;
++        }
++
++        return true;
++    };
++};
++
++class go_teleport_nexus_1 : public GameObjectScript
++{
++public:
++	go_teleport_nexus_1() : GameObjectScript("go_teleport_nexus_1") { }
++
++	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++	{
++		pPlayer->TeleportTo(578, 999.460083f, 1063.041382f, 359.476807f, 3.456630f);
++		return true;
++	}
++};
++
++class go_teleport_nexus_2 : public GameObjectScript
++{
++public:
++	go_teleport_nexus_2() : GameObjectScript("go_teleport_nexus_2") { }
++
++	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++	{
++		pPlayer->TeleportTo(571, 3878.909912f, 6984.500000f, 106.320999f, 3.156650f);
++		return true;
++	}
++};
++
++class go_teleport_nexus_4 : public GameObjectScript
++{
++public:
++	go_teleport_nexus_4() : GameObjectScript("go_teleport_nexus_4") { }
++
++	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++	{
++		pPlayer->TeleportTo(578, 1149.962280f, 1050.744263f, 614.410828f, 3.194959f);
++		return true;
++	}
++};
++
++class go_teleport_nexus_3 : public GameObjectScript
++{
++public:
++	go_teleport_nexus_3() : GameObjectScript("go_teleport_nexus_3") { }
++
++	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++	{
++		pPlayer->TeleportTo(578, 1285.599976f, 1070.359985f, 439.515015f, 3.577920f);
++		return true;
++	}
++};
++
++class go_teleport_nexus_5 : public GameObjectScript
++{
++public:
++	go_teleport_nexus_5() : GameObjectScript("go_teleport_nexus_5") { }
++
++	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
++	{
++		pPlayer->TeleportTo(578, 1023.679871f, 1052.060913f, 605.626892f, 3.220721f);
++		return true;
++	}
++};
++
++void AddSC_oculus()
++{
++    new npc_oculus_drake;
++    new mob_centrifige_construct;
++	new go_teleport_nexus_1;
++    new go_teleport_nexus_2;
++	new go_teleport_nexus_3;
++	new go_teleport_nexus_4;
++	new go_teleport_nexus_5;
++
++}
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/oculus.h b/src/server/scripts/Northrend/Nexus/Oculus/oculus.h
+--- a/src/server/scripts/Northrend/Nexus/Oculus/oculus.h
++++ b/src/server/scripts/Northrend/Nexus/Oculus/oculus.h
+@@ -18,12 +18,15 @@
+ #ifndef DEF_OCULUS_H
+ #define DEF_OCULUS_H
+ 
++
++
+ enum Data
+ {
+     DATA_DRAKOS_EVENT,
+     DATA_VAROS_EVENT,
+     DATA_UROM_EVENT,
+     DATA_EREGOS_EVENT,
++	DATA_GO_PORTAL,
+     DATA_CENTRIFUGE_CONSTRUCT_EVENT
+ };
+ 
+@@ -45,14 +48,15 @@
+  
+     NPC_VERDISA                                   = 27657,
+     NPC_BELGARISTRASZ                             = 27658,
+-    NPC_ETERNOS                                   = 27659
++    NPC_ETERNOS                                   = 27659,
+ };
+ 
+ enum GameObjects
+ {
+ 	GO_CACHE_OF_ERAGOS	   = 191349,
+ 	GO_CACHE_OF_ERAGOS_H	   = 193603,
+-	GO_DRAGON_CAGE_DOOR        = 193995
++	GO_DRAGON_CAGE_DOOR        = 193995,
++	GO_PORTAL               =200002
+ };
+ 
+ #endif
+diff --git a/src/server/scripts/Northrend/RubySanctum/ruby_sanctum.h b/src/server/scripts/Northrend/RubySanctum/ruby_sanctum.h
+--- a/src/server/scripts/Northrend/RubySanctum/ruby_sanctum.h
++++ b/src/server/scripts/Northrend/RubySanctum/ruby_sanctum.h
+@@ -1,143 +1,143 @@
+-/* Copyright (C) 2010 Easy for TrinityCore <http://trinity-core.ru/>
+-* This program is free software; you can redistribute it and/or modify
+-* it under the terms of the GNU General Public License as published by
+-* the Free Software Foundation; either version 2 of the License, or
+-* (at your option) any later version.
+-*
+-* This program is distributed in the hope that it will be useful,
+-* but WITHOUT ANY WARRANTY; without even the implied warranty of
+-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-* GNU General Public License for more details.
+-*
+-* You should have received a copy of the GNU General Public License
+-* along with this program; if not, write to the Free Software
+-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-*/
+-
+-/*
+-DELETE FROM script_texts where `entry` <= -1752008 AND `entry` >= -1752016;
+-DELETE FROM script_texts where `entry` <= -1752001 AND `entry` >= -1752006;
+-DELETE FROM script_texts where `entry` <= -1752017 AND `entry` >= -1752036;
+-
+-INSERT INTO script_texts (`entry`, `content_default`, `npc_entry`, `content_loc3`, `sound`, `type`, `language`) VALUES
+-('-1752008', 'Help! I am trapped within this tree! I require aid!', '0', '', '17490', '1', '0'),         
+-('-1752009', 'Thank you! I could not have held out for much longer.... A terrible thing has happened here.', '0', '', '17491', '1', '0'),         
+-('-1752010', 'We believed the Sanctum was well-fortified, but we were not prepared for the nature of this assault.', '0', '', '17492', '0', '0'),         
+-('-1752011', 'The Black dragonkin materialized from thin air, and set upon us before we could react.', '0', '', '17493', '0', '0'),     
+-('-1752012', 'We did not stand a chance. As my brethren perished around me, I managed to retreat here and bar the entrance.', '0', '', '17494', '0', '0'),     
+-('-1752013', 'They slaughtered us with cold efficiency, but the true focus of their interest seemed to be the eggs kept here in the Sanctum.', '0', '', '17495', '0', '0'),    
+-('-1752014', 'The commander of the forces on the ground here is a cruel brute named Zarithrian, but I fear there are greater powers at work.', '0', '', '17496', '0', '0'),    
+-('-1752015', 'In their initial assault, I caught a glimpse of their true leader, a fearsome full-grown twilight dragon.', '0', '', '17497', '0', '0'),    
+-('-1752016', 'I know not the extent of their plans, heroes, but I know this: They cannot be allowed to succeed!', '0', '', '17498', '0', '0'),
+-
+-( -1752001, "Ah, the entertainment has arrived.", 0, "", 17520, 1, 0),
+-( -1752002, "Baltharus leaves no survivors!", 0, "", 17521, 1, 0),
+-( -1752003, "This world has enough heroes.", 0, "", 17522, 1, 0),
+-( -1752004, "I..Didn''t saw...that coming...", 0, "", 17523, 1, 0),
+-( -1752005, "Twice the pain and half the fun.", 0, "", 17524, 1, 0),
+-( -1752006, "Your power wanes, ancient one.... Soon you will join your friends.", 0, "", 17525, 1, 0),
+-
+-( -1752017, "Alexstrasza has chosen capable allies... A pity that I must END YOU!", 0, "", 17512, 1, 0),
+-( -1752018, "You thought you stood a chance?", 0, "", 17513, 1, 0),
+-( -1752019, "It''s for the best.", 0, "", 17514, 1, 0),
+-( -1752020, "HALION! I...", 0, "", 17515, 1, 0),
+-( -1752021, "Turn them to ashes, minions!", 0, "", 17516, 1, 0),
+-
+-( -1752022, "You will sssuffer for this intrusion!", 0, "", 17528, 1, 0),
+-( -1752023, "As it should be...", 0, "", 17529, 1, 0),
+-( -1752024, "Halion will be pleased", 0, "", 17530, 1, 0),
+-( -1752025, "Hhrr...Grr..", 0, "", 17531, 1, 0),
+-( -1752026, "Burn in the master's flame!", 0, "", 17532, 1, 0),
+-
+-(-1752027, 'Insects! You''re too late. The Ruby Sanctum is lost.',NULL,NULL,17499,0,0),
+-(-1752028, 'Your world teeters on the brink of annihilation. You will ALL bear witness to the coming of a new age of DESTRUCTION!',NULL,NULL,17500,0,0),
+-(-1752029, 'Another hero falls.',NULL,NULL,17501,0,0),
+-(-1752030, 'Hahahahaha.',NULL,NULL,17502,0,0),
+-(-1752031, 'Relish this victory, mortals, for it will be your last! This world will burn with the master''s return!',NULL,NULL,17503,0,0),
+-(-1752032, 'Not good enough.',NULL,NULL,17504,0,0),
+-(-1752033, 'The heavens burn!',NULL,NULL,17505,0,0),
+-(-1752034, 'Beware the shadow!',NULL,NULL,17506,0,0),
+-(-1752035, 'You will find only suffering within the realm of twilight! Enter if you dare!',NULL,NULL,17507,0,0),
+-(-1752036, 'I am the light and the darkness! Cower, mortals, before the herald of Deathwing!',NULL,NULL,17508,0,0);
+-
+-UPDATE `instance_template` SET `script`='instance_ruby_sanctum' WHERE (`map`='724');
+-UPDATE `creature_template` SET `ScriptName` = 'boss_baltharus' WHERE `entry` = '39751';
+-UPDATE `creature_template` SET `ScriptName` = 'boss_baltharus_summon' WHERE `entry` = '39899';
+-UPDATE `creature_template` SET `ScriptName` = 'npc_xerestrasza' WHERE `entry` = '40429';
+-UPDATE `creature_template` SET `ScriptName` = 'boss_zarithrian' WHERE `entry` = '39746';
+-UPDATE `creature_template` SET `ScriptName` = 'boss_ragefire' WHERE `entry` = '39747';
+-UPDATE `creature_template` SET `ScriptName` = 'boss_halion' WHERE `entry`= '39863';
+-UPDATE `creature_template` SET `ScriptName` = 'boss_twilight_halion' WHERE `entry` = '40142';
+-UPDATE `creature_template` SET `ScriptName` = 'npc_onyx_flamecaller' WHERE `entry` = '39814';
+-UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_strike, `flags_extra`=128' WHERE `entry` = '40041';
+-UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_flame', `flags_extra`=128 WHERE `entry` = '40042';
+-UPDATE `creature_template` SET `ScriptName` = 'npc_spell_meteor_strike', `flags_extra`=128 WHERE `entry` = '40029';
+-UPDATE `creature_template` SET `name`='summon halion', `ScriptName` = 'npc_summon_halion', `flags_extra`=128 WHERE `entry` = '40044';
+-
+-REPLACE `spell_script_names` SET `ScriptName` = 'spell_halion_portal', `spell_id`=74812;
+-
++/* Copyright (C) 2010 Easy for TrinityCore <http://trinity-core.ru/>
++* This program is free software; you can redistribute it and/or modify
++* it under the terms of the GNU General Public License as published by
++* the Free Software Foundation; either version 2 of the License, or
++* (at your option) any later version.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++* GNU General Public License for more details.
++*
++* You should have received a copy of the GNU General Public License
++* along with this program; if not, write to the Free Software
++* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++*/
++
++/*
++DELETE FROM script_texts where `entry` <= -1752008 AND `entry` >= -1752016;
++DELETE FROM script_texts where `entry` <= -1752001 AND `entry` >= -1752006;
++DELETE FROM script_texts where `entry` <= -1752017 AND `entry` >= -1752036;
++
++INSERT INTO script_texts (`entry`, `content_default`, `npc_entry`, `content_loc3`, `sound`, `type`, `language`) VALUES
++('-1752008', 'Help! I am trapped within this tree! I require aid!', '0', '', '17490', '1', '0'),         
++('-1752009', 'Thank you! I could not have held out for much longer.... A terrible thing has happened here.', '0', '', '17491', '1', '0'),         
++('-1752010', 'We believed the Sanctum was well-fortified, but we were not prepared for the nature of this assault.', '0', '', '17492', '0', '0'),         
++('-1752011', 'The Black dragonkin materialized from thin air, and set upon us before we could react.', '0', '', '17493', '0', '0'),     
++('-1752012', 'We did not stand a chance. As my brethren perished around me, I managed to retreat here and bar the entrance.', '0', '', '17494', '0', '0'),     
++('-1752013', 'They slaughtered us with cold efficiency, but the true focus of their interest seemed to be the eggs kept here in the Sanctum.', '0', '', '17495', '0', '0'),    
++('-1752014', 'The commander of the forces on the ground here is a cruel brute named Zarithrian, but I fear there are greater powers at work.', '0', '', '17496', '0', '0'),    
++('-1752015', 'In their initial assault, I caught a glimpse of their true leader, a fearsome full-grown twilight dragon.', '0', '', '17497', '0', '0'),    
++('-1752016', 'I know not the extent of their plans, heroes, but I know this: They cannot be allowed to succeed!', '0', '', '17498', '0', '0'),
++
++( -1752001, "Ah, the entertainment has arrived.", 0, "", 17520, 1, 0),
++( -1752002, "Baltharus leaves no survivors!", 0, "", 17521, 1, 0),
++( -1752003, "This world has enough heroes.", 0, "", 17522, 1, 0),
++( -1752004, "I..Didn''t saw...that coming...", 0, "", 17523, 1, 0),
++( -1752005, "Twice the pain and half the fun.", 0, "", 17524, 1, 0),
++( -1752006, "Your power wanes, ancient one.... Soon you will join your friends.", 0, "", 17525, 1, 0),
++
++( -1752017, "Alexstrasza has chosen capable allies... A pity that I must END YOU!", 0, "", 17512, 1, 0),
++( -1752018, "You thought you stood a chance?", 0, "", 17513, 1, 0),
++( -1752019, "It''s for the best.", 0, "", 17514, 1, 0),
++( -1752020, "HALION! I...", 0, "", 17515, 1, 0),
++( -1752021, "Turn them to ashes, minions!", 0, "", 17516, 1, 0),
++
++( -1752022, "You will sssuffer for this intrusion!", 0, "", 17528, 1, 0),
++( -1752023, "As it should be...", 0, "", 17529, 1, 0),
++( -1752024, "Halion will be pleased", 0, "", 17530, 1, 0),
++( -1752025, "Hhrr...Grr..", 0, "", 17531, 1, 0),
++( -1752026, "Burn in the master's flame!", 0, "", 17532, 1, 0),
++
++(-1752027, 'Insects! You''re too late. The Ruby Sanctum is lost.',NULL,NULL,17499,0,0),
++(-1752028, 'Your world teeters on the brink of annihilation. You will ALL bear witness to the coming of a new age of DESTRUCTION!',NULL,NULL,17500,0,0),
++(-1752029, 'Another hero falls.',NULL,NULL,17501,0,0),
++(-1752030, 'Hahahahaha.',NULL,NULL,17502,0,0),
++(-1752031, 'Relish this victory, mortals, for it will be your last! This world will burn with the master''s return!',NULL,NULL,17503,0,0),
++(-1752032, 'Not good enough.',NULL,NULL,17504,0,0),
++(-1752033, 'The heavens burn!',NULL,NULL,17505,0,0),
++(-1752034, 'Beware the shadow!',NULL,NULL,17506,0,0),
++(-1752035, 'You will find only suffering within the realm of twilight! Enter if you dare!',NULL,NULL,17507,0,0),
++(-1752036, 'I am the light and the darkness! Cower, mortals, before the herald of Deathwing!',NULL,NULL,17508,0,0);
++
++UPDATE `instance_template` SET `script`='instance_ruby_sanctum' WHERE (`map`='724');
++UPDATE `creature_template` SET `ScriptName` = 'boss_baltharus' WHERE `entry` = '39751';
++UPDATE `creature_template` SET `ScriptName` = 'boss_baltharus_summon' WHERE `entry` = '39899';
++UPDATE `creature_template` SET `ScriptName` = 'npc_xerestrasza' WHERE `entry` = '40429';
++UPDATE `creature_template` SET `ScriptName` = 'boss_zarithrian' WHERE `entry` = '39746';
++UPDATE `creature_template` SET `ScriptName` = 'boss_ragefire' WHERE `entry` = '39747';
++UPDATE `creature_template` SET `ScriptName` = 'boss_halion' WHERE `entry`= '39863';
++UPDATE `creature_template` SET `ScriptName` = 'boss_twilight_halion' WHERE `entry` = '40142';
++UPDATE `creature_template` SET `ScriptName` = 'npc_onyx_flamecaller' WHERE `entry` = '39814';
++UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_strike, `flags_extra`=128' WHERE `entry` = '40041';
++UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_flame', `flags_extra`=128 WHERE `entry` = '40042';
++UPDATE `creature_template` SET `ScriptName` = 'npc_spell_meteor_strike', `flags_extra`=128 WHERE `entry` = '40029';
++UPDATE `creature_template` SET `name`='summon halion', `ScriptName` = 'npc_summon_halion', `flags_extra`=128 WHERE `entry` = '40044';
++
++REPLACE `spell_script_names` SET `ScriptName` = 'spell_halion_portal', `spell_id`=74812;
++
+ UPDATE `gameobject_template` SET `data10`=74807 WHERE `entry`=202794;
+-UPDATE `gameobject_template` SET `data10`=74812 WHERE `entry`=202796;
+-
+-DELETE FROM `spell_linked_spell` WHERE (`spell_trigger`='-74562') AND (`spell_effect`='74610');
+-DELETE FROM `spell_linked_spell` WHERE (`spell_trigger`='-74792') AND (`spell_effect`='74800');
+-INSERT INTO spell_linked_spell VALUES (-74562, 74610, 0, 'Fiery Combustion removed -> Combustion');
+-INSERT INTO spell_linked_spell VALUES (-74792, 74800, 0, 'Soul Consumption removed -> Consumption');
+-
+-DELETE FROM creature WHERE `id`=39863 and `map`=724;
+-INSERT INTO creature VALUES (null,39863,724,15,1,0,0,3144.93,527.233,72.8887,0.110395,300,0,0,11156000,0,0,0);
+-*/
+-
+-#ifndef DEF_RUBY_SANCTUM_H
+-#define DEF_RUBY_SANCTUM_H
+-
+-static const Position SpawnPosHalion = {3144.93f, 527.233f, 72.8887f, 0.110395f};
+-
+-enum eData
+-{
+-    DATA_BALTHARUS       = 0,
+-    DATA_RAGEFIRE        = 1,
+-    DATA_ZARITHRIAN      = 2,
+-    DATA_HALION          = 3,
+-    MAX_ENCOUNTER        = 4,
+-    DATA_XERESTRASZA     = 5,
+-    DATA_TWILIGHT_HALION = 6,
+-    DATA_DAMAGE          = 7
+-};
+-
+-enum eAchievementData
+-{
+-    TWILIGHT_DESTROYER_NORMAL_10    = 4817,
+-    TWILIGHT_DESTROYER_NORMAL_25    = 4815,
+-    TWILIGHT_DESTROYER_HEROIC_10    = 4818,
+-    TWILIGHT_DESTROYER_HEROIC_25    = 4816
+-};
+-
+-enum eCreature
+-{
+-    NPC_BALTHARUS        = 39751,
+-    NPC_BALTHARUS_SUMMON = 39899,
+-    NPC_ZARITHRIAN       = 39746,
+-    NPC_RAGEFIRE         = 39747,
+-    NPC_HALION           = 39863,
+-    NPC_TWILIGHT_HALION  = 40142,
+-    NPC_XERESTRASZA      = 40429,
+-    NPC_ONYX_FLAMECALLER = 39814,
+-    NPC_METEOR_STRIKE    = 40041,//40029
+-    NPC_METEOR_FLAME     = 40042,
+-    NPC_SUMMON_HALIOH    = 40044,
+-    //возгорание         = 40001
+-};
+-
+-enum eGameObject
+-{
+-    GO_FIRE_FIELD       = 203005,
+-    GO_FLAME_WALLS      = 203006,
+-    GO_FLAME_WALLS2     = 203007,
+-    GO_FLAME_WALLS3     = 203624,
+-    GO_TWILIGHT_PORTAL1 = 202794,
+-    GO_TWILIGHT_PORTAL2 = 202796
+-};
+-
+-#endif
+-
++UPDATE `gameobject_template` SET `data10`=74812 WHERE `entry`=202796;
++
++DELETE FROM `spell_linked_spell` WHERE (`spell_trigger`='-74562') AND (`spell_effect`='74610');
++DELETE FROM `spell_linked_spell` WHERE (`spell_trigger`='-74792') AND (`spell_effect`='74800');
++INSERT INTO spell_linked_spell VALUES (-74562, 74610, 0, 'Fiery Combustion removed -> Combustion');
++INSERT INTO spell_linked_spell VALUES (-74792, 74800, 0, 'Soul Consumption removed -> Consumption');
++
++DELETE FROM creature WHERE `id`=39863 and `map`=724;
++INSERT INTO creature VALUES (null,39863,724,15,1,0,0,3144.93,527.233,72.8887,0.110395,300,0,0,11156000,0,0,0);
++*/
++
++#ifndef DEF_RUBY_SANCTUM_H
++#define DEF_RUBY_SANCTUM_H
++
++static const Position SpawnPosHalion = {3144.93f, 527.233f, 72.8887f, 0.110395f};
++
++enum eData
++{
++    DATA_BALTHARUS       = 0,
++    DATA_RAGEFIRE        = 1,
++    DATA_ZARITHRIAN      = 2,
++    DATA_HALION          = 3,
++    MAX_ENCOUNTER        = 4,
++    DATA_XERESTRASZA     = 5,
++    DATA_TWILIGHT_HALION = 6,
++    DATA_DAMAGE          = 7
++};
++
++enum eAchievementData
++{
++    TWILIGHT_DESTROYER_NORMAL_10    = 4817,
++    TWILIGHT_DESTROYER_NORMAL_25    = 4815,
++    TWILIGHT_DESTROYER_HEROIC_10    = 4818,
++    TWILIGHT_DESTROYER_HEROIC_25    = 4816
++};
++
++enum eCreature
++{
++    NPC_BALTHARUS        = 39751,
++    NPC_BALTHARUS_SUMMON = 39899,
++    NPC_ZARITHRIAN       = 39746,
++    NPC_RAGEFIRE         = 39747,
++    NPC_HALION           = 39863,
++    NPC_TWILIGHT_HALION  = 40142,
++    NPC_XERESTRASZA      = 40429,
++    NPC_ONYX_FLAMECALLER = 39814,
++    NPC_METEOR_STRIKE    = 40041,//40029
++    NPC_METEOR_FLAME     = 40042,
++    NPC_SUMMON_HALIOH    = 40044,
++    //возгорание         = 40001
++};
++
++enum eGameObject
++{
++    GO_FIRE_FIELD       = 203005,
++    GO_FLAME_WALLS      = 203006,
++    GO_FLAME_WALLS2     = 203007,
++    GO_FLAME_WALLS3     = 203624,
++    GO_TWILIGHT_PORTAL1 = 202794,
++    GO_TWILIGHT_PORTAL2 = 202796
++};
++
++#endif
++

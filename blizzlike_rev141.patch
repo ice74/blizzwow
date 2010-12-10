@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1288860051 -18000
+# Node ID 2423fb6e7fc33a5fb4a6c2033b4289938e38f4bc
+# Parent  c529cc2d85eb4082c5460224db5f237363080db1
+prevent crash hack
+
+diff --git a/src/server/game/Maps/Map.cpp b/src/server/game/Maps/Map.cpp
+--- a/src/server/game/Maps/Map.cpp
++++ b/src/server/game/Maps/Map.cpp
+@@ -2357,7 +2357,7 @@
+                                 sLog.outError("GroupBind save players: %d, group count: %d", groupBind->save->GetPlayerCount(), groupBind->save->GetGroupCount());
+                             else
+                                 sLog.outError("GroupBind save NULL");
+-                            return false;
++                            player->RepopAtGraveyard();
+                         }
+                         // if the group/leader is permanently bound to the instance
+                         // players also become permanently bound when they enter

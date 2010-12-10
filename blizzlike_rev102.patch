@@ -1,0 +1,25 @@
+# HG changeset patch
+# User asniker
+# Date 1288615063 -18000
+# Node ID d34edcfdc97853a0af00c77965db3c68848bd823
+# Parent  841515ce3fb58b8d5d531f3356a64741fdc3a02a
+Core: Add a warning message for those who are using SFMT for random number
+generation.
+
+diff --git a/src/server/worldserver/Master.cpp b/src/server/worldserver/Master.cpp
+--- a/src/server/worldserver/Master.cpp
++++ b/src/server/worldserver/Master.cpp
+@@ -190,6 +190,13 @@
+     sLog.outString( "                                 T R I N I T Y @ G R E E D Y - C O R E  /\\___/");
+     sLog.outString( "http://Trinitycore.org/                    \\/__/\n");
+ 
++    #ifdef USE_SFMT_FOR_RNG
++	sLog.outString( "\n");
++	sLog.outString( "SFMT has been enabled as the random number generator, if worldserver");
++	sLog.outString( "freezes or crashes randomly, first, try disabling SFMT in CMAKE configuration");
++	sLog.outString( "\n");
++	#endif //USE_SFMT_FOR_RNG
++
+     /// worldd PID file creation
+     std::string pidfile = sConfig.GetStringDefault("PidFile", "");
+     if(!pidfile.empty())

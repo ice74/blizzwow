@@ -1,0 +1,184 @@
+# HG changeset patch
+# User asniker
+# Date 1289992067 -18000
+# Node ID 016d8a7251a7a4e41cf5c2f3e5a1a6f6e9bc038e
+# Parent  bad3be042f796cebd753b18ddf038a8a3df1c8c2
+ßäðî/Áàçà: ïðàâêà êâåñòîâ
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5782,8 +5782,8 @@
+ 
+ 
+ 
+-UPDATE `world`.`quest_template` SET `ReqCreatureOrGOId1` = '25814' WHERE `quest_template`.`entry` =11712;
+-UPDATE `world`.`quest_template` SET `ReqSpellCast1` = '45980' WHERE `quest_template`.`entry` =11712;
++UPDATE `quest_template` SET `ReqCreatureOrGOId1`='34956', `ReqSpellCast1`='0', `ReqCreatureOrGOId2`='34716' WHERE (`entry`='14096');
++UPDATE `quest_template` SET `ReqCreatureOrGOId1`='34956', `ReqSpellCast1`='0', `ReqCreatureOrGOId2`='34716' WHERE (`entry`='14142'); 
+ 
+ 
+ 
+@@ -5986,7 +5986,28 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_dark_ranger_marrah' WHERE `entry`=24137;
+ 
+ 
+-
+-
+-
+-
++INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
++(1178, 0, 1, 1, 1122, 0, -4879.88, -3884.42, 303.659, 2.4162, 300, 0, 0, 417, 0, 0, 0),
++(1178, 0, 1, 1, 1122, 0, -4884.67, -3813.78, 304.126, 1.87155, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4902.35, -3910.26, 300.735, 1.74533, 300, 0, 0, 417, 0, 0, 0),
++(1178, 0, 1, 1, 1122, 0, -4948.55, -3748.52, 318.755, 0.36412, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4874.72, -3906.17, 302.602, 3.10669, 300, 0, 0, 417, 0, 0, 0),
++(1178, 0, 1, 1, 1122, 0, -4880.8, -3747.4, 312.49, 0.888788, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4915.2, -3986.09, 296.665, 0.226805, 300, 3, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4963.93, -4022.95, 301.358, 3.79229, 300, 3, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5082.26, -4080.96, 311.608, 1.07957, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4981.38, -3914.15, 305.894, 4.63279, 300, 3, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4958.24, -3946.78, 301.179, 3.28957, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4957.42, -3915.39, 305.241, 1.86585, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5111, -3845.37, 320.988, 4.76514, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5009.46, -3890.06, 309.664, 2.09648, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5072.94, -3885.23, 321.944, 0.028778, 300, 5, 0, 417, 0, 0, 1);
++
++
++INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFamilyMask0`,`SpellFamilyMask1`,`SpellFamilyMask2`,`procFlags`,`procEx`,`ppmRate`,`CustomChance`,`Cooldown`) VALUES
++( 67712, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000002, 0, 0, 2);
++
++
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
+@@ -25,14 +25,33 @@
+ UPDATE `quest_template` SET `ReqSpellCast1`=45474, `ReqSpellCast2`=45474 WHERE `entry`=11593;
+ UPDATE `quest_template` SET `ReqCreatureOrGOId1` = '25351' WHERE `quest_template`.`entry` =11593;
+ 
++	
+ 
+-UPDATE `world`.`quest_template` SET `ReqCreatureOrGOId1` = '0',
+-`ReqCreatureOrGOCount1` = '0',
+-`ReqSpellCast1` = '0' WHERE `quest_template`.`entry` =14096;
+-UPDATE `world`.`quest_template` SET `ReqCreatureOrGOId1` = '0',
+-`ReqCreatureOrGOCount1` = '0' WHERE `quest_template`.`entry` =14142;
++UPDATE `quest_template` SET `ReqCreatureOrGOId1`='34956', `ReqSpellCast1`='0', `ReqCreatureOrGOId2`='34716' WHERE (`entry`='14096');
++UPDATE `quest_template` SET `ReqCreatureOrGOId1`='34956', `ReqSpellCast1`='0', `ReqCreatureOrGOId2`='34716' WHERE (`entry`='14142'); 
+ 
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12856;
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12432;
+ 
+-UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;
+\ No newline at end of file
++UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;
++
++INSERT INTO `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
++(1178, 0, 1, 1, 1122, 0, -4879.88, -3884.42, 303.659, 2.4162, 300, 0, 0, 417, 0, 0, 0),
++(1178, 0, 1, 1, 1122, 0, -4884.67, -3813.78, 304.126, 1.87155, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4902.35, -3910.26, 300.735, 1.74533, 300, 0, 0, 417, 0, 0, 0),
++(1178, 0, 1, 1, 1122, 0, -4948.55, -3748.52, 318.755, 0.36412, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4874.72, -3906.17, 302.602, 3.10669, 300, 0, 0, 417, 0, 0, 0),
++(1178, 0, 1, 1, 1122, 0, -4880.8, -3747.4, 312.49, 0.888788, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4915.2, -3986.09, 296.665, 0.226805, 300, 3, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4963.93, -4022.95, 301.358, 3.79229, 300, 3, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5082.26, -4080.96, 311.608, 1.07957, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4981.38, -3914.15, 305.894, 4.63279, 300, 3, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4958.24, -3946.78, 301.179, 3.28957, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -4957.42, -3915.39, 305.241, 1.86585, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5111, -3845.37, 320.988, 4.76514, 300, 5, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5009.46, -3890.06, 309.664, 2.09648, 300, 10, 0, 417, 0, 0, 1),
++(1178, 0, 1, 1, 1122, 0, -5072.94, -3885.23, 321.944, 0.028778, 300, 5, 0, 417, 0, 0, 1);
++
++
++INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFamilyMask0`,`SpellFamilyMask1`,`SpellFamilyMask2`,`procFlags`,`procEx`,`ppmRate`,`CustomChance`,`Cooldown`) VALUES
++( 67712, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000002, 0, 0, 2);
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix script.sql b/sql/Blizzlike@Sacred-core/new fix/fix script.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix script.sql	
+@@ -0,0 +1,2 @@
++ï»¿UPDATE `creature_template` SET `ScriptName`='npc_savage_worg' WHERE `entry`=29735;
++UPDATE `creature_template` SET `ScriptName`='npc_dark_ranger_marrah' WHERE `entry`=24137;
+diff --git a/src/server/scripts/World/npcs_special.cpp b/src/server/scripts/World/npcs_special.cpp
+--- a/src/server/scripts/World/npcs_special.cpp
++++ b/src/server/scripts/World/npcs_special.cpp
+@@ -2619,6 +2619,67 @@
+     }
+ };
+ 
++// need correct positions
++const Position movePosition[] = 
++{
++    { 8539.276367f, 624.307678f, 563.883545f, 0.0f },
++    { 8607.274414f, 796.302795f, 597.421082f, 0.0f },
++    { 8689.521484f, 1071.988525f, 607.254333f, 0.0f },
++    { 8759.689453f, 1333.898315f, 514.711304f, 0.0f },
++    { 8854.704102f, 1684.304443f, 267.374268f, 0.0f },
++    { 8868.194336f, 1900.236206f, 136.044876f, 0.0f },
++    { 8893.030273f, 1998.716431f, 88.405754f, 0.0f },
++    { 8958.488281f, 2062.763428f, 22.060783f, 0.0f },
++    { 8980.103516f, 2068.657227f, 12.500456f, 0.0f },
++    { 0.0f, 0.0f, 0.0f, 0.0f }
++};
++
++class vehicle_knight_gryphon : public CreatureScript
++{
++public:
++    vehicle_knight_gryphon() : CreatureScript("vehicle_knight_gryphon") { }
++
++    struct vehicle_knight_gryphonAI : VehicleAI
++    {
++        vehicle_knight_gryphonAI(Creature *c) : VehicleAI(c) 
++        {
++            MovingStarted = false;
++            curPoint = 0;
++        }
++
++        uint8 curPoint;
++        bool MovingStarted;
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!MovingStarted) {
++                me->GetMotionMaster()->MovePoint(curPoint,movePosition[curPoint]);
++                MovingStarted = true;
++            } else
++                if (me->GetDistance(movePosition[curPoint]) <= 5.0f)
++                {
++                    curPoint++;
++                    if (movePosition[curPoint].GetPositionX() > 8000)
++                        me->GetMotionMaster()->MovePoint(curPoint,movePosition[curPoint]);
++                    else  {
++                        if (me->GetCharmer())
++                            if (me->GetCharmer()->ToPlayer()) 
++                            {
++                                me->GetCharmer()->ToPlayer()->KilledMonsterCredit(me->GetEntry(),0);
++                                me->GetCharmer()->ToPlayer()->ExitVehicle();
++                            }
++                        me->ForcedDespawn();
++                    }
++                }
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new vehicle_knight_gryphonAI(creature);
++    }
++};
++
+ void AddSC_npcs_special()
+ {
+     new npc_air_force_bots;
+@@ -2649,5 +2710,6 @@
+     new npc_locksmith;
+     new npc_tabard_vendor;
+     new npc_experience;
++	new vehicle_knight_gryphon;
+ }
+ 

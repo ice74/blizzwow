@@ -1,0 +1,131 @@
+# HG changeset patch
+# User asniker
+# Date 1289737715 -18000
+# Node ID d4453d9e3e9a618b581805dd1eaea4abf293eac0
+# Parent  ca89e6a307581de0830d10c484b4c8a51c9f4424
+fix icecrown citadel
+
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
+@@ -193,13 +193,8 @@
+ 
+                 if (m_uiInfectionTimer <= diff)
+                 {
+-                    if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                    {
+-                        if(pTarget && !pTarget->HasAura(SPELL_INFECTION_AURA))
+-                        {
+-                            DoCast(pTarget, SPELL_INFECTION_AURA);
+-                        }
+-                    }
++                    if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_INFECTION_AURA))
++						DoCast(pTarget, SPELL_INFECTION_AURA);
+                     m_uiInfectionTimer = 14000;
+                 } else m_uiInfectionTimer -= diff;
+ 
+@@ -211,8 +206,7 @@
+                         {
+                             case 1:
+                             {
+-                                Creature* stalker = me->FindNearestCreature(CREATURE_PUDDLE_STALKER, 100.0f, true);
+-                                if(stalker)
++                                if(Creature* stalker = me->FindNearestCreature(CREATURE_PUDDLE_STALKER, 100.0f, true))
+                                 {
+                                     stalker->CastSpell(stalker, SPELL_OOZE_FLOOD, true);
+                                     ++m_uiFloodStage;
+@@ -222,8 +216,7 @@
+                             break;
+                             case 2:
+                             {
+-                                Creature* stalker_puddle = me->FindNearestCreature(CREATURE_GREEN_GAS_STALKER, 100.0f, true);
+-                                if(stalker_puddle)
++                                if(Creature* stalker_puddle = me->FindNearestCreature(CREATURE_GREEN_GAS_STALKER, 100.0f, true))
+                                 {
+                                     stalker_puddle->CastSpell(stalker_puddle, SPELL_OOZE_FLOOD_1, true);
+                                     --m_uiFloodStage;
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -78,6 +78,7 @@
+     SPELL_NECROTIC_PLAGUE_IMMUNITY   = 72846,
+     SPELL_PLAGUE_SIPHON              = 74074,
+     SPELL_REMORSELES_WINTER          = 68981,
++	SPELL_REMORSELES_WINTER_DAMAGE   = 68983,
+     SPELL_PAIN_AND_SUFFERING         = 72133,
+     SPELL_WINGS_OF_THE_DAMNED        = 74352,
+     SPELL_SOUL_REAPER                = 69409,
+@@ -186,7 +187,7 @@
+                 m_uiTirionSpawnTimer = 5000;
+                 m_uiIcePulsSummonTimer = 10000;
+                 m_uiPainandSufferingTimer = 10000;
+-                m_uiSummonSpiritTimer = 20000;
++                m_uiSummonSpiritTimer = 25000;
+                 m_uiSummonValkyrTimer = 5000;
+                 m_uiSoulReaperTimer = 30000;
+                 m_uiDefileTimer = 25000;
+@@ -379,6 +380,11 @@
+                         m_uiPhase = 4;
+                         Phasenswitch();
+                     break;
++					case 4:
++						if(HealthAbovePct(11) || bEnding)
++							return;
++
++						bEnding = true;
+                 }
+ 
+                 if(!HealthAbovePct(12) && !TriggerSpawned)
+@@ -387,15 +393,12 @@
+                     pSafeZone->AI()->AttackStart(me);
+                     pSafeZone->SetDisplayId(MODEL_INVISIBLE);
+                     TriggerSpawned = true;
+-                }
+-
+-                if(!HealthAbovePct(11) && !bEnding)
+-                    bEnding = true;
++                }              
+             }
+ 
+             void UpdateAI(const uint32 uiDiff)
+             {
+-                if (!UpdateVictim() || !CheckInRoom())
++                if (!CheckInRoom())
+                     return;
+ 
+                 if(!bEnding)
+@@ -514,7 +517,7 @@
+                     {
+                         if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true))
+                             DoCast(pTarget, SPELL_SUMMON_RAGING_SPIRIT);
+-                        m_uiSummonSpiritTimer = 15000;
++                        m_uiSummonSpiritTimer = 25000;
+                     } else m_uiSummonSpiritTimer -= uiDiff;
+ 
+                     if (m_uiIcePulsSummonTimer < uiDiff)
+@@ -775,12 +778,15 @@
+ 
+             void UpdateAI(const uint32 diff)
+             {
++				if(!pInstance)
++					return;
++
+                 if(pInstance->GetData(DATA_LICH_KING_EVENT) != NOT_STARTED)
+                     me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                 else
+                     me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+ 
+-                 if(!bIntro || !pInstance)
++                 if(!bIntro)
+                      return;
+ 
+                 if(m_uiIntroTimer <= diff)
+@@ -1165,6 +1171,8 @@
+                 if(!aurApp)
+                     return;
+ 
++				aurApp->GetBase()->GetCaster()->CastSpell(aurApp->GetBase()->GetCaster(), SPELL_REMORSELES_WINTER_DAMAGE, true);
++
+                 if (InstanceScript* instance = aurApp->GetTarget()->GetInstanceScript())
+                     if (GameObject* floor = GameObject::GetGameObject(*aurApp->GetTarget(), instance->GetData64(DATA_PLATFORM)))
+                         if(floor->HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED))

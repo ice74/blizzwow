@@ -1,0 +1,32 @@
+# HG changeset patch
+# User asniker
+# Date 1290095044 -18000
+# Node ID c8199de5726170709da186a7312adc7e88ba4d70
+# Parent  234441a893cc90333ed32af12d62a3c6246f03ee
+Ядро: фикс краша на острове завоевания
+
+diff --git a/src/server/game/Battlegrounds/BattlegroundMgr.cpp b/src/server/game/Battlegrounds/BattlegroundMgr.cpp
+--- a/src/server/game/Battlegrounds/BattlegroundMgr.cpp
++++ b/src/server/game/Battlegrounds/BattlegroundMgr.cpp
+@@ -334,8 +334,8 @@
+                         break;
+ 					case 628:                           // IC
+                         *data << (uint32)0x00000002;                // count of next fields
+-                        *data << (uint32)((BattlegroundICScore*)itr->second)->BasesAssaulted;       // bases asssulted
+-                        *data << (uint32)((BattlegroundICScore*)itr->second)->BasesDefended;        // bases defended
++                        *data << (uint32)((BattlegroundICScore*)itr2->second)->BasesAssaulted;       // bases asssulted
++                        *data << (uint32)((BattlegroundICScore*)itr2->second)->BasesDefended;        // bases defended
+                     default:
+                         *data << uint32(0);
+                         break;
+@@ -369,8 +369,8 @@
+                 break;
+ 			case BATTLEGROUND_IC:                           // wotlk
+                 *data << (uint32)0x00000002;                // count of next fields
+-                *data << (uint32)((BattlegroundICScore*)itr->second)->BasesAssaulted;       // bases asssulted
+-                *data << (uint32)((BattlegroundICScore*)itr->second)->BasesDefended;        // bases defended
++                *data << (uint32)((BattlegroundICScore*)itr2->second)->BasesAssaulted;       // bases asssulted
++				*data << (uint32)((BattlegroundICScore*)itr2->second)->BasesDefended;        // bases defended
+                 break;
+             case BATTLEGROUND_NA:
+             case BATTLEGROUND_BE:

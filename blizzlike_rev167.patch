@@ -1,0 +1,39 @@
+# HG changeset patch
+# User asniker
+# Date 1289385794 -18000
+# Node ID 7a5a6a8c9273994fabc438565817f243e6e39fce
+# Parent  ad4c0d0f309ad7cd5b6b681dc0fd737dfcc7396b
+fix ulduar
+
+diff --git a/src/server/scripts/Northrend/Ulduar/ulduar/boss_general_vezax.cpp b/src/server/scripts/Northrend/Ulduar/ulduar/boss_general_vezax.cpp
+--- a/src/server/scripts/Northrend/Ulduar/ulduar/boss_general_vezax.cpp
++++ b/src/server/scripts/Northrend/Ulduar/ulduar/boss_general_vezax.cpp
+@@ -37,10 +37,10 @@
+     SAY_HARDMODE_ON                             = -1603296
+ };
+ 
+-#define EMOTE_VAPORS      "A cloud of saronite vapors coalesces nearby!"
+-#define EMOTE_ANIMUS      "The saronite vapors mass and swirl violently, merging into a monstrous form!"
+-#define EMOTE_BARRIER     "A saronite barrier appears around General Vezax!"
+-#define EMOTE_DARKNESS    "General Vezax roars and surges with dark might!"
++#define EMOTE_VAPORS      "Облако саронитовых паров уже близко!"
++#define EMOTE_ANIMUS      "Сартонитовые пары с неудержимой силой сливаются в одно целое!"
++#define EMOTE_BARRIER     "Саронитовый барьер появляется вокруг General Vezax!"
++#define EMOTE_DARKNESS    "General Vezax образует волны тёмной силы!"
+ 
+ enum VezaxSpells
+ {
+diff --git a/src/server/scripts/Northrend/Ulduar/ulduar/boss_mimiron.cpp b/src/server/scripts/Northrend/Ulduar/ulduar/boss_mimiron.cpp
+--- a/src/server/scripts/Northrend/Ulduar/ulduar/boss_mimiron.cpp
++++ b/src/server/scripts/Northrend/Ulduar/ulduar/boss_mimiron.cpp
+@@ -374,7 +374,10 @@
+                                         if (pAerialUnit->getStandState() == UNIT_STAND_STATE_DEAD)
+                                         {
+                                             if (Unit* pTarget = me->SelectNearestTarget())
++											{
+                                                 pTarget->ToPlayer()->RewardPlayerAndGroupAtKill(pLeviathan);
++												pTarget->ToPlayer()->RewardPlayerAndGroupAtKill(me);
++												}
+                                             pLeviathan->DisappearAndDie();
+                                             pVX_001->DisappearAndDie();
+                                             pAerialUnit->DisappearAndDie();

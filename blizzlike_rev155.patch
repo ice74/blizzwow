@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1288962265 -18000
+# Node ID ea6cda7a9e2fac34a1d69424b0169780dd30720f
+# Parent  1b7b36cc3ff780707f3954f6bf1ec073777dd0c7
+��������� ������
+
+diff --git a/src/server/game/Chat/Commands/Level2.cpp b/src/server/game/Chat/Commands/Level2.cpp
+--- a/src/server/game/Chat/Commands/Level2.cpp
++++ b/src/server/game/Chat/Commands/Level2.cpp
+@@ -2095,7 +2095,7 @@
+ 
+     announce = "Игрок '";
+     announce += target->GetName();
+-    announce += "' был кикнуть из мира персонажем '";
++    announce += "' был кикнут из мира персонажем '";
+     announce += m_session->GetPlayerName();
+     announce += "'.";
+     HandleAnnounceCommand(announce.c_str());

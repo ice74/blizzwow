@@ -1,0 +1,41 @@
+# HG changeset patch
+# User asniker
+# Date 1290327166 -18000
+# Node ID c19a58e4e315be42077cf5f3d8bb831a6c84b6af
+# Parent  366a9a34f3192098c2323879f855839a6d99ab72
+ядро: фикс прока тир10 у паладина холи
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -6028,3 +6028,7 @@
+ ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+ 
+ 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (70755);
++INSERT INTO `spell_proc_event` VALUES (70755, 0x00, 0x0A, 0x00000000, 0x80000000, 0x00000000, 0x00004000, 0x00010000, 0, 101, 0);
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/Tier10_fix_spell.sql b/sql/Blizzlike@Sacred-core/new fix/Tier10_fix_spell.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/Tier10_fix_spell.sql	
+@@ -0,0 +1,2 @@
++пїњDELETE FROM `spell_proc_event` WHERE `entry` IN (70755);
++INSERT INTO `spell_proc_event` VALUES (70755, 0x00, 0x0A, 0x00000000, 0x80000000, 0x00000000, 0x00004000, 0x00010000, 0, 101, 0);
+\ No newline at end of file
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -6929,6 +6929,11 @@
+             }
+             switch (dummySpell->Id)
+             {
++			// Item - Paladin T10 Holy 2P Bonus
++			case 70755:
++			if(procSpell->Id == 31842)
++			triggered_spell_id = 71166;
++			break;
+                 // Heart of the Crusader
+                 case 20335: // rank 1
+                     triggered_spell_id = 21183;

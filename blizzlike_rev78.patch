@@ -1,0 +1,23 @@
+# HG changeset patch
+# User asniker
+# Date 1287066050 -21600
+# Node ID ce201cfd0a2e05b3a0015e0dc1946bd17ab3adce
+# Parent  d4610e94045bc934227964b4c663f3ca85f862ba
+fix spell exploit weakness
+
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -3904,6 +3904,12 @@
+             spellInfo->EffectSpellClassMask[0] = flag96(423937, 276955137, 2049);
+             count++;
+             break;
++			case 70728: // Exploit Weakness
++            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
++            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_PET;
++            count++;
++            break;
++
+         default:
+             break;
+         }

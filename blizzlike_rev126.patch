@@ -1,0 +1,2800 @@
+# HG changeset patch
+# User asniker
+# Date 1288709039 -18000
+# Node ID 85a9658a05afcc766c4245a7253dd991d19afcc6
+# Parent  707ee118f59383468721c61787bd41e06eb9cf0d
+fix crash ÔÓÒÎÂ Ò‰‡˜Ë Àﬁ¡Œ√Œ Í‚ÂÒÚ‡
+
+diff --git a/src/server/game/AI/CoreAI/UnitAI.h b/src/server/game/AI/CoreAI/UnitAI.h
+--- a/src/server/game/AI/CoreAI/UnitAI.h
++++ b/src/server/game/AI/CoreAI/UnitAI.h
+@@ -139,6 +139,14 @@
+ 
+         static AISpellInfoType *AISpellInfo;
+         static void FillAISpellInfo();
++
++		virtual void sGossipHello(Player* /*player*/) {}
++		virtual void sGossipSelect(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/) {}
++		virtual void sGossipSelectCode(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/, const char* /*code*/) {}
++		virtual void sQuestAccept(Player* /*player*/, Quest const* /*quest*/) {}
++		virtual void sQuestSelect(Player* /*player*/, Quest const* /*quest*/) {}
++		virtual void sQuestComplete(Player* /*player*/, Quest const* /*quest*/) {}
++		virtual void sQuestReward(Player* /*player*/, Quest const* /*quest*/, uint32 /*opt*/) {}
+ };
+ 
+ class PlayerAI : public UnitAI
+diff --git a/src/server/game/Quests/QuestDef.cpp b/src/server/game/Quests/QuestDef.cpp
+--- a/src/server/game/Quests/QuestDef.cpp
++++ b/src/server/game/Quests/QuestDef.cpp
+@@ -1,216 +1,215 @@
+-Ôªø/*
+- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+- *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+- */
+-
+-#include "QuestDef.h"
+-#include "Player.h"
+-#include "World.h"
+-
+-Quest::Quest(Field * questRecord)
+-{
+-    QuestId = questRecord[0].GetUInt32();
+-    QuestMethod = questRecord[1].GetUInt32();
+-    ZoneOrSort = questRecord[2].GetInt32();
+-    SkillOrClassMask = questRecord[3].GetInt32();
+-    MinLevel = questRecord[4].GetUInt32();
+-    MaxLevel = questRecord[5].GetUInt32();
+-    QuestLevel = questRecord[6].GetInt32();
+-    Type = questRecord[7].GetUInt32();
+-    RequiredRaces = questRecord[8].GetUInt32();
+-    RequiredSkillValue = questRecord[9].GetUInt32();
+-    RepObjectiveFaction = questRecord[10].GetUInt32();
+-    RepObjectiveValue = questRecord[11].GetInt32();
+-    RepObjectiveFaction2 = questRecord[12].GetUInt32();
+-    RepObjectiveValue2 = questRecord[13].GetInt32();
+-    RequiredMinRepFaction = questRecord[14].GetUInt32();
+-    RequiredMinRepValue = questRecord[15].GetInt32();
+-    RequiredMaxRepFaction = questRecord[16].GetUInt32();
+-    RequiredMaxRepValue = questRecord[17].GetInt32();
+-    SuggestedPlayers = questRecord[18].GetUInt32();
+-    LimitTime = questRecord[19].GetUInt32();
+-    QuestFlags = questRecord[20].GetUInt32();
+-    uint32 SpecialFlags = questRecord[21].GetUInt16();
+-    CharTitleId = questRecord[22].GetUInt32();
+-    PlayersSlain = questRecord[23].GetUInt32();
+-    BonusTalents = questRecord[24].GetUInt32();
+-    RewArenaPoints = questRecord[25].GetInt32();
+-    PrevQuestId = questRecord[26].GetInt32();
+-    NextQuestId = questRecord[27].GetInt32();
+-    ExclusiveGroup = questRecord[28].GetInt32();
+-    NextQuestInChain = questRecord[29].GetUInt32();
+-    XPId = questRecord[30].GetUInt32();
+-    SrcItemId = questRecord[31].GetUInt32();
+-    SrcItemCount = questRecord[32].GetUInt32();
+-    SrcSpell = questRecord[33].GetUInt32();
+-    Title = questRecord[34].GetString();
+-    Details = questRecord[35].GetString();
+-    Objectives = questRecord[36].GetString();
+-    OfferRewardText = questRecord[37].GetString();
+-    RequestItemsText = questRecord[38].GetString();
+-    EndText = questRecord[39].GetString();
+-    CompletedText = questRecord[40].GetString();
+-
+-    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+-        ObjectiveText[i] = questRecord[41+i].GetString();
+-
+-    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+-        ReqItemId[i] = questRecord[45+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+-        ReqItemCount[i] = questRecord[51+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_SOURCE_ITEM_IDS_COUNT; ++i)
+-        ReqSourceId[i] = questRecord[57+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_SOURCE_ITEM_IDS_COUNT; ++i)
+-        ReqSourceCount[i] = questRecord[61+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+-        ReqCreatureOrGOId[i] = questRecord[65+i].GetInt32();
+-
+-    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+-        ReqCreatureOrGOCount[i] = questRecord[69+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+-        ReqSpell[i] = questRecord[73+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+-        RewChoiceItemId[i] = questRecord[77+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+-        RewChoiceItemCount[i] = questRecord[83+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_REWARDS_COUNT; ++i)
+-        RewItemId[i] = questRecord[89+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_REWARDS_COUNT; ++i)
+-        RewItemCount[i] = questRecord[93+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+-        RewRepFaction[i] = questRecord[97+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+-        RewRepValueId[i] = questRecord[102+i].GetInt32();
+-
+-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+-        RewRepValue[i] = questRecord[107+i].GetInt32();
+-
+-    RewHonorAddition = questRecord[112].GetUInt32();
+-    RewHonorMultiplier = questRecord[113].GetFloat();
+-    RewOrReqMoney = questRecord[114].GetInt32();
+-    RewMoneyMaxLevel = questRecord[115].GetUInt32();
+-    RewSpell = questRecord[116].GetUInt32();
+-    RewSpellCast = questRecord[117].GetInt32();
+-    RewMailTemplateId = questRecord[118].GetUInt32();
+-    RewMailDelaySecs = questRecord[119].GetUInt32();
+-    PointMapId = questRecord[120].GetUInt32();
+-    PointX = questRecord[121].GetFloat();
+-    PointY = questRecord[122].GetFloat();
+-    PointOpt = questRecord[123].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+-        DetailsEmote[i] = questRecord[124+i].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+-        DetailsEmoteDelay[i] = questRecord[128+i].GetUInt32();
+-
+-    IncompleteEmote = questRecord[132].GetUInt32();
+-    CompleteEmote = questRecord[133].GetUInt32();
+-
+-    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+-        OfferRewardEmote[i] = questRecord[134+i].GetInt32();
+-
+-    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+-        OfferRewardEmoteDelay[i] = questRecord[138+i].GetInt32();
+-
+-    QuestStartScript = questRecord[142].GetUInt32();
+-    QuestCompleteScript = questRecord[143].GetUInt32();
+-
+-    QuestFlags |= SpecialFlags << 20;
+-    if (QuestFlags & QUEST_TRINITY_FLAGS_AUTO_ACCEPT)
+-        QuestFlags |= QUEST_FLAGS_AUTO_ACCEPT;
+-
+-    m_reqitemscount = 0;
+-    m_reqCreatureOrGOcount = 0;
+-    m_rewitemscount = 0;
+-    m_rewchoiceitemscount = 0;
+-
+-    for (int i=0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+-        if (ReqItemId[i])
+-            ++m_reqitemscount;
+-
+-    for (int i=0; i < QUEST_OBJECTIVES_COUNT; ++i)
+-        if (ReqCreatureOrGOId[i])
+-            ++m_reqCreatureOrGOcount;
+-
+-    for (int i=0; i < QUEST_REWARDS_COUNT; ++i)
+-        if (RewItemId[i])
+-            ++m_rewitemscount;
+-
+-    for (int i=0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+-        if (RewChoiceItemId[i])
+-            ++m_rewchoiceitemscount;
+-}
+-
+-uint32 Quest::XPValue(Player *pPlayer) const
+-{
+-    if (pPlayer)
+-    {
+-        int32 quest_level = (QuestLevel == -1 ? pPlayer->getLevel() : QuestLevel);
+-        const QuestXPEntry *xpentry = sQuestXPStore.LookupEntry(quest_level);
+-        if (!xpentry)
+-            return 0;
+-
+-        int32 diffFactor = 2 * (quest_level - pPlayer->getLevel()) + 20;
+-        if (diffFactor < 1)
+-            diffFactor = 1;
+-        else if (diffFactor > 10)
+-            diffFactor = 10;
+-
+-        uint32 xp = diffFactor * xpentry->Exp[XPId] / 10;
+-        if (xp <= 100)
+-            xp = 5 * ((xp + 2) / 5);
+-        else if (xp <= 500)
+-            xp = 10 * ((xp + 5) / 10);
+-        else if (xp <= 1000)
+-            xp = 25 * ((xp + 12) / 25);
+-        else
+-            xp = 50 * ((xp + 25) / 50);
+-
+-        return xp;
+-    }
+-
+-    return 0;
+-}
+-
+-int32  Quest::GetRewOrReqMoney() const
+-{
+-    if (RewOrReqMoney <= 0)
+-        return RewOrReqMoney;
+-
+-    return int32(RewOrReqMoney * sWorld.getRate(RATE_DROP_MONEY));
+-}
+-
+-bool Quest::IsAllowedInRaid() const
+-{
+-    if (IsRaidQuest())
+-        return true;
+-
+-    return sWorld.getBoolConfig(CONFIG_QUEST_IGNORE_RAID);
+-}
++Ôªø/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "QuestDef.h"
++#include "Player.h"
++#include "World.h"
++
++Quest::Quest(Field * questRecord)
++{
++    QuestId = questRecord[0].GetUInt32();
++    QuestMethod = questRecord[1].GetUInt32();
++    ZoneOrSort = questRecord[2].GetInt32();
++    SkillOrClassMask = questRecord[3].GetInt32();
++    MinLevel = questRecord[4].GetUInt32();
++    MaxLevel = questRecord[5].GetUInt32();
++    QuestLevel = questRecord[6].GetInt32();
++    Type = questRecord[7].GetUInt32();
++    RequiredRaces = questRecord[8].GetUInt32();
++    RequiredSkillValue = questRecord[9].GetUInt32();
++    RepObjectiveFaction = questRecord[10].GetUInt32();
++    RepObjectiveValue = questRecord[11].GetInt32();
++    RepObjectiveFaction2 = questRecord[12].GetUInt32();
++    RepObjectiveValue2 = questRecord[13].GetInt32();
++    RequiredMinRepFaction = questRecord[14].GetUInt32();
++    RequiredMinRepValue = questRecord[15].GetInt32();
++    RequiredMaxRepFaction = questRecord[16].GetUInt32();
++    RequiredMaxRepValue = questRecord[17].GetInt32();
++    SuggestedPlayers = questRecord[18].GetUInt32();
++    LimitTime = questRecord[19].GetUInt32();
++    QuestFlags = questRecord[20].GetUInt32();
++    uint32 SpecialFlags = questRecord[21].GetUInt16();
++    CharTitleId = questRecord[22].GetUInt32();
++    PlayersSlain = questRecord[23].GetUInt32();
++    BonusTalents = questRecord[24].GetUInt32();
++    RewArenaPoints = questRecord[25].GetInt32();
++    PrevQuestId = questRecord[26].GetInt32();
++    NextQuestId = questRecord[27].GetInt32();
++    ExclusiveGroup = questRecord[28].GetInt32();
++    NextQuestInChain = questRecord[29].GetUInt32();
++    XPId = questRecord[30].GetUInt32();
++    SrcItemId = questRecord[31].GetUInt32();
++    SrcItemCount = questRecord[32].GetUInt32();
++    SrcSpell = questRecord[33].GetUInt32();
++    Title = questRecord[34].GetString();
++    Details = questRecord[35].GetString();
++    Objectives = questRecord[36].GetString();
++    OfferRewardText = questRecord[37].GetString();
++    RequestItemsText = questRecord[38].GetString();
++    EndText = questRecord[39].GetString();
++    CompletedText = questRecord[40].GetString();
++
++    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
++        ObjectiveText[i] = questRecord[41+i].GetString();
++
++    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
++        ReqItemId[i] = questRecord[45+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
++        ReqItemCount[i] = questRecord[51+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_SOURCE_ITEM_IDS_COUNT; ++i)
++        ReqSourceId[i] = questRecord[57+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_SOURCE_ITEM_IDS_COUNT; ++i)
++        ReqSourceCount[i] = questRecord[61+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
++        ReqCreatureOrGOId[i] = questRecord[65+i].GetInt32();
++
++    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
++        ReqCreatureOrGOCount[i] = questRecord[69+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
++        ReqSpell[i] = questRecord[73+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
++        RewChoiceItemId[i] = questRecord[77+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
++        RewChoiceItemCount[i] = questRecord[83+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_REWARDS_COUNT; ++i)
++        RewItemId[i] = questRecord[89+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_REWARDS_COUNT; ++i)
++        RewItemCount[i] = questRecord[93+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
++        RewRepFaction[i] = questRecord[97+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
++        RewRepValueId[i] = questRecord[102+i].GetInt32();
++
++    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
++        RewRepValue[i] = questRecord[107+i].GetInt32();
++
++    RewHonorAddition = questRecord[112].GetUInt32();
++    RewHonorMultiplier = questRecord[113].GetFloat();
++    RewOrReqMoney = questRecord[114].GetInt32();
++    RewMoneyMaxLevel = questRecord[115].GetUInt32();
++    RewSpell = questRecord[116].GetUInt32();
++    RewSpellCast = questRecord[117].GetInt32();
++    RewMailTemplateId = questRecord[118].GetUInt32();
++    RewMailDelaySecs = questRecord[119].GetUInt32();
++    PointMapId = questRecord[120].GetUInt32();
++    PointX = questRecord[121].GetFloat();
++    PointY = questRecord[122].GetFloat();
++    PointOpt = questRecord[123].GetUInt32();
++
++    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
++        DetailsEmote[i] = questRecord[124+i].GetUInt32();
++
++    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
++        DetailsEmoteDelay[i] = questRecord[128+i].GetUInt32();
++
++    IncompleteEmote = questRecord[132].GetUInt32();
++    CompleteEmote = questRecord[133].GetUInt32();
++
++    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
++        OfferRewardEmote[i] = questRecord[134+i].GetInt32();
++
++    for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
++        OfferRewardEmoteDelay[i] = questRecord[138+i].GetInt32();
++
++    QuestStartScript = questRecord[142].GetUInt32();
++    QuestCompleteScript = questRecord[143].GetUInt32();
++
++    QuestFlags |= SpecialFlags << 20;
++    if (QuestFlags & QUEST_TRINITY_FLAGS_AUTO_ACCEPT)
++        QuestFlags |= QUEST_FLAGS_AUTO_ACCEPT;
++
++    m_reqitemscount = 0;
++    m_reqCreatureOrGOcount = 0;
++    m_rewitemscount = 0;
++    m_rewchoiceitemscount = 0;
++
++    for (int i=0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
++        if (ReqItemId[i])
++            ++m_reqitemscount;
++
++    for (int i=0; i < QUEST_OBJECTIVES_COUNT; ++i)
++        if (ReqCreatureOrGOId[i])
++            ++m_reqCreatureOrGOcount;
++
++    for (int i=0; i < QUEST_REWARDS_COUNT; ++i)
++        if (RewItemId[i])
++            ++m_rewitemscount;
++
++    for (int i=0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
++        if (RewChoiceItemId[i])
++            ++m_rewchoiceitemscount;
++}
++
++uint32 Quest::XPValue(Player *pPlayer) const
++{
++    if (pPlayer)
++    {
++        int32 quest_level = (QuestLevel == -1 ? pPlayer->getLevel() : QuestLevel);
++        const QuestXPEntry *xpentry = sQuestXPStore.LookupEntry(quest_level);
++        if (!xpentry)
++            return 0;
++
++        int32 diffFactor = 2 * (quest_level - pPlayer->getLevel()) + 20;
++        if (diffFactor < 1)
++            diffFactor = 1;
++        else if (diffFactor > 10)
++            diffFactor = 10;
++
++        uint32 xp = diffFactor * xpentry->Exp[XPId] / 10;
++        if (xp <= 100)
++            xp = 5 * ((xp + 2) / 5);
++        else if (xp <= 500)
++            xp = 10 * ((xp + 5) / 10);
++        else if (xp <= 1000)
++            xp = 25 * ((xp + 12) / 25);
++        else
++            xp = 50 * ((xp + 25) / 50);
++
++        return xp;
++    }
++
++    return 0;
++}
++
++int32  Quest::GetRewOrReqMoney() const
++{
++    if (RewOrReqMoney <= 0)
++        return RewOrReqMoney;
++
++    return int32(RewOrReqMoney * sWorld.getRate(RATE_DROP_MONEY));
++}
++
++bool Quest::IsAllowedInRaid() const
++{
++    if (IsRaidQuest())
++        return true;
++
++    return sWorld.getBoolConfig(CONFIG_QUEST_IGNORE_RAID);
++}
++
+diff --git a/src/server/game/Quests/QuestDef.h b/src/server/game/Quests/QuestDef.h
+--- a/src/server/game/Quests/QuestDef.h
++++ b/src/server/game/Quests/QuestDef.h
+@@ -1,382 +1,380 @@
+-Ôªø/*
+- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+- *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+- */
+-
+-#ifndef TRINITYCORE_QUEST_H
+-#define TRINITYCORE_QUEST_H
+-
+-#include "Define.h"
+-#include "DatabaseEnv.h"
+-#include "SharedDefines.h"
+-
+-#include <string>
+-#include <vector>
+-
+-class Player;
+-
+-class ObjectMgr;
+-
+-#define MAX_QUEST_LOG_SIZE 25
+-
+-#define QUEST_OBJECTIVES_COUNT 4
+-#define QUEST_ITEM_OBJECTIVES_COUNT 6
+-#define QUEST_SOURCE_ITEM_IDS_COUNT 4
+-#define QUEST_REWARD_CHOICES_COUNT 6
+-#define QUEST_REWARDS_COUNT 4
+-#define QUEST_DEPLINK_COUNT 10
+-#define QUEST_REPUTATIONS_COUNT 5
+-#define QUEST_EMOTE_COUNT 4
+-
+-enum QuestFailedReasons
+-{
+-    INVALIDREASON_DONT_HAVE_REQ                 = 0,
+-    INVALIDREASON_QUEST_FAILED_LOW_LEVEL        = 1,        // You are not high enough level for that quest.
+-    INVALIDREASON_QUEST_FAILED_WRONG_RACE       = 6,        // That quest is not available to your race.
+-    INVALIDREASON_QUEST_ALREADY_DONE            = 7,        // You have completed that quest.
+-    INVALIDREASON_QUEST_ONLY_ONE_TIMED          = 12,       // You can only be on one timed quest at a time.
+-    INVALIDREASON_QUEST_ALREADY_ON              = 13,       // You are already on that quest.
+-    INVALIDREASON_QUEST_FAILED_EXPANSION        = 16,       // This quest requires an expansion enabled account.
+-    INVALIDREASON_QUEST_ALREADY_ON2             = 18,       // You are already on that quest.
+-    INVALIDREASON_QUEST_FAILED_MISSING_ITEMS    = 21,       // You don't have the required items with you. Check storage.
+-    INVALIDREASON_QUEST_FAILED_NOT_ENOUGH_MONEY = 23,       // You don't have enough money for that quest.
+-    INVALIDREASON_DAILY_QUESTS_REMAINING        = 26,       // You have already completed 25 daily quests today.
+-    INVALIDREASON_QUEST_FAILED_CAIS             = 27,       // You cannot complete quests once you have reached tired time.
+-    INVALIDREASON_DAILY_QUEST_COMPLETED_TODAY   = 29        // You have completed that daily quest today.
+-};
+-
+-enum QuestShareMessages
+-{
+-    QUEST_PARTY_MSG_SHARING_QUEST           = 0,
+-    QUEST_PARTY_MSG_CANT_TAKE_QUEST         = 1,
+-    QUEST_PARTY_MSG_ACCEPT_QUEST            = 2,
+-    QUEST_PARTY_MSG_DECLINE_QUEST           = 3,
+-    QUEST_PARTY_MSG_BUSY                    = 4,
+-    QUEST_PARTY_MSG_LOG_FULL                = 5,
+-    QUEST_PARTY_MSG_HAVE_QUEST              = 6,
+-    QUEST_PARTY_MSG_FINISH_QUEST            = 7,
+-    QUEST_PARTY_MSG_CANT_BE_SHARED_TODAY    = 8,
+-    QUEST_PARTY_MSG_SHARING_TIMER_EXPIRED   = 9,
+-    QUEST_PARTY_MSG_NOT_IN_PARTY            = 10
+-};
+-
+-enum __QuestTradeSkill
+-{
+-    QUEST_TRSKILL_NONE           = 0,
+-    QUEST_TRSKILL_ALCHEMY        = 1,
+-    QUEST_TRSKILL_BLACKSMITHING  = 2,
+-    QUEST_TRSKILL_COOKING        = 3,
+-    QUEST_TRSKILL_ENCHANTING     = 4,
+-    QUEST_TRSKILL_ENGINEERING    = 5,
+-    QUEST_TRSKILL_FIRSTAID       = 6,
+-    QUEST_TRSKILL_HERBALISM      = 7,
+-    QUEST_TRSKILL_LEATHERWORKING = 8,
+-    QUEST_TRSKILL_POISONS        = 9,
+-    QUEST_TRSKILL_TAILORING      = 10,
+-    QUEST_TRSKILL_MINING         = 11,
+-    QUEST_TRSKILL_FISHING        = 12,
+-    QUEST_TRSKILL_SKINNING       = 13,
+-    QUEST_TRSKILL_JEWELCRAFTING  = 14,
+-};
+-
+-enum QuestStatus
+-{
+-    QUEST_STATUS_NONE           = 0,
+-    QUEST_STATUS_COMPLETE       = 1,
+-    //QUEST_STATUS_UNAVAILABLE    = 2,
+-    QUEST_STATUS_INCOMPLETE     = 3,
+-    //QUEST_STATUS_AVAILABLE      = 4,
+-    QUEST_STATUS_FAILED         = 5,
+-    MAX_QUEST_STATUS
+-};
+-
+-enum __QuestGiverStatus
+-{
+-    DIALOG_STATUS_NONE                     = 0,
+-    DIALOG_STATUS_UNAVAILABLE              = 1,
+-    DIALOG_STATUS_LOW_LEVEL_AVAILABLE      = 2,
+-    DIALOG_STATUS_LOW_LEVEL_REWARD_REP     = 3,
+-    DIALOG_STATUS_LOW_LEVEL_AVAILABLE_REP  = 4,
+-    DIALOG_STATUS_INCOMPLETE               = 5,
+-    DIALOG_STATUS_REWARD_REP               = 6,
+-    DIALOG_STATUS_AVAILABLE_REP            = 7,
+-    DIALOG_STATUS_AVAILABLE                = 8,
+-    DIALOG_STATUS_REWARD2                  = 9,             // no yellow dot on minimap
+-    DIALOG_STATUS_REWARD                   = 10             // yellow dot on minimap
+-};
+-
+-enum __QuestFlags
+-{
+-    // Flags used at server and sent to client
+-    QUEST_FLAGS_NONE           = 0x00000000,
+-    QUEST_FLAGS_STAY_ALIVE     = 0x00000001,                // Not used currently
+-    QUEST_FLAGS_PARTY_ACCEPT   = 0x00000002,                // Not used currently. If player in party, all players that can accept this quest will receive confirmation box to accept quest CMSG_QUEST_CONFIRM_ACCEPT/SMSG_QUEST_CONFIRM_ACCEPT
+-    QUEST_FLAGS_EXPLORATION    = 0x00000004,                // Not used currently
+-    QUEST_FLAGS_SHARABLE       = 0x00000008,                // Can be shared: Player::CanShareQuest()
+-    //QUEST_FLAGS_NONE2        = 0x00000010,                // Not used currently
+-    QUEST_FLAGS_EPIC           = 0x00000020,                // Not used currently: Unsure of content
+-    QUEST_FLAGS_RAID           = 0x00000040,                // Not used currently
+-    QUEST_FLAGS_TBC            = 0x00000080,                // Not used currently: Available if TBC expansion enabled only
+-    QUEST_FLAGS_DELIVER_MORE   = 0x00000100,                // Not used currently: _DELIVER_MORE Quest needs more than normal _q-item_ drops from mobs
+-    QUEST_FLAGS_HIDDEN_REWARDS = 0x00000200,                // Items and money rewarded only sent in SMSG_QUESTGIVER_OFFER_REWARD (not in SMSG_QUESTGIVER_QUEST_DETAILS or in client quest log(SMSG_QUEST_QUERY_RESPONSE))
+-    QUEST_FLAGS_AUTO_REWARDED  = 0x00000400,                // These quests are automatically rewarded on quest complete and they will never appear in quest log client side.
+-    QUEST_FLAGS_TBC_RACES      = 0x00000800,                // Not used currently: Blood elf/Draenei starting zone quests
+-    QUEST_FLAGS_DAILY          = 0x00001000,                // Used to know quest is Daily one
+-    QUEST_FLAGS_REPEATABLE     = 0x00002000,                // Used on repeatable quests (3.0.0+)
+-    QUEST_FLAGS_UNAVAILABLE    = 0x00004000,                // Used on quests that are not generically available
+-    QUEST_FLAGS_WEEKLY         = 0x00008000,
+-    QUEST_FLAGS_AUTOCOMPLETE   = 0x00010000,                // auto complete
+-    QUEST_FLAGS_SPECIAL_ITEM   = 0x00020000,                // has something to do with ReqItemId and SrcItemId
+-    QUEST_FLAGS_OBJ_TEXT       = 0x00040000,                // use Objective text as Complete text
+-    QUEST_FLAGS_AUTO_ACCEPT    = 0x00080000,                // The client recognizes this flag as auto-accept. However, NONE of the current quests (3.3.5a) have this flag. Maybe blizz used to use it, or will use it in the future.
+-
+-    // Trinity flags for set SpecialFlags in DB if required but used only at server
+-    QUEST_TRINITY_FLAGS_REPEATABLE           = 0x00100000,   // Set by 1 in SpecialFlags from DB
+-    QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT = 0x00200000,   // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script)
+-    QUEST_TRINITY_FLAGS_AUTO_ACCEPT          = 0x00400000,  // Set by 4 in SpecialFlags in DB if the quest is to be auto-accepted.
+-    QUEST_TRINITY_FLAGS_DF_QUEST             = 0x00800000,  // Set by 8 in SpecialFlags in DB if the quest is used by Dungeon Finder.
+-
+-    QUEST_TRINITY_FLAGS_DB_ALLOWED = 0xFFFFF | QUEST_TRINITY_FLAGS_REPEATABLE | QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT | QUEST_TRINITY_FLAGS_AUTO_ACCEPT | QUEST_TRINITY_FLAGS_DF_QUEST,
+-
+-    // Trinity flags for internal use only
+-    QUEST_TRINITY_FLAGS_DELIVER              = 0x04000000,   // Internal flag computed only
+-    QUEST_TRINITY_FLAGS_SPEAKTO              = 0x08000000,   // Internal flag computed only
+-    QUEST_TRINITY_FLAGS_KILL_OR_CAST         = 0x10000000,   // Internal flag computed only
+-    QUEST_TRINITY_FLAGS_TIMED                = 0x20000000,   // Internal flag computed only
+-};
+-
+-struct QuestLocale
+-{
+-    QuestLocale() { ObjectiveText.resize(QUEST_OBJECTIVES_COUNT); }
+-
+-    StringVector Title;
+-    StringVector Details;
+-    StringVector Objectives;
+-    StringVector OfferRewardText;
+-    StringVector RequestItemsText;
+-    StringVector EndText;
+-    StringVector CompletedText;
+-    std::vector< StringVector > ObjectiveText;
+-};
+-
+-// This Quest class provides a convenient way to access a few pretotaled (cached) quest details,
+-// all base quest information, and any utility functions such as generating the amount of
+-// xp to give
+-class Quest
+-{
+-    friend class ObjectMgr;
+-    public:
+-        Quest(Field * questRecord);
+-        uint32 XPValue(Player *pPlayer) const;
+-
+-        bool HasFlag(uint32 flag) const { return (QuestFlags & flag) != 0; }
+-        void SetFlag(uint32 flag) { QuestFlags |= flag; }
+-
+-        // table data accessors:
+-        uint32 GetQuestId() const { return QuestId; }
+-        uint32 GetQuestMethod() const { return QuestMethod; }
+-        int32  GetZoneOrSort() const { return ZoneOrSort; }
+-        int32  GetSkillOrClassMask() const { return SkillOrClassMask; }
+-        uint32 GetMinLevel() const { return MinLevel; }
+-        uint32 GetMaxLevel() const { return MaxLevel; }
+-        uint32 GetQuestLevel() const { return QuestLevel; }
+-        uint32 GetType() const { return Type; }
+-        uint32 GetRequiredRaces() const { return RequiredRaces; }
+-        uint32 GetRequiredSkillValue() const { return RequiredSkillValue; }
+-        uint32 GetRepObjectiveFaction() const { return RepObjectiveFaction; }
+-        int32  GetRepObjectiveValue() const { return RepObjectiveValue; }
+-        uint32 GetRepObjectiveFaction2() const { return RepObjectiveFaction2; }
+-        int32  GetRepObjectiveValue2() const { return RepObjectiveValue2; }
+-        uint32 GetRequiredMinRepFaction() const { return RequiredMinRepFaction; }
+-        int32  GetRequiredMinRepValue() const { return RequiredMinRepValue; }
+-        uint32 GetRequiredMaxRepFaction() const { return RequiredMaxRepFaction; }
+-        int32  GetRequiredMaxRepValue() const { return RequiredMaxRepValue; }
+-        uint32 GetSuggestedPlayers() const { return SuggestedPlayers; }
+-        uint32 GetLimitTime() const { return LimitTime; }
+-        int32  GetPrevQuestId() const { return PrevQuestId; }
+-        int32  GetNextQuestId() const { return NextQuestId; }
+-        int32  GetExclusiveGroup() const { return ExclusiveGroup; }
+-        uint32 GetNextQuestInChain() const { return NextQuestInChain; }
+-        uint32 GetCharTitleId() const { return CharTitleId; }
+-        uint32 GetPlayersSlain() const { return PlayersSlain; }
+-        uint32 GetBonusTalents() const { return BonusTalents; }
+-        int32  GetRewArenaPoints() const {return RewArenaPoints; }
+-        uint32 GetXPId() const { return XPId; }
+-        uint32 GetSrcItemId() const { return SrcItemId; }
+-        uint32 GetSrcItemCount() const { return SrcItemCount; }
+-        uint32 GetSrcSpell() const { return SrcSpell; }
+-        std::string GetTitle() const { return Title; }
+-        std::string GetDetails() const { return Details; }
+-        std::string GetObjectives() const { return Objectives; }
+-        std::string GetOfferRewardText() const { return OfferRewardText; }
+-        std::string GetRequestItemsText() const { return RequestItemsText; }
+-        std::string GetEndText() const { return EndText; }
+-        std::string GetCompletedText() const { return CompletedText; }
+-        int32  GetRewOrReqMoney() const;
+-        uint32 GetRewHonorAddition() const { return RewHonorAddition; }
+-	    uint32 GetRewHonorMultiplier() const { return RewHonorMultiplier; }
+-        uint32 GetRewMoneyMaxLevel() const { return RewMoneyMaxLevel; }
+-                                                            // use in XP calculation at client
+-        uint32 GetRewSpell() const { return RewSpell; }
+-        int32  GetRewSpellCast() const { return RewSpellCast; }
+-        uint32 GetRewMailTemplateId() const { return RewMailTemplateId; }
+-        uint32 GetRewMailDelaySecs() const { return RewMailDelaySecs; }
+-        uint32 GetPointMapId() const { return PointMapId; }
+-        float  GetPointX() const { return PointX; }
+-        float  GetPointY() const { return PointY; }
+-        uint32 GetPointOpt() const { return PointOpt; }
+-        uint32 GetIncompleteEmote() const { return IncompleteEmote; }
+-        uint32 GetCompleteEmote() const { return CompleteEmote; }
+-        uint32 GetQuestStartScript() const { return QuestStartScript; }
+-        uint32 GetQuestCompleteScript() const { return QuestCompleteScript; }
+-        bool   IsRepeatable() const { return QuestFlags & QUEST_TRINITY_FLAGS_REPEATABLE; }
+-        bool   IsAutoComplete() const { return QuestMethod ? false : true; }
+-        uint32 GetFlags() const { return QuestFlags; }
+-        bool   IsDaily() const { return QuestFlags & QUEST_FLAGS_DAILY; }
+-        bool   IsWeekly() const { return QuestFlags & QUEST_FLAGS_WEEKLY; }
+-        bool   IsDailyOrWeekly() const { return QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY); }
+-        bool   IsAutoAccept() const { return QuestFlags & QUEST_FLAGS_AUTO_ACCEPT; }
+-        bool   IsRaidQuest() const { return Type == QUEST_TYPE_RAID || Type == QUEST_TYPE_RAID_10 || Type == QUEST_TYPE_RAID_25 || Type == QUEST_TYPE_PVP; }
+-        bool   IsAllowedInRaid() const;
+-        bool   IsDFQuest() const { return QuestFlags & QUEST_TRINITY_FLAGS_DF_QUEST; }
+-
+-        // multiple values
+-        std::string ObjectiveText[QUEST_OBJECTIVES_COUNT];
+-        uint32 ReqItemId[QUEST_ITEM_OBJECTIVES_COUNT];
+-        uint32 ReqItemCount[QUEST_ITEM_OBJECTIVES_COUNT];
+-        uint32 ReqSourceId[QUEST_SOURCE_ITEM_IDS_COUNT];
+-        uint32 ReqSourceCount[QUEST_SOURCE_ITEM_IDS_COUNT];
+-        int32  ReqCreatureOrGOId[QUEST_OBJECTIVES_COUNT];   // >0 Creature <0 Gameobject
+-        uint32 ReqCreatureOrGOCount[QUEST_OBJECTIVES_COUNT];
+-        uint32 ReqSpell[QUEST_OBJECTIVES_COUNT];
+-        uint32 RewChoiceItemId[QUEST_REWARD_CHOICES_COUNT];
+-        uint32 RewChoiceItemCount[QUEST_REWARD_CHOICES_COUNT];
+-        uint32 RewItemId[QUEST_REWARDS_COUNT];
+-        uint32 RewItemCount[QUEST_REWARDS_COUNT];
+-        uint32 RewRepFaction[QUEST_REPUTATIONS_COUNT];
+-        int32  RewRepValueId[QUEST_REPUTATIONS_COUNT];
+-        int32  RewRepValue[QUEST_REPUTATIONS_COUNT];
+-        uint32 DetailsEmote[QUEST_EMOTE_COUNT];
+-        uint32 DetailsEmoteDelay[QUEST_EMOTE_COUNT];
+-        uint32 OfferRewardEmote[QUEST_EMOTE_COUNT];
+-        uint32 OfferRewardEmoteDelay[QUEST_EMOTE_COUNT];
+-
+-        uint32 GetReqItemsCount() const { return m_reqitemscount; }
+-        uint32 GetReqCreatureOrGOcount() const { return m_reqCreatureOrGOcount; }
+-        uint32 GetRewChoiceItemsCount() const { return m_rewchoiceitemscount; }
+-        uint32 GetRewItemsCount() const { return m_rewitemscount; }
+-
+-        typedef std::vector<int32> PrevQuests;
+-        PrevQuests prevQuests;
+-        typedef std::vector<uint32> PrevChainQuests;
+-        PrevChainQuests prevChainQuests;
+-
+-        // cached data
+-    private:
+-        uint32 m_reqitemscount;
+-        uint32 m_reqCreatureOrGOcount;
+-        uint32 m_rewchoiceitemscount;
+-        uint32 m_rewitemscount;
+-
+-        // table data
+-    protected:
+-        uint32 QuestId;
+-        uint32 QuestMethod;
+-        int32  ZoneOrSort;
+-        int32  SkillOrClassMask;
+-        uint32 MinLevel;
+-        uint32 MaxLevel;
+-        int32  QuestLevel;
+-        uint32 Type;
+-        uint32 RequiredRaces;
+-        uint32 RequiredSkillValue;
+-        uint32 RepObjectiveFaction;
+-        int32  RepObjectiveValue;
+-        uint32 RepObjectiveFaction2;
+-        int32  RepObjectiveValue2;
+-        uint32 RequiredMinRepFaction;
+-        int32  RequiredMinRepValue;
+-        uint32 RequiredMaxRepFaction;
+-        int32  RequiredMaxRepValue;
+-        uint32 SuggestedPlayers;
+-        uint32 LimitTime;
+-        uint32 QuestFlags;
+-        uint32 CharTitleId;
+-        uint32 PlayersSlain;
+-        uint32 BonusTalents;
+-        int32  RewArenaPoints;
+-        int32  PrevQuestId;
+-        int32  NextQuestId;
+-        int32  ExclusiveGroup;
+-        uint32 NextQuestInChain;
+-        uint32 XPId;
+-        uint32 SrcItemId;
+-        uint32 SrcItemCount;
+-        uint32 SrcSpell;
+-        std::string Title;
+-        std::string Details;
+-        std::string Objectives;
+-        std::string OfferRewardText;
+-        std::string RequestItemsText;
+-        std::string EndText;
+-        std::string CompletedText;
+-        uint32 RewHonorAddition;
+-        float RewHonorMultiplier;
+-        int32  RewOrReqMoney;
+-        uint32 RewMoneyMaxLevel;
+-        uint32 RewSpell;
+-        int32  RewSpellCast;
+-        uint32 RewMailTemplateId;
+-        uint32 RewMailDelaySecs;
+-        uint32 PointMapId;
+-        float  PointX;
+-        float  PointY;
+-        uint32 PointOpt;
+-        uint32 IncompleteEmote;
+-        uint32 CompleteEmote;
+-        uint32 QuestStartScript;
+-        uint32 QuestCompleteScript;
+-};
+-
+-enum QuestUpdateState
+-{
+-    QUEST_UNCHANGED = 0,
+-    QUEST_CHANGED = 1,
+-    QUEST_NEW = 2
+-};
+-
+-struct QuestStatusData
+-{
+-    QuestStatusData()
+-        : m_status(QUEST_STATUS_NONE),m_rewarded(false),
+-        m_explored(false), m_timer(0), uState(QUEST_NEW)
+-    {
+-        memset(m_itemcount, 0, QUEST_ITEM_OBJECTIVES_COUNT * sizeof(uint16));
+-        memset(m_creatureOrGOcount, 0, QUEST_OBJECTIVES_COUNT * sizeof(uint16));
+-    }
+-
+-    QuestStatus m_status;
+-    bool m_rewarded;
+-    bool m_explored;
+-    uint32 m_timer;
+-    QuestUpdateState uState;
+-
+-    uint16 m_itemcount[ QUEST_ITEM_OBJECTIVES_COUNT ];
+-    uint16 m_creatureOrGOcount[ QUEST_OBJECTIVES_COUNT ];
+-};
+-#endif
++Ôªø/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef TRINITYCORE_QUEST_H
++#define TRINITYCORE_QUEST_H
++
++#include "Define.h"
++#include "DatabaseEnv.h"
++#include "SharedDefines.h"
++
++#include <string>
++#include <vector>
++
++class Player;
++
++class ObjectMgr;
++
++#define MAX_QUEST_LOG_SIZE 25
++
++#define QUEST_OBJECTIVES_COUNT 4
++#define QUEST_ITEM_OBJECTIVES_COUNT 6
++#define QUEST_SOURCE_ITEM_IDS_COUNT 4
++#define QUEST_REWARD_CHOICES_COUNT 6
++#define QUEST_REWARDS_COUNT 4
++#define QUEST_DEPLINK_COUNT 10
++#define QUEST_REPUTATIONS_COUNT 5
++#define QUEST_EMOTE_COUNT 4
++
++enum QuestFailedReasons
++{
++    INVALIDREASON_DONT_HAVE_REQ                 = 0,
++    INVALIDREASON_QUEST_FAILED_LOW_LEVEL        = 1,        // You are not high enough level for that quest.
++    INVALIDREASON_QUEST_FAILED_WRONG_RACE       = 6,        // That quest is not available to your race.
++    INVALIDREASON_QUEST_ALREADY_DONE            = 7,        // You have completed that quest.
++    INVALIDREASON_QUEST_ONLY_ONE_TIMED          = 12,       // You can only be on one timed quest at a time.
++    INVALIDREASON_QUEST_ALREADY_ON              = 13,       // You are already on that quest.
++    INVALIDREASON_QUEST_FAILED_EXPANSION        = 16,       // This quest requires an expansion enabled account.
++    INVALIDREASON_QUEST_ALREADY_ON2             = 18,       // You are already on that quest.
++    INVALIDREASON_QUEST_FAILED_MISSING_ITEMS    = 21,       // You don't have the required items with you. Check storage.
++    INVALIDREASON_QUEST_FAILED_NOT_ENOUGH_MONEY = 23,       // You don't have enough money for that quest.
++    INVALIDREASON_DAILY_QUESTS_REMAINING        = 26,       // You have already completed 25 daily quests today.
++    INVALIDREASON_QUEST_FAILED_CAIS             = 27,       // You cannot complete quests once you have reached tired time.
++    INVALIDREASON_DAILY_QUEST_COMPLETED_TODAY   = 29        // You have completed that daily quest today.
++};
++
++enum QuestShareMessages
++{
++    QUEST_PARTY_MSG_SHARING_QUEST           = 0,
++    QUEST_PARTY_MSG_CANT_TAKE_QUEST         = 1,
++    QUEST_PARTY_MSG_ACCEPT_QUEST            = 2,
++    QUEST_PARTY_MSG_DECLINE_QUEST           = 3,
++    QUEST_PARTY_MSG_BUSY                    = 4,
++    QUEST_PARTY_MSG_LOG_FULL                = 5,
++    QUEST_PARTY_MSG_HAVE_QUEST              = 6,
++    QUEST_PARTY_MSG_FINISH_QUEST            = 7,
++    QUEST_PARTY_MSG_CANT_BE_SHARED_TODAY    = 8,
++    QUEST_PARTY_MSG_SHARING_TIMER_EXPIRED   = 9,
++    QUEST_PARTY_MSG_NOT_IN_PARTY            = 10
++};
++
++enum __QuestTradeSkill
++{
++    QUEST_TRSKILL_NONE           = 0,
++    QUEST_TRSKILL_ALCHEMY        = 1,
++    QUEST_TRSKILL_BLACKSMITHING  = 2,
++    QUEST_TRSKILL_COOKING        = 3,
++    QUEST_TRSKILL_ENCHANTING     = 4,
++    QUEST_TRSKILL_ENGINEERING    = 5,
++    QUEST_TRSKILL_FIRSTAID       = 6,
++    QUEST_TRSKILL_HERBALISM      = 7,
++    QUEST_TRSKILL_LEATHERWORKING = 8,
++    QUEST_TRSKILL_POISONS        = 9,
++    QUEST_TRSKILL_TAILORING      = 10,
++    QUEST_TRSKILL_MINING         = 11,
++    QUEST_TRSKILL_FISHING        = 12,
++    QUEST_TRSKILL_SKINNING       = 13,
++    QUEST_TRSKILL_JEWELCRAFTING  = 14,
++};
++
++enum QuestStatus
++{
++    QUEST_STATUS_NONE           = 0,
++    QUEST_STATUS_COMPLETE       = 1,
++    //QUEST_STATUS_UNAVAILABLE    = 2,
++    QUEST_STATUS_INCOMPLETE     = 3,
++    //QUEST_STATUS_AVAILABLE      = 4,
++    QUEST_STATUS_FAILED         = 5,
++    MAX_QUEST_STATUS
++};
++
++enum __QuestGiverStatus
++{
++    DIALOG_STATUS_NONE                     = 0,
++    DIALOG_STATUS_UNAVAILABLE              = 1,
++    DIALOG_STATUS_LOW_LEVEL_AVAILABLE      = 2,
++    DIALOG_STATUS_LOW_LEVEL_REWARD_REP     = 3,
++    DIALOG_STATUS_LOW_LEVEL_AVAILABLE_REP  = 4,
++    DIALOG_STATUS_INCOMPLETE               = 5,
++    DIALOG_STATUS_REWARD_REP               = 6,
++    DIALOG_STATUS_AVAILABLE_REP            = 7,
++    DIALOG_STATUS_AVAILABLE                = 8,
++    DIALOG_STATUS_REWARD2                  = 9,             // no yellow dot on minimap
++    DIALOG_STATUS_REWARD                   = 10             // yellow dot on minimap
++};
++
++enum __QuestFlags
++{
++    // Flags used at server and sent to client
++    QUEST_FLAGS_NONE           = 0x00000000,
++    QUEST_FLAGS_STAY_ALIVE     = 0x00000001,                // Not used currently
++    QUEST_FLAGS_PARTY_ACCEPT   = 0x00000002,                // Not used currently. If player in party, all players that can accept this quest will receive confirmation box to accept quest CMSG_QUEST_CONFIRM_ACCEPT/SMSG_QUEST_CONFIRM_ACCEPT
++    QUEST_FLAGS_EXPLORATION    = 0x00000004,                // Not used currently
++    QUEST_FLAGS_SHARABLE       = 0x00000008,                // Can be shared: Player::CanShareQuest()
++    //QUEST_FLAGS_NONE2        = 0x00000010,                // Not used currently
++    QUEST_FLAGS_EPIC           = 0x00000020,                // Not used currently: Unsure of content
++    QUEST_FLAGS_RAID           = 0x00000040,                // Not used currently
++    QUEST_FLAGS_TBC            = 0x00000080,                // Not used currently: Available if TBC expansion enabled only
++    QUEST_FLAGS_DELIVER_MORE   = 0x00000100,                // Not used currently: _DELIVER_MORE Quest needs more than normal _q-item_ drops from mobs
++    QUEST_FLAGS_HIDDEN_REWARDS = 0x00000200,                // Items and money rewarded only sent in SMSG_QUESTGIVER_OFFER_REWARD (not in SMSG_QUESTGIVER_QUEST_DETAILS or in client quest log(SMSG_QUEST_QUERY_RESPONSE))
++    QUEST_FLAGS_AUTO_REWARDED  = 0x00000400,                // These quests are automatically rewarded on quest complete and they will never appear in quest log client side.
++    QUEST_FLAGS_TBC_RACES      = 0x00000800,                // Not used currently: Blood elf/Draenei starting zone quests
++    QUEST_FLAGS_DAILY          = 0x00001000,                // Used to know quest is Daily one
++    QUEST_FLAGS_REPEATABLE     = 0x00002000,                // Used on repeatable quests (3.0.0+)
++    QUEST_FLAGS_UNAVAILABLE    = 0x00004000,                // Used on quests that are not generically available
++    QUEST_FLAGS_WEEKLY         = 0x00008000,
++    QUEST_FLAGS_AUTOCOMPLETE   = 0x00010000,                // auto complete
++    QUEST_FLAGS_SPECIAL_ITEM   = 0x00020000,                // has something to do with ReqItemId and SrcItemId
++    QUEST_FLAGS_OBJ_TEXT       = 0x00040000,                // use Objective text as Complete text
++    QUEST_FLAGS_AUTO_ACCEPT    = 0x00080000,                // The client recognizes this flag as auto-accept. However, NONE of the current quests (3.3.5a) have this flag. Maybe blizz used to use it, or will use it in the future.
++
++    // Trinity flags for set SpecialFlags in DB if required but used only at server
++    QUEST_TRINITY_FLAGS_REPEATABLE           = 0x00100000,   // Set by 1 in SpecialFlags from DB
++    QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT = 0x00200000,   // Set by 2 in SpecialFlags from DB (if reequired area explore, spell SPELL_EFFECT_QUEST_COMPLETE casting, table `*_script` command SCRIPT_COMMAND_QUEST_EXPLORED use, set from script)
++    QUEST_TRINITY_FLAGS_AUTO_ACCEPT          = 0x00400000,  // Set by 4 in SpecialFlags in DB if the quest is to be auto-accepted.
++    QUEST_TRINITY_FLAGS_DF_QUEST             = 0x00800000,  // Set by 8 in SpecialFlags in DB if the quest is used by Dungeon Finder.
++
++    QUEST_TRINITY_FLAGS_DB_ALLOWED = 0xFFFFF | QUEST_TRINITY_FLAGS_REPEATABLE | QUEST_TRINITY_FLAGS_EXPLORATION_OR_EVENT | QUEST_TRINITY_FLAGS_AUTO_ACCEPT | QUEST_TRINITY_FLAGS_DF_QUEST,
++
++    // Trinity flags for internal use only
++    QUEST_TRINITY_FLAGS_DELIVER              = 0x04000000,   // Internal flag computed only
++    QUEST_TRINITY_FLAGS_SPEAKTO              = 0x08000000,   // Internal flag computed only
++    QUEST_TRINITY_FLAGS_KILL_OR_CAST         = 0x10000000,   // Internal flag computed only
++    QUEST_TRINITY_FLAGS_TIMED                = 0x20000000,   // Internal flag computed only
++};
++
++struct QuestLocale
++{
++    QuestLocale() { ObjectiveText.resize(QUEST_OBJECTIVES_COUNT); }
++
++    StringVector Title;
++    StringVector Details;
++    StringVector Objectives;
++    StringVector OfferRewardText;
++    StringVector RequestItemsText;
++    StringVector EndText;
++    StringVector CompletedText;
++    std::vector< StringVector > ObjectiveText;
++};
++
++// This Quest class provides a convenient way to access a few pretotaled (cached) quest details,
++// all base quest information, and any utility functions such as generating the amount of
++// xp to give
++class Quest
++{
++    friend class ObjectMgr;
++    public:
++        Quest(Field * questRecord);
++        uint32 XPValue(Player *pPlayer) const;
++
++        bool HasFlag(uint32 flag) const { return (QuestFlags & flag) != 0; }
++        void SetFlag(uint32 flag) { QuestFlags |= flag; }
++
++        // table data accessors:
++        uint32 GetQuestId() const { return QuestId; }
++        uint32 GetQuestMethod() const { return QuestMethod; }
++        int32  GetZoneOrSort() const { return ZoneOrSort; }
++        int32  GetSkillOrClassMask() const { return SkillOrClassMask; }
++        uint32 GetMinLevel() const { return MinLevel; }
++        uint32 GetMaxLevel() const { return MaxLevel; }
++        uint32 GetQuestLevel() const { return QuestLevel; }
++        uint32 GetType() const { return Type; }
++        uint32 GetRequiredRaces() const { return RequiredRaces; }
++        uint32 GetRequiredSkillValue() const { return RequiredSkillValue; }
++        uint32 GetRepObjectiveFaction() const { return RepObjectiveFaction; }
++        int32  GetRepObjectiveValue() const { return RepObjectiveValue; }
++        uint32 GetRepObjectiveFaction2() const { return RepObjectiveFaction2; }
++        int32  GetRepObjectiveValue2() const { return RepObjectiveValue2; }
++        uint32 GetRequiredMinRepFaction() const { return RequiredMinRepFaction; }
++        int32  GetRequiredMinRepValue() const { return RequiredMinRepValue; }
++        uint32 GetRequiredMaxRepFaction() const { return RequiredMaxRepFaction; }
++        int32  GetRequiredMaxRepValue() const { return RequiredMaxRepValue; }
++        uint32 GetSuggestedPlayers() const { return SuggestedPlayers; }
++        uint32 GetLimitTime() const { return LimitTime; }
++        int32  GetPrevQuestId() const { return PrevQuestId; }
++        int32  GetNextQuestId() const { return NextQuestId; }
++        int32  GetExclusiveGroup() const { return ExclusiveGroup; }
++        uint32 GetNextQuestInChain() const { return NextQuestInChain; }
++        uint32 GetCharTitleId() const { return CharTitleId; }
++        uint32 GetPlayersSlain() const { return PlayersSlain; }
++        uint32 GetBonusTalents() const { return BonusTalents; }
++        int32  GetRewArenaPoints() const {return RewArenaPoints; }
++        uint32 GetXPId() const { return XPId; }
++        uint32 GetSrcItemId() const { return SrcItemId; }
++        uint32 GetSrcItemCount() const { return SrcItemCount; }
++        uint32 GetSrcSpell() const { return SrcSpell; }
++        std::string GetTitle() const { return Title; }
++        std::string GetDetails() const { return Details; }
++        std::string GetObjectives() const { return Objectives; }
++        std::string GetOfferRewardText() const { return OfferRewardText; }
++        std::string GetRequestItemsText() const { return RequestItemsText; }
++        std::string GetEndText() const { return EndText; }
++        std::string GetCompletedText() const { return CompletedText; }
++        int32  GetRewOrReqMoney() const;
++        uint32 GetRewHonorAddition() const { return RewHonorAddition; }
++        uint32 GetRewHonorMultiplier() const { return RewHonorMultiplier; }
++        uint32 GetRewMoneyMaxLevel() const { return RewMoneyMaxLevel; }
++                                                            // use in XP calculation at client
++        uint32 GetRewSpell() const { return RewSpell; }
++        int32  GetRewSpellCast() const { return RewSpellCast; }
++        uint32 GetRewMailTemplateId() const { return RewMailTemplateId; }
++        uint32 GetRewMailDelaySecs() const { return RewMailDelaySecs; }
++        uint32 GetPointMapId() const { return PointMapId; }
++        float  GetPointX() const { return PointX; }
++        float  GetPointY() const { return PointY; }
++        uint32 GetPointOpt() const { return PointOpt; }
++        uint32 GetIncompleteEmote() const { return IncompleteEmote; }
++        uint32 GetCompleteEmote() const { return CompleteEmote; }
++        uint32 GetQuestStartScript() const { return QuestStartScript; }
++        uint32 GetQuestCompleteScript() const { return QuestCompleteScript; }
++        bool   IsRepeatable() const { return QuestFlags & QUEST_TRINITY_FLAGS_REPEATABLE; }
++        bool   IsAutoComplete() const { return QuestMethod ? false : true; }
++        uint32 GetFlags() const { return QuestFlags; }
++        bool   IsDaily() const { return QuestFlags & QUEST_FLAGS_DAILY; }
++        bool   IsWeekly() const { return QuestFlags & QUEST_FLAGS_WEEKLY; }
++        bool   IsDailyOrWeekly() const { return QuestFlags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY); }
++        bool   IsAutoAccept() const { return QuestFlags & QUEST_FLAGS_AUTO_ACCEPT; }
++        bool   IsRaidQuest() const { return Type == QUEST_TYPE_RAID || Type == QUEST_TYPE_RAID_10 || Type == QUEST_TYPE_RAID_25; }
++        bool   IsAllowedInRaid() const;
++        bool   IsDFQuest() const { return QuestFlags & QUEST_TRINITY_FLAGS_DF_QUEST; }
++
++        // multiple values
++        std::string ObjectiveText[QUEST_OBJECTIVES_COUNT];
++        uint32 ReqItemId[QUEST_ITEM_OBJECTIVES_COUNT];
++        uint32 ReqItemCount[QUEST_ITEM_OBJECTIVES_COUNT];
++        uint32 ReqSourceId[QUEST_SOURCE_ITEM_IDS_COUNT];
++        uint32 ReqSourceCount[QUEST_SOURCE_ITEM_IDS_COUNT];
++        int32  ReqCreatureOrGOId[QUEST_OBJECTIVES_COUNT];   // >0 Creature <0 Gameobject
++        uint32 ReqCreatureOrGOCount[QUEST_OBJECTIVES_COUNT];
++        uint32 ReqSpell[QUEST_OBJECTIVES_COUNT];
++        uint32 RewChoiceItemId[QUEST_REWARD_CHOICES_COUNT];
++        uint32 RewChoiceItemCount[QUEST_REWARD_CHOICES_COUNT];
++        uint32 RewItemId[QUEST_REWARDS_COUNT];
++        uint32 RewItemCount[QUEST_REWARDS_COUNT];
++        uint32 RewRepFaction[QUEST_REPUTATIONS_COUNT];
++        int32  RewRepValueId[QUEST_REPUTATIONS_COUNT];
++        int32  RewRepValue[QUEST_REPUTATIONS_COUNT];
++        uint32 DetailsEmote[QUEST_EMOTE_COUNT];
++        uint32 DetailsEmoteDelay[QUEST_EMOTE_COUNT];
++        uint32 OfferRewardEmote[QUEST_EMOTE_COUNT];
++        uint32 OfferRewardEmoteDelay[QUEST_EMOTE_COUNT];
++
++        uint32 GetReqItemsCount() const { return m_reqitemscount; }
++        uint32 GetReqCreatureOrGOcount() const { return m_reqCreatureOrGOcount; }
++        uint32 GetRewChoiceItemsCount() const { return m_rewchoiceitemscount; }
++        uint32 GetRewItemsCount() const { return m_rewitemscount; }
++
++        typedef std::vector<int32> PrevQuests;
++        PrevQuests prevQuests;
++        typedef std::vector<uint32> PrevChainQuests;
++        PrevChainQuests prevChainQuests;
++
++        // cached data
++    private:
++        uint32 m_reqitemscount;
++        uint32 m_reqCreatureOrGOcount;
++        uint32 m_rewchoiceitemscount;
++        uint32 m_rewitemscount;
++
++        // table data
++    protected:
++        uint32 QuestId;
++        uint32 QuestMethod;
++        int32  ZoneOrSort;
++        int32  SkillOrClassMask;
++        uint32 MinLevel;
++        uint32 MaxLevel;
++        int32  QuestLevel;
++        uint32 Type;
++        uint32 RequiredRaces;
++        uint32 RequiredSkillValue;
++        uint32 RepObjectiveFaction;
++        int32  RepObjectiveValue;
++        uint32 RepObjectiveFaction2;
++        int32  RepObjectiveValue2;
++        uint32 RequiredMinRepFaction;
++        int32  RequiredMinRepValue;
++        uint32 RequiredMaxRepFaction;
++        int32  RequiredMaxRepValue;
++        uint32 SuggestedPlayers;
++        uint32 LimitTime;
++        uint32 QuestFlags;
++        uint32 CharTitleId;
++        uint32 PlayersSlain;
++        uint32 BonusTalents;
++        int32  RewArenaPoints;
++        int32  PrevQuestId;
++        int32  NextQuestId;
++        int32  ExclusiveGroup;
++        uint32 NextQuestInChain;
++        uint32 XPId;
++        uint32 SrcItemId;
++        uint32 SrcItemCount;
++        uint32 SrcSpell;
++        std::string Title;
++        std::string Details;
++        std::string Objectives;
++        std::string OfferRewardText;
++        std::string RequestItemsText;
++        std::string EndText;
++        std::string CompletedText;
++        uint32 RewHonorAddition;
++        float RewHonorMultiplier;
++        int32  RewOrReqMoney;
++        uint32 RewMoneyMaxLevel;
++        uint32 RewSpell;
++        int32  RewSpellCast;
++        uint32 RewMailTemplateId;
++        uint32 RewMailDelaySecs;
++        uint32 PointMapId;
++        float  PointX;
++        float  PointY;
++        uint32 PointOpt;
++        uint32 IncompleteEmote;
++        uint32 CompleteEmote;
++        uint32 QuestStartScript;
++        uint32 QuestCompleteScript;
++};
++
++enum QuestUpdateState
++{
++    QUEST_UNCHANGED = 0,
++    QUEST_CHANGED = 1,
++    QUEST_NEW = 2
++};
++
++struct QuestStatusData
++{
++    QuestStatusData()
++        : m_status(QUEST_STATUS_NONE),m_rewarded(false),
++        m_explored(false), m_timer(0), uState(QUEST_NEW)
++    {
++        memset(m_itemcount, 0, QUEST_ITEM_OBJECTIVES_COUNT * sizeof(uint16));
++        memset(m_creatureOrGOcount, 0, QUEST_OBJECTIVES_COUNT * sizeof(uint16));
++    }
++
++    QuestStatus m_status;
++    bool m_rewarded;
++    bool m_explored;
++    uint32 m_timer;
++    QuestUpdateState uState;
++
++    uint16 m_itemcount[ QUEST_ITEM_OBJECTIVES_COUNT ];
++    uint16 m_creatureOrGOcount[ QUEST_OBJECTIVES_COUNT ];
++};
++#endif
+diff --git a/src/server/game/Server/Protocol/Handlers/MiscHandler.cpp b/src/server/game/Server/Protocol/Handlers/MiscHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/MiscHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/MiscHandler.cpp
+@@ -143,6 +143,8 @@
+         {
+             if (!sScriptMgr.OnGossipSelectCode(_player, unit, _player->PlayerTalkClass->GossipOptionSender(gossipListId), _player->PlayerTalkClass->GossipOptionAction(gossipListId), code.c_str()))
+                 _player->OnGossipSelect(unit, gossipListId, menuId);
++
++			unit->AI()->sGossipSelectCode(_player, _player->PlayerTalkClass->GossipOptionSender(gossipListId), _player->PlayerTalkClass->GossipOptionAction(gossipListId), code.c_str());
+         }
+         else
+ 		{
+@@ -156,6 +158,8 @@
+         {
+             if (!sScriptMgr.OnGossipSelect(_player, unit, _player->PlayerTalkClass->GossipOptionSender(gossipListId), _player->PlayerTalkClass->GossipOptionAction(gossipListId)))
+                 _player->OnGossipSelect(unit, gossipListId, menuId);
++
++			unit->AI()->sGossipSelect(_player, _player->PlayerTalkClass->GossipOptionSender(gossipListId), _player->PlayerTalkClass->GossipOptionAction(gossipListId));
+         }
+         else
+ 		{
+diff --git a/src/server/game/Server/Protocol/Handlers/NPCHandler.cpp b/src/server/game/Server/Protocol/Handlers/NPCHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/NPCHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/NPCHandler.cpp
+@@ -36,6 +36,7 @@
+ #include "BattlegroundMgr.h"
+ #include "Battleground.h"
+ #include "ScriptMgr.h"
++#include "CreatureAI.h"
+ 
+ enum StableResultCode
+ {
+@@ -345,6 +346,7 @@
+         _player->PrepareGossipMenu(unit, unit->GetCreatureInfo()->GossipMenuId, true);
+         _player->SendPreparedGossip(unit);
+     }
++	unit->AI()->sGossipHello(_player);
+ }
+ 
+ /*void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket & recv_data)
+diff --git a/src/server/game/Server/Protocol/Handlers/QuestHandler.cpp b/src/server/game/Server/Protocol/Handlers/QuestHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/QuestHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/QuestHandler.cpp
+@@ -1,742 +1,745 @@
+-Ôªø/*
+- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+- *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+- */
+-
+-#include "Common.h"
+-#include "Log.h"
+-#include "WorldPacket.h"
+-#include "WorldSession.h"
+-#include "Opcodes.h"
+-#include "World.h"
+-#include "ObjectMgr.h"
+-#include "Player.h"
+-#include "GossipDef.h"
+-#include "QuestDef.h"
+-#include "ObjectAccessor.h"
+-#include "Group.h"
+-#include "Battleground.h"
+-#include "BattlegroundAV.h"
+-#include "ScriptMgr.h"
+-#include "ConditionMgr.h"
+-#include "Creature.h"
+-#include "CreatureAI.h"
+-#include "GameObjectAI.h"
+-
+-void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket & recv_data)
+-{
+-    uint64 guid;
+-    recv_data >> guid;
+-    uint8 questStatus = DIALOG_STATUS_NONE;
+-    uint8 defstatus = DIALOG_STATUS_NONE;
+-
+-    Object* questgiver = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
+-    if (!questgiver)
+-    {
+-        sLog.outDetail("Error in CMSG_QUESTGIVER_STATUS_QUERY, called for not found questgiver (Typeid: %u GUID: %u)",GuidHigh2TypeId(GUID_HIPART(guid)),GUID_LOPART(guid));
+-        return;
+-    }
+-
+-    switch(questgiver->GetTypeId())
+-    {
+-        case TYPEID_UNIT:
+-        {
+-            sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for npc, guid = %u",uint32(GUID_LOPART(guid)));
+-            Creature* cr_questgiver=questgiver->ToCreature();
+-            if (!cr_questgiver->IsHostileTo(_player))       // not show quest status to enemies
+-            {
+-                questStatus = sScriptMgr.GetDialogStatus(_player, cr_questgiver);
+-                if (questStatus > 6)
+-                    questStatus = getDialogStatus(_player, cr_questgiver, defstatus);
+-            }
+-            break;
+-        }
+-        case TYPEID_GAMEOBJECT:
+-        {
+-            sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for GameObject guid = %u",uint32(GUID_LOPART(guid)));
+-            GameObject* go_questgiver=(GameObject*)questgiver;
+-            questStatus = sScriptMgr.GetDialogStatus(_player, go_questgiver);
+-            if (questStatus > 6)
+-                questStatus = getDialogStatus(_player, go_questgiver, defstatus);
+-            break;
+-        }
+-        default:
+-            sLog.outError("QuestGiver called for unexpected type %u", questgiver->GetTypeId());
+-            break;
+-    }
+-
+-    //inform client about status of quest
+-    _player->PlayerTalkClass->SendQuestGiverStatus(questStatus, guid);
+-}
+-
+-void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket & recv_data)
+-{
+-    uint64 guid;
+-    recv_data >> guid;
+-
+-    sLog.outDebug ("WORLD: Received CMSG_QUESTGIVER_HELLO npc = %u", GUID_LOPART(guid));
+-
+-    Creature *pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid,UNIT_NPC_FLAG_NONE);
+-    if (!pCreature)
+-    {
+-        sLog.outDebug ("WORLD: HandleQuestgiverHelloOpcode - Unit (GUID: %u) not found or you can't interact with him.",
+-            GUID_LOPART(guid));
+-        return;
+-    }
+-
+-    // remove fake death
+-    if (GetPlayer()->hasUnitState(UNIT_STAT_DIED))
+-        GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
+-    // Stop the npc if moving
+-    pCreature->StopMoving();
+-
+-    if (sScriptMgr.OnGossipHello(_player, pCreature))
+-        return;
+-
+-    _player->PrepareGossipMenu(pCreature, pCreature->GetCreatureInfo()->GossipMenuId, true);
+-    _player->SendPreparedGossip(pCreature);
+-}
+-
+-void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket & recv_data)
+-{
+-    uint64 guid;
+-    uint32 quest;
+-    uint32 unk1;
+-    recv_data >> guid >> quest >> unk1;
+-
+-    if (!GetPlayer()->isAlive())
+-        return;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_ACCEPT_QUEST npc = %u, quest = %u, unk1 = %u", uint32(GUID_LOPART(guid)), quest, unk1);
+-
+-    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT|TYPEMASK_ITEM|TYPEMASK_PLAYER);
+-
+-    // no or incorrect quest giver
+-    if (!pObject
+-        || (pObject->GetTypeId() != TYPEID_PLAYER && !pObject->hasQuest(quest))
+-        || (pObject->GetTypeId() == TYPEID_PLAYER && !pObject->ToPlayer()->CanShareQuest(quest))
+-)
+-    {
+-        _player->PlayerTalkClass->CloseGossip();
+-        _player->SetDivider(0);
+-        return;
+-    }
+-
+-    Quest const* qInfo = sObjectMgr.GetQuestTemplate(quest);
+-    if (qInfo)
+-    {
+-        // prevent cheating
+-        if (!GetPlayer()->CanTakeQuest(qInfo,true))
+-        {
+-            _player->PlayerTalkClass->CloseGossip();
+-            _player->SetDivider(0);
+-            return;
+-        }
+-
+-        if (_player->GetDivider() != 0)
+-        {
+-            Player *pPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
+-            if (pPlayer)
+-            {
+-                pPlayer->SendPushToPartyResponse(_player, QUEST_PARTY_MSG_ACCEPT_QUEST);
+-                _player->SetDivider(0);
+-            }
+-        }
+-
+-        if (_player->CanAddQuest(qInfo, true))
+-        {
+-            _player->AddQuest(qInfo, pObject);
+-
+-            if (qInfo->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
+-            {
+-                if (Group* pGroup = _player->GetGroup())
+-                {
+-                    for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+-                    {
+-                        Player* pPlayer = itr->getSource();
+-
+-                        if (!pPlayer || pPlayer == _player)     // not self
+-                            continue;
+-
+-                        if (pPlayer->CanTakeQuest(qInfo, true))
+-                        {
+-                            pPlayer->SetDivider(_player->GetGUID());
+-
+-                            //need confirmation that any gossip window will close
+-                            pPlayer->PlayerTalkClass->CloseGossip();
+-
+-                            _player->SendQuestConfirmAccept(qInfo, pPlayer);
+-                        }
+-                    }
+-                }
+-            }
+-
+-            if (_player->CanCompleteQuest(quest))
+-                _player->CompleteQuest(quest);
+-
+-            switch(pObject->GetTypeId())
+-            {
+-                case TYPEID_UNIT:
+-                    sScriptMgr.OnQuestAccept(_player, (pObject->ToCreature()), qInfo);
+-                    break;
+-                case TYPEID_ITEM:
+-                case TYPEID_CONTAINER:
+-                {
+-                    sScriptMgr.OnQuestAccept(_player, ((Item*)pObject), qInfo);
+-
+-                    // destroy not required for quest finish quest starting item
+-                    bool destroyItem = true;
+-                    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+-                    {
+-                        if ((qInfo->ReqItemId[i] == ((Item*)pObject)->GetEntry()) && (((Item*)pObject)->GetProto()->MaxCount > 0))
+-                        {
+-                            destroyItem = false;
+-                            break;
+-                        }
+-                    }
+-
+-                    if (destroyItem)
+-                        _player->DestroyItem(((Item*)pObject)->GetBagSlot(), ((Item*)pObject)->GetSlot(),true);
+-
+-                    break;
+-                }
+-                case TYPEID_GAMEOBJECT:
+-                    sScriptMgr.OnQuestAccept(_player, ((GameObject*)pObject), qInfo);
+-					(pObject->ToGameObject())->AI()->QuestAccept(_player, qInfo);
+-                    break;
+-                default:
+-                    break;
+-            }
+-            _player->PlayerTalkClass->CloseGossip();
+-
+-            if (qInfo->GetSrcSpell() > 0)
+-                _player->CastSpell(_player, qInfo->GetSrcSpell(), true);
+-
+-            return;
+-        }
+-    }
+-
+-    _player->PlayerTalkClass->CloseGossip();
+-}
+-
+-void WorldSession::HandleQuestgiverQueryQuestOpcode(WorldPacket & recv_data)
+-{
+-    uint64 guid;
+-    uint32 quest;
+-    uint8 unk1;
+-    recv_data >> guid >> quest >> unk1;
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_QUERY_QUEST npc = %u, quest = %u, unk1 = %u", uint32(GUID_LOPART(guid)), quest, unk1);
+-
+-    // Verify that the guid is valid and is a questgiver or involved in the requested quest
+-    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT|TYPEMASK_ITEM);
+-    if (!pObject || (!pObject->hasQuest(quest) && !pObject->hasInvolvedQuest(quest)))
+-    {
+-        _player->PlayerTalkClass->CloseGossip();
+-        return;
+-    }
+-
+-    Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest);
+-    if (pQuest)
+-    {
+-        if (pQuest->IsAutoAccept() && _player->CanAddQuest(pQuest, true))
+-        {
+-            _player->AddQuest(pQuest, pObject);
+-            if (_player->CanCompleteQuest(quest))
+-                _player->CompleteQuest(quest);
+-        }
+-
+-        if (pQuest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
+-            _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, pObject->GetGUID(), _player->CanCompleteQuest(pQuest->GetQuestId()), true);
+-        else
+-            _player->PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, pObject->GetGUID(), true);
+-    }
+-}
+-
+-void WorldSession::HandleQuestQueryOpcode(WorldPacket & recv_data)
+-{
+-    if (!_player)
+-        return;
+-
+-    uint32 quest;
+-    recv_data >> quest;
+-    sLog.outDebug("WORLD: Received CMSG_QUEST_QUERY quest = %u",quest);
+-
+-    Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest);
+-    if (pQuest)
+-    {
+-        _player->PlayerTalkClass->SendQuestQueryResponse(pQuest);
+-    }
+-}
+-
+-void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket & recv_data)
+-{
+-    uint32 quest, reward;
+-    uint64 guid;
+-    recv_data >> guid >> quest >> reward;
+-
+-    if (reward >= QUEST_REWARD_CHOICES_COUNT)
+-    {
+-        sLog.outError("Error in CMSG_QUESTGIVER_CHOOSE_REWARD: player %s (guid %d) tried to get invalid reward (%u) (probably packet hacking)", _player->GetName(), _player->GetGUIDLow(), reward);
+-        return;
+-    }
+-
+-    if (!GetPlayer()->isAlive())
+-        return;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_CHOOSE_REWARD npc = %u, quest = %u, reward = %u",uint32(GUID_LOPART(guid)),quest,reward);
+-
+-    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
+-    if (!pObject)
+-        return;
+-
+-    if (!pObject->hasInvolvedQuest(quest))
+-        return;
+-
+-    Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest);
+-    if (pQuest)
+-    {
+-        if (_player->CanRewardQuest(pQuest, reward, true))
+-        {
+-            _player->RewardQuest(pQuest, reward, pObject);
+-
+-            switch(pObject->GetTypeId())
+-            {
+-                case TYPEID_UNIT:
+-                    if (!(sScriptMgr.OnQuestReward(_player, (pObject->ToCreature()), pQuest, reward)))
+-                    {
+-                        // Send next quest
+-                        if (Quest const* nextquest = _player->GetNextQuest(guid ,pQuest))
+-                            _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest,guid,true);
+-						 pObject->ToGameObject()->AI()->QuestReward(_player, pQuest, reward);
+-                    }
+-                    break;
+-                case TYPEID_GAMEOBJECT:
+-                    if (!sScriptMgr.OnQuestReward(_player, ((GameObject*)pObject), pQuest, reward))
+-                    {
+-                        // Send next quest
+-                        if (Quest const* nextquest = _player->GetNextQuest(guid ,pQuest))
+-                            _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest,guid,true);
+-                    }
+-                    break;
+-                default:
+-                    break;
+-            }
+-        }
+-        else
+-            _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
+-    }
+-}
+-
+-void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket & recv_data)
+-{
+-    uint32 quest;
+-    uint64 guid;
+-    recv_data >> guid >> quest;
+-
+-    if (!GetPlayer()->isAlive())
+-        return;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_REQUEST_REWARD npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
+-
+-    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
+-    if (!pObject||!pObject->hasInvolvedQuest(quest))
+-        return;
+-
+-    if (_player->CanCompleteQuest(quest))
+-        _player->CompleteQuest(quest);
+-
+-    if (_player->GetQuestStatus(quest) != QUEST_STATUS_COMPLETE)
+-        return;
+-
+-    if (Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest))
+-        _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
+-}
+-
+-void WorldSession::HandleQuestgiverCancel(WorldPacket& /*recv_data*/)
+-{
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_CANCEL");
+-
+-    _player->PlayerTalkClass->CloseGossip();
+-}
+-
+-void WorldSession::HandleQuestLogSwapQuest(WorldPacket& recv_data)
+-{
+-    uint8 slot1, slot2;
+-    recv_data >> slot1 >> slot2;
+-
+-    if (slot1 == slot2 || slot1 >= MAX_QUEST_LOG_SIZE || slot2 >= MAX_QUEST_LOG_SIZE)
+-        return;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUESTLOG_SWAP_QUEST slot 1 = %u, slot 2 = %u", slot1, slot2);
+-
+-    GetPlayer()->SwapQuestSlot(slot1,slot2);
+-}
+-
+-void WorldSession::HandleQuestLogRemoveQuest(WorldPacket& recv_data)
+-{
+-    uint8 slot;
+-    recv_data >> slot;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUESTLOG_REMOVE_QUEST slot = %u",slot);
+-
+-    if (slot < MAX_QUEST_LOG_SIZE)
+-    {
+-        if (uint32 quest = _player->GetQuestSlotQuestId(slot))
+-        {
+-            if (!_player->TakeQuestSourceItem(quest, true))
+-                return;                                     // can't un-equip some items, reject quest cancel
+-
+-            if (const Quest *pQuest = sObjectMgr.GetQuestTemplate(quest))
+-            {
+-                if (pQuest->HasFlag(QUEST_TRINITY_FLAGS_TIMED))
+-                    _player->RemoveTimedQuest(quest);
+-            }
+-
+-            _player->TakeQuestSourceItem(quest, true); // remove quest src item from player
+-            _player->SetQuestStatus(quest, QUEST_STATUS_NONE);
+-            _player->GetAchievementMgr().RemoveTimedAchievement(ACHIEVEMENT_TIMED_TYPE_QUEST, quest);
+-        }
+-
+-        _player->SetQuestSlot(slot, 0);
+-
+-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_ABANDONED, 1);
+-    }
+-}
+-
+-void WorldSession::HandleQuestConfirmAccept(WorldPacket& recv_data)
+-{
+-    uint32 quest;
+-    recv_data >> quest;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUEST_CONFIRM_ACCEPT quest = %u", quest);
+-
+-    if (const Quest* pQuest = sObjectMgr.GetQuestTemplate(quest))
+-    {
+-        if (!pQuest->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
+-            return;
+-
+-        Player* pOriginalPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
+-
+-        if (!pOriginalPlayer)
+-            return;
+-
+-        if (pQuest->IsRaidQuest())
+-        {
+-            if (!_player->IsInSameRaidWith(pOriginalPlayer))
+-                return;
+-        }
+-        else
+-        {
+-            if (!_player->IsInSameGroupWith(pOriginalPlayer))
+-                return;
+-        }
+-
+-        if (_player->CanAddQuest(pQuest, true))
+-            _player->AddQuest(pQuest, NULL);                // NULL, this prevent DB script from duplicate running
+-
+-        _player->SetDivider(0);
+-    }
+-}
+-
+-void WorldSession::HandleQuestgiverCompleteQuest(WorldPacket& recv_data)
+-{
+-    uint32 quest;
+-    uint64 guid;
+-    recv_data >> guid >> quest;
+-
+-    if (!GetPlayer()->isAlive())
+-        return;
+-
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_COMPLETE_QUEST npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
+-
+-    Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest);
+-    if (pQuest)
+-    {
+-        // TODO: need a virtual function
+-        if (GetPlayer()->InBattleground())
+-            if (Battleground* bg = GetPlayer()->GetBattleground())
+-                if (bg->GetTypeID() == BATTLEGROUND_AV)
+-                    ((BattlegroundAV*)bg)->HandleQuestComplete(quest, GetPlayer());
+-
+-        if (_player->GetQuestStatus(quest) != QUEST_STATUS_COMPLETE)
+-        {
+-            if (pQuest->IsRepeatable())
+-                _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanCompleteRepeatableQuest(pQuest), false);
+-            else
+-                _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanRewardQuest(pQuest,false), false);
+-        }
+-        else
+-        {
+-            if (pQuest->GetReqItemsCount())                  // some items required
+-                _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanRewardQuest(pQuest,false), false);
+-            else                                            // no items required
+-                _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
+-        }
+-    }
+-}
+-
+-void WorldSession::HandleQuestgiverQuestAutoLaunch(WorldPacket& /*recvPacket*/)
+-{
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_QUEST_AUTOLAUNCH");
+-}
+-
+-void WorldSession::HandlePushQuestToParty(WorldPacket& recvPacket)
+-{
+-    uint32 questId;
+-    recvPacket >> questId;
+-
+-    sLog.outDebug("WORLD: Received CMSG_PUSHQUESTTOPARTY quest = %u", questId);
+-
+-    if (Quest const *pQuest = sObjectMgr.GetQuestTemplate(questId))
+-    {
+-        if (Group* pGroup = _player->GetGroup())
+-        {
+-            for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+-            {
+-                Player *pPlayer = itr->getSource();
+-
+-                if (!pPlayer || pPlayer == _player)         // skip self
+-                    continue;
+-
+-                _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_SHARING_QUEST);
+-
+-                if (!pPlayer->SatisfyQuestStatus(pQuest, false))
+-                {
+-                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_HAVE_QUEST);
+-                    continue;
+-                }
+-
+-                if (pPlayer->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
+-                {
+-                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_FINISH_QUEST);
+-                    continue;
+-                }
+-
+-                if (!pPlayer->CanTakeQuest(pQuest, false))
+-                {
+-                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_CANT_TAKE_QUEST);
+-                    continue;
+-                }
+-
+-                if (!pPlayer->SatisfyQuestLog(false))
+-                {
+-                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_LOG_FULL);
+-                    continue;
+-                }
+-
+-                if (pPlayer->GetDivider() != 0)
+-                {
+-                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_BUSY);
+-                    continue;
+-                }
+-
+-                pPlayer->PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, _player->GetGUID(), true);
+-                pPlayer->SetDivider(_player->GetGUID());
+-            }
+-        }
+-    }
+-}
+-
+-void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
+-{
+-    uint64 guid;
+-    uint8 msg;
+-    recvPacket >> guid >> msg;
+-
+-    sLog.outDebug("WORLD: Received MSG_QUEST_PUSH_RESULT");
+-
+-    if (_player->GetDivider() != 0)
+-    {
+-        Player *pPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
+-        if (pPlayer)
+-        {
+-            WorldPacket data(MSG_QUEST_PUSH_RESULT, (8+1));
+-            data << uint64(guid);
+-            data << uint8(msg);                             // valid values: 0-8
+-            pPlayer->GetSession()->SendPacket(&data);
+-            _player->SetDivider(0);
+-        }
+-    }
+-}
+-
+-uint32 WorldSession::getDialogStatus(Player *pPlayer, Object* questgiver, uint32 defstatus)
+-{
+-    uint32 result = defstatus;
+-
+-    QuestRelationBounds qr;
+-    QuestRelationBounds qir;
+-
+-    switch(questgiver->GetTypeId())
+-    {
+-        case TYPEID_GAMEOBJECT:
+-        {
+-            qr  = sObjectMgr.GetGOQuestRelationBounds(questgiver->GetEntry());
+-            qir = sObjectMgr.GetGOQuestInvolvedRelationBounds(questgiver->GetEntry());
+-            break;
+-        }
+-        case TYPEID_UNIT:
+-        {
+-            qr  = sObjectMgr.GetCreatureQuestRelationBounds(questgiver->GetEntry());
+-            qir = sObjectMgr.GetCreatureQuestInvolvedRelationBounds(questgiver->GetEntry());
+-            break;
+-        }
+-        default:
+-            //its imposible, but check ^)
+-            sLog.outError("Warning: GetDialogStatus called for unexpected type %u", questgiver->GetTypeId());
+-            return DIALOG_STATUS_NONE;
+-    }
+-
+-    for (QuestRelations::const_iterator i = qir.first; i != qir.second; ++i)
+-    {
+-        uint32 result2 = 0;
+-        uint32 quest_id = i->second;
+-        Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest_id);
+-        if (!pQuest) continue;
+-
+-        ConditionList conditions = sConditionMgr.GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, pQuest->GetQuestId());
+-        if (!sConditionMgr.IsPlayerMeetToConditions(pPlayer, conditions))
+-            continue;
+-
+-        QuestStatus status = pPlayer->GetQuestStatus(quest_id);
+-        if ((status == QUEST_STATUS_COMPLETE && !pPlayer->GetQuestRewardStatus(quest_id)) ||
+-            (pQuest->IsAutoComplete() && pPlayer->CanTakeQuest(pQuest, false)))
+-        {
+-            if (pQuest->IsAutoComplete() && pQuest->IsRepeatable())
+-                result2 = DIALOG_STATUS_REWARD_REP;
+-            else
+-                result2 = DIALOG_STATUS_REWARD;
+-        }
+-        else if (status == QUEST_STATUS_INCOMPLETE)
+-            result2 = DIALOG_STATUS_INCOMPLETE;
+-
+-        if (result2 > result)
+-            result = result2;
+-    }
+-
+-    for (QuestRelations::const_iterator i = qr.first; i != qr.second; ++i)
+-    {
+-        uint32 result2 = 0;
+-        uint32 quest_id = i->second;
+-        Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest_id);
+-        if (!pQuest)
+-            continue;
+-
+-        ConditionList conditions = sConditionMgr.GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, pQuest->GetQuestId());
+-        if (!sConditionMgr.IsPlayerMeetToConditions(pPlayer, conditions))
+-            continue;
+-
+-        QuestStatus status = pPlayer->GetQuestStatus(quest_id);
+-        if (status == QUEST_STATUS_NONE)
+-        {
+-            if (pPlayer->CanSeeStartQuest(pQuest))
+-            {
+-                if (pPlayer->SatisfyQuestLevel(pQuest, false))
+-                {
+-                    if (pQuest->IsAutoComplete() || (pQuest->IsRepeatable() && pPlayer->getQuestStatusMap()[quest_id].m_rewarded))
+-                        result2 = DIALOG_STATUS_REWARD_REP;
+-                    else if (pPlayer->getLevel() <= ((pPlayer->GetQuestLevel(pQuest) == -1) ? pPlayer->getLevel() : pPlayer->GetQuestLevel(pQuest) + sWorld.getIntConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF)))
+-                    {
+-                        if (pQuest->HasFlag(QUEST_FLAGS_DAILY) || pQuest->HasFlag(QUEST_FLAGS_WEEKLY))
+-                            result2 = DIALOG_STATUS_AVAILABLE_REP;
+-                        else
+-                            result2 = DIALOG_STATUS_AVAILABLE;
+-                    }
+-                    else
+-                        result2 = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
+-                }
+-                else
+-                    result2 = DIALOG_STATUS_UNAVAILABLE;
+-            }
+-        }
+-
+-        if (result2 > result)
+-            result = result2;
+-    }
+-
+-    return result;
+-}
+-
+-void WorldSession::HandleQuestgiverStatusMultipleQuery(WorldPacket& /*recvPacket*/)
+-{
+-    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY");
+-
+-    uint32 count = 0;
+-
+-    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 4);
+-    data << uint32(count);                                  // placeholder
+-
+-    for (Player::ClientGUIDs::const_iterator itr = _player->m_clientGUIDs.begin(); itr != _player->m_clientGUIDs.end(); ++itr)
+-    {
+-        uint8 questStatus = DIALOG_STATUS_NONE;
+-        uint8 defstatus = DIALOG_STATUS_NONE;
+-
+-        if (IS_CRE_OR_VEH_OR_PET_GUID(*itr))
+-        {
+-            // need also pet quests case support
+-            Creature *questgiver = ObjectAccessor::GetCreatureOrPetOrVehicle(*GetPlayer(),*itr);
+-            if (!questgiver || questgiver->IsHostileTo(_player))
+-                continue;
+-            if (!questgiver->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+-                continue;
+-            questStatus = sScriptMgr.GetDialogStatus(_player, questgiver);
+-            if (questStatus > 6)
+-                questStatus = getDialogStatus(_player, questgiver, defstatus);
+-
+-            data << uint64(questgiver->GetGUID());
+-            data << uint8(questStatus);
+-            ++count;
+-        }
+-        else if (IS_GAMEOBJECT_GUID(*itr))
+-        {
+-            GameObject *questgiver = GetPlayer()->GetMap()->GetGameObject(*itr);
+-            if (!questgiver)
+-                continue;
+-            if (questgiver->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
+-                continue;
+-            questStatus = sScriptMgr.GetDialogStatus(_player, questgiver);
+-            if (questStatus > 6)
+-                questStatus = getDialogStatus(_player, questgiver, defstatus);
+-
+-            data << uint64(questgiver->GetGUID());
+-            data << uint8(questStatus);
+-            ++count;
+-        }
+-    }
+-
+-    data.put<uint32>(0, count);                             // write real count
+-    SendPacket(&data);
+-}
+-
+-void WorldSession::HandleQueryQuestsCompleted(WorldPacket & /*recv_data*/)
+-{
+-    uint32 count = 0;
+-
+-    WorldPacket data(SMSG_QUERY_QUESTS_COMPLETED_RESPONSE, 4+4*count);
+-    data << uint32(count);
+-
+-    for (QuestStatusMap::const_iterator itr = _player->getQuestStatusMap().begin(); itr != _player->getQuestStatusMap().end(); ++itr)
+-    {
+-        if (itr->second.m_rewarded)
+-        {
+-            data << uint32(itr->first);
+-            count++;
+-        }
+-    }
+-    data.put<uint32>(0, count);
+-    SendPacket(&data);
+-}
++Ôªø/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "Common.h"
++#include "Log.h"
++#include "WorldPacket.h"
++#include "WorldSession.h"
++#include "Opcodes.h"
++#include "World.h"
++#include "ObjectMgr.h"
++#include "Player.h"
++#include "GossipDef.h"
++#include "QuestDef.h"
++#include "ObjectAccessor.h"
++#include "Group.h"
++#include "Battleground.h"
++#include "BattlegroundAV.h"
++#include "ScriptMgr.h"
++#include "ConditionMgr.h"
++#include "Creature.h"
++#include "CreatureAI.h"
++#include "GameObjectAI.h"
++
++void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket & recv_data)
++{
++    uint64 guid;
++    recv_data >> guid;
++    uint8 questStatus = DIALOG_STATUS_NONE;
++    uint8 defstatus = DIALOG_STATUS_NONE;
++
++    Object* questgiver = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
++    if (!questgiver)
++    {
++        sLog.outDetail("Error in CMSG_QUESTGIVER_STATUS_QUERY, called for not found questgiver (Typeid: %u GUID: %u)",GuidHigh2TypeId(GUID_HIPART(guid)),GUID_LOPART(guid));
++        return;
++    }
++
++    switch(questgiver->GetTypeId())
++    {
++        case TYPEID_UNIT:
++        {
++            sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for npc, guid = %u",uint32(GUID_LOPART(guid)));
++            Creature* cr_questgiver=questgiver->ToCreature();
++            if (!cr_questgiver->IsHostileTo(_player))       // not show quest status to enemies
++            {
++                questStatus = sScriptMgr.GetDialogStatus(_player, cr_questgiver);
++                if (questStatus > 6)
++                    questStatus = getDialogStatus(_player, cr_questgiver, defstatus);
++            }
++            break;
++        }
++        case TYPEID_GAMEOBJECT:
++        {
++            sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for GameObject guid = %u",uint32(GUID_LOPART(guid)));
++            GameObject* go_questgiver=(GameObject*)questgiver;
++            questStatus = sScriptMgr.GetDialogStatus(_player, go_questgiver);
++            if (questStatus > 6)
++                questStatus = getDialogStatus(_player, go_questgiver, defstatus);
++            break;
++        }
++        default:
++            sLog.outError("QuestGiver called for unexpected type %u", questgiver->GetTypeId());
++            break;
++    }
++
++    //inform client about status of quest
++    _player->PlayerTalkClass->SendQuestGiverStatus(questStatus, guid);
++}
++
++void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket & recv_data)
++{
++    uint64 guid;
++    recv_data >> guid;
++
++    sLog.outDebug ("WORLD: Received CMSG_QUESTGIVER_HELLO npc = %u", GUID_LOPART(guid));
++
++    Creature *pCreature = GetPlayer()->GetNPCIfCanInteractWith(guid,UNIT_NPC_FLAG_NONE);
++    if (!pCreature)
++    {
++        sLog.outDebug ("WORLD: HandleQuestgiverHelloOpcode - Unit (GUID: %u) not found or you can't interact with him.",
++            GUID_LOPART(guid));
++        return;
++    }
++
++    // remove fake death
++    if (GetPlayer()->hasUnitState(UNIT_STAT_DIED))
++        GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
++    // Stop the npc if moving
++    pCreature->StopMoving();
++
++    if (sScriptMgr.OnGossipHello(_player, pCreature))
++        return;
++
++    _player->PrepareGossipMenu(pCreature, pCreature->GetCreatureInfo()->GossipMenuId, true);
++    _player->SendPreparedGossip(pCreature);
++
++    pCreature->AI()->sGossipHello(_player);
++}
++
++void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket & recv_data)
++{
++    uint64 guid;
++    uint32 quest;
++    uint32 unk1;
++    recv_data >> guid >> quest >> unk1;
++
++    if (!GetPlayer()->isAlive())
++        return;
++
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_ACCEPT_QUEST npc = %u, quest = %u, unk1 = %u", uint32(GUID_LOPART(guid)), quest, unk1);
++
++    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT|TYPEMASK_ITEM|TYPEMASK_PLAYER);
++
++    // no or incorrect quest giver
++    if (!pObject
++        || (pObject->GetTypeId() != TYPEID_PLAYER && !pObject->hasQuest(quest))
++        || (pObject->GetTypeId() == TYPEID_PLAYER && !pObject->ToPlayer()->CanShareQuest(quest))
++)
++    {
++        _player->PlayerTalkClass->CloseGossip();
++        _player->SetDivider(0);
++        return;
++    }
++
++    Quest const* qInfo = sObjectMgr.GetQuestTemplate(quest);
++    if (qInfo)
++    {
++        // prevent cheating
++        if (!GetPlayer()->CanTakeQuest(qInfo,true))
++        {
++            _player->PlayerTalkClass->CloseGossip();
++            _player->SetDivider(0);
++            return;
++        }
++
++        if (_player->GetDivider() != 0)
++        {
++            Player *pPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
++            if (pPlayer)
++            {
++                pPlayer->SendPushToPartyResponse(_player, QUEST_PARTY_MSG_ACCEPT_QUEST);
++                _player->SetDivider(0);
++            }
++        }
++
++        if (_player->CanAddQuest(qInfo, true))
++        {
++            _player->AddQuest(qInfo, pObject);
++
++            if (qInfo->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
++            {
++                if (Group* pGroup = _player->GetGroup())
++                {
++                    for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
++                    {
++                        Player* pPlayer = itr->getSource();
++
++                        if (!pPlayer || pPlayer == _player)     // not self
++                            continue;
++
++                        if (pPlayer->CanTakeQuest(qInfo, true))
++                        {
++                            pPlayer->SetDivider(_player->GetGUID());
++
++                            //need confirmation that any gossip window will close
++                            pPlayer->PlayerTalkClass->CloseGossip();
++
++                            _player->SendQuestConfirmAccept(qInfo, pPlayer);
++                        }
++                    }
++                }
++            }
++
++            if (_player->CanCompleteQuest(quest))
++                _player->CompleteQuest(quest);
++
++            switch(pObject->GetTypeId())
++            {
++                case TYPEID_UNIT:
++                    sScriptMgr.OnQuestAccept(_player, (pObject->ToCreature()), qInfo);
++                    (pObject->ToCreature())->AI()->sQuestAccept(_player, qInfo);
++                    break;
++                case TYPEID_ITEM:
++                case TYPEID_CONTAINER:
++                {
++                    sScriptMgr.OnQuestAccept(_player, ((Item*)pObject), qInfo);
++
++                    // destroy not required for quest finish quest starting item
++                    bool destroyItem = true;
++                    for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
++                    {
++                        if ((qInfo->ReqItemId[i] == ((Item*)pObject)->GetEntry()) && (((Item*)pObject)->GetProto()->MaxCount > 0))
++                        {
++                            destroyItem = false;
++                            break;
++                        }
++                    }
++
++                    if (destroyItem)
++                        _player->DestroyItem(((Item*)pObject)->GetBagSlot(), ((Item*)pObject)->GetSlot(),true);
++
++                    break;
++                }
++                case TYPEID_GAMEOBJECT:
++                    sScriptMgr.OnQuestAccept(_player, ((GameObject*)pObject), qInfo);
++                    (pObject->ToGameObject())->AI()->QuestAccept(_player, qInfo);
++                    break;
++                default:
++                    break;
++            }
++            _player->PlayerTalkClass->CloseGossip();
++
++            if (qInfo->GetSrcSpell() > 0)
++                _player->CastSpell(_player, qInfo->GetSrcSpell(), true);
++
++            return;
++        }
++    }
++
++    _player->PlayerTalkClass->CloseGossip();
++}
++
++void WorldSession::HandleQuestgiverQueryQuestOpcode(WorldPacket & recv_data)
++{
++    uint64 guid;
++    uint32 quest;
++    uint8 unk1;
++    recv_data >> guid >> quest >> unk1;
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_QUERY_QUEST npc = %u, quest = %u, unk1 = %u", uint32(GUID_LOPART(guid)), quest, unk1);
++
++    // Verify that the guid is valid and is a questgiver or involved in the requested quest
++    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT|TYPEMASK_ITEM);
++    if (!pObject || (!pObject->hasQuest(quest) && !pObject->hasInvolvedQuest(quest)))
++    {
++        _player->PlayerTalkClass->CloseGossip();
++        return;
++    }
++
++    Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest);
++    if (pQuest)
++    {
++        if (pQuest->IsAutoAccept() && _player->CanAddQuest(pQuest, true))
++        {
++            _player->AddQuest(pQuest, pObject);
++            if (_player->CanCompleteQuest(quest))
++                _player->CompleteQuest(quest);
++        }
++
++        if (pQuest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
++            _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, pObject->GetGUID(), _player->CanCompleteQuest(pQuest->GetQuestId()), true);
++        else
++            _player->PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, pObject->GetGUID(), true);
++    }
++}
++
++void WorldSession::HandleQuestQueryOpcode(WorldPacket & recv_data)
++{
++    if (!_player)
++        return;
++
++    uint32 quest;
++    recv_data >> quest;
++    sLog.outDebug("WORLD: Received CMSG_QUEST_QUERY quest = %u",quest);
++
++    Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest);
++    if (pQuest)
++    {
++        _player->PlayerTalkClass->SendQuestQueryResponse(pQuest);
++    }
++}
++
++void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket & recv_data)
++{
++    uint32 quest, reward;
++    uint64 guid;
++    recv_data >> guid >> quest >> reward;
++
++    if (reward >= QUEST_REWARD_CHOICES_COUNT)
++    {
++        sLog.outError("Error in CMSG_QUESTGIVER_CHOOSE_REWARD: player %s (guid %d) tried to get invalid reward (%u) (probably packet hacking)", _player->GetName(), _player->GetGUIDLow(), reward);
++        return;
++    }
++
++    if (!GetPlayer()->isAlive())
++        return;
++
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_CHOOSE_REWARD npc = %u, quest = %u, reward = %u",uint32(GUID_LOPART(guid)),quest,reward);
++
++    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
++    if (!pObject)
++        return;
++
++    if (!pObject->hasInvolvedQuest(quest))
++        return;
++
++    Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest);
++    if (pQuest)
++    {
++        if (_player->CanRewardQuest(pQuest, reward, true))
++        {
++            _player->RewardQuest(pQuest, reward, pObject);
++
++            switch(pObject->GetTypeId())
++            {
++                case TYPEID_UNIT:
++                    if (!(sScriptMgr.OnQuestReward(_player, (pObject->ToCreature()), pQuest, reward)))
++                    {
++                        // Send next quest
++                        if (Quest const* nextquest = _player->GetNextQuest(guid ,pQuest))
++                            _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest,guid,true);
++
++                        (pObject->ToCreature())->AI()->sQuestReward(_player, pQuest, reward);
++                    }
++                    break;
++                case TYPEID_GAMEOBJECT:
++                    if (!sScriptMgr.OnQuestReward(_player, ((GameObject*)pObject), pQuest, reward))
++                    {
++                        // Send next quest
++                        if (Quest const* nextquest = _player->GetNextQuest(guid ,pQuest))
++                            _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextquest,guid,true);
++                        pObject->ToGameObject()->AI()->QuestReward(_player, pQuest, reward);
++                    }
++                    break;
++                default:
++                    break;
++            }
++        }
++        else
++            _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
++    }
++}
++
++void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket & recv_data)
++{
++    uint32 quest;
++    uint64 guid;
++    recv_data >> guid >> quest;
++
++    if (!GetPlayer()->isAlive())
++        return;
++
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_REQUEST_REWARD npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
++
++    Object* pObject = ObjectAccessor::GetObjectByTypeMask(*_player, guid,TYPEMASK_UNIT|TYPEMASK_GAMEOBJECT);
++    if (!pObject||!pObject->hasInvolvedQuest(quest))
++        return;
++
++    if (_player->CanCompleteQuest(quest))
++        _player->CompleteQuest(quest);
++
++    if (_player->GetQuestStatus(quest) != QUEST_STATUS_COMPLETE)
++        return;
++
++    if (Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest))
++        _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
++}
++
++void WorldSession::HandleQuestgiverCancel(WorldPacket& /*recv_data*/)
++{
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_CANCEL");
++
++    _player->PlayerTalkClass->CloseGossip();
++}
++
++void WorldSession::HandleQuestLogSwapQuest(WorldPacket& recv_data)
++{
++    uint8 slot1, slot2;
++    recv_data >> slot1 >> slot2;
++
++    if (slot1 == slot2 || slot1 >= MAX_QUEST_LOG_SIZE || slot2 >= MAX_QUEST_LOG_SIZE)
++        return;
++
++    sLog.outDebug("WORLD: Received CMSG_QUESTLOG_SWAP_QUEST slot 1 = %u, slot 2 = %u", slot1, slot2);
++
++    GetPlayer()->SwapQuestSlot(slot1,slot2);
++}
++
++void WorldSession::HandleQuestLogRemoveQuest(WorldPacket& recv_data)
++{
++    uint8 slot;
++    recv_data >> slot;
++
++    sLog.outDebug("WORLD: Received CMSG_QUESTLOG_REMOVE_QUEST slot = %u",slot);
++
++    if (slot < MAX_QUEST_LOG_SIZE)
++    {
++        if (uint32 quest = _player->GetQuestSlotQuestId(slot))
++        {
++            if (!_player->TakeQuestSourceItem(quest, true))
++                return;                                     // can't un-equip some items, reject quest cancel
++
++            if (const Quest *pQuest = sObjectMgr.GetQuestTemplate(quest))
++            {
++                if (pQuest->HasFlag(QUEST_TRINITY_FLAGS_TIMED))
++                    _player->RemoveTimedQuest(quest);
++            }
++
++            _player->TakeQuestSourceItem(quest, true); // remove quest src item from player
++            _player->SetQuestStatus(quest, QUEST_STATUS_NONE);
++            _player->GetAchievementMgr().RemoveTimedAchievement(ACHIEVEMENT_TIMED_TYPE_QUEST, quest);
++        }
++
++        _player->SetQuestSlot(slot, 0);
++
++        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_ABANDONED, 1);
++    }
++}
++
++void WorldSession::HandleQuestConfirmAccept(WorldPacket& recv_data)
++{
++    uint32 quest;
++    recv_data >> quest;
++
++    sLog.outDebug("WORLD: Received CMSG_QUEST_CONFIRM_ACCEPT quest = %u", quest);
++
++    if (const Quest* pQuest = sObjectMgr.GetQuestTemplate(quest))
++    {
++        if (!pQuest->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
++            return;
++
++        Player* pOriginalPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
++
++        if (!pOriginalPlayer)
++            return;
++
++        if (pQuest->IsRaidQuest())
++        {
++            if (!_player->IsInSameRaidWith(pOriginalPlayer))
++                return;
++        }
++        else
++        {
++            if (!_player->IsInSameGroupWith(pOriginalPlayer))
++                return;
++        }
++
++        if (_player->CanAddQuest(pQuest, true))
++            _player->AddQuest(pQuest, NULL);                // NULL, this prevent DB script from duplicate running
++
++        _player->SetDivider(0);
++    }
++}
++
++void WorldSession::HandleQuestgiverCompleteQuest(WorldPacket& recv_data)
++{
++    uint32 quest;
++    uint64 guid;
++    recv_data >> guid >> quest;
++
++    if (!GetPlayer()->isAlive())
++        return;
++
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_COMPLETE_QUEST npc = %u, quest = %u",uint32(GUID_LOPART(guid)),quest);
++
++    Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest);
++    if (pQuest)
++    {
++        // TODO: need a virtual function
++        if (GetPlayer()->InBattleground())
++            if (Battleground* bg = GetPlayer()->GetBattleground())
++                if (bg->GetTypeID() == BATTLEGROUND_AV)
++                    ((BattlegroundAV*)bg)->HandleQuestComplete(quest, GetPlayer());
++
++        if (_player->GetQuestStatus(quest) != QUEST_STATUS_COMPLETE)
++        {
++            if (pQuest->IsRepeatable())
++                _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanCompleteRepeatableQuest(pQuest), false);
++            else
++                _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanRewardQuest(pQuest,false), false);
++        }
++        else
++        {
++            if (pQuest->GetReqItemsCount())                  // some items required
++                _player->PlayerTalkClass->SendQuestGiverRequestItems(pQuest, guid, _player->CanRewardQuest(pQuest,false), false);
++            else                                            // no items required
++                _player->PlayerTalkClass->SendQuestGiverOfferReward(pQuest, guid, true);
++        }
++    }
++}
++
++void WorldSession::HandleQuestgiverQuestAutoLaunch(WorldPacket& /*recvPacket*/)
++{
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_QUEST_AUTOLAUNCH");
++}
++
++void WorldSession::HandlePushQuestToParty(WorldPacket& recvPacket)
++{
++    uint32 questId;
++    recvPacket >> questId;
++
++    sLog.outDebug("WORLD: Received CMSG_PUSHQUESTTOPARTY quest = %u", questId);
++
++    if (Quest const *pQuest = sObjectMgr.GetQuestTemplate(questId))
++    {
++        if (Group* pGroup = _player->GetGroup())
++        {
++            for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
++            {
++                Player *pPlayer = itr->getSource();
++
++                if (!pPlayer || pPlayer == _player)         // skip self
++                    continue;
++
++                _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_SHARING_QUEST);
++
++                if (!pPlayer->SatisfyQuestStatus(pQuest, false))
++                {
++                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_HAVE_QUEST);
++                    continue;
++                }
++
++                if (pPlayer->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
++                {
++                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_FINISH_QUEST);
++                    continue;
++                }
++
++                if (!pPlayer->CanTakeQuest(pQuest, false))
++                {
++                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_CANT_TAKE_QUEST);
++                    continue;
++                }
++
++                if (!pPlayer->SatisfyQuestLog(false))
++                {
++                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_LOG_FULL);
++                    continue;
++                }
++
++                if (pPlayer->GetDivider() != 0)
++                {
++                    _player->SendPushToPartyResponse(pPlayer, QUEST_PARTY_MSG_BUSY);
++                    continue;
++                }
++
++                pPlayer->PlayerTalkClass->SendQuestGiverQuestDetails(pQuest, _player->GetGUID(), true);
++                pPlayer->SetDivider(_player->GetGUID());
++            }
++        }
++    }
++}
++
++void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
++{
++    uint64 guid;
++    uint8 msg;
++    recvPacket >> guid >> msg;
++
++    sLog.outDebug("WORLD: Received MSG_QUEST_PUSH_RESULT");
++
++    if (_player->GetDivider() != 0)
++    {
++        Player *pPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
++        if (pPlayer)
++        {
++            WorldPacket data(MSG_QUEST_PUSH_RESULT, (8+1));
++            data << uint64(guid);
++            data << uint8(msg);                             // valid values: 0-8
++            pPlayer->GetSession()->SendPacket(&data);
++            _player->SetDivider(0);
++        }
++    }
++}
++
++uint32 WorldSession::getDialogStatus(Player *pPlayer, Object* questgiver, uint32 defstatus)
++{
++    uint32 result = defstatus;
++
++    QuestRelationBounds qr;
++    QuestRelationBounds qir;
++
++    switch(questgiver->GetTypeId())
++    {
++        case TYPEID_GAMEOBJECT:
++        {
++            qr  = sObjectMgr.GetGOQuestRelationBounds(questgiver->GetEntry());
++            qir = sObjectMgr.GetGOQuestInvolvedRelationBounds(questgiver->GetEntry());
++            break;
++        }
++        case TYPEID_UNIT:
++        {
++            qr  = sObjectMgr.GetCreatureQuestRelationBounds(questgiver->GetEntry());
++            qir = sObjectMgr.GetCreatureQuestInvolvedRelationBounds(questgiver->GetEntry());
++            break;
++        }
++        default:
++            //its imposible, but check ^)
++            sLog.outError("Warning: GetDialogStatus called for unexpected type %u", questgiver->GetTypeId());
++            return DIALOG_STATUS_NONE;
++    }
++
++    for (QuestRelations::const_iterator i = qir.first; i != qir.second; ++i)
++    {
++        uint32 result2 = 0;
++        uint32 quest_id = i->second;
++        Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest_id);
++        if (!pQuest) continue;
++
++        ConditionList conditions = sConditionMgr.GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, pQuest->GetQuestId());
++        if (!sConditionMgr.IsPlayerMeetToConditions(pPlayer, conditions))
++            continue;
++
++        QuestStatus status = pPlayer->GetQuestStatus(quest_id);
++        if ((status == QUEST_STATUS_COMPLETE && !pPlayer->GetQuestRewardStatus(quest_id)) ||
++            (pQuest->IsAutoComplete() && pPlayer->CanTakeQuest(pQuest, false)))
++        {
++            if (pQuest->IsAutoComplete() && pQuest->IsRepeatable())
++                result2 = DIALOG_STATUS_REWARD_REP;
++            else
++                result2 = DIALOG_STATUS_REWARD;
++        }
++        else if (status == QUEST_STATUS_INCOMPLETE)
++            result2 = DIALOG_STATUS_INCOMPLETE;
++
++        if (result2 > result)
++            result = result2;
++    }
++
++    for (QuestRelations::const_iterator i = qr.first; i != qr.second; ++i)
++    {
++        uint32 result2 = 0;
++        uint32 quest_id = i->second;
++        Quest const *pQuest = sObjectMgr.GetQuestTemplate(quest_id);
++        if (!pQuest)
++            continue;
++
++        ConditionList conditions = sConditionMgr.GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, pQuest->GetQuestId());
++        if (!sConditionMgr.IsPlayerMeetToConditions(pPlayer, conditions))
++            continue;
++
++        QuestStatus status = pPlayer->GetQuestStatus(quest_id);
++        if (status == QUEST_STATUS_NONE)
++        {
++            if (pPlayer->CanSeeStartQuest(pQuest))
++            {
++                if (pPlayer->SatisfyQuestLevel(pQuest, false))
++                {
++                    if (pQuest->IsAutoComplete() || (pQuest->IsRepeatable() && pPlayer->getQuestStatusMap()[quest_id].m_rewarded))
++                        result2 = DIALOG_STATUS_REWARD_REP;
++                    else if (pPlayer->getLevel() <= ((pPlayer->GetQuestLevel(pQuest) == -1) ? pPlayer->getLevel() : pPlayer->GetQuestLevel(pQuest) + sWorld.getIntConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF)))
++                    {
++                        if (pQuest->HasFlag(QUEST_FLAGS_DAILY) || pQuest->HasFlag(QUEST_FLAGS_WEEKLY))
++                            result2 = DIALOG_STATUS_AVAILABLE_REP;
++                        else
++                            result2 = DIALOG_STATUS_AVAILABLE;
++                    }
++                    else
++                        result2 = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
++                }
++                else
++                    result2 = DIALOG_STATUS_UNAVAILABLE;
++            }
++        }
++
++        if (result2 > result)
++            result = result2;
++    }
++
++    return result;
++}
++
++void WorldSession::HandleQuestgiverStatusMultipleQuery(WorldPacket& /*recvPacket*/)
++{
++    sLog.outDebug("WORLD: Received CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY");
++
++    uint32 count = 0;
++
++    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 4);
++    data << uint32(count);                                  // placeholder
++
++    for (Player::ClientGUIDs::const_iterator itr = _player->m_clientGUIDs.begin(); itr != _player->m_clientGUIDs.end(); ++itr)
++    {
++        uint8 questStatus = DIALOG_STATUS_NONE;
++        uint8 defstatus = DIALOG_STATUS_NONE;
++
++        if (IS_CRE_OR_VEH_OR_PET_GUID(*itr))
++        {
++            // need also pet quests case support
++            Creature *questgiver = ObjectAccessor::GetCreatureOrPetOrVehicle(*GetPlayer(),*itr);
++            if (!questgiver || questgiver->IsHostileTo(_player))
++                continue;
++            if (!questgiver->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
++                continue;
++            questStatus = sScriptMgr.GetDialogStatus(_player, questgiver);
++            if (questStatus > 6)
++                questStatus = getDialogStatus(_player, questgiver, defstatus);
++
++            data << uint64(questgiver->GetGUID());
++            data << uint8(questStatus);
++            ++count;
++        }
++        else if (IS_GAMEOBJECT_GUID(*itr))
++        {
++            GameObject *questgiver = GetPlayer()->GetMap()->GetGameObject(*itr);
++            if (!questgiver)
++                continue;
++            if (questgiver->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
++                continue;
++            questStatus = sScriptMgr.GetDialogStatus(_player, questgiver);
++            if (questStatus > 6)
++                questStatus = getDialogStatus(_player, questgiver, defstatus);
++
++            data << uint64(questgiver->GetGUID());
++            data << uint8(questStatus);
++            ++count;
++        }
++    }
++
++    data.put<uint32>(0, count);                             // write real count
++    SendPacket(&data);
++}
++
++void WorldSession::HandleQueryQuestsCompleted(WorldPacket & /*recv_data*/)
++{
++    uint32 count = 0;
++
++    WorldPacket data(SMSG_QUERY_QUESTS_COMPLETED_RESPONSE, 4+4*count);
++    data << uint32(count);
++
++    for (QuestStatusMap::const_iterator itr = _player->getQuestStatusMap().begin(); itr != _player->getQuestStatusMap().end(); ++itr)
++    {
++        if (itr->second.m_rewarded)
++        {
++            data << uint32(itr->first);
++            count++;
++        }
++    }
++    data.put<uint32>(0, count);
++    SendPacket(&data);
++}
+diff --git a/src/server/game/Server/WorldSession.cpp b/src/server/game/Server/WorldSession.cpp
+--- a/src/server/game/Server/WorldSession.cpp
++++ b/src/server/game/Server/WorldSession.cpp
+@@ -455,6 +455,9 @@
+         sSocialMgr.SendFriendStatus(_player, FRIEND_OFFLINE, _player->GetGUIDLow(), true);
+         sSocialMgr.RemovePlayerSocial (_player->GetGUIDLow ());
+ 
++        // Call script hook before deletion
++		sScriptMgr.OnPlayerLogout(GetPlayer());
++
+         ///- Remove the player from the world
+         // the player may not be in the world when logging out
+         // e.g if he got disconnected during a transfer to another map
+@@ -474,7 +477,6 @@
+         CharacterDatabase.PExecute("UPDATE characters SET online = 0 WHERE account = '%u'",
+             GetAccountId());
+         sLog.outDebug("SESSION: Sent SMSG_LOGOUT_COMPLETE Message");
+-        sScriptMgr.OnPlayerLogout(GetPlayer());
+     }
+ 
+     m_playerLogout = false;
+diff --git a/src/server/game/Texts/CreatureTextMgr.cpp b/src/server/game/Texts/CreatureTextMgr.cpp
+--- a/src/server/game/Texts/CreatureTextMgr.cpp
++++ b/src/server/game/Texts/CreatureTextMgr.cpp
+@@ -419,15 +419,16 @@
+     CreatureTextMap::const_iterator sList = mTextMap.find(sourceEntry);
+     if (sList == mTextMap.end())
+     {
+-        sLog.outDebug("CreatureTextMgr::TextExist: Could not find Text for Creature (entry %u) in 'creature_text' table.", sourceEntry);
++        sLog.outErrorDb("CreatureTextMgr::TextExist: Could not find Text for Creature (entry %u) in 'creature_text' table.", sourceEntry);
+         return false;
+     }
+     CreatureTextHolder TextHolder = (*sList).second;
+     CreatureTextHolder::const_iterator itr = TextHolder.find(textGroup);
+     if (itr == TextHolder.end())
+     {
+-        sLog.outDebug("CreatureTextMgr::TextExist: Could not find TextGroup %u for Creature (entry %u).",uint32(textGroup), sourceEntry);
++        sLog.outErrorDb("CreatureTextMgr::TextExist: Could not find TextGroup %u for Creature (entry %u).",uint32(textGroup), sourceEntry);
+         return false;
+     }
+     return true;
+ }
++

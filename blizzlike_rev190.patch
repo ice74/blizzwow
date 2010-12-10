@@ -1,0 +1,74 @@
+# HG changeset patch
+# User asniker
+# Date 1289738750 -18000
+# Node ID 40f50338de6b42ea69a8f9afe505af0934f0acec
+# Parent  d4453d9e3e9a618b581805dd1eaea4abf293eac0
+fix sql errors
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5822,8 +5822,9 @@
+ INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`, `ap_dot_bonus`, `comments`) VALUES
+ (53600, 0, 0, 0, 0 ,'Paladin - Shield of Righteousness');
+ 
++DELETE FROM `spell_proc_event` WHERE entry IN (75481,75475);
+ INSERT INTO `spell_proc_event` VALUES
+-(75481, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
++(75481, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0), 
+ (75475, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
+ 
+ 
+diff --git a/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql b/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/Chamber of Aspects.sql	
+@@ -1,4 +1,5 @@
+-﻿INSERT INTO `spell_proc_event` VALUES
+-(75481, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
++﻿DELETE FROM `spell_proc_event` WHERE entry IN (75481,75475);
++INSERT INTO `spell_proc_event` VALUES
++(75481, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0), 
+ (75475, 0x00, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 45, 0); 
+ 
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown citadel.sql	
+@@ -16,6 +16,7 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72999 AND `ScriptName`='spell_blood_council_shadow_prison_damage';
++DELETE FROM `spell_script_names` WHERE `spell_id`=72784 AND `ScriptName`='spell_taldaram_ball_of_inferno_flame';
+ 
+ 
+ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+@@ -64,6 +65,7 @@
+ (37970,-1631139,'...why...?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16683,1,0,0,'SAY_VALANAR_DEATH');
+ 
+ 
++DELETE FROM `spell_linked_spell` WHERE spell_trigger IN (-70337,-70338);
+ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
+ (-70337,70338,0, 'The Lich King: Necrotic plague initial cast'),
+ (-70337,72846,0, 'The Lich King: Necrotic plague immun'),
+@@ -71,6 +73,7 @@
+ 
+ 
+ DELETE FROM `spell_script_names` WHERE `spell_id` IN (73781) AND `ScriptName`='spell_lich_king_necrotic_plague';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70338);
+ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+ (70338,'spell_lich_king_necrotic_plague');
+ 
+@@ -86,12 +89,14 @@
+ UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
+ UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
+ 
++DELETE FROM `creature_addon` WHERE `guid` IN (201252);
+ INSERT INTO `creature_addon` (`guid`, `bytes1`) VALUES
+ (201252,0x03000000); -- Blood Queen Lana'Thel
+ 
+ DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=13 AND `SourceEntry` IN (70952,70982,70981,70983,71070,71081,71080);
+ DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=21 AND `SourceGroup` IN (37672,38285);
+ 
++INSERT INTO `conditions` VALUES
+ (21,37672,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
+ (21,38285,71516,0,3,49888,0,0,0, '', 'Mutated Abomination - Unholy Infusion'),
+ (13,0,70952,0,18,1,37970,0,0, '', 'Valanar - Invocation of Blood'),

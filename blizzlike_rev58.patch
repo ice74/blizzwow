@@ -1,0 +1,40 @@
+# HG changeset patch
+# User asniker
+# Date 1286806262 -21600
+# Node ID e355cfd097b6e1060f174a34078482ed1a208381
+# Parent  e0e92da83160a1122e3f9a7f6d0276ccfaad8406
+перевод телепортеров в ульдуаре
+
+diff --git a/src/server/scripts/Northrend/Ulduar/ulduar/ulduar_teleporter.cpp b/src/server/scripts/Northrend/Ulduar/ulduar/ulduar_teleporter.cpp
+--- a/src/server/scripts/Northrend/Ulduar/ulduar/ulduar_teleporter.cpp
++++ b/src/server/scripts/Northrend/Ulduar/ulduar/ulduar_teleporter.cpp
+@@ -93,22 +93,22 @@
+         if (!pInstance)
+             return false;
+ 
+-        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
++        pPlayer->ADD_GOSSIP_ITEM(0, "Главный лагерь экспедиции.", GOSSIP_SENDER_MAIN, BASE_CAMP);
+         if (pInstance->GetBossState(DATA_PRELEVIATHAN) == DONE || pPlayer->isGameMaster())
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
++            pPlayer->ADD_GOSSIP_ITEM(0, "Плац.", GOSSIP_SENDER_MAIN, GROUNDS);
+             if (pInstance->GetBossState(TYPE_LEVIATHAN) == DONE || pPlayer->isGameMaster())
+             {
+-                pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
++                pPlayer->ADD_GOSSIP_ITEM(0, "Гигантская кузня.", GOSSIP_SENDER_MAIN, FORGE);
+                 if (pInstance->GetBossState(TYPE_XT002) == DONE || pPlayer->isGameMaster())
+                 {
+-                    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
+-                    pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
++                    pPlayer->ADD_GOSSIP_ITEM(0, "Мусорная свалка.", GOSSIP_SENDER_MAIN, SCRAPYARD);
++                    pPlayer->ADD_GOSSIP_ITEM(0, "Вестибюль.", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+                     if (pInstance->GetBossState(TYPE_KOLOGARN) == DONE || pPlayer->isGameMaster())
+                     {
+-                        pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
++                        pPlayer->ADD_GOSSIP_ITEM(0, "Обвалившаяся галерея.", GOSSIP_SENDER_MAIN, WALKWAY);
+                         if (pInstance->GetBossState(TYPE_AURIAYA) == DONE || pPlayer->isGameMaster())
+-                            pPlayer->ADD_GOSSIP_ITEM(0, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
++                            pPlayer->ADD_GOSSIP_ITEM(0, "Оранжерея жизни.", GOSSIP_SENDER_MAIN, CONSERVATORY);
+                     }
+                 }
+             }

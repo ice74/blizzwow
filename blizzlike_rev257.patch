@@ -1,0 +1,112 @@
+# HG changeset patch
+# User asniker
+# Date 1291350492 -18000
+# Node ID 3f37830c20ce6d7126e6f5d4ba22fbdf969fda9e
+# Parent  cee3e757b62776ad8da255bf2fef25e245409940
+Ядро/Заклинания/Веши: Фиксы  "Травма", "Травма Героик", "Последнее желание", "Последнее Желание Героик", "Нибелунг", "Нибелунг героик".
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -6058,6 +6058,30 @@
+ INSERT INTO `spell_bonus_data` (entry, direct_bonus, ap_bonus, comments) VALUES
+ (25742,0,0,'Paladin - Seal of Righteousness Dummy Proc');
+ 
++-- (31664) Zuluheds key
+ UPDATE item_template SET ScriptName = 'item_zuluheds_key' WHERE entry = 31664;
+ 
+-
++-- (71865) Item - Icecrown 25 Normal Healer Weapon Proc 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (71865); 
++INSERT INTO `spell_proc_event` VALUES (71865, 0x01, 0x0A, 0x00000000, 0x00000000, 0x00000000, 0x00044000, 0x00000018, 0, 1, 0); 
++
++-- (71868) Item - Icecrown 25 Heroic Healer Weapon Proc 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (71868); 
++INSERT INTO `spell_proc_event` VALUES (71868, 0x01, 0x0A, 0x00000000, 0x00000000, 0x00000000, 0x00044000, 0x00000018, 0, 1, 0); 
++
++-- (71871) Item - Icecrown 25 Normal Tank Weapon Proc 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (71871); 
++INSERT INTO `spell_proc_event` VALUES (71871, 0x01, 0x0A, 0x00000000, 0x00000000, 0x00000000, 0x00000014, 0x00000018, 0, 37, 30); 
++
++-- (71873) Item - Icecrown 25 Heroic Tank Weapon Proc 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (71873); 
++INSERT INTO `spell_proc_event` VALUES (71873, 0x01, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000014, 0x00000018, 0, 37, 35);
++
++-- (71845) Item - Icecrown 25 Normal Caster Weapon Proc 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (71845); 
++INSERT INTO `spell_proc_event` VALUES (71845, 0x01, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00000000, 0, 2, 40); 
++
++-- (71845) Item - Icecrown 25 Normal Caster Weapon Proc 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (71845); 
++INSERT INTO `spell_proc_event` VALUES (71845, 0x01, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00000000, 0, 2, 45);
++
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -5476,6 +5476,24 @@
+                     triggered_spell_id = 33494;
+                     break;
+                 }
++				//Item - Icecrown 25 Normal Tank Weapon Proc 
++				case 71871: 
++                { 
++                    triggered_spell_id = 71870; 
++					target = this; 
++					break; 
++				} 
++				//Item - Icecrown 25 Heroic Tank Weapon Proc 
++				case 71873: 
++                { 
++                    triggered_spell_id = 71872; 
++					target = this; 
++					break; 
++                } 
++				// Twisted Reflection (boss spell) 
++				case 21063: 
++                    triggered_spell_id = 21064; 
++                    break;          
+                 // Twisted Reflection (boss spell)
+                 case 21063:
+                     triggered_spell_id = 21064;
+@@ -5544,6 +5562,20 @@
+                 // Sunwell Exalted Caster Neck (??? neck)
+                 // cast ??? Light's Wrath if Exalted by Aldor
+                 // cast ??? Arcane Bolt if Exalted by Scryers
++				//Item - Icecrown 25 Normal Caster Weapon Proc 
++					case 71845: 
++                    { 
++                        triggered_spell_id = 71843; 
++                        target = this; 
++                        break; 
++                    } 
++					//Item - Icecrown 25 Heroic Caster Weapon Proc 
++					case 71846: 
++					{ 
++						triggered_spell_id = 71844; 
++						target = this; 
++						break; 
++					}
+                 case 46569:
+                     return false;                           // old unused version
+                 // Sunwell Exalted Caster Neck (Shattered Sun Pendant of Acumen neck)
+@@ -8606,6 +8638,20 @@
+                         target = pVictim;
+                         break;
+                     }
++					//Item - Icecrown 25 Normal Healer Weapon Proc 
++					case 71865: 
++                    { 
++                        trigger_spell_id = 71864; 
++                        target = this; 
++                        break; 
++                    } 
++					//Item - Icecrown 25 Heroic Healer Weapon Proc 
++					case 71868: 
++                    { 
++                        trigger_spell_id = 71866; 
++                        target = this; 
++                        break; 
++                   }
+                     //Item - Coliseum 25 Heroic Caster Trinket
+                     case 67758:
+                     {

@@ -1,0 +1,1307 @@
+# HG changeset patch
+# User asniker
+# Date 1289026967 -18000
+# Node ID 5e67414699d9fe3a10e60f1afabf89fac4db72df
+# Parent  1f324ee3bbb083eb6bd84d9ba29026c0ffab6c2c
+finish oculus 100%
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -3057,14 +3057,12 @@
+ DELETE FROM creature_onkill_reputation WHERE creature_id IN (27947,27949);
+ 
+ 
+-
+-SET NAMES 'UTF8';
+--- Ruby drake
+-UPDATE creature_template SET mindmg = 422, maxdmg = 586, attackpower = 642, dynamicflags = 8, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103, spell1 = 50232, spell2 = 50248, spell3 = 50240, spell4 =  50253, spell5 = 53112, VehicleId = 70 WHERE entry = 27756;
++--Ruby drake
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 50232, `spell2` = 50248, `spell3` = 50240, `spell4` =  50253, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27756;
+ -- Amber Drake
+-UPDATE creature_template SET mindmg = 422, maxdmg = 586, attackpower = 642, dynamicflags = 8, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103, spell1 = 49840, spell2 = 49838, spell3 = 49592, spell4 =  0, spell5 = 53112, VehicleId = 70 WHERE entry = 27755;
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 49840, `spell2` = 49838, `spell3` = 49592, `spell4` =  0, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27755;
+ -- Emerald Drake
+-UPDATE creature_template SET mindmg = 422, maxdmg = 586, attackpower = 642, dynamicflags = 8, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103, spell1 = 50328, spell2 = 50341, spell3 = 50344, spell4 =  0, spell5 = 53112, VehicleId = 70 WHERE entry = 27692;
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 50328, `spell2` = 50341, `spell3` = 50344, `spell4` =  0, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27692;
+ 
+ UPDATE creature_template SET npcflag=1 WHERE entry IN (27657,27658,27659);
+ 
+@@ -3073,6 +3071,9 @@
+ UPDATE creature_template SET ScriptName='mob_centrifige_construct' WHERE entry = 27641;
+ UPDATE creature_template SET ScriptName='boss_varos' WHERE entry = 27447;
+ UPDATE creature_template SET ScriptName='boss_eregos' WHERE entry = 27656;
++UPDATE creature_template SET ScriptName='npc_planar_anomaly' WHERE entry = 30879;
++UPDATE `creature_template` SET `npcflag`=3 WHERE `entry` = 27658;
++
+ -- Planar anomaly
+ UPDATE creature_template SET InhabitType = 5, modelid1 =  28107, modelid3 = 28107 WHERE entry=30879;
+ -- Unstable Sphere
+@@ -3117,87 +3118,30 @@
+ 
+ UPDATE gameobject_template SET flags=4 where entry IN (189986,193995);
+ 
+-
+--- Fix ad oculus
+-UPDATE creature_template SET mindmg = 1000, maxdmg = 1200, spell1 = 39824 WHERE entry = 27653; -- Phantasmal Water
+-UPDATE creature_template SET mindmg = 1100, maxdmg = 1300, spell1 = 20545 WHERE entry = 27650; -- Phantasmal Air
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 1500, spell1 = 50744 WHERE entry = 27651; -- Phantasmal Fire
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 1500, spell1 = 50730, spell2 = 50731 WHERE entry = 27647; -- Phantasmal -- Ogre
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 2000, spell1 = 49711, spell2 = 50732 WHERE entry = 27648; -- Phantasmal -- Naga
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 2000, dmg_multiplier = 1 WHERE entry = 27649; -- Phantasmal Murloc
+-UPDATE creature_template SET mindmg = 2000, maxdmg = 2500, spell1 = 32323, spell2 = 51253 WHERE entry = 27642; -- Phantasmal -- Mammouth
+-UPDATE creature_template SET mindmg = 2000, maxdmg = 2500, spell1 = 50729, spell2 = 50728 WHERE entry = 27644; -- Phantasmal -- Worg
+-UPDATE creature_template SET mindmg = 2000, maxdmg = 2500, spell1 = 59223, spell2 = 59217 WHERE entry = 27645; -- Phantasmal -- Cloudscraper
+-UPDATE creature_template SET npcflag = 1 WHERE entry IN (27657, 27658, 27659);
+-
+--- Reputazione a Oculus
+-DELETE FROM `creature_onkill_reputation` WHERE creature_id IN (27654, 27656, 27655, 27447, 27633, 27636, 28236, 27638, 27635, 27641, 28276, 27650, 27645, 27651, 27642, 27649, 27648, 27647, 27653, 27644, 30879, 27640, 27639, 28153);
+-INSERT INTO `creature_onkill_reputation` (`creature_id`, `RewOnKillRepFaction1`, `RewOnKillRepFaction2`, `MaxStanding1`, `IsTeamAward1`, `RewOnKillRepValue1`, `MaxStanding2`, `IsTeamAward2`, `RewOnKillRepValue2`, `TeamDependent`) VALUES 
+-(27654, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Drakos the interrogator
+-(27656, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Ley Guardian Eregos
+-(27655, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Mage lord urom
+-(27447, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Varos cloudstrider
+--- Trash
+-(27633, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27636, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(28236, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27638, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27635, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27641, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(28276, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27650, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27645, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27651, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27642, 1037, 1052, 7, 0, 5, 7, 0, 5, 1), 
+-(27649, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27648, 1037, 1052, 7, 0, 5, 7, 0, 5, 1), 
+-(27647, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27653, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27644, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(30879, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27640, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27639, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(28153, 1037, 1052, 7, 0, 5, 7, 0, 5, 1);
+--- Planar Anomlay di Eregos
+-UPDATE creature_template SET ScriptName = 'npc_planar_anomaly' WHERE entry = 30879;
+--- Arcane beam
+-DELETE FROM creature WHERE id = 28239;
+-UPDATE creature_template SET modelid3 = 0 WHERE entry = 30879;
+-
+--- Reputazione a Oculus
+-DELETE FROM `creature_onkill_reputation` WHERE creature_id IN (27642, 27649, 27648, 27647, 27653, 27644, 30879, 27640, 27639, 28153);
+-INSERT INTO `creature_onkill_reputation` (`creature_id`, `RewOnKillRepFaction1`, `RewOnKillRepFaction2`, `MaxStanding1`, `IsTeamAward1`, `RewOnKillRepValue1`, `MaxStanding2`, `IsTeamAward2`, `RewOnKillRepValue2`, `TeamDependent`) VALUES 
+-(27642, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27649, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27648, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27647, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27653, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27644, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(30879, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27640, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27639, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(28153, 1037, 1052, 7, 0, 25, 7, 0, 25, 1);
++-- Orb of the Nexus
++UPDATE gameobject_template SET TYPE=10,flags=32,data0=0,data2=1887150,data3=0,data6=1 WHERE entry=188715;
++DELETE FROM event_scripts WHERE id=1887150;
++INSERT INTO event_scripts (id,delay,command,datalong,datalong2,dataint,x,y,z,o) VALUES 
++(1887150,0,6,571,0,0,3877.953125,6984.460449,106.320236,0.023581);
++-- Nexus Portal
++UPDATE gameobject_template SET TYPE=10,flags=32,data0=0,data2=1899850,data3=0,data6=1 WHERE entry=189985;
++DELETE FROM event_scripts WHERE id=1899850;
++INSERT INTO event_scripts (id,delay,command,datalong,datalong2,dataint,x,y,z,o) VALUES 
++(1899850,0,6,578,0,0,996.837646,1061.329834,359.476685,3.490091);
++-- Missing rep (Thx Bloodycore)
++DELETE FROM creature_onkill_reputation WHERE creature_id IN (27636,27642,28153,28236);
++INSERT INTO creature_onkill_reputation (creature_id,RewOnKillRepFaction1,RewOnKillRepFaction2,MaxStanding1,IsTeamAward1,RewOnKillRepValue1,MaxStanding2,IsTeamAward2,RewOnKillRepValue2,TeamDependent) VALUES 
++(27636,1037,1052,7,0,25,7,0,25,1),
++(27642,1037,1052,7,0,5,7,0,5,1),
++(28153,1037,1052,7,0,5,7,0,5,1),
++(28236,1037,1052,7,0,25,7,0,25,1);
+ 
+ UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_1' WHERE `entry` IN (189985);
+ UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_2' WHERE `entry` IN (188715);
+ 
+-DELETE FROM `gameobject_template` WHERE (`entry`=200000);
+-INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200000, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_3');
+-
+-
+-DELETE FROM `gameobject_template` WHERE (`entry`=200001);
+-INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200001, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_4');
+-
+-DELETE FROM `gameobject_template` WHERE (`entry`=200002);
+-INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200002, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_5');
+-
+-DELETE FROM `gameobject` WHERE `id` IN (200000,200001);
+-INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+-(1000000, 200000, 578, 3, 1,  1210.128906, 971.459900, 526.811768, 3.915801, 0, 0, 0, 1, 180, 100, 1),
+-(1000001, 200001, 578, 3, 1,  1323.944946, 1065.755493, 438.941132, 2.989029, 0, 0, 0, 1, 180, 100, 1);
+-
+-
+-SET NAMES 'UTF8';
++
++
++
+ DELETE FROM `creature_ai_scripts` WHERE `creature_id` IN (12129,36561);
+ INSERT INTO `creature_ai_scripts` (`id`,`creature_id`,`event_type`,`event_inverse_phase_mask`,`event_chance`,`event_flags`,`event_param1`,`event_param2`,`event_param3`,`event_param4`,`action1_type`,`action1_param1`,`action1_param2`,`action1_param3`,`action2_type`,`action2_param1`,`action2_param2`,`action2_param3`,`action3_type`,`action3_param1`,`action3_param2`,`action3_param3`,`comment`) VALUES
+ ('1212901','12129','0','0','100','7','7800','8200','9400','9600','11','15284','1','1','0','0','0','0','0','0','0','0','Onyxian Warder - Cast Cleave'),
+diff --git a/sql/Blizzlike@Sacred-core/new fix/Ocolus.sql b/sql/Blizzlike@Sacred-core/new fix/Ocolus.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/Ocolus.sql	
+@@ -0,0 +1,81 @@
++--Ruby drake
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 50232, `spell2` = 50248, `spell3` = 50240, `spell4` =  50253, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27756;
++-- Amber Drake
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 49840, `spell2` = 49838, `spell3` = 49592, `spell4` =  0, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27755;
++-- Emerald Drake
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 50328, `spell2` = 50341, `spell3` = 50344, `spell4` =  0, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27692;
++
++UPDATE creature_template SET npcflag=1 WHERE entry IN (27657,27658,27659);
++
++UPDATE creature_template SET ScriptName='boss_drakos' WHERE entry = 27654;
++UPDATE creature_template SET ScriptName='boss_urom' WHERE entry = 27655;
++UPDATE creature_template SET ScriptName='mob_centrifige_construct' WHERE entry = 27641;
++UPDATE creature_template SET ScriptName='boss_varos' WHERE entry = 27447;
++UPDATE creature_template SET ScriptName='boss_eregos' WHERE entry = 27656;
++UPDATE creature_template SET ScriptName='npc_planar_anomaly' WHERE entry = 30879;
++UPDATE `creature_template` SET `npcflag`=3 WHERE `entry` = 27658;
++
++-- Planar anomaly
++UPDATE creature_template SET InhabitType = 5, modelid1 =  28107, modelid3 = 28107 WHERE entry=30879;
++-- Unstable Sphere
++UPDATE creature_template SET minlevel = 80, maxlevel = 80, mindmg = 422, maxdmg = 586, faction_A = 16, faction_H = 16, attackpower = 642, dmg_multiplier = 1, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103 WHERE entry = 28166;
++-- Drakos the Interrogator
++DELETE FROM `script_texts` WHERE npc_entry='27654';
++INSERT INTO `script_texts` VALUES ('27654', -1578000, 'The prisoners shall not go free. The word of Malygos is law!','', '', '', '', '', '', '', '', 13594,1,0,0, 'drakos SAY_AGGRO');
++INSERT INTO `script_texts` VALUES ('27654', -1578001, 'A fitting punishment!','', '', '', '', '', '', '', '', 13602, 1,0,0, 'drakos SAY_KILL_1');
++INSERT INTO `script_texts` VALUES ('27654', -1578002, 'Sentence: executed!','', '', '', '', '', '', '', '', 13603,1,0,0, 'drakos SAY_KILL_2');
++INSERT INTO `script_texts` VALUES ('27654', -1578003, 'Another casualty of war!','', '', '', '', '', '', '', '', 13604, 1,0,0, 'drakos SAY_KILL_3');
++INSERT INTO `script_texts` VALUES ('27654', -1578004, 'The war... goes on.','', '', '', '', '', '', '', '', 13605,1,0,0,  'drakos SPELL_DEATH');
++INSERT INTO `script_texts` VALUES ('27654', -1578005, 'It is too late to run!','', '', '', '', '', '', '', '', 13598, 1,0,0, 'drakos SAY_PULL_1');
++INSERT INTO `script_texts` VALUES ('27654', -1578006, 'Gather \'round! ','', '', '', '', '', '', '', '', 13599, 1,0,0, 'drakos SAY_PULL_2');
++INSERT INTO `script_texts` VALUES ('27654', -1578007, 'None shall escape!','', '', '', '', '', '', '', '', 13600, 1,0,0, 'drakos SAY_PULL_3');
++INSERT INTO `script_texts` VALUES ('27654', -1578008, 'I condemn you to death!','', '', '', '', '', '', '', '', 13601,1,0,0,  'drakos SAY_PULL_4');
++INSERT INTO `script_texts` VALUES ('27654', -1578009, 'Tremble, worms!','', '', '', '', '', '', '', '', 13595,1,0,0,  'drakos SAY_STOMP_1');
++INSERT INTO `script_texts` VALUES ('27654', -1578010, 'I will crush you!', '', '', '', '', '', '', '', '', 13596, 1,0,0, 'drakos SAY_STOMP_2');
++INSERT INTO `script_texts` VALUES ('27654', -1578011, 'Can you fly?', '', '', '', '', '', '', '', '', 13597, 1,0,0, 'drakos SAY_STOMP_3');
++-- Mage-Lord Urom
++DELETE FROM `script_texts` WHERE npc_entry= '27655';
++INSERT INTO `script_texts` VALUES ('27655', -1578012, 'Poor blind fools!','', '', '', '', '', '', '', '', 13638,1,0,0, 'urom SAY_AGGRO');
++INSERT INTO `script_texts` VALUES ('27655', -1578013, 'If only you understood!','', '', '', '', '', '', '', '', 13641,1,0,0, 'urom SAY_KILL_1');
++INSERT INTO `script_texts` VALUES ('27655', -1578014, 'Now, do you see? DO YOU?!','', '', '', '', '', '', '', '', 13642,1,0,0, 'urom SAY_KILL_2');
++INSERT INTO `script_texts` VALUES ('27655', -1578015, 'Unfortunate, but necessary.','', '', '', '', '', '', '', '', 13643,1,0,0, 'urom SAY_KILL_3');
++INSERT INTO `script_texts` VALUES ('27655', -1578016, 'Everything I\'ve done... has been for Azeroth...','', '', '', '', '', '', '', '', 13644,1,0,0, 'urom SAY_DEATH');
++INSERT INTO `script_texts` VALUES ('27655', -1578017, 'A taste... just a small taste... of the Spell-Weaver\'s power!','', '', '', '', '', '', '', '', 13639,1,0,0, 'urom SAY_EXPLOSION_1');
++INSERT INTO `script_texts` VALUES ('27655', -1578018, 'So much unstable energy... but worth the risk to destroy you!','', '', '', '', '', '', '', '', 13640,1,0,0, 'urom SAY_EXPLOSION_2');
++INSERT INTO `script_texts` VALUES ('27655', -1578019, 'What do we have here... those would defy the Spell-Weaver? Those without foresight or understanding. How could I make you see? Malygos is saving the world from itself! Bah! You are hardly worth my time!','', '', '', '', '', '', '', '', 13635,1,0,0, 'urom SAY_SUMMON_1');
++INSERT INTO `script_texts` VALUES ('27655', -1578020, 'Clearly my pets failed. Perhaps another demonstration is in order.','', '', '', '', '', '', '', '', 13636,1,0,0, 'urom SAY_SUMMON_2');
++INSERT INTO `script_texts` VALUES ('27655', -1578021, 'Still you fight. Still you cling to misguided principles. If you survive, you\'ll find me in the center ring.','', '', '', '', '', '', '', '', 13637,1,0,0, 'urom SAY_SUMMON_3');
++-- Varos Cloudstrider
++DELETE FROM `script_texts` WHERE npc_entry = '27447';
++INSERT INTO `script_texts` VALUES ('27447', -1578022, 'There will be no mercy!','', '', '', '', '', '', '', '', 13649,1,0,0, 'varos SAY_AGGRO');
++INSERT INTO `script_texts` VALUES ('27447', -1578023, 'You were warned.','', '', '', '', '', '', '', '', 13653,1,0,0, 'varos SAY_KILL_1');
++INSERT INTO `script_texts` VALUES ('27447', -1578024, 'The Oculus is ours.','', '', '', '', '', '', '', '', 13654,1,0,0, 'varos SAY_KILL_2');
++INSERT INTO `script_texts` VALUES ('27447', -1578025, 'They are... too strong! Underestimated their... fortitude.','', '', '', '', '', '', '', '', 13655,1,0,0, 'varos SAY_DEATH');
++INSERT INTO `script_texts` VALUES ('27447', -1578026, 'Blast them! Destroy them!','', '', '', '', '', '', '', '', 13650,1,0,0, 'varos SAY_STRIKE_1');
++INSERT INTO `script_texts` VALUES ('27447', -1578027, 'Take no prisoners! Attack!','', '', '', '', '', '', '', '', 13651,1,0,0, 'varos SAY_STRIKE_2');
++INSERT INTO `script_texts` VALUES ('27447', -1578028, 'Strike now! Obliterate them!','', '', '', '', '', '', '', '', 13652,1,0,0, 'varos SAY_STRIKE_3');
++-- Varos says when Drakos dies
++INSERT INTO `script_texts` VALUES ('27447', -1578029, 'Intruders, your victory will be short-lived. I am Commander Varos Cloudstrider. My drakes control the skies and protest this conduit. I will see to it personally that the Oculus does not fall into your hands!','', '', '', '', '', '', '', '', 13648,1,0,0, 'varos SAY_SPAWN');
++
++UPDATE gameobject_template SET flags=4 where entry IN (189986,193995);
++
++-- Orb of the Nexus
++UPDATE gameobject_template SET TYPE=10,flags=32,data0=0,data2=1887150,data3=0,data6=1 WHERE entry=188715;
++DELETE FROM event_scripts WHERE id=1887150;
++INSERT INTO event_scripts (id,delay,command,datalong,datalong2,dataint,x,y,z,o) VALUES 
++(1887150,0,6,571,0,0,3877.953125,6984.460449,106.320236,0.023581);
++-- Nexus Portal
++UPDATE gameobject_template SET TYPE=10,flags=32,data0=0,data2=1899850,data3=0,data6=1 WHERE entry=189985;
++DELETE FROM event_scripts WHERE id=1899850;
++INSERT INTO event_scripts (id,delay,command,datalong,datalong2,dataint,x,y,z,o) VALUES 
++(1899850,0,6,578,0,0,996.837646,1061.329834,359.476685,3.490091);
++-- Missing rep (Thx Bloodycore)
++DELETE FROM creature_onkill_reputation WHERE creature_id IN (27636,27642,28153,28236);
++INSERT INTO creature_onkill_reputation (creature_id,RewOnKillRepFaction1,RewOnKillRepFaction2,MaxStanding1,IsTeamAward1,RewOnKillRepValue1,MaxStanding2,IsTeamAward2,RewOnKillRepValue2,TeamDependent) VALUES 
++(27636,1037,1052,7,0,25,7,0,25,1),
++(27642,1037,1052,7,0,5,7,0,5,1),
++(28153,1037,1052,7,0,5,7,0,5,1),
++(28236,1037,1052,7,0,25,7,0,25,1);
++
++UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_1' WHERE `entry` IN (189985);
++UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_2' WHERE `entry` IN (188715);
+diff --git a/sql/Blizzlike@Sacred-core/world/Ocolus.sql b/sql/Blizzlike@Sacred-core/world/Ocolus.sql
+--- a/sql/Blizzlike@Sacred-core/world/Ocolus.sql
++++ b/sql/Blizzlike@Sacred-core/world/Ocolus.sql
+@@ -1,10 +1,9 @@
+-п»їSET NAMES 'UTF8';
+--- Ruby drake
+-UPDATE creature_template SET mindmg = 422, maxdmg = 586, attackpower = 642, dynamicflags = 8, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103, spell1 = 50232, spell2 = 50248, spell3 = 50240, spell4 =  50253, spell5 = 53112, VehicleId = 70 WHERE entry = 27756;
++--Ruby drake
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 50232, `spell2` = 50248, `spell3` = 50240, `spell4` =  50253, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27756;
+ -- Amber Drake
+-UPDATE creature_template SET mindmg = 422, maxdmg = 586, attackpower = 642, dynamicflags = 8, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103, spell1 = 49840, spell2 = 49838, spell3 = 49592, spell4 =  0, spell5 = 53112, VehicleId = 70 WHERE entry = 27755;
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 49840, `spell2` = 49838, `spell3` = 49592, `spell4` =  0, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27755;
+ -- Emerald Drake
+-UPDATE creature_template SET mindmg = 422, maxdmg = 586, attackpower = 642, dynamicflags = 8, minrangedmg = 345, maxrangedmg = 509, rangedattackpower = 103, spell1 = 50328, spell2 = 50341, spell3 = 50344, spell4 =  0, spell5 = 53112, VehicleId = 70 WHERE entry = 27692;
++UPDATE `creature_template` SET `mindmg` = 422, `maxdmg` = 586, `attackpower` = 642, `dynamicflags` = 8, `minrangedmg` = 345, `maxrangedmg` = 509, `rangedattackpower` = 103, `spell1` = 50328, `spell2` = 50341, `spell3` = 50344, `spell4` =  0, `spell5` = 53112, `VehicleId` = 70 WHERE `entry` = 27692;
+ 
+ UPDATE creature_template SET npcflag=1 WHERE entry IN (27657,27658,27659);
+ 
+@@ -13,6 +12,9 @@
+ UPDATE creature_template SET ScriptName='mob_centrifige_construct' WHERE entry = 27641;
+ UPDATE creature_template SET ScriptName='boss_varos' WHERE entry = 27447;
+ UPDATE creature_template SET ScriptName='boss_eregos' WHERE entry = 27656;
++UPDATE creature_template SET ScriptName='npc_planar_anomaly' WHERE entry = 30879;
++UPDATE `creature_template` SET `npcflag`=3 WHERE `entry` = 27658;
++
+ -- Planar anomaly
+ UPDATE creature_template SET InhabitType = 5, modelid1 =  28107, modelid3 = 28107 WHERE entry=30879;
+ -- Unstable Sphere
+@@ -57,81 +59,23 @@
+ 
+ UPDATE gameobject_template SET flags=4 where entry IN (189986,193995);
+ 
+-
+--- Fix ad oculus
+-UPDATE creature_template SET mindmg = 1000, maxdmg = 1200, spell1 = 39824 WHERE entry = 27653; -- Phantasmal Water
+-UPDATE creature_template SET mindmg = 1100, maxdmg = 1300, spell1 = 20545 WHERE entry = 27650; -- Phantasmal Air
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 1500, spell1 = 50744 WHERE entry = 27651; -- Phantasmal Fire
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 1500, spell1 = 50730, spell2 = 50731 WHERE entry = 27647; -- Phantasmal -- Ogre
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 2000, spell1 = 49711, spell2 = 50732 WHERE entry = 27648; -- Phantasmal -- Naga
+-UPDATE creature_template SET mindmg = 1300, maxdmg = 2000, dmg_multiplier = 1 WHERE entry = 27649; -- Phantasmal Murloc
+-UPDATE creature_template SET mindmg = 2000, maxdmg = 2500, spell1 = 32323, spell2 = 51253 WHERE entry = 27642; -- Phantasmal -- Mammouth
+-UPDATE creature_template SET mindmg = 2000, maxdmg = 2500, spell1 = 50729, spell2 = 50728 WHERE entry = 27644; -- Phantasmal -- Worg
+-UPDATE creature_template SET mindmg = 2000, maxdmg = 2500, spell1 = 59223, spell2 = 59217 WHERE entry = 27645; -- Phantasmal -- Cloudscraper
+-UPDATE creature_template SET npcflag = 1 WHERE entry IN (27657, 27658, 27659);
+-
+--- Reputazione a Oculus
+-DELETE FROM `creature_onkill_reputation` WHERE creature_id IN (27654, 27656, 27655, 27447, 27633, 27636, 28236, 27638, 27635, 27641, 28276, 27650, 27645, 27651, 27642, 27649, 27648, 27647, 27653, 27644, 30879, 27640, 27639, 28153);
+-INSERT INTO `creature_onkill_reputation` (`creature_id`, `RewOnKillRepFaction1`, `RewOnKillRepFaction2`, `MaxStanding1`, `IsTeamAward1`, `RewOnKillRepValue1`, `MaxStanding2`, `IsTeamAward2`, `RewOnKillRepValue2`, `TeamDependent`) VALUES 
+-(27654, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Drakos the interrogator
+-(27656, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Ley Guardian Eregos
+-(27655, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Mage lord urom
+-(27447, 1037, 1052, 7, 0, 250, 7, 0, 250, 1), -- Varos cloudstrider
+--- Trash
+-(27633, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27636, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(28236, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27638, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27635, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27641, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(28276, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27650, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27645, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27651, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27642, 1037, 1052, 7, 0, 5, 7, 0, 5, 1), 
+-(27649, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27648, 1037, 1052, 7, 0, 5, 7, 0, 5, 1), 
+-(27647, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27653, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27644, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(30879, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27640, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(27639, 1037, 1052, 7, 0, 5, 7, 0, 5, 1),
+-(28153, 1037, 1052, 7, 0, 5, 7, 0, 5, 1);
+--- Planar Anomlay di Eregos
+-UPDATE creature_template SET ScriptName = 'npc_planar_anomaly' WHERE entry = 30879;
+--- Arcane beam
+-DELETE FROM creature WHERE id = 28239;
+-UPDATE creature_template SET modelid3 = 0 WHERE entry = 30879;
+-
+--- Reputazione a Oculus
+-DELETE FROM `creature_onkill_reputation` WHERE creature_id IN (27642, 27649, 27648, 27647, 27653, 27644, 30879, 27640, 27639, 28153);
+-INSERT INTO `creature_onkill_reputation` (`creature_id`, `RewOnKillRepFaction1`, `RewOnKillRepFaction2`, `MaxStanding1`, `IsTeamAward1`, `RewOnKillRepValue1`, `MaxStanding2`, `IsTeamAward2`, `RewOnKillRepValue2`, `TeamDependent`) VALUES 
+-(27642, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27649, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27648, 1037, 1052, 7, 0, 25, 7, 0, 25, 1), 
+-(27647, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27653, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27644, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(30879, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27640, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(27639, 1037, 1052, 7, 0, 25, 7, 0, 25, 1),
+-(28153, 1037, 1052, 7, 0, 25, 7, 0, 25, 1);
++-- Orb of the Nexus
++UPDATE gameobject_template SET TYPE=10,flags=32,data0=0,data2=1887150,data3=0,data6=1 WHERE entry=188715;
++DELETE FROM event_scripts WHERE id=1887150;
++INSERT INTO event_scripts (id,delay,command,datalong,datalong2,dataint,x,y,z,o) VALUES 
++(1887150,0,6,571,0,0,3877.953125,6984.460449,106.320236,0.023581);
++-- Nexus Portal
++UPDATE gameobject_template SET TYPE=10,flags=32,data0=0,data2=1899850,data3=0,data6=1 WHERE entry=189985;
++DELETE FROM event_scripts WHERE id=1899850;
++INSERT INTO event_scripts (id,delay,command,datalong,datalong2,dataint,x,y,z,o) VALUES 
++(1899850,0,6,578,0,0,996.837646,1061.329834,359.476685,3.490091);
++-- Missing rep (Thx Bloodycore)
++DELETE FROM creature_onkill_reputation WHERE creature_id IN (27636,27642,28153,28236);
++INSERT INTO creature_onkill_reputation (creature_id,RewOnKillRepFaction1,RewOnKillRepFaction2,MaxStanding1,IsTeamAward1,RewOnKillRepValue1,MaxStanding2,IsTeamAward2,RewOnKillRepValue2,TeamDependent) VALUES 
++(27636,1037,1052,7,0,25,7,0,25,1),
++(27642,1037,1052,7,0,5,7,0,5,1),
++(28153,1037,1052,7,0,5,7,0,5,1),
++(28236,1037,1052,7,0,25,7,0,25,1);
+ 
+ UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_1' WHERE `entry` IN (189985);
+ UPDATE `gameobject_template` SET `ScriptName`='go_teleport_nexus_2' WHERE `entry` IN (188715);
+-
+-DELETE FROM `gameobject_template` WHERE (`entry`=200000);
+-INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200000, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_3');
+-
+-
+-DELETE FROM `gameobject_template` WHERE (`entry`=200001);
+-INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200001, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_4');
+-
+-DELETE FROM `gameobject_template` WHERE (`entry`=200002);
+-INSERT INTO `gameobject_template` (`entry`, `type`, `displayId`, `name`, `IconName`, `castBarCaption`, `unk1`, `faction`, `flags`, `size`, `questItem1`, `questItem2`, `questItem3`, `questItem4`, `questItem5`, `questItem6`, `data0`, `data1`, `data2`, `data3`, `data4`, `data5`, `data6`, `data7`, `data8`, `data9`, `data10`, `data11`, `data12`, `data13`, `data14`, `data15`, `data16`, `data17`, `data18`, `data19`, `data20`, `data21`, `data22`, `data23`, `ScriptName`) VALUES (200002, 22, 1327, 'Nexus Portal', '', '', '', 0, 0, 2, 0, 0, 0, 0, 0, 0, 49305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'go_teleport_nexus_5');
+-
+-DELETE FROM `gameobject` WHERE `id` IN (200000,200001);
+-INSERT INTO `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) VALUES
+-(1000000, 200000, 578, 3, 1,  1210.128906, 971.459900, 526.811768, 3.915801, 0, 0, 0, 1, 180, 100, 1),
+-(1000001, 200001, 578, 3, 1,  1323.944946, 1065.755493, 438.941132, 2.989029, 0, 0, 0, 1, 180, 100, 1);
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp b/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/boss_drakos.cpp
+@@ -1,20 +1,24 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+  *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+  *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
+  *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
+  */
+-
++ 
+ #include "ScriptPCH.h"
+ #include "oculus.h"
+ 
+@@ -83,7 +87,7 @@
+             lSummons.DespawnAll();
+             uiMagicPullTimer = 15000;
+             uiStompTimer = 17000;
+-            uiBombSummonTimer = 2000;
++            uiBombSummonTimer = 3000;
+ 
+             bPostPull = false;
+ 
+@@ -193,12 +197,12 @@
+         void Reset()
+         {
+             me->SetReactState(REACT_PASSIVE);
+-            me->GetMotionMaster()->MoveRandom(40.0f);
++            me->GetMotionMaster()->MoveRandom(42.5f);
+ 
+             me->AddAura(SPELL_UNSTABLE_SPHERE_PASSIVE, me);
+             me->AddAura(SPELL_UNSTABLE_SPHERE_TIMER, me);
+ 
+-            uiPulseTimer = 3000;
++            uiPulseTimer = 2800;
+             uiDeathTimer = 19000;
+         }
+ 
+@@ -218,8 +222,6 @@
+ 
+ };
+ 
+-
+-
+ void AddSC_boss_drakos()
+ {
+     new boss_drakos();
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp b/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/boss_eregos.cpp
+@@ -1,20 +1,24 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+  *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+  *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
+  *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
+  */
+-
++ 
+ #include "ScriptPCH.h"
+ #include "oculus.h"
+ 
+@@ -227,16 +231,8 @@
+                 pInstance->SetData(DATA_EREGOS_EVENT, DONE);
+ 		    }
+ 		    lSummons.DespawnAll();
+-
+-
+- 
+-
+-			
+-			
+-			
+         }
+     };
+-	
+ 
+     CreatureAI* GetAI(Creature* pCreature)
+     {
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/boss_urom.cpp b/src/server/scripts/Northrend/Nexus/Oculus/boss_urom.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/boss_urom.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/boss_urom.cpp
+@@ -1,19 +1,24 @@
+-п»ї/* Copyright (C) 2008 - 2010 TrinityCore <http://www.trinitycore.org>
+-* This program is free software; you can redistribute it and/or modify
+-* it under the terms of the GNU General Public License as published by
+-* the Free Software Foundation; either version 2 of the License, or
+-* (at your option) any later version.
+-*
+-* This program is distributed in the hope that it will be useful,
+-* but WITHOUT ANY WARRANTY; without even the implied warranty of
+-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-* GNU General Public License for more details.
+-*
+-* You should have received a copy of the GNU General Public License
+-* along with this program; if not, write to the Free Software
+-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-*/
+-
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
++ */
++ 
+ #include "ScriptPCH.h"
+ #include "oculus.h"
+ 
+@@ -23,9 +28,9 @@
+ 
+ static Locations BossLocSpawn[]=
+ {
+-    {968.181213f, 1042.239502f, 527.321777f, 0.021777f},  // AT IВ° spawn
+-	{1164.015747f, 1171.213989f, 527.321655f, 4.282561f}, // AT IIВ° spawn
+-	{1123.280151f, 1080.605347f, 508.360016f, 1.251068f}, // AT IIIВ° spawn
++    {968.181213f, 1042.239502f, 527.321777f, 0.021777f},  // AT I° spawn
++	{1164.015747f, 1171.213989f, 527.321655f, 4.282561f}, // AT II° spawn
++	{1123.280151f, 1080.605347f, 508.360016f, 1.251068f}, // AT III° spawn
+ 	{1101.646729f, 1053.799927f, 509.237610f, 1.555070f}, // Oculus centre
+ };
+ 
+@@ -61,17 +66,17 @@
+ 
+ enum Creatures
+ {
+-	//IВ° spawn (2 fire, 1 water, 1 air)
++	//I° spawn (2 fire, 1 water, 1 air)
+ 	NPC_PHANTASMAL_WATER						= 27653,  //ScriptedAI
+ 	NPC_PHANTASMAL_AIR   						= 27650,  //ScriptedAI
+ 	NPC_PHANTASMAL_FIRE							= 27651,  //ScriptedAI
+ 
+-	//IIВ° spawn (2 ogres, 1 naga, 1 murloc)
++	//II° spawn (2 ogres, 1 naga, 1 murloc)
+ 	NPC_PHANTASMAL_OGRE						= 27647,  //ScriptedAI
+ 	NPC_PHANTASMAL_NAGA   					= 27648,  //ScriptedAI
+ 	NPC_PHANTASMAL_MURLOC					= 27649,  //NO ABILITIES
+ 
+-	//IIIВ° spawn (1 mammoth, 2 wolves, 2 cloudscrapers)
++	//III° spawn (1 mammoth, 2 wolves, 2 cloudscrapers)
+ 	NPC_PHANTASMAL_MAMMOTH					= 27642,  //ScriptedAI
+ 	NPC_PHANTASMAL_WOLVE   					= 27644,  //ScriptedAI
+ 	NPC_PHANTASMAL_CLUODSCRAPER				= 27645,  //ScriptedAI
+@@ -127,10 +132,6 @@
+ 		    ui_TimeBomb_Timer = 15000;
+ 		    ui_ArcaneExplosion_Timer = 30000;
+ 		    ui_ArcaneExplosionDuration = DUNGEON_MODE(9000,7000);
+-		    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+-            DoCast(SPELL_ARCANE_SHIELD);
+-		    me->SetReactState(REACT_PASSIVE);
+ 
+         }
+ 
+@@ -191,7 +192,7 @@
+ 			    phase++;
+ 			    just_summoned = false;
+ 			    summoning_casted = false;
+-			    ui_SummonSimulation_Timer = 4000;
++			    ui_SummonSimulation_Timer = 3800;
+ 			    waiting_teleport = true;
+ 			    if(phase == 4)
+ 				    started=true;
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/boss_varos.cpp b/src/server/scripts/Northrend/Nexus/Oculus/boss_varos.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/boss_varos.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/boss_varos.cpp
+@@ -1,18 +1,22 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+  *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+  *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
+  *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
+  */
+ 
+ #include "ScriptPCH.h"
+@@ -109,7 +113,7 @@
+ 		    if(uiEnergizeCore_Timer <= diff)
+ 		    {
+ 			    DoCast(me->getVictim(),SPELL_ENERGIZE_CORES);
+-			    uiEnergizeCore_Timer = 10000;
++			    uiEnergizeCore_Timer = 11000;
+ 		    } else uiEnergizeCore_Timer -= diff;
+ 
+             DoMeleeAttackIfReady();
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp b/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/instance_oculus.cpp
+@@ -1,20 +1,24 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+  *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+  *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
+  *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
+  */
+-
++ 
+ #include "ScriptPCH.h"
+ #include "oculus.h"
+ 
+@@ -272,19 +276,9 @@
+             } else OUT_LOAD_INST_DATA_FAIL;
+ 
+             OUT_LOAD_INST_DATA_COMPLETE;
+-
+-			if (Data(DATA_EREGOS_EVENT)==DONE)
+-                       
+-                           
+-			
+-                            {
+-                                if (GameObject* portal = instance->GetGameObject(GetData64(DATA_GO_PORTAL)))
+-								portal->SummonGameObject(GO_PORTAL, 1081.047485f, 1091.057617f, 657.658203f, 4.475467f, 0, 0, 0, 1, 180 );
+-							}
+         }
+     };
+ 
+-
+     InstanceScript* GetInstanceScript(InstanceMap* pMap) const
+     {
+         return new instance_oculus_InstanceMapScript(pMap);
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp b/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp
+--- a/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp
++++ b/src/server/scripts/Northrend/Nexus/Oculus/oculus.cpp
+@@ -1,232 +1,235 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#include "ScriptPCH.h"
+-#include "oculus.h"
+-
+-#define GOSSIP_ITEM_DRAKES         "So where do we go from here?"
+-#define GOSSIP_ITEM_BELGARISTRASZ1 "I want to fly on the wings of the Red Flight"
+-#define GOSSIP_ITEM_BELGARISTRASZ2 "What abilities do Ruby Drakes have?"
+-#define GOSSIP_ITEM_VERDISA1       "I want to fly on the wings of the Green Flight"
+-#define GOSSIP_ITEM_VERDISA2       "What abilities do Emerald Drakes have?"
+-#define GOSSIP_ITEM_ETERNOS1       "I want to fly on the wings of the Bronze Flight"
+-#define GOSSIP_ITEM_ETERNOS2       "What abilities do Amber Drakes have?"
+-
+-#define HAS_ESSENCE(a) ((a)->HasItemCount(ITEM_EMERALD_ESSENCE,1) || (a)->HasItemCount(ITEM_AMBER_ESSENCE,1) || (a)->HasItemCount(ITEM_RUBY_ESSENCE,1))
+-
+-enum Drakes
+-{
+-    GOSSIP_TEXTID_DRAKES                          = 13267,
+-    GOSSIP_TEXTID_BELGARISTRASZ1                  = 12916,
+-    GOSSIP_TEXTID_BELGARISTRASZ2                  = 13466,
+-    GOSSIP_TEXTID_BELGARISTRASZ3                  = 13254,
+-    GOSSIP_TEXTID_VERDISA1                        = 1,
+-    GOSSIP_TEXTID_VERDISA2                        = 1,
+-    GOSSIP_TEXTID_VERDISA3                        = 1,
+-    GOSSIP_TEXTID_ETERNOS1                        = 1,
+-    GOSSIP_TEXTID_ETERNOS2                        = 1,
+-    GOSSIP_TEXTID_ETERNOS3                        = 13256,
+-
+-    ITEM_EMERALD_ESSENCE                          = 37815,
+-    ITEM_AMBER_ESSENCE                            = 37859,
+-    ITEM_RUBY_ESSENCE                             = 37860,
+-
+-	//spells
+-	SPELL_PARACHUTE								  = 61243    
+-};
+-
+-class mob_centrifige_construct : public CreatureScript
+-{
+-public:
+-    mob_centrifige_construct() : CreatureScript("mob_centrifige_construct") { }
+-
+-    struct mob_CentrifigeConstructAI : public ScriptedAI
+-    {
+-        mob_CentrifigeConstructAI(Creature *c) : ScriptedAI(c)
+-        {
+-            pInstance = c->GetInstanceScript();
+-        }
+-
+-        InstanceScript* pInstance;
+-
+-
+-	    void DismountPlayers()
+-	    {
+-		    std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
+-		    std::list<HostileReference*>::const_iterator i = m_threatlist.begin();
+-		    for (i = m_threatlist.begin(); i!= m_threatlist.end(); ++i)
+-		    {
+-			    Unit* pUnit = Unit::GetUnit((*me), (*i)->getUnitGuid());
+-			    if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER) )
+-			    {
+-				    Vehicle* v = pUnit->GetVehicle();
+-				    if(v)
+-				    {
+-					    pUnit->ExitVehicle();
+-					    v->Dismiss();
+-					    DoCast(pUnit,SPELL_PARACHUTE);					
+-				    }
+-			    }
+-		    }
+-	    }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            //Return since we have no target
+-            if (!UpdateVictim())
+-                return;
+-		    DismountPlayers();
+-            DoMeleeAttackIfReady();
+-        }
+-
+-        void JustDied(Unit* killer)
+-        {
+-            if (pInstance)
+-                pInstance->SetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT, pInstance->GetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT)+1);
+-        }
+-    };
+-
+-    CreatureAI* GetAI(Creature* pCreature) const
+-    {
+-        return new mob_CentrifigeConstructAI (pCreature);
+-    };
+-};
+-
+-class npc_oculus_drake : public CreatureScript
+-{
+-    public:
+-    npc_oculus_drake() : CreatureScript("npc_oculus_drake") { }
+-
+-    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+-    {
+-        if (pCreature->isQuestGiver())
+-            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+-
+-        if (pCreature->GetInstanceScript()->GetData(DATA_DRAKOS_EVENT) == DONE)
+-        {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_DRAKES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+-            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_DRAKES, pCreature->GetGUID());
+-        }
+-
+-        return true;
+-    };
+-
+-    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+-    {
+-        pPlayer->PlayerTalkClass->ClearMenus();
+-        switch(pCreature->GetEntry())
+-        {
+-        case NPC_VERDISA: //Verdisa
+-            switch(uiAction)
+-            {
+-            case GOSSIP_ACTION_INFO_DEF + 1:
+-                if (!HAS_ESSENCE(pPlayer))
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA1, pCreature->GetGUID());
+-                }
+-                else
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA2, pCreature->GetGUID());
+-                }
+-                break;
+-            case GOSSIP_ACTION_INFO_DEF + 2:
+-            {
+-                ItemPosCountVec dest;
+-                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_EMERALD_ESSENCE, 1);
+-                if (msg == EQUIP_ERR_OK)
+-                    pPlayer->StoreNewItem(dest, ITEM_EMERALD_ESSENCE, true);
+-                pPlayer->CLOSE_GOSSIP_MENU();
+-                break;
+-            }
+-            case GOSSIP_ACTION_INFO_DEF + 3:
+-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA3, pCreature->GetGUID());
+-                break;
+-            }
+-            break;
+-        case NPC_BELGARISTRASZ: //Belgaristrasz
+-            switch(uiAction)
+-            {
+-            case GOSSIP_ACTION_INFO_DEF + 1:
+-                if (!HAS_ESSENCE(pPlayer))
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ1, pCreature->GetGUID());
+-					pPlayer->TeleportTo(578, 1177.469971f, 937.721985f, 527.405029f, 2.216570f);
+-                }
+-                else
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ2, pCreature->GetGUID());
+-                }
+-                break;
+-            case GOSSIP_ACTION_INFO_DEF + 2:
+-            {
+-                ItemPosCountVec dest;
+-                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_RUBY_ESSENCE, 1);
+-                if (msg == EQUIP_ERR_OK)
+-                    pPlayer->StoreNewItem(dest, ITEM_RUBY_ESSENCE, true);
+-                pPlayer->CLOSE_GOSSIP_MENU();
+-                break;
+-            }
+-            case GOSSIP_ACTION_INFO_DEF + 3:
+-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ3, pCreature->GetGUID());
+-                break;
+-            }
+-            break;
+-        case NPC_ETERNOS: //Eternos
+-            switch(uiAction)
+-            {
+-            case GOSSIP_ACTION_INFO_DEF + 1:
+-                if (!HAS_ESSENCE(pPlayer))
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS1, pCreature->GetGUID());
+-                }
+-                else
+-                {
+-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+-                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS2, pCreature->GetGUID());
+-                }
+-                break;
+-            case GOSSIP_ACTION_INFO_DEF + 2:
+-            {
+-                ItemPosCountVec dest;
+-                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_AMBER_ESSENCE, 1);
+-                if (msg == EQUIP_ERR_OK)
+-                    pPlayer->StoreNewItem(dest, ITEM_AMBER_ESSENCE, true);
+-                pPlayer->CLOSE_GOSSIP_MENU();
+-                break;
+-            }
+-            case GOSSIP_ACTION_INFO_DEF + 3:
+-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS3, pCreature->GetGUID());
+-                break;
+-            }
+-            break;
+-        }
+-
+-        return true;
+-    };
+-};
+-
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
++ */
++ 
++#include "ScriptPCH.h"
++#include "oculus.h"
++
++#define GOSSIP_ITEM_DRAKES         "Куда мы пойдём отсюда?"
++#define GOSSIP_ITEM_BELGARISTRASZ1 "Я хочу летать на крыльях Red Flight"
++#define GOSSIP_ITEM_BELGARISTRASZ2 "Какие способности Ruby Drakes имеют?"
++#define GOSSIP_ITEM_VERDISA1       "Я хочу летать на крыльях Green Flight"
++#define GOSSIP_ITEM_VERDISA2       "Какие способности Emerald Drakes имеют?"
++#define GOSSIP_ITEM_ETERNOS1       "Я хочу летать на крыльях Bronze Flight"
++#define GOSSIP_ITEM_ETERNOS2       "Какие способности Amber Drakes имеют?"
++
++#define HAS_ESSENCE(a) ((a)->HasItemCount(ITEM_EMERALD_ESSENCE,1) || (a)->HasItemCount(ITEM_AMBER_ESSENCE,1) || (a)->HasItemCount(ITEM_RUBY_ESSENCE,1))
++
++enum Drakes
++{
++    GOSSIP_TEXTID_DRAKES                          = 13267,
++    GOSSIP_TEXTID_BELGARISTRASZ1                  = 12916,
++    GOSSIP_TEXTID_BELGARISTRASZ2                  = 13466,
++    GOSSIP_TEXTID_BELGARISTRASZ3                  = 13254,
++    GOSSIP_TEXTID_VERDISA1                        = 1,
++    GOSSIP_TEXTID_VERDISA2                        = 1,
++    GOSSIP_TEXTID_VERDISA3                        = 1,
++    GOSSIP_TEXTID_ETERNOS1                        = 1,
++    GOSSIP_TEXTID_ETERNOS2                        = 1,
++    GOSSIP_TEXTID_ETERNOS3                        = 13256,
++
++    ITEM_EMERALD_ESSENCE                          = 37815,
++    ITEM_AMBER_ESSENCE                            = 37859,
++    ITEM_RUBY_ESSENCE                             = 37860,
++
++	//spells
++	SPELL_PARACHUTE								  = 61243    
++};
++
++class mob_centrifige_construct : public CreatureScript
++{
++public:
++    mob_centrifige_construct() : CreatureScript("mob_centrifige_construct") { }
++
++    struct mob_CentrifigeConstructAI : public ScriptedAI
++    {
++        mob_CentrifigeConstructAI(Creature *c) : ScriptedAI(c)
++        {
++            pInstance = c->GetInstanceScript();
++        }
++
++        InstanceScript* pInstance;
++
++
++	    void DismountPlayers()
++	    {
++		    std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
++		    std::list<HostileReference*>::const_iterator i = m_threatlist.begin();
++		    for (i = m_threatlist.begin(); i!= m_threatlist.end(); ++i)
++		    {
++			    Unit* pUnit = Unit::GetUnit((*me), (*i)->getUnitGuid());
++			    if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER) )
++			    {
++				    Vehicle* v = pUnit->GetVehicle();
++				    if(v)
++				    {
++					    pUnit->ExitVehicle();
++					    v->Dismiss();
++					    DoCast(pUnit,SPELL_PARACHUTE);					
++				    }
++			    }
++		    }
++	    }
++
++        void UpdateAI(const uint32 diff)
++        {
++            //Return since we have no target
++            if (!UpdateVictim())
++                return;
++		    DismountPlayers();
++            DoMeleeAttackIfReady();
++        }
++
++        void JustDied(Unit* killer)
++        {
++            if (pInstance)
++                pInstance->SetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT, pInstance->GetData(DATA_CENTRIFUGE_CONSTRUCT_EVENT)+1);
++        }
++    };
++
++    CreatureAI* GetAI(Creature* pCreature) const
++    {
++        return new mob_CentrifigeConstructAI (pCreature);
++    };
++};
++
++class npc_oculus_drake : public CreatureScript
++{
++    public:
++    npc_oculus_drake() : CreatureScript("npc_oculus_drake") { }
++
++    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
++    {
++        if (pCreature->isQuestGiver())
++            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
++
++        if (pCreature->GetInstanceScript()->GetData(DATA_DRAKOS_EVENT) == DONE)
++        {
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_DRAKES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
++            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_DRAKES, pCreature->GetGUID());
++        }
++
++        return true;
++    };
++
++    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
++    {
++        pPlayer->PlayerTalkClass->ClearMenus();
++        switch(pCreature->GetEntry())
++        {
++        case NPC_VERDISA: //Verdisa
++            switch(uiAction)
++            {
++            case GOSSIP_ACTION_INFO_DEF + 1:
++                if (!HAS_ESSENCE(pPlayer))
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA1, pCreature->GetGUID());
++                }
++                else
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_VERDISA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA2, pCreature->GetGUID());
++                }
++                break;
++            case GOSSIP_ACTION_INFO_DEF + 2:
++            {
++                ItemPosCountVec dest;
++                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_EMERALD_ESSENCE, 1);
++                if (msg == EQUIP_ERR_OK)
++                    pPlayer->StoreNewItem(dest, ITEM_EMERALD_ESSENCE, true);
++                pPlayer->CLOSE_GOSSIP_MENU();
++                break;
++            }
++            case GOSSIP_ACTION_INFO_DEF + 3:
++                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_VERDISA3, pCreature->GetGUID());
++                break;
++            }
++            break;
++        case NPC_BELGARISTRASZ: //Belgaristrasz
++            switch(uiAction)
++            {
++            case GOSSIP_ACTION_INFO_DEF + 1:
++                if (!HAS_ESSENCE(pPlayer))
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ1, pCreature->GetGUID());
++                }
++                else
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BELGARISTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ2, pCreature->GetGUID());
++                }
++                break;
++            case GOSSIP_ACTION_INFO_DEF + 2:
++            {
++                ItemPosCountVec dest;
++                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_RUBY_ESSENCE, 1);
++                if (msg == EQUIP_ERR_OK)
++                    pPlayer->StoreNewItem(dest, ITEM_RUBY_ESSENCE, true);
++                pPlayer->CLOSE_GOSSIP_MENU();
++                break;
++            }
++            case GOSSIP_ACTION_INFO_DEF + 3:
++                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_BELGARISTRASZ3, pCreature->GetGUID());
++                break;
++            }
++            break;
++        case NPC_ETERNOS: //Eternos
++            switch(uiAction)
++            {
++            case GOSSIP_ACTION_INFO_DEF + 1:
++                if (!HAS_ESSENCE(pPlayer))
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS1, pCreature->GetGUID());
++                }
++                else
++                {
++                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ETERNOS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
++                    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS2, pCreature->GetGUID());
++                }
++                break;
++            case GOSSIP_ACTION_INFO_DEF + 2:
++            {
++                ItemPosCountVec dest;
++                uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_AMBER_ESSENCE, 1);
++                if (msg == EQUIP_ERR_OK)
++                    pPlayer->StoreNewItem(dest, ITEM_AMBER_ESSENCE, true);
++                pPlayer->CLOSE_GOSSIP_MENU();
++                break;
++            }
++            case GOSSIP_ACTION_INFO_DEF + 3:
++                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ETERNOS3, pCreature->GetGUID());
++                break;
++            }
++            break;
++        }
++
++        return true;
++    };
++};
++
+ class go_teleport_nexus_1 : public GameObjectScript
+ {
+ public:
+@@ -250,51 +253,11 @@
+ 		return true;
+ 	}
+ };
+-
+-class go_teleport_nexus_4 : public GameObjectScript
+-{
+-public:
+-	go_teleport_nexus_4() : GameObjectScript("go_teleport_nexus_4") { }
+-
+-	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
+-	{
+-		pPlayer->TeleportTo(578, 1149.962280f, 1050.744263f, 614.410828f, 3.194959f);
+-		return true;
+-	}
+-};
+-
+-class go_teleport_nexus_3 : public GameObjectScript
+-{
+-public:
+-	go_teleport_nexus_3() : GameObjectScript("go_teleport_nexus_3") { }
+-
+-	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
+-	{
+-		pPlayer->TeleportTo(578, 1285.599976f, 1070.359985f, 439.515015f, 3.577920f);
+-		return true;
+-	}
+-};
+-
+-class go_teleport_nexus_5 : public GameObjectScript
+-{
+-public:
+-	go_teleport_nexus_5() : GameObjectScript("go_teleport_nexus_5") { }
+-
+-	bool OnGossipHello(Player *pPlayer, GameObject *pGO)
+-	{
+-		pPlayer->TeleportTo(578, 1023.679871f, 1052.060913f, 605.626892f, 3.220721f);
+-		return true;
+-	}
+-};
+-
+-void AddSC_oculus()
+-{
+-    new npc_oculus_drake;
+-    new mob_centrifige_construct;
+-	new go_teleport_nexus_1;
+-    new go_teleport_nexus_2;
+-	new go_teleport_nexus_3;
+-	new go_teleport_nexus_4;
+-	new go_teleport_nexus_5;
+-
+-}
++
++void AddSC_oculus()
++{
++    new npc_oculus_drake();
++	new go_teleport_nexus_1();
++    new go_teleport_nexus_2();
++    new mob_centrifige_construct();
++}
+diff --git a/src/server/scripts/Northrend/Nexus/Oculus/oculus.h b/src/server/scripts/Northrend/Nexus/Oculus/oculus.h
+--- a/src/server/scripts/Northrend/Nexus/Oculus/oculus.h
++++ b/src/server/scripts/Northrend/Nexus/Oculus/oculus.h
+@@ -1,32 +1,33 @@
+-п»ї/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+  *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
++ * Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+  *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
+  *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * Author: Bondiano
+  */
+-
++ 
+ #ifndef DEF_OCULUS_H
+ #define DEF_OCULUS_H
+ 
+-
+-
+ enum Data
+ {
+     DATA_DRAKOS_EVENT,
+     DATA_VAROS_EVENT,
+     DATA_UROM_EVENT,
+     DATA_EREGOS_EVENT,
+-	DATA_GO_PORTAL,
+     DATA_CENTRIFUGE_CONSTRUCT_EVENT
+ };
+ 
+@@ -44,19 +45,18 @@
+     CREATURE_VAROS			= 27447,
+     CREATURE_UROM			= 27655,
+     CREATURE_EREGOS			= 27656, 
+-    CREATURE_AZURE_GUARDIAN	        = 27638,
++    CREATURE_AZURE_GUARDIAN	= 27638,
+  
+-    NPC_VERDISA                                   = 27657,
+-    NPC_BELGARISTRASZ                             = 27658,
+-    NPC_ETERNOS                                   = 27659,
++    NPC_VERDISA             = 27657,
++    NPC_BELGARISTRASZ       = 27658,
++    NPC_ETERNOS             = 27659
+ };
+ 
+ enum GameObjects
+ {
+-	GO_CACHE_OF_ERAGOS	   = 191349,
+-	GO_CACHE_OF_ERAGOS_H	   = 193603,
+-	GO_DRAGON_CAGE_DOOR        = 193995,
+-	GO_PORTAL               =200002
++	GO_CACHE_OF_ERAGOS	    = 191349,
++	GO_CACHE_OF_ERAGOS_H    = 193603,
++	GO_DRAGON_CAGE_DOOR     = 193995
+ };
+ 
+ #endif

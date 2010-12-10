@@ -1,0 +1,32 @@
+# HG changeset patch
+# User asniker
+# Date 1290421776 -18000
+# Node ID ea7d60e5d5b2df2b68ffef52096e43ef7708ef04
+# Parent  e3874841a8307b952915c82e4bc1903e1498d9fa
+ядро: надеюст послений фикс вертушки у вара
+
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -4257,9 +4257,7 @@
+ 
+     std::list <AuraType> immunity_list;
+     if (GetMiscValue() & (1<<10))
+-        immunity_list.push_back(SPELL_AURA_MOD_STUN);
+-	if (GetMiscValue() & (1<<7))
+-		immunity_list.push_back(SPELL_AURA_MOD_DISARM);
++        immunity_list.push_back(SPELL_AURA_MOD_STUN);	
+     if (GetMiscValue() & (1<<1))
+         immunity_list.push_back(SPELL_AURA_TRANSFORM);
+ 
+@@ -4274,8 +4272,9 @@
+         immunity_list.push_back(SPELL_AURA_MOD_FEAR);
+ 
+     // must be last due to Bladestorm
++	if (GetMiscValue() & (1<<7))
++	immunity_list.push_back(SPELL_AURA_MOD_DISARM);
+     
+-
+     // TODO: figure out a better place to put this...
+     // Patch 3.0.3 Bladestorm now breaks all snares and roots on the warrior when activated.
+     // however not all mechanic specified in immunity

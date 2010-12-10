@@ -1,0 +1,34 @@
+# HG changeset patch
+# User asniker
+# Date 1289491693 -18000
+# Node ID 1331e5dc8993068a52144fd0d6a02788df1e2db8
+# Parent  e6d97cedc0cc49ad08c7d363c2cde6c8b9686b69
+fix sucub's spell
+
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -1613,9 +1613,10 @@
+                         default: break;
+                         }
+                         durationadd *= mod;
+-                        duration += int32(durationadd);
++                        duration += int32(durationadd);						
+                     }
+                 }
++				
+                 // and duration of auras affected by SPELL_AURA_PERIODIC_HASTE
+                 if (m_originalCaster->HasAuraTypeWithAffectMask(SPELL_AURA_PERIODIC_HASTE, aurSpellInfo))
+                     duration = int32(duration * m_originalCaster->GetFloatValue(UNIT_MOD_CAST_SPEED));
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -2881,7 +2881,7 @@
+             else if (spellproto->SpellFamilyFlags[1] & 0x8)
+                 return DIMINISHING_FEAR_BLIND;
+             // Seduction
+-            else if (spellproto->SpellFamilyFlags[0] & 0x40000000)
++            else if ((spellproto->SpellFamilyFlags[0] & 0x40000000) && spellproto->Id != 7870)
+                 return DIMINISHING_FEAR_BLIND;
+             break;
+         }

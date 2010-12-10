@@ -1,0 +1,56 @@
+# HG changeset patch
+# User asniker
+# Date 1288668267 -18000
+# Node ID 878a6d28c6f043c3c93dc46102dede9f4b8d5ed0
+# Parent  4e1af00420c38923dff0d8ac8bef78c357047558
+player pvp zone and del dungeon finder
+
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -18748,6 +18748,8 @@
+ {
+     if (!IsPvP())
+         return;
++	if (pvpInfo.inHostileArea)
++        return;
+     if (pvpInfo.endTimer == 0 || currTime < (pvpInfo.endTimer + 300))
+         return;
+ 
+diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
+--- a/src/server/game/Scripting/ScriptLoader.cpp
++++ b/src/server/game/Scripting/ScriptLoader.cpp
+@@ -63,8 +63,6 @@
+ void AddSC_npc_taxi();
+ void AddSC_achievement_scripts();
+ void AddSC_npc_customize();
+-void AddSC_dungeon_finder();
+-
+ 
+ //eastern kingdoms
+ void AddSC_alterac_valley();                 //Alterac Valley
+@@ -651,7 +649,6 @@
+     AddSC_achievement_scripts();
+     AddSC_chat_log();
+ 	AddSC_npc_customize();
+-	AddSC_dungeon_finder();
+ 	
+ #endif
+ }
+diff --git a/src/server/scripts/World/CMakeLists.txt b/src/server/scripts/World/CMakeLists.txt
+--- a/src/server/scripts/World/CMakeLists.txt
++++ b/src/server/scripts/World/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-set(scripts_STAT_SRCS
++﻿set(scripts_STAT_SRCS
+   ${scripts_STAT_SRCS}
+   World/npc_professions.cpp
+   World/mob_generic_creature.cpp
+@@ -16,7 +16,6 @@
+   World/npc_mount.cpp
+   World/go_scripts.cpp
+   World/npc_innkeeper.cpp
+-  World/dungeon_finder.cpp
+   World/achievement_scripts.cpp
+ )
+ 

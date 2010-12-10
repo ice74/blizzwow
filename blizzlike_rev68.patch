@@ -1,0 +1,62 @@
+# HG changeset patch
+# User asniker
+# Date 1286904395 -21600
+# Node ID e6edf1f873a17d4610e00e2afe23b88cf0287755
+# Parent  78a8e392d42f2c7dfd95ddcf548a6acb4dcd87b1
+перевод госсипа в ИК
+
+diff --git a/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp b/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
+--- a/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
++++ b/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
+@@ -1389,11 +1389,11 @@
+             break;
+ 
+         case GOSSIP_ACTION_INFO_DEF+2:
+-            pCreature->MonsterSay("Ok, I will wait here for your leader", LANG_UNIVERSAL, pPlayer->GetGUID());
++            pCreature->MonsterSay("Хорошо, я дождусь вашего лидера.", LANG_UNIVERSAL, pPlayer->GetGUID());
+             break;
+ 
+         case GOSSIP_ACTION_INFO_DEF+3:
+-            pCreature->MonsterSay("Hope all stats are correct. Have a good day!", LANG_UNIVERSAL, pPlayer->GetGUID());
++            pCreature->MonsterSay("Надеюсь, статистика верна. Хорошего дня!", LANG_UNIVERSAL, pPlayer->GetGUID());
+             break;
+ 
+         default:
+@@ -1409,7 +1409,7 @@
+     {
+         if ((!pPlayer->GetGroup() || !pPlayer->GetGroup()->IsLeader(pPlayer->GetGUID())) && !pPlayer->isGameMaster())
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Sorry, I'm not leader here.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Извини, я не яляюсь лидером рейда.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+             pPlayer->SEND_GOSSIP_MENU(13691, pCreature->GetGUID());
+             return true;
+         }
+@@ -1420,23 +1420,23 @@
+ 
+         if (instance->GetBossState(DATA_TWIN_VALKYR) == DONE)
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We have defeated twins val'kyr!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы одержали победу над Валь'кирами-близнецами!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+         }
+         else if (instance->GetBossState(DATA_FACTION_CHAMPIONS) == DONE)
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We have defeated faction champions!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы одержали победу над чемпионами фракций!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+         }
+         else if (instance->GetBossState(DATA_LORD_JARAXXUS) == DONE)
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We have defeated Lord Jaraxxus!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы одержали победу над лордом Джараксусом!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+         }
+         else if (instance->GetBossState(DATA_BEASTS) == DONE)
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We have defeated Beasts of Northrend!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы одержали победу над Нордскольскими чудовищами!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+         }
+         else
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We are ready to start the tournament!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы готовы к началу состязания!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+         }
+ 
+ 

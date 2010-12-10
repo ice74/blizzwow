@@ -1,0 +1,142 @@
+# HG changeset patch
+# User asniker
+# Date 1287903916 -21600
+# Node ID 44a29e68e3bd7bfd78b65ed4cb63830af7dec406
+# Parent  da9082ce10420700f03b98a75138e3199d10c4bf
+fix icecrown_citadel
+
+diff --git a/sql/Greedy-core/world/IcecrownCitadel.sql b/sql/Greedy-core/world/IcecrownCitadel.sql
+--- a/sql/Greedy-core/world/IcecrownCitadel.sql
++++ b/sql/Greedy-core/world/IcecrownCitadel.sql
+@@ -58,7 +58,7 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_ice_tomb' WHERE `entry`= 36980;
+ UPDATE `creature_template` SET `ScriptName`='npc_frost_bomb' WHERE `entry`= 37186;
+ UPDATE `creature_template` SET `ScriptName`='npc_icc_puddle_stalker' WHERE `entry`= 37824;
+-UPDATE `creature_template` SET `ScriptName`='npc_abomination' WHERE `entry` = 37672;
++
+ UPDATE `creature_template` SET `ScriptName`='npc_sticky_ooze' WHERE `entry`= 37006;
+ UPDATE `creature_template` SET `ScriptName`='npc_ooze_explode_stalker' WHERE `entry` = 38107;
+ UPDATE `creature_template` SET `ScriptName`='npc_gas_cloud_icc' WHERE `entry` = 37562;
+@@ -80,7 +80,8 @@
+ UPDATE `creature_model_info` SET `bounding_radius` = 5,`combat_reach` = 5 WHERE `modelid` = 31119;
+ UPDATE `creature_template` SET `mechanic_immune_mask` = 634339327 WHERE `entry` IN (36855,38106,38296,38297);
+ UPDATE `creature_template` SET `flags_extra` = 2 WHERE `entry` IN (37007,38301);
+-UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14, `spell1` = 70360, `spell2` = 70539, `spell3` = 70542, `VehicleId` = 591 WHERE `entry` IN (37672,38605,38786,38787);
++UPDATE `creature_template` SET `spell1` = 70360, `spell2`= 70539, `spell3`= 70542, `VehicleId` = 591 WHERE `entry`= 37672;
++UPDATE `creature_template` SET `spell1` = 72527, `spell2`= 72457, `spell3`= 70542, `VehicleId` = 591 WHERE `entry`= 38285;
+ UPDATE `creature_template` SET `dynamicflags` = 8, `npcflag` = 0, `unit_flags` = 32832 WHERE `entry` = 38995;
+ UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14 WHERE `entry` IN (36899,38123);
+ UPDATE `creature_template` SET `MovementType` = 1 WHERE `entry` = 37985;
+@@ -129,6 +130,7 @@
+ (13,0,69162,0,18,1,36659,0,0, '', 'Festergut - Gaseous Blight'),
+ (13,0,69164,0,18,1,36659,0,0, '', 'Festergut - Gaseous Blight'),
+ (13,0,71614,0,18,1,38995,0,0, '', 'LichKing - Ice Lock'),
++(13,0,71617,0,18,1,38317,0,0, '', 'Putricide - Tear Gas'),
+ (13,0,69125,0,18,1,37013,0,0, '', '');
+ 
+ -- creature
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+@@ -90,7 +90,6 @@
+                 DoCast(me, SPELL_CORRUPTION);
+                 me->SetHealth(uint32(me->GetMaxHealth() * 0.50));
+ 
+-                m_uiPortalTimer = 50000;
+                 m_uiEndTimer = 1000;
+ 
+                 bIntro = false;
+@@ -100,7 +99,7 @@
+ 
+                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+ 
+-                if (pInstance && me->isAlive())
++                if (pInstance)
+                     pInstance->SetData(DATA_VALITHRIA_DREAMWALKER_EVENT, NOT_STARTED);
+             }
+ 
+@@ -125,19 +124,9 @@
+ 
+             void UpdateAI(const uint32 diff)
+             {
+-                if (!pInstance || pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) != IN_PROGRESS)
++                if (!pInstance || pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) == DONE)
+                     return;
+ 
+-                if (m_uiPortalTimer <= diff)
+-                {
+-                    DoScriptText(SAY_OPEN_PORTAL, me);
+-                    for(uint8 p = 0; p < 6; ++p)
+-                    {
+-                        DoCast(RAID_MODE(SPELL_PORTAL_N_PRE,SPELL_PORTAL_N_PRE,SPELL_PORTAL_H_PRE,SPELL_PORTAL_H_PRE));
+-                    }
+-                    m_uiPortalTimer = 50000;
+-                } else m_uiPortalTimer -= diff;
+-
+                 if (!bAboveHP && (HealthAbovePct(74)))
+                 {
+                     DoScriptText(SAY_ABOVE_75, me);
+@@ -154,6 +143,7 @@
+                 {
+                     DoScriptText(SAY_END, me);
+                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
++                    pInstance->SetData(DATA_VALITHRIA_DREAMWALKER_EVENT, DONE);
+                     me->SetReactState(REACT_PASSIVE);
+                     me->RemoveAurasDueToSpell(SPELL_CORRUPTION);
+                     bEnd = true;
+@@ -176,7 +166,6 @@
+                             m_uiEndTimer = 1000;
+                             break;
+                         case 3:
+-                            pInstance->SetData(DATA_VALITHRIA_DREAMWALKER_EVENT, DONE);
+                             me->ForcedDespawn();
+                             m_uiEndTimer = 1000;
+                             bEnd = false;
+@@ -190,7 +179,6 @@
+             InstanceScript* pInstance;
+ 
+             uint8 m_uiStage;
+-            uint32 m_uiPortalTimer;
+             uint32 m_uiEndTimer;
+             bool bIntro;
+             bool bEnd;
+@@ -270,7 +258,7 @@
+             {
+                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+ 
+-                m_uiChangeTimer = 10000;
++                m_uiChangeTimer = 15000;
+             }
+ 
+             void UpdateAI(const uint32 diff)
+@@ -657,6 +645,7 @@
+                 me->SetInCombatWithZone();
+                 DoStartNoMovement(me->getVictim());
+                 m_uiSummonTimer = 20000;
++                m_uiPortalTimer = 50000;
+ 
+                 if (pInstance && pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) != IN_PROGRESS)
+                     summons.DespawnAll();
+@@ -693,11 +682,22 @@
+                     }
+                     m_uiSummonTimer = 20000;
+                 } else m_uiSummonTimer -= diff;
++
++                if (m_uiPortalTimer <= diff)
++                {
++                    DoScriptText(SAY_OPEN_PORTAL, pValithria);
++                    for(uint8 p = 0; p < 6; ++p)
++                    {
++                        DoCast(RAID_MODE(SPELL_PORTAL_N_PRE,SPELL_PORTAL_N_PRE,SPELL_PORTAL_H_PRE,SPELL_PORTAL_H_PRE));
++                    }
++                    m_uiPortalTimer = 50000;
++                } else m_uiPortalTimer -= diff;
+             }
+             private:
+                 InstanceScript* pInstance;
+ 
+                 uint32 m_uiSummonTimer;
++                uint32 m_uiPortalTimer;
+                 SummonList summons;
+         };
+ 

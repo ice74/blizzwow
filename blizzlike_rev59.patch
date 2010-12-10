@@ -1,0 +1,94 @@
+# HG changeset patch
+# User asniker
+# Date 1286811632 -21600
+# Node ID 4e50d91816e91f10fcfff462b60c6a47a0dbae2d
+# Parent  e355cfd097b6e1060f174a34078482ed1a208381
+перевёл все скрипты в ruby sanctum
+
+diff --git a/sql/Greedy-core/world/Ruby_sanctum.sql b/sql/Greedy-core/world/Ruby_sanctum.sql
+--- a/sql/Greedy-core/world/Ruby_sanctum.sql
++++ b/sql/Greedy-core/world/Ruby_sanctum.sql
+@@ -3,6 +3,13 @@
+ DELETE FROM script_texts where `entry` <= -1752017 AND `entry` >= -1752036;
+ 
+ INSERT INTO script_texts (`entry`, `content_default`, `npc_entry`, `content_loc3`, `sound`, `type`, `language`) VALUES
++( -1752001, "Ah, the entertainment has arrived.", 0, "", 17520, 1, 0),
++( -1752002, "Baltharus leaves no survivors!", 0, "", 17521, 1, 0),
++( -1752003, "This world has enough heroes.", 0, "", 17522, 1, 0),
++( -1752004, "I..Didn''t saw...that coming...", 0, "", 17523, 1, 0),
++( -1752005, "Twice the pain and half the fun.", 0, "", 17524, 1, 0),
++( -1752006, "Your power wanes, ancient one.... Soon you will join your friends.", 0, "", 17525, 1, 0),
++
+ ('-1752008', 'Help! I am trapped within this tree! I require aid!', '0', '', '17490', '1', '0'),	 	
+ ('-1752009', 'Thank you! I could not have held out for much longer.... A terrible thing has happened here.', '0', '', '17491', '1', '0'),	 	
+ ('-1752010', 'We believed the Sanctum was well-fortified, but we were not prepared for the nature of this assault.', '0', '', '17492', '0', '0'),	 	
+@@ -13,13 +20,6 @@
+ ('-1752015', 'In their initial assault, I caught a glimpse of their true leader, a fearsome full-grown twilight dragon.', '0', '', '17497', '0', '0'),	
+ ('-1752016', 'I know not the extent of their plans, heroes, but I know this: They cannot be allowed to succeed!', '0', '', '17498', '0', '0'),
+ 
+-( -1752001, "Ah, the entertainment has arrived.", 0, "", 17520, 1, 0),
+-( -1752002, "Baltharus leaves no survivors!", 0, "", 17521, 1, 0),
+-( -1752003, "This world has enough heroes.", 0, "", 17522, 1, 0),
+-( -1752004, "I..Didn''t saw...that coming...", 0, "", 17523, 1, 0),
+-( -1752005, "Twice the pain and half the fun.", 0, "", 17524, 1, 0),
+-( -1752006, "Your power wanes, ancient one.... Soon you will join your friends.", 0, "", 17525, 1, 0),
+-
+ ( -1752017, "Alexstrasza has chosen capable allies... A pity that I must END YOU!", 0, "", 17512, 1, 0),
+ ( -1752018, "You thought you stood a chance?", 0, "", 17513, 1, 0),
+ ( -1752019, "It''s for the best.", 0, "", 17514, 1, 0),
+@@ -71,4 +71,53 @@
+ UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_strike', `flags_extra`=128 WHERE `entry` = '40041';
+ UPDATE `creature_template` SET `ScriptName` = 'npc_meteor_flame', `flags_extra`=128 WHERE `entry` = '40042';
+ UPDATE `creature_template` SET `ScriptName` = 'npc_spell_meteor_strike', `flags_extra`=128 WHERE `entry` = '40029';
+-UPDATE `creature_template` SET `name`='summon halion', `ScriptName` = 'npc_summon_halion', `flags_extra`=128 WHERE `entry` = '40044';
+\ No newline at end of file
++UPDATE `creature_template` SET `name`='summon halion', `ScriptName` = 'npc_summon_halion', `flags_extra`=128 WHERE `entry` = '40044';
++
++
++/*Русский перевод*/
++
++
++UPDATE `script_texts` SET `content_loc8`='А-а-а, цирк приехал.' WHERE `entry`=-1752001;
++UPDATE `script_texts` SET `content_loc8`='Балтар не оставляет в живых!' WHERE `entry`=-1752002;
++UPDATE `script_texts` SET `content_loc8`='В мире хватает героев и без тебя...' WHERE `entry`=-1752003;
++UPDATE `script_texts` SET `content_loc8`='Как... это могло произойти?..' WHERE `entry`=-1752004;
++UPDATE `script_texts` SET `content_loc8`='Вдвое сильнее страдание.' WHERE `entry`=-1752005;
++UPDATE `script_texts` SET `content_loc8`='Твоя сила на исходе, древнейшая. Скоро ты присоеденишься к своим друзьям.' WHERE `entry`=-1752006;
++
++UPDATE `script_texts` SET `content_loc8`='Спасите! Я под этим деревом. Мне нужна помощь!' WHERE `entry`=-1752008;
++UPDATE `script_texts` SET `content_loc8`='Спасибо! Без вас я бы долго не продержалась... Здесь произошли страшные события... ' WHERE `entry`=-1752009;
++UPDATE `script_texts` SET `content_loc8`='Святилище считалось неприступным, но до сих пор оно не подвергалось такому штурму...' WHERE `entry`=-1752010;
++UPDATE `script_texts` SET `content_loc8`='Чёрный Дракон появился из воздуха, и поставил на нас крест, прежде чем мы успели отреагировать.' WHERE `entry`=-1752011;
++UPDATE `script_texts` SET `content_loc8`='У нас не единого шанса! Мои братья погибли здесь, вокруг меня, мне пришлось отступить здесь и найти выход.' WHERE `entry`=-1752012;
++UPDATE `script_texts` SET `content_loc8`='Они убили нас с холодной эффективностью, не хотя этого, их настоящая задача охранять яйца, которые находятся в святилище.' WHERE `entry`=-1752013;
++UPDATE `script_texts` SET `content_loc8`='Главного генерала, управляющего здесь всеми силами, зовут Заритриан, но я его боюсь.Здесь приобладают большие полномочия в сфере труда.' WHERE `entry`=-1752014;
++UPDATE `script_texts` SET `content_loc8`='В первоначальных нападение, я увидел их истинного лидера: грозного. взрослого сумеречного дракона.' WHERE `entry`=-1752015;
++UPDATE `script_texts` SET `content_loc8`='Я не знаю их истинных планов, герои, но я могу сказать одно: они не должны победить.' WHERE `entry`=-1752016;
++UPDATE `script_texts` SET `content_loc8`='Алекстраза выбрала достойных союзников... Жаль, что придется ПРИКОНЧИТЬ ВАС!' WHERE `entry`=-1752017;
++UPDATE `script_texts` SET `content_loc8`='Думаете, у вас есть шанс?' WHERE `entry`=-1752018;
++UPDATE `script_texts` SET `content_loc8`='Они и к лучшему.' WHERE `entry`=-1752019;
++UPDATE `script_texts` SET `content_loc8`='ХАЛИОН! Я...' WHERE `entry`=-1752020;
++UPDATE `script_texts` SET `content_loc8`='Слуги! Обратите их в пепел!' WHERE `entry`=-1752021;
++UPDATE `script_texts` SET `content_loc8`='Ваш-ш-ши муки с-станут платой за это вторжение!' WHERE `entry`=-1752022;
++UPDATE `script_texts` SET `content_loc8`='Как и должно быть...' WHERE `entry`=-1752023;
++UPDATE `script_texts` SET `content_loc8`='Халион будет доволен.' WHERE `entry`=-1752024;
++UPDATE `script_texts` SET `content_loc8`='Хрррр...Грррр...' WHERE `entry`=-1752024;
++UPDATE `script_texts` SET `content_loc8`='Горите в огне хозяина!' WHERE `entry`=-1752026;
++UPDATE `script_texts` SET `content_loc8`='Насекомые! Вы слишком поздно. Рубиновое Святилище потеряно.' WHERE `entry`=-1752027;
++UPDATE `script_texts` SET `content_loc8`='Этот мир вот-вот соскользнет в бездну. Вам выпала честь узреть начало эры РАЗРУШЕНИЯ!' WHERE `entry`=-1752028;
++UPDATE `script_texts` SET `content_loc8`='Другие герои пали.' WHERE `entry`=-1752029;
++UPDATE `script_texts` SET `content_loc8`='Ха-ха-ха.' WHERE `entry`=-1752030;
++UPDATE `script_texts` SET `content_loc8`='Это ваша последняя победа. Насладитесь ее вкусом. Ибо когда вернется мой господин, этот мир сгинет в огне!' WHERE `entry`=-1752031;
++UPDATE `script_texts` SET `content_loc8`='Не достаточно хорошо.' WHERE `entry`=-1752032;
++UPDATE `script_texts` SET `content_loc8`='Небеса в огне!' WHERE `entry`=-1752033;
++UPDATE `script_texts` SET `content_loc8`='Остерегайтесь теней!' WHERE `entry`=-1752034;
++UPDATE `script_texts` SET `content_loc8`='Вы найдете только страдание в царстве сумерек! Войдите, если сумеете!' WHERE `entry`=-1752035;
++UPDATE `script_texts` SET `content_loc8`='Я есть свет и я есть тьма! Трепещите, ничтожные, перед посланником Смертокрыла!' WHERE `entry`=-1752033;
++
++
++
++
++
++
++
++

@@ -1,0 +1,41 @@
+# HG changeset patch
+# User asniker
+# Date 1291350095 -18000
+# Node ID cee3e757b62776ad8da255bf2fef25e245409940
+# Parent  a577693c5ec1d5eff351d50bdd2a41a39885b9c0
+ядро: ‘икс »тема http://www.wowhead.com/item=31664
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -6058,3 +6058,6 @@
+ INSERT INTO `spell_bonus_data` (entry, direct_bonus, ap_bonus, comments) VALUES
+ (25742,0,0,'Paladin - Seal of Righteousness Dummy Proc');
+ 
++UPDATE item_template SET ScriptName = 'item_zuluheds_key' WHERE entry = 31664;
++
++
+diff --git a/src/server/scripts/World/item_scripts.cpp b/src/server/scripts/World/item_scripts.cpp
+--- a/src/server/scripts/World/item_scripts.cpp
++++ b/src/server/scripts/World/item_scripts.cpp
+@@ -511,6 +511,20 @@
+     }
+ };
+ 
++            //item_zuluheds_key (31664)
++
++class item_zuluheds_key : public ItemScript
++{
++	public:
++		item_zuluheds_key() : ItemScript("item_zuluheds_key") { }
++
++		bool OnUse(Player *pPlayer, Item *pItem, SpellCastTargets const& targets)
++		{
++			pPlayer->KilledMonsterCredit(22112,0);
++			return false;
++		}
++};
++
+ void AddSC_item_scripts()
+ {
+     new item_only_for_flight;

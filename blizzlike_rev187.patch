@@ -1,0 +1,43 @@
+# HG changeset patch
+# User asniker
+# Date 1289726524 -18000
+# Node ID 4e9275116aaaf658f2b5acc1fc71092c20bffb58
+# Parent  a7cf4f1ccbb3b9441ae60b6a8c17c352d0b2e996
+fix quest
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5980,12 +5980,13 @@
+ (250180, 23472, 628, 3, 1, 0, 0, 311.937, -918.894, 48.6856, 4.76736, 300, 0, 0, 4120, 0, 0, 0),
+ (250186, 23472, 628, 3, 1, 0, 0, 430.61, -857.491, 48.198, 0.074609, 300, 0, 0, 4120, 0, 0, 0);
+ 
+-
+-
+-
+-
+-
+-
+-
+-
+-
++UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;
++
++
++
++
++
++
++
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
+@@ -34,3 +34,5 @@
+ 
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12856;
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12432;
++
++UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;
+\ No newline at end of file

@@ -1,0 +1,78 @@
+# HG changeset patch
+# User asniker
+# Date 1288606105 -18000
+# Node ID ef790cdd9b6384252952c26c00d96bf48d392135
+# Parent  3e10e0e75f5734c800bdc55bc599cee4ad3e5514
+freebsd add
+
+diff --git a/dep/g3dlite/source/FileSystem.cpp b/dep/g3dlite/source/FileSystem.cpp
+--- a/dep/g3dlite/source/FileSystem.cpp
++++ b/dep/g3dlite/source/FileSystem.cpp
+@@ -27,6 +27,15 @@
+ #   include <io.h>
+ 
+ #define stat64 _stat64
++#elif defined(__FreeBSD__)
++#   include <dirent.h>
++#   include <fnmatch.h>
++#   include <unistd.h>
++#   define O_LARGEFILE      0100000
++#   define stat64 stat
++#   define _stat stat
++#   define _getcwd getcwd
++
+ #else
+ #   include <dirent.h>
+ #   include <fnmatch.h>
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5678,7 +5678,7 @@
+ 
+ 
+ 
+-INSERT INTO `creature_template` (`entry`, `modelid1`, `modelid3`, `name`, `gossip_menu_id`, `faction_A`, `faction_H`, `npcflag`, `unit_class`, `ScriptName`) VALUES ('100006', '25103', '25106', 'Buff-NPC', '40034', '35', '35', '1', '1', 'buffNPC');
++INSERT INTO `creature_template` (`entry`, `modelid1`, `modelid3`, `name`, `gossip_menu_id`, `faction_A`, `faction_H`, `npcflag`, `unit_class`, `ScriptName`) VALUES ('100006', '25103', '25106', 'Buff-NPC', '40034', '35', '35', '1', '1', 'npc_buffNPC');
+ 
+ INSERT INTO `npc_text` (`ID`, `text0_0`) VALUES ('40033', 'Ihr seid gerade in einen Kampf verwickelt. Kommt sp ter wieder $N');
+ INSERT INTO `npc_text` (`ID`, `text0_0`) VALUES ('40034', 'Willkommen $N. Wie kann ich euch behilflich sein ? Was haltet ihr von ein paar Buffs ?');
+diff --git a/src/server/game/DungeonFinding/LFGMgr.cpp b/src/server/game/DungeonFinding/LFGMgr.cpp
+--- a/src/server/game/DungeonFinding/LFGMgr.cpp
++++ b/src/server/game/DungeonFinding/LFGMgr.cpp
+@@ -1110,14 +1110,14 @@
+     uint32 rolecheckId = grp->GetLowGUID();
+     LfgRoleCheck* pRoleCheck = NULL;
+     LfgRolesMap check_roles;
+-    LfgRoleCheckMap::iterator itRoleCheck = m_RoleChecks.find(rolecheckId);
+-    LfgDungeonSet* dungeons = plr->GetLfgDungeons();
++    LfgRoleCheckMap::iterator itRoleCheck = m_RoleChecks.find(rolecheckId);   
+     bool newRoleCheck = itRoleCheck == m_RoleChecks.end();
+     if (newRoleCheck)
+     {
+-        if (grp->GetLeaderGUID() != plr->GetGUID())
++        if (!plr || grp->GetLeaderGUID() != plr->GetGUID())
+             return;
+ 
++		LfgDungeonSet* dungeons = plr->GetLfgDungeons();
+         pRoleCheck = new LfgRoleCheck();
+         pRoleCheck->cancelTime = time_t(time(NULL)) + LFG_TIME_ROLECHECK;
+         pRoleCheck->result = LFG_ROLECHECK_INITIALITING;
+diff --git a/src/server/shared/SystemConfig.h b/src/server/shared/SystemConfig.h
+--- a/src/server/shared/SystemConfig.h
++++ b/src/server/shared/SystemConfig.h
+@@ -38,12 +38,12 @@
+ 
+ #if PLATFORM == PLATFORM_WINDOWS
+ # ifdef _WIN64
+-#  define _FULLVERSION _PACKAGENAME "revision " _REVISION " "  "last update " _HASH " (Win64, made by Stik" _ENDIAN_STRING ")"
++#  define _FULLVERSION _PACKAGENAME "revision " _REVISION " "  "last update " _HASH " (Win64, made by Stik " _ENDIAN_STRING ")"
+ # else
+-#  define _FULLVERSION _PACKAGENAME "revision " _REVISION " "  "last update " _HASH " (Win32, made by Stik" _ENDIAN_STRING ")"
++#  define _FULLVERSION _PACKAGENAME "revision " _REVISION " "  "last update " _HASH " (Win32, made by Stik " _ENDIAN_STRING ")"
+ # endif
+ #else
+-#  define _FULLVERSION _PACKAGENAME "revision " _REVISION " "  "last update " _HASH " (Unix, made by Stik" _ENDIAN_STRING ")"
++#  define _FULLVERSION _PACKAGENAME "revision " _REVISION " "  "last update " _HASH " (Unix, made by Stik " _ENDIAN_STRING ")"
+ #endif
+ #endif
+ 

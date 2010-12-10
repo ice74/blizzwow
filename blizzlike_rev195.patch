@@ -1,0 +1,39 @@
+# HG changeset patch
+# User asniker
+# Date 1289990508 -18000
+# Node ID 86af3860b01e79aa080d801d5b16348ad36266f8
+# Parent  6be479ab9676655b219afe1e6750e02c58a84ea1
+fix some paladin spells
+
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -753,6 +753,15 @@
+             }
+             case SPELLFAMILY_PALADIN:
+             {
++			 // Judgement of Righteousness
++                if (m_spellInfo->Id == 20187)
++                {
++                    float ap = m_caster->GetTotalAttackPowerValue(BASE_ATTACK);
++                    int32 holy = m_caster->SpellBaseDamageBonus(GetSpellSchoolMask(m_spellInfo));
++                    if (holy < 0)
++                        holy = 0;
++                    damage += int32(ap * 0.2f) + int32(holy * 32 / 100);
++				}
+                 // Hammer of the Righteous
+                 if (m_spellInfo->SpellFamilyFlags[EFFECT_1] & 0x40000)
+                 {
+@@ -768,6 +777,12 @@
+ 				  damage += m_caster->GetShieldBlockValue() * SpellMgr::CalculateSpellEffectAmount(m_spellInfo, EFFECT_1) / 100;
+ 				  break;
+                  }
++				 // Judgement - Feedback needed
++				else if (m_spellInfo->Id == 54158)
++			    {
++					// [1 + 0.25 * SPH + 0.16 * AP]
++					damage += int32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.16f);
++				}
+                 // Blood Boil - bonus for diseased targets
+                 if (m_spellInfo->SpellFamilyFlags[0] & 0x00040000 && unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DEATHKNIGHT, 0, 0, 0x00000002, m_caster->GetGUID()))
+                 {

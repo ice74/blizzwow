@@ -1,0 +1,57 @@
+# HG changeset patch
+# User asniker
+# Date 1291133184 -18000
+# Node ID 375ce21203085c0887d32256833486708af6b3f9
+# Parent  820905dc3d0ab4a9af5c3a3c21f6a1502b85777a
+ядро: исправленно пару крашей
+
+diff --git a/src/server/game/Movement/MovementGenerators/TargetedMovementGenerator.cpp b/src/server/game/Movement/MovementGenerators/TargetedMovementGenerator.cpp
+--- a/src/server/game/Movement/MovementGenerators/TargetedMovementGenerator.cpp
++++ b/src/server/game/Movement/MovementGenerators/TargetedMovementGenerator.cpp
+@@ -258,7 +258,8 @@
+ template <> void TargetedMovementGenerator<Creature>::MovementInform(Creature &unit)
+ {
+     // Pass back the GUIDLow of the target. If it is pet's owner then PetAI will handle
+-    unit.AI()->MovementInform(TARGETED_MOTION_TYPE, i_target.getTarget()->GetGUIDLow());
++    if(unit.AI())
++	unit.AI()->MovementInform(TARGETED_MOTION_TYPE, i_target.getTarget()->GetGUIDLow());
+ }
+ 
+ template void TargetedMovementGenerator<Player>::MovementInform(Player&); // Not implemented for players
+diff --git a/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp b/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
+@@ -103,7 +103,7 @@
+         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+         return;
+     }
+-
++	
+     // some item classes can be used only in equipped state
+     if (proto->InventoryType != INVTYPE_NON_EQUIP && !pItem->IsEquipped())
+     {
+@@ -221,7 +221,13 @@
+     {
+         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+         return;
+-    }
++    }	
++	if (proto->Flags & ITEM_PROTO_FLAG_OPENABLE);
++	       else
++		{
++		KickPlayer();
++		return;
++		}
+ 	
+ 	   // Verify that the bag is an actual bag or wrapped item that can be used "normally"
+ 	   if(!(proto->Flags & ITEM_PROTO_FLAG_OPENABLE) && !pItem->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAPPED))
+@@ -299,7 +305,8 @@
+     if (sScriptMgr.OnGossipHello(_player, obj))
+         return;
+ 
+-obj->AI()->GossipHello(_player);
++      if(GameObjectAI *objAI = obj->AI())
++         objAI->GossipHello(_player);
+ 
+     obj->Use(_player);
+ }

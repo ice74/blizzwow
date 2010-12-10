@@ -1,0 +1,31 @@
+# HG changeset patch
+# User asniker
+# Date 1290082313 -18000
+# Node ID 507caa7b9758ebd1386899ffd561cc52bc885fc5
+# Parent  64a624f698a106e5a95e4e325402a2e5d1c49d61
+çàáûòîå
+
+diff --git a/sql/Blizzlike@Sacred-core/new fix/mail.sql b/sql/Blizzlike@Sacred-core/new fix/mail.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/mail.sql	
+@@ -0,0 +1,18 @@
++ï»¿DROP TABLE IF EXISTS `mail_external`;
++CREATE TABLE `mail_external` (
++  `id` bigint(20) unsigned NOT NULL auto_increment,
++  `receiver` bigint(20) unsigned NOT NULL,
++  `subject` varchar(200) default 'Support Message',
++  `message` varchar(500) default 'Support Message',
++  `money` bigint(20) unsigned NOT NULL default '0',
++  PRIMARY KEY  (`id`)
++) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
++ 
++DROP TABLE IF EXISTS `mail_external_items`;
++CREATE TABLE `mail_external_items` (
++  `id` int(10) unsigned NOT NULL auto_increment,
++  `mail_id` int(10) unsigned NOT NULL,
++  `item` int(11) NOT NULL,
++  `count` int(11) NOT NULL,
++  PRIMARY KEY  (`id`)
++) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+\ No newline at end of file

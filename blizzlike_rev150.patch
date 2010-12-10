@@ -1,0 +1,26 @@
+# HG changeset patch
+# User asniker
+# Date 1288875864 -18000
+# Node ID 64349ca36ce199e53f54ca72c664afb0c20dc0ee
+# Parent  a87d8580234b6c82be4ab6279d704e9c93c99647
+add dungeon finder into scriptloader.cpp
+
+diff --git a/src/server/game/Scripting/ScriptLoader.cpp b/src/server/game/Scripting/ScriptLoader.cpp
+--- a/src/server/game/Scripting/ScriptLoader.cpp
++++ b/src/server/game/Scripting/ScriptLoader.cpp
+@@ -63,6 +63,7 @@
+ void AddSC_npc_taxi();
+ void AddSC_achievement_scripts();
+ void AddSC_npc_customize();
++void AddSC_dungeon_finder();
+ 
+ //eastern kingdoms
+ void AddSC_alterac_valley();                 //Alterac Valley
+@@ -649,6 +650,7 @@
+     AddSC_achievement_scripts();
+     AddSC_chat_log();
+ 	AddSC_npc_customize();
++    AddSC_dungeon_finder();
+ 	
+ #endif
+ }

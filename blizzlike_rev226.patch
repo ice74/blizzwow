@@ -1,0 +1,18 @@
+# HG changeset patch
+# User asniker
+# Date 1290347825 -18000
+# Node ID 5a27afee27bd36754cd57a7472cf46d45798e0e4
+# Parent  50d48c79dab36c15acc4e387f65935134c8d6b8b
+ядро: фикс тираниуса
+
+diff --git a/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp b/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp
+--- a/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp
++++ b/src/server/scripts/Northrend/FrozenHalls/PitOfSaron/boss_scourgelord_tyrannus.cpp
+@@ -138,6 +138,7 @@
+         void KilledUnit(Unit * /*victim*/)
+         {
+             DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
++			me->SetVisibility(VISIBILITY_OFF);
+         }
+ 
+         void JustDied(Unit* /*killer*/)

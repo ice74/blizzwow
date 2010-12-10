@@ -1,0 +1,21 @@
+# HG changeset patch
+# User asniker
+# Date 1288860293 -18000
+# Node ID 8f8059c57321e9c9ea45119d45325e0dbbcf8a39
+# Parent  22bbe6935b490d79270a2f400b0ff0bafca25d66
+забытое Blade barrier
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -8890,8 +8890,8 @@
+     // Blade Barrier
+     if (auraSpellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 85)
+     {
+-        Player * plr = this->ToPlayer();
+-        if (this->GetTypeId() != TYPEID_PLAYER || !plr || plr->getClass() != CLASS_DEATH_KNIGHT)
++        Player * plr = ToPlayer();
++		if (!plr || plr->getClass() != CLASS_DEATH_KNIGHT)
+             return false;
+ 
+         if (!plr->IsBaseRuneSlotsOnCooldown(RUNE_BLOOD))

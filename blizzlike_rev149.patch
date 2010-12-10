@@ -1,0 +1,50 @@
+# HG changeset patch
+# User asniker
+# Date 1288875747 -18000
+# Node ID a87d8580234b6c82be4ab6279d704e9c93c99647
+# Parent  8f56d278beee97272b1cafd9df9d41a1de854bb0
+fix Tricks of the trade
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -6653,6 +6653,17 @@
+                     triggered_spell_id = 32747;
+                     break;
+                 }
++				case 57934: // Tricks of the Trade
++                {
++                    if (Unit * unitTarget = GetMisdirectionTarget())
++                    {
++                        RemoveAura(dummySpell->Id, GetGUID(), 0, AURA_REMOVE_BY_DEFAULT);
++                        CastSpell(this, 59628, true);
++                        CastSpell(unitTarget, 57933, true);
++                        return true;
++                    }
++                    return false;
++                }
+                 // Item - Druid T10 Balance 4P Bonus
+                 case 70723:
+                 {
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -5919,6 +5919,18 @@
+                     if (GetId() == 61777)
+                         target->CastSpell(target,m_spellProto->EffectTriggerSpell[m_effIndex],true);
+                     break;
++					 case SPELLFAMILY_ROGUE:
++                {
++                    switch(GetId())
++                    {
++                        case 59628: // Tricks of the Trade
++                            caster->SetReducedThreatPercent(0, 0);
++                            break;
++                        default:
++                            break;
++                    }
++                    break;
++                }
+                 default:
+                     break;
+             }

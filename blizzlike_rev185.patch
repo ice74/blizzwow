@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1289724594 -18000
+# Node ID 7136fac37437c9234199ae601ad4adecd3bdd8fe
+# Parent  24f6d369a4abd6cd78aff64d4f1d92a0a92f6c87
+fix borean tundra
+
+diff --git a/src/server/scripts/Northrend/borean_tundra.cpp b/src/server/scripts/Northrend/borean_tundra.cpp
+--- a/src/server/scripts/Northrend/borean_tundra.cpp
++++ b/src/server/scripts/Northrend/borean_tundra.cpp
+@@ -1945,7 +1945,7 @@
+         void JustDied(Unit* /*killer*/)
+         {
+             if (Player* pPlayer = GetPlayerForEscort())
+-                pPlayer->FailQuest(QUEST_ESCAPING_THE_MIST);
++                pPlayer->FailQuest(QUEST_GET_ME_OUTA_HERE);
+         }
+ 
+         void UpdateEscortAI(const uint32 /*diff*/)

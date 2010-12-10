@@ -1,0 +1,81 @@
+# HG changeset patch
+# User asniker
+# Date 1290095890 -18000
+# Node ID 2787f5ad11a2478bb3e72e07abc5043401f4ff70
+# Parent  c8199de5726170709da186a7312adc7e88ba4d70
+ядро: фикс спэлла дк - ¬зрыв трупа
+
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -3922,6 +3922,13 @@
+ 				spellInfo->Effect[1] = 0;
+ 				count++;
+ 				break;
++         // Ghoul's explosion - fix wrong target(?) + make instakill
++            case 47496:
++                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_DST;
++                spellInfo->EffectImplicitTargetB[0] = 0;
++                spellInfo->Effect[1] = SPELL_EFFECT_INSTAKILL;
++                count++;
++                break;
+         // Master Shapeshifter: missing stance data for forms other than bear - bear version has correct data
+         // To prevent aura staying on target after talent unlearned
+         case 48420:
+diff --git a/src/server/scripts/Spells/spell_dk.cpp b/src/server/scripts/Spells/spell_dk.cpp
+--- a/src/server/scripts/Spells/spell_dk.cpp
++++ b/src/server/scripts/Spells/spell_dk.cpp
+@@ -164,18 +164,46 @@
+            if (Unit* unitTarget = GetHitUnit())
+             {
+                 int32 bp = 0;
+-
++              
++			  bool ghoul = false;
+                 // Living ghoul as a target
+                 if (unitTarget->isAlive())
++                               {
++                                       ghoul = true;
+                     bp = int32(unitTarget->CountPctFromMaxHealth(25));
++                               }
+                 // Some corpse
+                 else
+-                    bp = GetEffectValue();
+-                GetCaster()->CastCustomSpell(unitTarget, SpellMgr::CalculateSpellEffectAmount(GetSpellInfo(), 1), &bp, NULL, NULL, true);
+-                // Corpse Explosion (Suicide)
+-                unitTarget->CastCustomSpell(unitTarget, DK_SPELL_CORPSE_EXPLOSION_TRIGGERED, &bp, NULL, NULL, true);
+-                // Set corpse look
+-                unitTarget->SetDisplayId(DISPLAY_GHOUL_CORPSE + urand(0, 3));
++                    bp = GetEffectValue();    
++
++                               uint32 spellid = SpellMgr::CalculateSpellEffectAmount(GetSpellInfo(), 1);
++
++                               // ghoul case
++                               if (ghoul)
++                               {
++                                       spellid = 47496;
++                                       // ap bonus is offlike?
++                                       bp += GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.1f;
++                                       // ghoul cast on self, 1,5 seconds
++                                       unitTarget->CastCustomSpell(unitTarget, spellid, &bp, NULL, NULL, false);
++                               }
++                               else
++                                       GetCaster()->CastCustomSpell(unitTarget, spellid, &bp, NULL, NULL, true);
++
++                               // ghoul is dead already by 47496
++                               if (!ghoul)
++                               {
++                                       // Corpse Explosion (Suicide)
++                                       unitTarget->CastCustomSpell(unitTarget, DK_SPELL_CORPSE_EXPLOSION_TRIGGERED, &bp, NULL, NULL, true);
++                                       // Set corpse look
++                                       unitTarget->SetDisplayId(DISPLAY_GHOUL_CORPSE + urand(0, 3));
++                               }
++
++                               // impossible to summon a new pet for a time when corpse exist, don't know how on offy
++                               /*if (ghoul)
++                               {
++                                       DoSomethingToRemoveCorpse();
++                               }*/              
+             }
+ 		}	
+ 			

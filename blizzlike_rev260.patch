@@ -1,0 +1,191 @@
+# HG changeset patch
+# User asniker
+# Date 1291351472 -18000
+# Node ID 8261f1f392c7b5b3c935c8200d1b44f7347cde35
+# Parent  9b3f071f0f6617376926b093e2999042be93b09d
+ядро: пофиксил ачивы
+
+diff --git a/src/server/game/Achievements/AchievementMgr.cpp b/src/server/game/Achievements/AchievementMgr.cpp
+--- a/src/server/game/Achievements/AchievementMgr.cpp
++++ b/src/server/game/Achievements/AchievementMgr.cpp
+@@ -98,6 +98,7 @@
+         case ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
+         case ACHIEVEMENT_CRITERIA_TYPE_ROLL_GREED_ON_LOOT:
+         case ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE:
++		case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
+             break;
+         default:
+             sLog.outErrorDb("Table `achievement_criteria_data` has data for non-supported criteria type (Entry: %u Type: %u), ignored.", criteria->ID, criteria->requiredType);
+@@ -1166,7 +1167,7 @@
+                 // You _have_ to loot that item, just owning it when logging in does _not_ count!
+                 if (!miscvalue1)
+                     continue;
+-                if (miscvalue1 != achievementCriteria->own_item.itemID)
++                if (miscvalue1 != achievementCriteria->loot_item.itemID)
+                     continue;
+                 SetCriteriaProgress(achievementCriteria, miscvalue2, PROGRESS_ACCUMULATE);
+                 break;
+@@ -1464,6 +1465,16 @@
+                 SetCriteriaProgress(achievementCriteria, 1, PROGRESS_ACCUMULATE);
+                 break;
+             }
++			case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
++				{
++					// those requirements couldn't be found in the dbc
++					AchievementCriteriaDataSet const* data = sAchievementMgr.GetCriteriaDataSet(achievementCriteria);
++					if (!data || !data->Meets(GetPlayer(),unit))
++						continue;
++
++					SetCriteriaProgress(achievementCriteria, miscvalue1, PROGRESS_ACCUMULATE);
++					break;
++				}
+             // std case: not exist in DBC, not triggered in code as result
+             case ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HEALTH:
+             case ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_SPELLPOWER:
+@@ -1475,8 +1486,7 @@
+             // FIXME: not triggered in code as result, need to implement
+             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID:
+             case ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA:
+-            case ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA:
+-            case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
++            case ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA:            
+             case ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_TEAM_RATING:
+             case ACHIEVEMENT_CRITERIA_TYPE_REACH_TEAM_RATING:
+             case ACHIEVEMENT_CRITERIA_TYPE_OWN_RANK:
+@@ -1634,6 +1644,8 @@
+             return progress->counter >= achievementCriteria->learn_skill_line.spellCount;
+         case ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL:
+             return progress->counter >= achievementCriteria->honorable_kill.killCount;
++		case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
++			return progress->counter >= achievementCriteria->honorable_kill_pvp.killCount;
+         case ACHIEVEMENT_CRITERIA_TYPE_EARN_ACHIEVEMENT_POINTS:
+             return progress->counter >= 9000;
+         case ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS:
+@@ -2237,6 +2249,8 @@
+                 break;                                      // any cases
+             case ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL:
+                 break;                                      // any cases
++			case ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL:
++				break;                                      // any cases
+             default:                                        // type not use DB data, ignore
+                 continue;
+         }
+diff --git a/src/server/game/Battlegrounds/Battleground.cpp b/src/server/game/Battlegrounds/Battleground.cpp
+--- a/src/server/game/Battlegrounds/Battleground.cpp
++++ b/src/server/game/Battlegrounds/Battleground.cpp
+@@ -1025,6 +1025,7 @@
+ 
+         sLog.outDetail("BATTLEGROUND: Removed player %s from Battleground.", plr->GetName());
+         plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId(), true);
++		plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId(), true);
+     }
+ 
+     //battleground object will be deleted next Battleground::Update() call
+@@ -1149,6 +1150,8 @@
+ 
+     plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HEALING_DONE, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId());
+     plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DAMAGE_DONE, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId());
++	plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId(), true);
++	plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId(), true);
+ 
+     // setup BG group membership
+     PlayerAddedToBGCheckIfBGIsRunning(plr);
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp
+@@ -171,6 +171,17 @@
+             EndBattleground(HORDE);
+     }
+ }
++void BattlegroundAB::HandleKillPlayer(Player *player, Player *killer)
++{
++	if (GetStatus() != STATUS_IN_PROGRESS)
++		return;
++
++	if (killer->GetAreaId() == player->GetAreaId()) 
++		killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA);
++
++	Battleground::HandleKillPlayer(player, killer);
++
++}
+ 
+ void BattlegroundAB::StartingEventCloseDoors()
+ {
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAB.h b/src/server/game/Battlegrounds/Zones/BattlegroundAB.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAB.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAB.h
+@@ -252,6 +252,7 @@
+         virtual void StartingEventCloseDoors();
+         virtual void StartingEventOpenDoors();
+         void RemovePlayer(Player *plr,uint64 guid);
++		void HandleKillPlayer(Player* player, Player *killer);
+         void HandleAreaTrigger(Player *Source, uint32 Trigger);
+         virtual bool SetupBattleground();
+         virtual void Reset();
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
+@@ -52,6 +52,9 @@
+     if (GetStatus() != STATUS_IN_PROGRESS)
+         return;
+ 
++  if (killer->GetAreaId() == player->GetAreaId()) 
++       killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA);
++
+     Battleground::HandleKillPlayer(player, killer);
+     UpdateScore(player->GetTeam(),-1);
+ }
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp
+@@ -579,6 +579,9 @@
+     if (GetStatus() != STATUS_IN_PROGRESS)
+         return;
+ 
++	if (killer->GetAreaId() == player->GetAreaId()) 
++		killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA);
++
+     Battleground::HandleKillPlayer(player, killer);
+     EventPlayerDroppedFlag(player);
+ }
+diff --git a/src/server/game/DataStores/DBCStructure.h b/src/server/game/DataStores/DBCStructure.h
+--- a/src/server/game/DataStores/DBCStructure.h
++++ b/src/server/game/DataStores/DBCStructure.h
+@@ -221,6 +221,13 @@
+             uint32  killCount;                              // 4
+         } honorable_kill_at_area;
+ 
++        // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL         = 35
++		struct
++		{
++			uint32  unused;                                 // 3
++			uint32  killCount;                              // 4
++			} honorable_kill_pvp;
++
+         // ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA              = 32
+         struct
+         {
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -6894,6 +6894,7 @@
+             // and those in a lifetime
+             ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
+             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
++			UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL,1);
+             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, pVictim->getClass());
+             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, pVictim->getRace());
+         }
+diff --git a/src/server/game/Globals/ObjectMgr.cpp b/src/server/game/Globals/ObjectMgr.cpp
+--- a/src/server/game/Globals/ObjectMgr.cpp
++++ b/src/server/game/Globals/ObjectMgr.cpp
+@@ -1055,7 +1055,8 @@
+ dbcitem->InventoryType != INVTYPE_WEAPONOFFHAND &&
+ dbcitem->InventoryType != INVTYPE_HOLDABLE &&
+ dbcitem->InventoryType != INVTYPE_THROWN &&
+-dbcitem->InventoryType != INVTYPE_RANGEDRIGHT)
++dbcitem->InventoryType != INVTYPE_RANGEDRIGHT &&
++dbcitem->InventoryType != INVTYPE_RELIC)
+ {
+ sLog.outErrorDb("Item (entry=%u) in creature_equip_template.equipentry%u for entry = %u is not equipable in a hand, forced to 0.", eqInfo->equipentry[j], j+1, i);
+ const_cast<EquipmentInfo*>(eqInfo)->equipentry[j] = 0;

@@ -1,0 +1,63 @@
+# HG changeset patch
+# User asniker
+# Date 1291349379 -18000
+# Node ID acca9ad6920274f58dad58d241374f59fda669e8
+# Parent  4bda015fd6fddbbf82cadfe5494cd2ffe35c7161
+Ядро/Заклинания/Веши: Фикс "Lesser Invisibility", "Glyph of shadow starfall", "Clearcasting".
+Ядро: Фикс компила
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -8889,6 +8889,13 @@
+         case 72176:
+             basepoints0 = 3;
+             break;	
++			// Glyph of Shadow only in shadow form
++			case 55689:
++			if (GetTypeId() != TYPEID_PLAYER)
++			if (Player * plr = this->ToPlayer())
++			if (plr->m_form != FORM_SHADOW)
++			return false;
++			break;
+ 			 case 44543: // Fingers of Frost (Rank 1)
+         case 44545: // Fingers of Frost (Rank 2)                  
+             // Frostbite
+diff --git a/src/server/game/Spells/Spell.h b/src/server/game/Spells/Spell.h
+--- a/src/server/game/Spells/Spell.h
++++ b/src/server/game/Spells/Spell.h
+@@ -765,6 +765,8 @@
+                             continue;
+                         if (!target->isAttackableByAOE(i_requireDeadTarget))
+                             continue;
++						if (!i_source->canSeeOrDetect(target, false))
++						    continue;
+                         if (i_source->IsControlledByPlayer())
+                         {
+                             if (i_source->IsFriendlyTo(target))
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -2880,8 +2880,8 @@
+             // Howl of Terror
+             else if (spellproto->SpellFamilyFlags[1] & 0x8)
+                 return DIMINISHING_FEAR_BLIND;
+-            // Seduction
+-            else if ((spellproto->SpellFamilyFlags[0] & 0x40000000) && spellproto->Id != 7870)
++           // Seduction (Lesser Invisibility have same SpellFamilyFlags)
++			else if (spellproto->SpellFamilyFlags[0] & 0x40000000 && spellproto->SpellIconID != 331)
+                 return DIMINISHING_FEAR_BLIND;
+             break;
+         }
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -1022,7 +1022,7 @@
+         }
+ };
+ 
+-typedef boss_the_lich_king::boss_the_lich_kingAI LichKingAI
++typedef boss_the_lich_king::boss_the_lich_kingAI LichKingAI;
+ 
+ class spell_lich_king_necrotic_plague : public SpellScriptLoader
+ {

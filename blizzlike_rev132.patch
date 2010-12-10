@@ -1,0 +1,35 @@
+# HG changeset patch
+# User asniker
+# Date 1288771099 -18000
+# Node ID 8c8f2c6bd01fbbc9226a413e3c48cfdb6e2a9ae6
+# Parent  a09275299c48d7d700e19514772a86e7079a963a
+fix frost fingers
+
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -8873,8 +8873,8 @@
+         // Deathbringer Saurfang - Blood Beast's Blood Link
+         case 72176:
+             basepoints0 = 3;
+-            break;
+-			case 44543: // Fingers of Frost (Rank 1)
++            break;	
++			 case 44543: // Fingers of Frost (Rank 1)
+         case 44545: // Fingers of Frost (Rank 2)                  
+             // Frostbite
+             if (AuraEffect * aurEff = GetAuraEffect(SPELL_AURA_ADD_TARGET_TRIGGER, SPELLFAMILY_MAGE, 0, 0x200, 0, GetGUID()))
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -5761,6 +5761,10 @@
+                             caster->CastCustomSpell(28836, SPELLVALUE_BASE_POINT0, damage, target);
+                     }
+                     break;
++					case 74396: // Fingers of Frost
++                   if (SpellEntry const * spell = sSpellStore.LookupEntry(44544))
++                        GetBase()->SetStackAmount(spell->procCharges);
++                   break;
+                 case 71563:
+                     if (Aura* newAura = target->AddAura(71564, target))
+                         newAura->SetStackAmount(newAura->GetSpellProto()->StackAmount);

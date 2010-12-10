@@ -1,0 +1,126 @@
+# HG changeset patch
+# User asniker
+# Date 1290421381 -18000
+# Node ID e3874841a8307b952915c82e4bc1903e1498d9fa
+# Parent  6fb19dcff247e6c8bcb49e530185f5b533bd0285
+ядро: обновление цлк
+
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
+@@ -135,6 +135,8 @@
+ 
+             void EnterCombat(Unit* /*pWho*/)
+             {
++			if(!pInstance)
++			return;
+                 DoScriptText(SAY_AGGRO, me);
+ 
+                 DoCast(me, SPELL_BLOOD_LINK, true);
+@@ -142,9 +144,7 @@
+                 DoCast(me, SPELL_FALLEN_CHAMPION_AURA, true);
+                 DoCast(me, SPELL_RUNE_OF_BLOOD_AURA, true);
+ 				pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_FALLEN_CHAMPION);
+-
+-                if (pInstance)
+-                    pInstance->SetData(DATA_SAURFANG_EVENT, IN_PROGRESS);
++                pInstance->SetData(DATA_SAURFANG_EVENT, IN_PROGRESS);
+             }
+ 
+             void JustDied(Unit* /*pKiller*/)
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -157,7 +157,6 @@
+ Creature* pTirion;
+ Creature* pFather;
+ Creature* pFrostmourne;
+-Creature* pSafeZone;
+ 
+ class boss_the_lich_king : public CreatureScript
+ {
+@@ -282,10 +281,7 @@
+                 {
+                     if (Player* pPlayer = i->getSource())
+                     {
+-                        if(pPlayer)
+-                        {
+-                            pPlayer->SendMovieStart(16);
+-                        }
++                    pPlayer->SendMovieStart(16);					
+                     }
+                 }
+             }
+@@ -344,6 +340,12 @@
+                     case CREATURE_VILE_SPIRIT:
+                         summoned->CastSpell(summoned, SPELL_VILE_SPIRIT_DISTANCE_CHECK, true);
+                         break;
++					case CREATURE_TRIGGER:
++					    summoned->AI()->AttackStart(me);
++						summoned->SetDisplayId(MODEL_INVISIBLE);
++						summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
++						break;
++						
+                 }
+             }
+ 
+@@ -385,20 +387,19 @@
+ 							return;
+ 
+ 						bEnding = true;
++						break;
+                 }
+ 
+                 if(!HealthAbovePct(12) && !TriggerSpawned)
+                 {
+-                    pSafeZone = me->SummonCreature(CREATURE_TRIGGER, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 360000);
+-                    pSafeZone->AI()->AttackStart(me);
+-                    pSafeZone->SetDisplayId(MODEL_INVISIBLE);
++                    me->SummonCreature(CREATURE_TRIGGER, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 360000);
+                     TriggerSpawned = true;
+                 }              
+             }
+ 
+             void UpdateAI(const uint32 uiDiff)
+             {
+-                if (!CheckInRoom())
++               if (!pInstance || pInstance->GetData(DATA_LICH_KING_EVENT) != IN_PROGRESS)
+                     return;
+ 
+                 if(!bEnding)
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+@@ -71,7 +71,7 @@
+                 m_uiStage = 1;
+ 
+                 DoCast(me, SPELL_CORRUPTION);
+-                me->SetHealth(uint32(me->GetMaxHealth() * 0.50));
++                me->SetHealth(uint32(me->GetMaxHealth() / 2));
+ 
+                 m_uiEndTimer = 1000;
+ 
+@@ -98,6 +98,9 @@
+ 
+                     ScriptedAI::MoveInLineOfSight(who);
+                 }
++				if (pInstance && pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) == IN_PROGRESS)
++				if(!who->IsWithinDistInMap(me, 60.0f,true))
++				pInstance->SetData(DATA_VALITHRIA_DREAMWALKER_EVENT, FAIL);
+             }
+ 
+             void JustDied(Unit* /*pKiller*/)
+@@ -217,11 +220,9 @@
+                 {
+                     float x, y, z;
+                     me->GetPosition(x,y,z);
+-                    for(uint8 i = 0; i <= 8; ++i) //need correct count
+-                    {
++                    for(uint8 i = 0; i <= 8; ++i) //need correct count                
+                         //need correct min and max value
+-                        me->SummonCreature(CREATURE_CLOUD, x + (urand(2, 6) * 10), y + (urand(1, 4) * 10), z + urand(2,8), 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
+-                    }
++                        me->SummonCreature(CREATURE_CLOUD, x + (urand(2, 6) * 10), y + (urand(1, 4) * 10), z + urand(2,8), 0, TEMPSUMMON_TIMED_DESPAWN, 15000);                  
+                     m_uiSummonPortalTimer = 5000;
+                 } else m_uiSummonPortalTimer -= diff;
+             }

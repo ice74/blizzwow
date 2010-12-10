@@ -1,0 +1,214 @@
+# HG changeset patch
+# User asniker
+# Date 1288808942 -18000
+# Node ID f0e11f63a635a62d16546f856c3829bd28565545
+# Parent  dcf2fe0577d4faf31920f32d461755c0c687d6a8
+fix some spell and icecrown citadel
+
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql b/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix database errors.sql	
+@@ -1,2 +1,15 @@
+ ﻿UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
+-DELETE FROM `creature` WHERE `guid` = '4459255';
++DELETE FROM `creature` WHERE `entry` = '33115';
++
++
++UPDATE `quest_template` SET `SkillOrClassMask` = '773' WHERE `entry` IN (12517,12518,12798,13311);
++DELETE FROM `event_scripts` WHERE `id` = '8175';
++DELETE FROM `db_script_string` WHERE `entry` = '2000000348';
++
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_valanar_icc' WHERE `entry` = 37970;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_keleset_icc' WHERE `entry` = 37972;
++UPDATE `creature_template` SET `ScriptName`='boss_blood_elf_taldaram_icc' WHERE `entry` = 37973;
++
++ALTER TABLE `corpse` ADD COLUMN `itemCache` text NOT NULL AFTER `displayID`;
++
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql	
+@@ -0,0 +1,3 @@
++﻿UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37970';
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
++UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
+\ No newline at end of file
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
+@@ -23,8 +23,8 @@
+ REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMask`, `MinLevel`, `MaxLevel`, `QuestLevel`, `Type`, `RequiredRaces`, `RequiredSkillValue`, `RepObjectiveFaction`, `RepObjectiveValue`, `RepObjectiveFaction2`, `RepObjectiveValue2`, `RequiredMinRepFaction`, `RequiredMinRepValue`, `RequiredMaxRepFaction`, `RequiredMaxRepValue`, `SuggestedPlayers`, `LimitTime`, `QuestFlags`, `SpecialFlags`, `CharTitleId`, `PlayersSlain`, `BonusTalents`, `RewardArenaPoints`, `PrevQuestId`, `NextQuestId`, `ExclusiveGroup`, `NextQuestInChain`, `RewXPId`, `SrcItemId`, `SrcItemCount`, `SrcSpell`, `Title`, `Details`, `Objectives`, `OfferRewardText`, `RequestItemsText`, `EndText`, `CompletedText`, `ObjectiveText1`, `ObjectiveText2`, `ObjectiveText3`, `ObjectiveText4`, `ReqItemId1`, `ReqItemId2`, `ReqItemId3`, `ReqItemId4`, `ReqItemId5`, `ReqItemId6`, `ReqItemCount1`, `ReqItemCount2`, `ReqItemCount3`, `ReqItemCount4`, `ReqItemCount5`, `ReqItemCount6`, `ReqSourceId1`, `ReqSourceId2`, `ReqSourceId3`, `ReqSourceId4`, `ReqSourceCount1`, `ReqSourceCount2`, `ReqSourceCount3`, `ReqSourceCount4`, `ReqCreatureOrGOId1`, `ReqCreatureOrGOId2`, `ReqCreatureOrGOId3`, `ReqCreatureOrGOId4`, `ReqCreatureOrGOCount1`, `ReqCreatureOrGOCount2`, `ReqCreatureOrGOCount3`, `ReqCreatureOrGOCount4`, `ReqSpellCast1`, `ReqSpellCast2`, `ReqSpellCast3`, `ReqSpellCast4`, `RewChoiceItemId1`, `RewChoiceItemId2`, `RewChoiceItemId3`, `RewChoiceItemId4`, `RewChoiceItemId5`, `RewChoiceItemId6`, `RewChoiceItemCount1`, `RewChoiceItemCount2`, `RewChoiceItemCount3`, `RewChoiceItemCount4`, `RewChoiceItemCount5`, `RewChoiceItemCount6`, `RewItemId1`, `RewItemId2`, `RewItemId3`, `RewItemId4`, `RewItemCount1`, `RewItemCount2`, `RewItemCount3`, `RewItemCount4`, `RewRepFaction1`, `RewRepFaction2`, `RewRepFaction3`, `RewRepFaction4`, `RewRepFaction5`, `RewRepValueId1`, `RewRepValueId2`, `RewRepValueId3`, `RewRepValueId4`, `RewRepValueId5`, `RewRepValue1`, `RewRepValue2`, `RewRepValue3`, `RewRepValue4`, `RewRepValue5`, `RewHonorAddition`, `RewHonorMultiplier`, `unk0`, `RewOrReqMoney`, `RewMoneyMaxLevel`, `RewSpell`, `RewSpellCast`, `RewMailTemplateId`, `RewMailDelaySecs`, `PointMapId`, `PointX`, `PointY`, `PointOpt`, `DetailsEmote1`, `DetailsEmote2`, `DetailsEmote3`, `DetailsEmote4`, `DetailsEmoteDelay1`, `DetailsEmoteDelay2`, `DetailsEmoteDelay3`, `DetailsEmoteDelay4`, `IncompleteEmote`, `CompleteEmote`, `OfferRewardEmote1`, `OfferRewardEmote2`, `OfferRewardEmote3`, `OfferRewardEmote4`, `OfferRewardEmoteDelay1`, `OfferRewardEmoteDelay2`, `OfferRewardEmoteDelay3`, `OfferRewardEmoteDelay4`, `StartScript`, `CompleteScript`, `WDBVerified`) VALUES (24499, 2, 4809, 0, 78, 0, 80, 81, 1101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 24510, 24683, 0, 24683, 8, 0, 0, 0, 'Echoes of Tortured Souls', 'I cannot thank you enough for coming. We\'re severely undermanned to be risking a venture into the citadel, but opportunities like this are too rare to pass up.$B$BI\'m awaiting the arrival of champions from the coliseum, but if your reputation holds true, you should be more than equipped to fight through the forge yourself. Clear the way to the far side and secure the passage to the Pit of Saron. We will need to hold it to move our men further into the citadel.$B$BPlease hurry, $n. We\'re counting on you.', 'Kill Bronjahm and the Devourer of Souls to secure access to the Pit of Saron.', 'Just in time! Thank you, $N.$B$BThe Pit of Saron lies ahead, and if our scouts are correct, past that will be the Halls of Reflection. It is there that Arthas lets his guard down, and it is there that we hope to find a clue to his weakness... or maybe, just maybe, his redemption.', '', '', 'Speak to Lady Jaina Proudmoore at the rear of the Forge of Souls.', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36497, 36502, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49426, 0, 0, 0, 2, 0, 0, 0, 1050, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 296000, 264600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12340);
+ 
+ 
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701; 
+-UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 24451;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701;
++UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 13679; 
+  
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11587;
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11607;
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -1872,8 +1872,9 @@
+                         {
+                             case 5065:                          // Rank 1
+                             case 5064:                          // Rank 2
+-                                triggeredSpells.push_back(TriggeredSpellInfo(33619, pVictim, this,
+-                                    std::min(RemainingDamage, currentAbsorb) * aurEff->GetAmount() / 100, *i));
++                                if (pVictim == caster)
++                  triggeredSpells.push_back(TriggeredSpellInfo(33619, pVictim, this,
++              std::min(RemainingDamage, currentAbsorb) * aurEff->GetAmount() / 100, *i));
+                                 break;
+                             default:
+                                 sLog.outError("Unit::CalcAbsorbResist: unknown Reflective Shield spell %d", aurEff->GetId());
+diff --git a/src/server/scripts/Spells/spell_dk.cpp b/src/server/scripts/Spells/spell_dk.cpp
+--- a/src/server/scripts/Spells/spell_dk.cpp
++++ b/src/server/scripts/Spells/spell_dk.cpp
+@@ -23,6 +23,7 @@
+ 
+ #include "ScriptPCH.h"
+ #include "Spell.h"
++#include "SpellAuraEffects.h"
+ 
+ enum DeathKnightSpells
+ {
+@@ -128,21 +129,124 @@
+     class spell_dk_scourge_strike_SpellScript : public SpellScript
+     {
+         PrepareSpellScript(spell_dk_scourge_strike_SpellScript)
++
+         bool Validate(SpellEntry const * /*spellEntry*/)
+         {
+             if (!sSpellStore.LookupEntry(DK_SPELL_SCOURGE_STRIKE_TRIGGERED))
+                 return false;
++
+             return true;
+         }
+ 
++		void GetGlyphScourgeStrikeAuraEffects(Unit const * caster, Unit const * target, Unit::AuraEffectList & auras)
++        {
++            Unit::AuraEffectList const & aurasA = target->GetAuraEffectsByType(SPELL_AURA_DUMMY);
++            for (Unit::AuraEffectList::const_iterator itr = aurasA.begin(); itr != aurasA.end(); ++itr)
++            {
++                if (((*itr)->GetCasterGUID() != caster->GetGUID()) || ((*itr)->GetEffIndex() != EFFECT_0))
++                    continue;
++
++                SpellEntry const * spellProto = (*itr)->GetSpellProto();
++                if ((spellProto->SpellIconID == 23) && (SpellFamilyNames(spellProto->SpellFamilyName) == SPELLFAMILY_GENERIC))
++                    auras.push_back(*itr);
++            }
++        }
++
++        AuraEffect * GetGlyphScourgeStrikeAuraEffect(uint32 diseaseId, Unit::AuraEffectList const & auras)
++        {
++            for (Unit::AuraEffectList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
++                if (diseaseId == ((*itr)->GetAmount() >> 4))
++                    return (*itr);
++
++            return NULL;
++        }
++
+         void HandleDummy(SpellEffIndex /*effIndex*/)
+         {
+-            Unit* caster = GetCaster();
+-            if (Unit* unitTarget = GetHitUnit())
++            static const AuraType diseaseAuraTypes[] =
+             {
+-                int32 bp = (GetHitDamage() * GetEffectValue() * unitTarget->GetDiseasesByCaster(caster->GetGUID())) / 100;
+-                caster->CastCustomSpell(unitTarget, DK_SPELL_SCOURGE_STRIKE_TRIGGERED, &bp, NULL, NULL, true);
++               SPELL_AURA_PERIODIC_DAMAGE, // Frost Fever and Blood Plague
++                SPELL_AURA_LINKED,          // Crypt Fever and Ebon Plague
++                SPELL_AURA_NONE
++            };
++
++            Unit * caster = GetCaster();
++            Unit * target = GetHitUnit();
++
++            if (!target)
++                return;
++
++            uint32 diseases = 0;
++            int32 extratime, maxtime;
++            AuraEffect const * aurEffA;
++
++            Unit::AuraEffectList aurasA;
++            GetGlyphScourgeStrikeAuraEffects(caster, caster, aurasA);
++
++            bool hasGlyph = bool(aurasA.size());
++
++            if (hasGlyph)
++            {
++                aurEffA = *aurasA.begin();
++                extratime = aurEffA->GetAmount();
++                maxtime = SpellMgr::CalculateSpellEffectAmount(aurEffA->GetSpellProto(), EFFECT_1);
++
++                aurasA.clear();
++                GetGlyphScourgeStrikeAuraEffects(caster, target, aurasA);
+             }
++			 for (AuraType const * itrA = &diseaseAuraTypes[0]; itrA && itrA[0] != SPELL_AURA_NONE; ++itrA)
++            {
++                Unit::AuraEffectList const & aurasB = target->GetAuraEffectsByType(*itrA);
++                for (Unit::AuraEffectList::const_iterator itrB = aurasB.begin(); itrB != aurasB.end(); ++itrB)
++                    if (((*itrB)->GetSpellProto()->Dispel == DISPEL_DISEASE) &&
++                        ((*itrB)->GetCasterGUID() == caster->GetGUID()))
++                    {
++                        ++diseases;
++
++                        if (!hasGlyph)
++                            continue;
++
++                        Aura * aura = (*itrB)->GetBase();
++
++                        int32 applytime = int32(aura->GetApplyTime() & 0x7FFFFFFF);
++                        int32 duration = std::min(aura->GetDuration() + (extratime * IN_MILLISECONDS), aura->GetMaxDuration());
++
++                        if (AuraEffect * aurEffB = GetGlyphScourgeStrikeAuraEffect(aura->GetId(), aurasA))
++                        {
++                            aurEffB->GetBase()->SetDuration(duration);
++
++                            if (applytime != aurEffB->GetBase()->GetMaxDuration())
++                                aurEffB->SetAmount(aurEffB->GetAmount() & ~(0xF));
++
++                            if (maxtime <= (aurEffB->GetAmount() & 0xF))
++                                continue;
++
++                            aura->SetDuration(duration);
++
++                            aurEffB->GetBase()->SetMaxDuration(applytime);
++                            aurEffB->SetAmount(aurEffB->GetAmount() + extratime);
++
++                            continue;
++                        }
++
++                        int32 bp0 = (aura->GetId() << 4) + extratime;
++                        caster->CastCustomSpell(target, aurEffA->GetId(), &bp0, NULL, NULL, true);
++
++                        Unit::AuraEffectList tmp;
++                        GetGlyphScourgeStrikeAuraEffects(caster, target, tmp);
++
++                        if (AuraEffect * aurEffB = GetGlyphScourgeStrikeAuraEffect(aura->GetId(), tmp))
++                        {
++                            aura->SetDuration(duration);
++
++                            aurEffB->GetBase()->SetMaxDuration(applytime);
++                            aurEffB->GetBase()->SetDuration(duration);
++                        }
++                    }
++            }
++
++            int32 bp0 = (GetHitDamage() * GetEffectValue() * diseases) / 100;
++            caster->CastCustomSpell(target, DK_SPELL_SCOURGE_STRIKE_TRIGGERED, &bp0, NULL, NULL, true);
+         }
+ 
+         void Register()
+@@ -151,7 +255,7 @@
+         }
+     };
+ 
+-    SpellScript* GetSpellScript() const
++    SpellScript * GetSpellScript() const
+     {
+         return new spell_dk_scourge_strike_SpellScript();
+     }

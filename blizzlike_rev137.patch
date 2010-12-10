@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1288853987 -18000
+# Node ID c0b5d74512f95cdf72b72079fea48fdf655fed85
+# Parent  cad7e28f89ce7bdc0f0da6fc56abf062a9525130
+��������
+
+diff --git a/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp b/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
+--- a/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
++++ b/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheCrusader/trial_of_the_crusader.cpp
+@@ -1436,7 +1436,7 @@
+         }
+         else
+         {
+-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы готовы к началу сотязания!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
++            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Мы готовы к началу соcтязания!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+         }
+ 
+ 

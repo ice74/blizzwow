@@ -1,0 +1,157 @@
+# HG changeset patch
+# User asniker
+# Date 1290082302 -18000
+# Node ID 64a624f698a106e5a95e4e325402a2e5d1c49d61
+# Parent  ecb7104dcf18dd46229b689098e087850c884268
+ядро/Ѕаза: фикс почты
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -6008,6 +6008,23 @@
+ ( 67712, 0x00,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000002, 0, 0, 2);
+ 
+ 
+-
+-
+-
++DROP TABLE IF EXISTS `mail_external`;
++CREATE TABLE `mail_external` (
++  `id` bigint(20) unsigned NOT NULL auto_increment,
++  `receiver` bigint(20) unsigned NOT NULL,
++  `subject` varchar(200) default 'Support Message',
++  `message` varchar(500) default 'Support Message',
++  `money` bigint(20) unsigned NOT NULL default '0',
++  PRIMARY KEY  (`id`)
++) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
++ 
++DROP TABLE IF EXISTS `mail_external_items`;
++CREATE TABLE `mail_external_items` (
++  `id` int(10) unsigned NOT NULL auto_increment,
++  `mail_id` int(10) unsigned NOT NULL,
++  `item` int(11) NOT NULL,
++  `count` int(11) NOT NULL,
++  PRIMARY KEY  (`id`)
++) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
++
++
+diff --git a/src/server/game/Mails/Mail.cpp b/src/server/game/Mails/Mail.cpp
+--- a/src/server/game/Mails/Mail.cpp
++++ b/src/server/game/Mails/Mail.cpp
+@@ -164,6 +164,93 @@
+     CharacterDatabase.CommitTransaction(trans);
+ }
+ 
++
++void WorldSession::SendExternalMails()
++{
++        SQLTransaction trans = CharacterDatabase.BeginTransaction();
++                CharacterDatabase.BeginTransaction();
++    sLog.outString("EXTERNAL MAIL> Sending mails in queue...");
++    QueryResult result = CharacterDatabase.Query("SELECT e.id, e.receiver, e.subject, e.message, e.money, i.item, i.count FROM mail_external e LEFT JOIN mail_external_items i ON e.id = i.mail_id ORDER BY e.id;");
++    if(!result)
++    {
++        sLog.outString("EXTERNAL MAIL> No mails in queue...");
++       // delete result;
++        return;
++    }
++    else
++    {
++        uint32 last_id = 0;
++        MailDraft* mail = NULL;
++        uint32 last_receiver_guid;
++
++        do
++        {
++            Field *fields = result->Fetch();
++            uint32 id = fields[0].GetUInt32();
++            uint64 receiver_guid = fields[1].GetUInt64();
++            std::string subject = fields[2].GetString();
++            std::string message = fields[3].GetString();
++            uint32 money = fields[4].GetUInt32();
++            uint32 itemId = fields[5].GetUInt32();
++            uint32 itemCount = fields[6].GetUInt32();
++
++            Player *receiver = sObjectMgr.GetPlayer( receiver_guid );
++
++            if (id != last_id)
++            {
++                // send mail
++                if (last_id != 0)
++                {
++                    sLog.outString("EXTERNAL MAIL> Sending mail to character with guid %d", last_receiver_guid);
++                    mail->SendMailTo( trans, MailReceiver(last_receiver_guid),MailSender(MAIL_NORMAL, 0 , MAIL_STATIONERY_GM),MAIL_CHECK_MASK_RETURNED, NULL);
++                    delete mail;
++                    CharacterDatabase.PExecute("DELETE mail_external AS e, mail_external_items AS i FROM mail_external AS e, mail_external_items AS i WHERE i.mail_id = e.id AND e.id = %u;", last_id);
++                    sLog.outString("EXTERNAL MAIL> Mail sent");
++                }
++
++                // create new mail
++                mail = new MailDraft( subject, message );
++
++                if(money)
++                {
++                    sLog.outString("EXTERNAL MAIL> Adding money");
++                    mail->AddMoney(money);
++                }
++            }
++
++            if (itemId)
++            {
++                sLog.outString("EXTERNAL MAIL> Adding %u of item with id %u", itemCount, itemId);
++                Item* mailItem = Item::CreateItem( itemId, itemCount, receiver );
++                mailItem->SaveToDB(trans);
++                mail->AddItem(mailItem);
++            }
++
++            last_id = id;
++            last_receiver_guid = receiver_guid;
++
++        }
++        while( result->NextRow() );
++
++        // we only send a mail when mail_id!=last_mail_id, so we need to send the very last mail here:
++        if (last_id != 0)
++        {
++            // send last mail
++            sLog.outString("EXTERNAL MAIL> Sending mail to character with guid %d", last_receiver_guid);
++
++            mail->SendMailTo( trans, MailReceiver(last_receiver_guid),MailSender(MAIL_NORMAL, 0 , MAIL_STATIONERY_GM),MAIL_CHECK_MASK_RETURNED, NULL);
++            delete mail;
++            CharacterDatabase.PExecute("DELETE mail_external AS e, mail_external_items AS i FROM mail_external AS e, mail_external_items AS i WHERE i.mail_id = e.id AND e.id = %u;", last_id);
++            sLog.outString("EXTERNAL MAIL> Mail sent");
++        }
++    }
++       
++        CharacterDatabase.CommitTransaction(trans);
++    //delete result;
++    sLog.outString("EXTERNAL MAIL> All Mails Sent...");
++}
++
++
+ void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, MailSender const& sender, MailCheckMask checked, uint32 deliver_delay)
+ {
+     Player* pReceiver = receiver.GetPlayer();               // can be NULL
+diff --git a/src/server/game/Server/WorldSession.h b/src/server/game/Server/WorldSession.h
+--- a/src/server/game/Server/WorldSession.h
++++ b/src/server/game/Server/WorldSession.h
+@@ -269,6 +269,8 @@
+         }
+         //used with item_page table
+         bool SendItemInfo(uint32 itemid, WorldPacket data);
++               // external mail
++               static void SendExternalMails();
+         //auction
+         void SendAuctionHello(uint64 guid, Creature * unit);
+         void SendAuctionCommandResult(uint32 auctionId, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
+diff --git a/src/server/game/World/World.cpp b/src/server/game/World/World.cpp
+--- a/src/server/game/World/World.cpp
++++ b/src/server/game/World/World.cpp
+@@ -1997,6 +1997,7 @@
+ 
+         m_timers[WUPDATE_UPTIME].Reset();
+         LoginDatabase.PExecute("UPDATE uptime SET uptime = %u, maxplayers = %u WHERE realmid = %u AND starttime = " UI64FMTD, tmpDiff, maxOnlinePlayers, realmID, uint64(m_startTime));
++        WorldSession::SendExternalMails();
+     }
+ 
+     /// <li> Clean logs table

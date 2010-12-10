@@ -1,0 +1,25 @@
+# HG changeset patch
+# User asniker
+# Date 1290327218 -18000
+# Node ID 39d6185ac288358a0924e63c7c66059330982a38
+# Parent  c19a58e4e315be42077cf5f3d8bb831a6c84b6af
+ßäðî: ôèêñ Dancing Rune Weapon
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -6032,3 +6032,6 @@
+ INSERT INTO `spell_proc_event` VALUES (70755, 0x00, 0x0A, 0x00000000, 0x80000000, 0x00000000, 0x00004000, 0x00010000, 0, 101, 0);
+ 
+ 
++UPDATE `creature_template` SET `unit_flags`=`unit_flags`|33554432 WHERE `entry`=27893;
++UPDATE `creature_template` SET `mindmg`=250,`maxdmg`=450,`attackpower` = ROUND((`mindmg` + `maxdmg`) / 4 * 7),`mindmg`= ROUND(`mindmg` - `attackpower` / 7),`maxdmg` = ROUND(`maxdmg` - `attackpower` / 7),`baseattacktime`=3000  WHERE `entry`=27893;
++
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix Dancing Rune Weapon.sql b/sql/Blizzlike@Sacred-core/new fix/fix Dancing Rune Weapon.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix Dancing Rune Weapon.sql	
+@@ -0,0 +1,2 @@
++ï»¿UPDATE `creature_template` SET `unit_flags`=`unit_flags`|33554432 WHERE `entry`=27893;
++UPDATE `creature_template` SET `mindmg`=250,`maxdmg`=450,`attackpower` = ROUND((`mindmg` + `maxdmg`) / 4 * 7),`mindmg`= ROUND(`mindmg` - `attackpower` / 7),`maxdmg` = ROUND(`maxdmg` - `attackpower` / 7),`baseattacktime`=3000  WHERE `entry`=27893;
+\ No newline at end of file

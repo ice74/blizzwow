@@ -1,0 +1,44 @@
+# HG changeset patch
+# User asniker
+# Date 1289548710 -18000
+# Node ID a843f696bf8bc99bf35a961841de0ee3ad00b984
+# Parent  8c8a591d1213c82e23fad4ef7792e3a47d3887ae
+fix crash
+
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -10384,15 +10384,6 @@
+         }
+     }
+ 
+-	// Currency tokens are not supposed to be swapped out of their hidden bag
+-	uint8 pItemslot = pItem->GetSlot();
+-	if (pItemslot >= CURRENCYTOKEN_SLOT_START && pItemslot < CURRENCYTOKEN_SLOT_END)
+-	{
+-	 sLog.outError("Possible hacking attempt: Player %s [guid: %u] tried to move token [guid: %u, entry: %u] out of the currency bag!",
+-	 GetName(), GetGUIDLow(), pItem->GetGUIDLow(), pProto->ItemId);
+-	 return EQUIP_ERR_ITEMS_CANT_BE_SWAPPED;
+-	 }
+-	
+     // check count of items (skip for auto move for same player from bank)
+     uint32 no_similar_count = 0;                            // can't store this amount similar items
+     uint8 res = _CanTakeMoreSimilarItems(entry,count,pItem,&no_similar_count);
+@@ -11084,7 +11075,16 @@
+ 
+             if (pItem->IsBindedNotWith(this))
+                 return EQUIP_ERR_DONT_OWN_THAT_ITEM;
+-
++				
++				// Currency tokens are not supposed to be swapped out of their hidden bag
++    uint8 pItemslot = pItem->GetSlot();
++    if (pItemslot >= CURRENCYTOKEN_SLOT_START && pItemslot < CURRENCYTOKEN_SLOT_END)
++    {
++        sLog.outError("Possible hacking attempt: Player %s [guid: %u] tried to move token [guid: %u, entry: %u] out of the currency bag!",
++                GetName(), GetGUIDLow(), pItem->GetGUIDLow(), pProto->ItemId);
++        return EQUIP_ERR_ITEMS_CANT_BE_SWAPPED;
++    }
++	
+             // check count of items (skip for auto move for same player from bank)
+             uint8 res = CanTakeMoreSimilarItems(pItem);
+             if (res != EQUIP_ERR_OK)

@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1289722915 -18000
+# Node ID 48d61e0eaa83e26e04d880a5832c222ea037bea8
+# Parent  32eae123e04567e1ee264f118441afb39d4c6bde
+fix pet's stamina
+
+diff --git a/src/server/game/Entities/Unit/StatSystem.cpp b/src/server/game/Entities/Unit/StatSystem.cpp
+--- a/src/server/game/Entities/Unit/StatSystem.cpp
++++ b/src/server/game/Entities/Unit/StatSystem.cpp
+@@ -1090,7 +1090,7 @@
+ void Guardian::UpdateMaxHealth()
+ {
+     UnitMods unitMod = UNIT_MOD_HEALTH;
+-    float stamina = GetStat(STAT_STAMINA) - GetCreateStat(STAT_STAMINA);
++    float stamina = GetStat(STAT_STAMINA) + GetCreateStat(STAT_STAMINA);
+ 
+     float multiplicator;
+     switch(GetEntry())

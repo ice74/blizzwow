@@ -1,0 +1,1124 @@
+# HG changeset patch
+# User asniker
+# Date 1287677740 -21600
+# Node ID da9082ce10420700f03b98a75138e3199d10c4bf
+# Parent  50fa1a46d392d7b083becc346e51aede89bc95ea
+fix icecrown_citadel
+
+diff --git a/sql/Greedy-core/world/IcecrownCitadel.sql b/sql/Greedy-core/world/IcecrownCitadel.sql
+--- a/sql/Greedy-core/world/IcecrownCitadel.sql
++++ b/sql/Greedy-core/world/IcecrownCitadel.sql
+@@ -10,6 +10,7 @@
+ UPDATE `gameobject` SET `phaseMask` = '1' WHERE `id` IN (202242,202243,202244,202245,202235,202223,202246);
+ UPDATE `gameobject` SET `state` = '1' WHERE `id` IN (201614,201613);
+ UPDATE `gameobject` SET `state` = '0' WHERE `id` IN (201375);
++UPDATE gameobject SET phaseMask = 17 WHERE id IN (201375,201374);
+ 
+ -- Boss
+ UPDATE `creature_template` SET `ScriptName`='boss_lord_marrowgar' WHERE `entry` = 36612;
+@@ -82,6 +83,7 @@
+ UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14, `spell1` = 70360, `spell2` = 70539, `spell3` = 70542, `VehicleId` = 591 WHERE `entry` IN (37672,38605,38786,38787);
+ UPDATE `creature_template` SET `dynamicflags` = 8, `npcflag` = 0, `unit_flags` = 32832 WHERE `entry` = 38995;
+ UPDATE `creature_template` SET `faction_A` = 14, `faction_H` = 14 WHERE `entry` IN (36899,38123);
++UPDATE `creature_template` SET `MovementType` = 1 WHERE `entry` = 37985;
+ 
+ -- Spell
+ 
+@@ -92,6 +94,7 @@
+ UPDATE `creature_template` SET `unit_flags` = 33587972 WHERE `entry` = 37013;
+ UPDATE `creature_template` SET `flags_extra` = 0 WHERE `entry` IN (37986,38234,38317,36659,38548,37186,37013);
+ UPDATE `creature_template` SET `flags_extra` = 128 WHERE `entry` = 38234;
++UPDATE `creature_template` SET `flags_extra` = 130 WHERE `entry` = 38569;
+ 
+ -- Instance
+ UPDATE `instance_template` SET `script`='instance_icecrown_citadel' WHERE `map` = 631;
+@@ -117,7 +120,7 @@
+ 
+ -- Conditions
+ 
+-DELETE FROM `conditions` WHERE `SourceEntry` IN (69508,70881,70360,36659,70781,70856,70857,70858,70859,70860,70861);
++DELETE FROM `conditions` WHERE `SourceEntry` IN (69508,70881,70360,36659,70781,70856,70857,70858,70859,70860,70861,69157,71614);
+ DELETE FROM `conditions` WHERE `ConditionValue2` IN (SELECT `id` FROM `creature` WHERE `map` = 631);
+ 
+ INSERT INTO `conditions` (`SourceTypeOrReferenceId`,`SourceGroup`,`SourceEntry`,`ElseGroup`,`ConditionTypeOrReference`,`ConditionValue1`,`ConditionValue2`,`ConditionValue3`,`ErrorTextId`,`ScriptName`,`Comment`) VALUES
+@@ -125,22 +128,25 @@
+ (13,0,69157,0,18,1,36659,0,0, '', 'Festergut - Gaseous Blight'),
+ (13,0,69162,0,18,1,36659,0,0, '', 'Festergut - Gaseous Blight'),
+ (13,0,69164,0,18,1,36659,0,0, '', 'Festergut - Gaseous Blight'),
++(13,0,71614,0,18,1,38995,0,0, '', 'LichKing - Ice Lock'),
+ (13,0,69125,0,18,1,37013,0,0, '', '');
+ 
+ -- creature
+ 
+-DELETE FROM `creature` WHERE `id` IN(37813, 37013, 36659);
+-INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`) VALUES
+-(48969,37013,631,1,1,11686,0,4291.18,3092.92,372.97,2.33874,300,0,0,25200,0,0,0), -- puddle stalker
+-(48971,37013,631,1,1,11686,0,4312.14,3112.98,372.97,2.51327,300,0,0,25200,0,0,0),
+-(48973,37013,631,1,1,11686,0,4244.04,3092.66,372.97,0.97738,300,0,0,25200,0,0,0),
+-(48976,37013,631,1,1,11686,0,4223.47,3113.58,372.97,0.76794,300,0,0,25200,0,0,0),
+-(48981,37013,631,1,1,11686,0,4222.44,3161.69,372.97,5.53269,300,0,0,25200,0,0,0),
+-(48983,37013,631,1,1,11686,0,4243.89,3181.74,372.97,5.44543,300,0,0,25200,0,0,0),
+-(48989,37013,631,1,1,11686,0,4312.36,3160.84,372.97,3.80482,300,0,0,25200,0,0,0),
+-(48990,37013,631,1,1,11686,0,4291.45,3181.25,372.97,4.10152,300,0,0,25200,0,0,0),
+-(93955,36659,631,15,1,11686,0,4267.87,3137.33,360.469,0,300,0,0,25200,0,0,0),
+-(136107,37813,631,15,1,30790,0,-493.905,2211.35,541.114,3.18037,300,0,0,12299490,0,0,0); -- saurfang
++DELETE FROM `creature` WHERE `id` IN(37813, 37013, 36659,37950);
++INSERT INTO `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `DeathState`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) VALUES
++(48969,37013,631,1,1,11686,0,4291.18,3092.92,372.97,2.33874,300,0,0,25200,0,0,0,0,0,0), -- puddle stalker
++(48971,37013,631,1,1,11686,0,4312.14,3112.98,372.97,2.51327,300,0,0,25200,0,0,0,0,0,0),
++(48973,37013,631,1,1,11686,0,4244.04,3092.66,372.97,0.97738,300,0,0,25200,0,0,0,0,0,0),
++(48976,37013,631,1,1,11686,0,4223.47,3113.58,372.97,0.76794,300,0,0,25200,0,0,0,0,0,0),
++(48981,37013,631,1,1,11686,0,4222.44,3161.69,372.97,5.53269,300,0,0,25200,0,0,0,0,0,0),
++(48983,37013,631,1,1,11686,0,4243.89,3181.74,372.97,5.44543,300,0,0,25200,0,0,0,0,0,0),
++(48989,37013,631,1,1,11686,0,4312.36,3160.84,372.97,3.80482,300,0,0,25200,0,0,0,0,0,0),
++(48990,37013,631,1,1,11686,0,4291.45,3181.25,372.97,4.10152,300,0,0,25200,0,0,0,0,0,0),
++(93955,36659,631,15,1,11686,0,4267.87,3137.33,360.469,0,300,0,0,25200,0,0,0,0,0,0),
++(136107,37813,631,15,1,30790,0,-493.905,2211.35,541.114,3.18037,300,0,0,12299490,0,0,0,0,0,0), -- saurfang
++(1000000,37950,631,15,16,0,0,4203.65,2483.89,390.961,5.51524,604800,0,0,6000003,0,0,0,0,33540,8);
++
+ 
+ -- Linked spell
+ 
+@@ -166,7 +172,6 @@
+ (-71224,69706,0, 'Rotface: Mutated Infection Summon'),
+ (-73022,69706,0, 'Rotface: Mutated Infection Summon'),
+ (-73023,69706,0, 'Rotface: Mutated Infection Summon'),
+-(-70308,70311,0, 'Professor: Abomination call'),
+ (-69290,69291,0, 'Festergut: Gaseous spore');
+ 
+ -- Linked Respawn
+@@ -191,6 +196,23 @@
+ (37945,70766,0,0,0,3,0,0,0),
+ (38430,70766,0,0,0,3,0,0,0);
+ 
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70405,72508,72509,72510) AND `ScriptName`='spell_putricide_mutated_transformation_dismiss';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70311,71503) AND `ScriptName`='spell_putricide_mutated_transformation';
++DELETE FROM `spell_script_names` WHERE `spell_id`=70308 AND `ScriptName`='spell_putricide_mutation_init';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71412,71415) AND `ScriptName`='spell_putricide_ooze_summon';
++INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
++(71412,'spell_putricide_ooze_summon'),
++(71415,'spell_putricide_ooze_summon'),
++(72510,'spell_putricide_mutated_transformation_dismiss'),
++(72509,'spell_putricide_mutated_transformation_dismiss'),
++(72508,'spell_putricide_mutated_transformation_dismiss'),
++(70405,'spell_putricide_mutated_transformation_dismiss'),
++(70308,'spell_putricide_mutation_init'),
++(70311,'spell_putricide_mutated_transformation'),
++(71503,'spell_putricide_mutated_transformation');
++
++UPDATE waypoint_scripts SET delay = 3 WHERE dataint = 38879 AND command = 15;
++
+ 
+ DELETE FROM `spell_proc_event` WHERE `entry` IN (70107);
+ INSERT INTO `spell_proc_event` VALUES (70107, 0x08, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000054, 0x00000000, 0, 20, 0);
+@@ -231,8 +253,18 @@
+ DELETE FROM `spell_proc_event` WHERE `entry` IN (72408);
+ INSERT INTO `spell_proc_event` VALUES (72408, 0x01, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000004, 0x00000000, 0, 100, 0);
+ 
++DELETE FROM `spell_proc_event` WHERE `entry` IN (70672);
++INSERT INTO `spell_proc_event` VALUES (70672, 0x28, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 100, 0);
++
+ DELETE FROM `spell_proc_event` WHERE `entry` IN (72455);
+-INSERT INTO `spell_proc_event` VALUES (72455, 0x01, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 100, 0);
++INSERT INTO `spell_proc_event` VALUES (72455, 0x28, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 100, 0);
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (72832);
++INSERT INTO `spell_proc_event` VALUES (72832, 0x28, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 100, 0);
++
++DELETE FROM `spell_proc_event` WHERE `entry` IN (72833);
++INSERT INTO `spell_proc_event` VALUES (72833, 0x28, 0x00, 0x00000000, 0x00000000, 0x00000000, 0x00000008, 0x00000000, 0, 100, 0);
++
+ 
+ DELETE FROM script_texts WHERE entry <= -1665902 AND entry >= -1666080;
+ DELETE FROM script_texts WHERE entry <= -1810001 AND entry >= -1810031;
+@@ -406,16 +438,20 @@
+ (36627,-1631103,'Bad news daddy...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,16989,1,0,0,'SAY_DEATH');
+ 
+ # 7
+-INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+-(36678,-1666026,'Good news, everyone! I think I perfected a plague that will destroy all life on Azeroth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17144,1,0,0,''),
+-(36678,-1666027,'You can''t come in here all dirty like that! You need that nasty flesh scrubbed off first!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17125,1,0,0,''),
+-(36678,-1666028,'Two oozes, one room! So many delightful possibilities...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17122,1,0,0,''),
+-(36678,-1666029,'Hmm. I don''t feel a thing. Whaa...? Where''d those come from?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17120,1,0,0,''),
+-(36678,-1666030,'Tastes like... Cherry! Oh! Excuse me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17121,1,0,0,''),
+-(36678,-1666031,'Hmm... Interesting...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17115,1,0,0,''),
+-(36678,-1666032,'That was unexpected!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17116,1,0,0,''),
+-(36678,-1666033,'Great news, everyone!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17118,1,0,0,''),
+-(36678,-1666034,'Bad news, everyone! I don''t think I''m going to make it.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17117,1,0,0,'');
++DELETE FROM `script_texts` WHERE `entry` BETWEEN -1631114 AND -1631104;
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(36678,-1631104,'Good news, everyone! I think I perfected a plague that will destroy all life on Azeroth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17114,1,0,0,'SAY_AGGRO'),
++(36678,-1631105,'%s begins to cast Unstable Experiment!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_UNSTABLE_EXPERIMENT'),
++(36678,-1631106,'Two oozes, one room! So many delightful possibilities...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17122,1,0,0,'SAY_PHASE_TRANSITION_HEROIC'),
++(36678,-1631107,'Hmm. I don''t feel a thing. Whaa...? Where''d those come from?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17120,1,0,15,'SAY_TRANSFORM_1'),
++(36678,-1631108,'Tastes like... Cherry! Oh! Excuse me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17121,1,0,15,'SAY_TRANSFORM_2'),
++(36678,-1631109,'|TInterface\Icons\inv_misc_herb_evergreenmoss.blp:16|t%s cast |cFF00FF00Malleable Goo!|r',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_MALLEABLE_GOO'),
++(36678,-1631110,'%s cast |cFFFF7F00Choking Gas Bomb!|r',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_CHOKING_GAS_BOMB'),
++(36678,-1631111,'Hmm... Interesting...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17115,1,0,0,'SAY_KILL_1'),
++(36678,-1631112,'That was unexpected!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17116,1,0,0,'SAY_KILL_2'),
++(36678,-1631113,'Great news, everyone!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17118,1,0,0,'SAY_BERSERK'),
++(36678,-1631114,'Bad news, everyone! I don''t think I''m going to make it.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17117,1,0,0,'SAY_DEATH');
++
+ 
+ # 8
+ INSERT INTO `script_texts`(`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
+@@ -85,7 +85,6 @@
+                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
+                 me->ApplySpellImmune(SPELL_FROST_BOLT, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, false);
+                 bIntro = false;
+-                bCombat = false;
+                 bFirstSummon = false;
+                 m_uiCount = RAID_MODE(0,1,1,3);
+             }
+@@ -108,8 +107,6 @@
+                 m_uiDominateMindTimer = 27000;
+                 m_uiCultTimer = urand(20000, 23000);
+ 
+-                pSummoned = NULL;
+-
+                 me->SetLastManaUse(0xFFFFFFFF);
+ 
+                 DoCast(me, SPELL_SHADOW_CHANNELING);
+@@ -126,10 +123,9 @@
+             void EnterCombat(Unit* /*pWho*/)
+             {
+                 DoScriptText(SAY_AGGRO, me);
++
+                 me->RemoveAurasDueToSpell(SPELL_SHADOW_CHANNELING);
+ 
+-                bCombat = true;
+-
+                 if (pInstance)
+                     pInstance->SetData(DATA_DEATHWHISPER_EVENT, IN_PROGRESS);
+             }
+@@ -140,8 +136,6 @@
+ 
+                 if (pInstance)
+                     pInstance->SetData(DATA_DEATHWHISPER_EVENT, DONE);
+-
+-                summons.DespawnAll();
+             }
+ 
+             void JustReachedHome()
+@@ -188,15 +182,15 @@
+                 switch(m_uiStage)
+                 {
+                     case 1:
+-                        pSummoned = DoSummon(CREATURE_FANATIC, SpawnLoc[0]);
+-                        pSummoned = DoSummon(CREATURE_ADHERENT, SpawnLoc[1]);
+-                        pSummoned = DoSummon(CREATURE_FANATIC, SpawnLoc[2]);
++                        DoSummon(CREATURE_FANATIC, SpawnLoc[0]);
++                        DoSummon(CREATURE_ADHERENT, SpawnLoc[1]);
++                        DoSummon(CREATURE_FANATIC, SpawnLoc[2]);
+                         ++m_uiStage;
+                         break;
+                     case 2:
+-                        pSummoned = DoSummon(CREATURE_ADHERENT, SpawnLoc[3]);
+-                        pSummoned = DoSummon(CREATURE_FANATIC, SpawnLoc[4]);
+-                        pSummoned = DoSummon(CREATURE_ADHERENT, SpawnLoc[5]);
++                        DoSummon(CREATURE_ADHERENT, SpawnLoc[3]);
++                        DoSummon(CREATURE_FANATIC, SpawnLoc[4]);
++                        DoSummon(CREATURE_ADHERENT, SpawnLoc[5]);
+                         --m_uiStage;
+                         break;
+                 }
+@@ -267,106 +261,106 @@
+                     ++m_uiIntroPhase;
+                 } else m_uiIntroTimer -= uiDiff;
+ 
+-                if(bCombat == true)
++                if (!UpdateVictim())
++                    return;
++
++                if (m_uiBerserkTimer < uiDiff)
+                 {
+-                    if (m_uiBerserkTimer < uiDiff)
+-                    {
+-                        DoCast(me, SPELL_BERSERK);
+-                        DoScriptText(SAY_BERSERK, me);
+-                        m_uiBerserkTimer = 600000;
+-                    } else m_uiBerserkTimer -= uiDiff;
++                    DoCast(me, SPELL_BERSERK);
++                    DoScriptText(SAY_BERSERK, me);
++                    m_uiBerserkTimer = 600000;
++                } else m_uiBerserkTimer -= uiDiff;
+ 
+-                    if (m_uiCultTimer < uiDiff)
+-                    {
+-                        EmpowerCultist();
+-                        m_uiCultTimer = urand(20000, 23000);
+-                    } else m_uiCultTimer -= uiDiff;
++                if (m_uiCultTimer < uiDiff)
++                {
++                    EmpowerCultist();
++                    m_uiCultTimer = urand(20000, 23000);
++                } else m_uiCultTimer -= uiDiff;
+ 
+-                    if (m_uiDeathandDecayTimer < uiDiff)
++                if (m_uiDeathandDecayTimer < uiDiff)
++                {
++                    if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
++                        DoCast(pTarget, SPELL_DEATH_AND_DECAY);
++                    m_uiDeathandDecayTimer = 11000;
++                } else m_uiDeathandDecayTimer -= uiDiff;
++
++                if (m_uiDominateMindTimer < uiDiff)
++                {
++                    for (uint8 i = 1; i <= m_uiCount; i++)
+                     {
+                         if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                            DoCast(pTarget, SPELL_DEATH_AND_DECAY);
+-                        m_uiDeathandDecayTimer = 11000;
+-                    } else m_uiDeathandDecayTimer -= uiDiff;
++                        {
++                            DoCast(pTarget, SPELL_DOMINATE_MIND);
++                            DoScriptText(SAY_DOMINATE_MIND, me);
++                        }
++                    }
++                    m_uiDominateMindTimer = 15000;
++                } else m_uiDominateMindTimer -= uiDiff;
+ 
+-                    if (m_uiDominateMindTimer < uiDiff)
++                if (m_uiPhase == 1)
++                {
++                    if (m_uiShadowBoltTimer < uiDiff)
+                     {
+-                        for (uint8 i = 1; i <= m_uiCount; i++)
++                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
++                            DoCast(pTarget, SPELL_SHADOW_BOLT);
++                        m_uiShadowBoltTimer = 6000;
++                    } else m_uiShadowBoltTimer -= uiDiff;
++
++                    if (m_uiSummonWaveTimer < uiDiff)
++                    {
++                        if (Difficulty() == RAID_DIFFICULTY_10MAN_NORMAL || Difficulty() == RAID_DIFFICULTY_10MAN_HEROIC)
++                            RandomSpawn();
++                        else
+                         {
+-                            if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                            {
+-                                DoCast(pTarget, SPELL_DOMINATE_MIND);
+-                                DoScriptText(SAY_DOMINATE_MIND, me);
+-                            }
++                            DoSummon(CREATURE_FANATIC, SpawnLoc[0]);
++                            DoSummon(CREATURE_ADHERENT, SpawnLoc[1]);
++                            DoSummon(CREATURE_FANATIC, SpawnLoc[2]);
++                            DoSummon(CREATURE_ADHERENT, SpawnLoc[3]);
++                            DoSummon(CREATURE_FANATIC, SpawnLoc[4]);
++                            DoSummon(CREATURE_ADHERENT, SpawnLoc[5]);
++                            DoSummon(RAND(CREATURE_FANATIC,CREATURE_ADHERENT), SpawnLoc[6]);
+                         }
+-                        m_uiDominateMindTimer = 15000;
+-                    } else m_uiDominateMindTimer -= uiDiff;
++                        bFirstSummon = false ? true : true;
++                        m_uiSummonWaveTimer = !bFirstSummon ? 10000 : 60000;
++                    } else m_uiSummonWaveTimer -= uiDiff;
++                }
+ 
+-                    if (m_uiPhase == 1)
++                if (m_uiPhase == 2)
++                {
++                    if (m_uiFrostBoltTimer < uiDiff)
+                     {
+-                        if (m_uiShadowBoltTimer < uiDiff)
+-                        {
+-                            if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                                DoCast(pTarget, SPELL_SHADOW_BOLT);
+-                            m_uiShadowBoltTimer = 6000;
+-                        } else m_uiShadowBoltTimer -= uiDiff;
++                        DoCast(me->getVictim(), SPELL_FROST_BOLT);
++                        m_uiFrostBoltTimer = 10000;
++                    } else m_uiFrostBoltTimer -= uiDiff;
+ 
+-                        if (m_uiSummonWaveTimer < uiDiff)
+-                        {
+-                            if (Difficulty() == RAID_DIFFICULTY_10MAN_NORMAL || Difficulty() == RAID_DIFFICULTY_10MAN_HEROIC)
+-                                RandomSpawn();
+-                            else
+-                            {
+-                                pSummoned = DoSummon(CREATURE_FANATIC, SpawnLoc[0]);
+-                                pSummoned = DoSummon(CREATURE_ADHERENT, SpawnLoc[1]);
+-                                pSummoned = DoSummon(CREATURE_FANATIC, SpawnLoc[2]);
+-                                pSummoned = DoSummon(CREATURE_ADHERENT, SpawnLoc[3]);
+-                                pSummoned = DoSummon(CREATURE_FANATIC, SpawnLoc[4]);
+-                                pSummoned = DoSummon(CREATURE_ADHERENT, SpawnLoc[5]);
+-                                pSummoned = DoSummon(RAND(CREATURE_FANATIC,CREATURE_ADHERENT), SpawnLoc[6]);
+-                            }
+-                                bFirstSummon = false ? true : true;
+-                            m_uiSummonWaveTimer = !bFirstSummon ? 10000 : 60000;
+-                        } else m_uiSummonWaveTimer -= uiDiff;
+-                    }
++                    if (m_uiFrostValleyTimer < uiDiff)
++                    {
++                        DoCast(SPELL_FROST_BOLT_VALLEY);
++                        m_uiFrostValleyTimer = 19000;
++                    } else m_uiFrostValleyTimer -= uiDiff;
+ 
+-                    if (m_uiPhase == 2)
++                    if (m_uiInsignificanceTimer < uiDiff)
+                     {
+-                        if (m_uiFrostBoltTimer < uiDiff)
+-                        {
+-                            DoCast(me->getVictim(), SPELL_FROST_BOLT);
+-                            m_uiFrostBoltTimer = 10000;
+-                        } else m_uiFrostBoltTimer -= uiDiff;
++                        DoCast(me->getVictim(), SPELL_INSIGNIFICANCE);
++                        m_uiInsignificanceTimer = 8000;
++                    } else m_uiInsignificanceTimer -= uiDiff;
+ 
+-                        if (m_uiFrostValleyTimer < uiDiff)
+-                        {
+-                            DoCast(SPELL_FROST_BOLT_VALLEY);
+-                            m_uiFrostValleyTimer = 19000;
+-                        } else m_uiFrostValleyTimer -= uiDiff;
++                    if (m_uiSummonWaveTimer < uiDiff)
++                    {
++                        if (Difficulty() == RAID_DIFFICULTY_10MAN_HEROIC)
++                            DoSummon(RAND(CREATURE_FANATIC,CREATURE_ADHERENT), SpawnLoc[6]);
++                        if (Difficulty() == RAID_DIFFICULTY_25MAN_HEROIC)
++                            RandomSpawn();
++                        m_uiSummonWaveTimer = 60000;
++                    } else m_uiSummonWaveTimer -= uiDiff;
+ 
+-                        if (m_uiInsignificanceTimer < uiDiff)
+-                        {
+-                            DoCast(me->getVictim(), SPELL_INSIGNIFICANCE);
+-                            m_uiInsignificanceTimer = 8000;
+-                        } else m_uiInsignificanceTimer -= uiDiff;
++                    if (m_uiShadeTimer < uiDiff)
++                    {
++                        DoCast(SPELL_SUMMON_SHADE);
++                        m_uiShadeTimer = 15000;
++                    } else m_uiShadeTimer -= uiDiff;
+ 
+-                        if (m_uiSummonWaveTimer < uiDiff)
+-                        {
+-                            if (Difficulty() == RAID_DIFFICULTY_10MAN_HEROIC)
+-                                pSummoned = DoSummon(RAND(CREATURE_FANATIC,CREATURE_ADHERENT), SpawnLoc[6]);
+-                            if (Difficulty() == RAID_DIFFICULTY_25MAN_HEROIC)
+-                                RandomSpawn();
+-                            m_uiSummonWaveTimer = 60000;
+-                        } else m_uiSummonWaveTimer -= uiDiff;
+-
+-                        if (m_uiShadeTimer < uiDiff)
+-                        {
+-                            DoCast(SPELL_SUMMON_SHADE);
+-                            m_uiShadeTimer = 15000;
+-                        } else m_uiShadeTimer -= uiDiff;
+-
+-                        DoMeleeAttackIfReady();
+-                    }
++                    DoMeleeAttackIfReady();
+                 }
+             }
+ 
+@@ -390,11 +384,9 @@
+             uint32 m_uiIntroTimer;
+ 
+             bool bIntro;
+-            bool bCombat;
+             bool bFirstSummon;
+ 
+             SummonList summons;
+-            Unit *pSummoned;
+         };
+ 
+         CreatureAI* GetAI(Creature* pCreature) const
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+@@ -325,6 +325,7 @@
+                             {
+                                 Creature* pBone = me->SummonCreature(CREATURE_BONE_SPIKE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 999999);
+                                 CAST_AI(npc_bone_spike::npc_bone_spikeAI, pBone->AI())->SetPrisoner(pTarget);
++								DoCast(pTarget, SPELL_SPIKE_IMPALING, true);
+                             }
+                         }
+                         DoScriptText(RAND(SAY_SPIKE_1,SAY_SPIKE_2,SAY_SPIKE_3), me);
+@@ -417,4 +418,7 @@
+     new npc_bone_spike();
+     new npc_cold_flame();
+     new boss_lord_marrowgar();
++
++	    if (VehicleSeatEntry* vehSeat = const_cast<VehicleSeatEntry*>(sVehicleSeatStore.LookupEntry(6206)))
++            vehSeat->m_flags |= 0x400;
+ }
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_professor_putricide.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_professor_putricide.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_professor_putricide.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_professor_putricide.cpp
+@@ -16,14 +16,10 @@
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+ 
+-/*
+-*Need implantet Tentacle stalker
+-*Need implantet heroic mode
+-*Need correct ozze and gas mechanic
+-*Need correct bomb mechanic
+-*/
+-
+-#include "ScriptPCH.h"
++#include "ScriptMgr.h"
++#include "ScriptedCreature.h"
++#include "SpellScript.h"
++#include "SpellAuraEffects.h"
+ #include "icecrown_citadel.h"
+ 
+ enum eBrothersYells
+@@ -45,15 +41,18 @@
+ 
+ enum Yells
+ {
+-    SAY_AGGRO       = -1666026,
+-    SAY_AIRLOCK     = -1666027,
+-    SAY_PHASE_HC    = -1666028,
+-    SAY_TRANSFORM_1 = -1666029,
+-    SAY_TRANSFORM_2 = -1666030,
+-    SAY_KILL_1      = -1666031,
+-    SAY_KILL_2      = -1666032,
+-    SAY_BERSERK     = -1666033,
+-    SAY_DEATH       = -1666034
++    SAY_AGGRO         = -1631104,
++    EMOTE_EXPERIMENT  = -1631105,
++    SAY_AIRLOCK       = -1666027,
++    SAY_PHASE_HC      = -1631106,
++    SAY_TRANSFORM_1   = -1631107,
++    SAY_TRANSFORM_2   = -1631108,
++    SAY_KILL_1        = -1631111,
++    SAY_KILL_2        = -1631112,
++    SAY_BERSERK       = -1631113,
++    SAY_DEATH         = -1631114,
++    EMOTE_GOO         = -1631109,
++    EMOTE_GAS_BOMB    = -1631110
+ };
+ 
+ enum Spells
+@@ -62,8 +61,8 @@
+     SPELL_TEAR_GAS              = 71617,
+     SPELL_CREATE_CONCOTION      = 71621,
+     SPELL_GUZZLE_POTIONS        = 71893,
+-    SPELL_MALLEABLE_GOO         = 72296,
+-    SPELL_MUTATED_PLAGUE        = 72672,
++    SPELL_MALLEABLE_GOO         = 70852,
++    SPELL_MUTATED_PLAGUE        = 72451,
+     SPELL_OOZE_ERUPTION         = 70492,
+     SPELL_VOLATILE_OOZE         = 70447,
+     SPELL_CHOKING_GAS           = 71278,
+@@ -73,18 +72,21 @@
+     SPELL_CHOKING_GAS_BOMB      = 71273,
+     SPELL_CHOKING_GAS_BOMB_1    = 71275,
+     SPELL_CHOKING_GAS_BOMB_2    = 71276,
+-    SPELL_CHOKING_GAS_AURA      = 71278,
++    SPELL_CHOKING_GAS_AURA      = 71259,
+     SPELL_SUMMON_OOZE           = 71413,
+-    SPELL_GASEOUS_BLOAT         = 70215,
+-    SPELL_GASEOUS_BLOAT_AURA    = 72455,
++    SPELL_GASEOUS_BLOAT         = 70672,
+     SPELL_MUTATED               = 70405,
+     SPELL_STRENGTH              = 71603,
+-    SPELL_ORANGE_RADIATION      = 45857,
+     SPELL_PUDDLE_TRIGGER        = 71425,
+     SPELL_HITTIN_PROC           = 71971,
+     SPELL_OOZE_SEARCH_EFFECT    = 70457,
+     SPELL_OOZE_FLOOD            = 69783,
+-    SPELL_GAS_FLOOD             = 71379
++    SPELL_GAS_FLOOD             = 71379,
++    SPELL_TRANSFORMATION        = 70311,
++    SPELL_TRANSFORMATION_DAMAGE = 70405,
++    SPELL_TRANSFORMATION_NAME   = 72401,
++    SPELL_GASEOUS_PROTECTION    = 70812,
++    SPELL_VOLATILE_PROTECTION   = 70530
+ };
+ 
+ enum ePhases
+@@ -96,11 +98,9 @@
+     PHASE_MASK_NOT_SELF = (1 << PHASE_FESTERGUT) | (1 << PHASE_ROTFACE)
+ };
+ 
+-#define EMOTE_UNSTABLE_EXPERIMENT "Professor Putricide begins unstable experiment!"
+-
+-static const Position festergutWatchPos = {4324.82f, 3166.03f, 389.3831f, 3.316126f};
+-static const Position rotfaceWatchPos = {4417.302246f, 3188.219971f, 389.332520f, 5.102f};
+-static const Position professorStartPos = {4356.779785f, 3263.510010f, 389.398010f, 1.586f};
++static const Position festergutWatchPos = {4324.821f, 3166.03f, 389.3831f, 3.316126f};
++static const Position rotfaceWatchPos   = {4390.371f, 3164.50f, 389.3890f, 5.497787f};
++static const Position professorStartPos = {4356.190f, 3262.90f, 389.4820f, 1.483530f};
+ 
+ const Position SpawnLoc[]=
+ {
+@@ -117,7 +117,7 @@
+ 
+         struct boss_professor_putricideAI : public BossAI
+         {
+-            boss_professor_putricideAI(Creature* pCreature) : BossAI(pCreature, DATA_PROFESSOR_PUTRICIDE)
++            boss_professor_putricideAI(Creature* pCreature) : BossAI(pCreature, DATA_PROFESSOR_PUTRICIDE),summons(me)
+             {
+                 pInstance = me->GetInstanceScript();
+                 phase = ePhases(0);
+@@ -131,18 +131,20 @@
+             {
+                 m_uiPhase = 1;
+                 m_uiUnstableExperimentTimer = 35000;
+-                m_uiPuddleTimer = 19000;
++                m_uiPuddleTimer = 30000;
+                 m_uiMalleableTimer = 15000;
+                 m_uiPhaseSwitchTimer = 1000;
+                 m_uiBerserkTimer = 600000;
+-                m_uiBombTimer = 20000;
++                m_uiBombTimer = 25000;
++                m_uiMutatedPlague = 10000;
+ 
+                 experement = 1;
+                 phaseswitch = 0;
+                 stage = 1;
+-                count = RAID_MODE(1,2,1,2);
+ 
+                 fBaseSpeed = me->GetSpeedRate(MOVE_RUN);
++                me->SetReactState(REACT_DEFENSIVE);
++                me->RemoveUnitMovementFlag(MOVEMENTFLAG_WALKING);
+ 
+                 if (pInstance && me->isAlive())
+                     pInstance->SetData(DATA_PROFESSOR_PUTRICIDE_EVENT, NOT_STARTED);
+@@ -156,6 +158,7 @@
+                 pInstance->SetData(DATA_PROFESSOR_PUTRICIDE_EVENT, IN_PROGRESS);
+                 SetSonPhase(PHASE_COMBAT);
+                 DoScriptText(SAY_AGGRO, me);
++                DoZoneInCombat(me);
+             }
+ 
+             void JustDied(Unit* /*pKiller*/)
+@@ -164,6 +167,8 @@
+ 
+                 if (pInstance)
+                     pInstance->SetData(DATA_PROFESSOR_PUTRICIDE_EVENT, DONE);
++
++                summons.DespawnAll();
+             }
+ 
+             void KilledUnit(Unit* victim)
+@@ -182,13 +187,42 @@
+             {
+                 if(pInstance)
+                     pInstance->SetData(DATA_PROFESSOR_PUTRICIDE_EVENT, FAIL);
++
++                summons.DespawnAll();
+             }
+ 
+-            void JustSummoned(Creature* pSummoned)
++            void JustSummoned(Creature* summon)
+             {
+-                if(pSummoned->GetEntry() != CREATURE_VOLATILE_OOZE || pSummoned->GetEntry() != CREATURE_GAS_CLOUD)
+-                    if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,1))
+-                       pSummoned->AI()->AttackStart(pTarget);
++                summons.Summon(summon);
++                switch (summon->GetEntry())
++                {
++                    case CREATURE_GAS_CLOUD:
++                        summon->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
++                        summon->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
++                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -SPELL_GASEOUS_PROTECTION))
++                        {
++                            summon->AI()->AttackStart(target);
++                            summon->CastCustomSpell(SPELL_GASEOUS_BLOAT, SPELLVALUE_MAX_TARGETS, 1, target, false);
++                            summon->clearUnitState(UNIT_STAT_CASTING);
++                            summon->GetMotionMaster()->MoveIdle();
++                        }
++                        return;
++                    case CREATURE_VOLATILE_OOZE:
++                        summon->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
++                        summon->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
++                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, -SPELL_VOLATILE_PROTECTION))
++                        {
++                            summon->AI()->AttackStart(target);
++                            summon->CastCustomSpell(SPELL_VOLATILE_OOZE, SPELLVALUE_MAX_TARGETS, 1, target, false);
++                            summon->clearUnitState(UNIT_STAT_CASTING);
++                            summon->GetMotionMaster()->MoveIdle();
++                        }
++                        return;
++                    default:
++                        break;
++                }
++                if (me->isInCombat())
++                    DoZoneInCombat(summon);
+             }
+ 
+             void SetSonPhase(ePhases newPhase)
+@@ -401,12 +435,12 @@
+ 
+                     if (m_uiPuddleTimer < uiDiff)
+                     {
+-                        for (uint8 i = 1; i <= count; i++)
++                        for (uint8 i = 1; i <= 2; i++)
+                         {
+-                            if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
++                            if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, -8.0f, true))
+                                 DoCast(pTarget, SPELL_SLIME_PUDDLE, true);
+                         }
+-                        m_uiPuddleTimer = 19000;
++                        m_uiPuddleTimer = 30000;
+                     } else m_uiPuddleTimer -= uiDiff;
+ 
+                     if (m_uiPhase == 1)
+@@ -415,7 +449,7 @@
+                         {
+                             SpawnAdds();
+                             DoCast(SPELL_UNSTABLE_EXPERIMENT);
+-                            me->MonsterTextEmote(EMOTE_UNSTABLE_EXPERIMENT, NULL);
++                            me->MonsterTextEmote(EMOTE_EXPERIMENT, NULL);
+                             m_uiUnstableExperimentTimer = 40000;
+                         } else m_uiUnstableExperimentTimer -= uiDiff;
+                     }
+@@ -425,15 +459,18 @@
+                         if (m_uiUnstableExperimentTimer < uiDiff)
+                         {
+                             DoCast(me, SPELL_UNSTABLE_EXPERIMENT);
+-                            me->MonsterTextEmote(EMOTE_UNSTABLE_EXPERIMENT,NULL);
++                            me->MonsterTextEmote(EMOTE_EXPERIMENT,NULL);
+                             TwoAdds();
+                             m_uiUnstableExperimentTimer = 40000;
+                         } else m_uiUnstableExperimentTimer -= uiDiff;
+ 
+                         if (m_uiMalleableTimer < uiDiff)
+                         {
+-                            if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                                DoCast(pTarget, SPELL_MALLEABLE_GOO);
++                            for (uint8 i = 0; i <= RAID_MODE(1,2,1,2); i++)
++                            {
++                                if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, -8.0f, true))
++                                    DoCast(pTarget, SPELL_MALLEABLE_GOO);
++                            }
+                             m_uiMalleableTimer = 16000;
+                         } else m_uiMalleableTimer -= uiDiff;
+ 
+@@ -442,7 +479,7 @@
+                             DoCast(SPELL_CHOKING_GAS_BOMB);
+                             DoCast(SPELL_CHOKING_GAS_BOMB_1);
+                             DoCast(SPELL_CHOKING_GAS_BOMB_2);
+-                            m_uiBombTimer = 21000;
++                            m_uiBombTimer = 30000;
+                         } else m_uiBombTimer -= uiDiff;
+                     }
+                     if (m_uiPhase == 3)
+@@ -454,16 +491,27 @@
+ 
+                         if (m_uiMalleableTimer < uiDiff)
+                         {
+-                            if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,1))
+-                                DoCast(pTarget, SPELL_MALLEABLE_GOO);
++                            for (uint8 i = 0; i <= RAID_MODE(1,2,1,2); i++)
++                            {
++                                if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, -8.0f, true))
++                                    DoCast(pTarget, SPELL_MALLEABLE_GOO);
++                            }
+                             m_uiMalleableTimer = 16000;
+                         } else m_uiMalleableTimer -= uiDiff;
+ 
+                         if (m_uiBombTimer < uiDiff)
+                         {
+                             DoCast(SPELL_CHOKING_GAS_BOMB);
+-                            m_uiBombTimer = 21000;
++                            DoCast(SPELL_CHOKING_GAS_BOMB_1);
++                            DoCast(SPELL_CHOKING_GAS_BOMB_2);
++                            m_uiBombTimer = 30000;
+                         } else m_uiBombTimer -= uiDiff;
++
++                        if (m_uiMutatedPlague < uiDiff)
++                        {
++                            DoCastVictim(SPELL_MUTATED_PLAGUE);
++                            m_uiMutatedPlague = 10000;
++                        } else m_uiMutatedPlague -= uiDiff;
+                     }
+                 }
+ 
+@@ -481,15 +529,15 @@
+             uint32 m_uiPhaseSwitchTimer;
+             uint32 m_uiBerserkTimer;
+             uint32 m_uiBombTimer;
++            uint32 m_uiMutatedPlague;
+             //festergut and rotface
+             uint32 m_uiMalleableGooTimer;
+             uint32 m_uiVileGasTimer;
+             uint32 m_uiSayDieTimer;
+-            uint64 gasDummyGUID;
++            SummonList summons;
+             uint8 experement;
+             uint8 phaseswitch;
+             uint8 stage;
+-            uint8 count;
+ 
+             bool PhaseSwitch1;
+             bool PhaseSwitch2;
+@@ -526,25 +574,31 @@
+ 
+                 m_uiSearchTargetTimer = 1000;
+                 target = false;
+-                aggro = false;
+ 
+                 me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
+             }
+ 
+-            void EnterCombat(Unit* /*who*/) { }
++            void SpellHitTarget(Unit* /*pTarget*/, const SpellEntry* spell)
++            {
++                SpellEntry const* explode = sSpellStore.LookupEntry(SPELL_OOZE_ERUPTION);
++                explode = sSpellMgr.GetSpellForDifficultyFromSpell(explode, me);
++                if (explode->Id == spell->Id)
++                {
++                    m_uiSearchTargetTimer = 5000;
++                    DoStartNoMovement(me);
++                }
++            }
+ 
+             void UpdateAI(const uint32 uiDiff)
+             {
++                if (!UpdateVictim())
++                    return;
++
+                 if (!target && m_uiSearchTargetTimer < uiDiff)
+                 {
+-                    if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,1))
+-                    {
+-                        me->AddThreat(me->getVictim(), 10000.0f);
+-                        me->GetMotionMaster()->MoveChase(me->getVictim());
+-                        pTarget->CastSpell(pTarget, SPELL_OOZE_SEARCH_EFFECT, true);
+-                        pTarget->CastSpell(pTarget, SPELL_VOLATILE_OOZE, true);
+-                        target = true;
+-                    }
++                    me->CastCustomSpell(SPELL_VOLATILE_OOZE, SPELLVALUE_MAX_TARGETS, 1, me->getVictim(), false);
++                    me->CastCustomSpell(SPELL_OOZE_SEARCH_EFFECT, SPELLVALUE_MAX_TARGETS, 1, me->getVictim(), false);
++                    target = true;
+                     m_uiSearchTargetTimer = 1000;
+                 } else m_uiSearchTargetTimer -= uiDiff;
+ 
+@@ -563,7 +617,6 @@
+ 
+              uint32 m_uiSearchTargetTimer;
+              bool target;
+-             bool aggro;
+         };
+ 
+         CreatureAI* GetAI(Creature* pCreature) const
+@@ -602,7 +655,7 @@
+             {
+                 if (m_uiBloatTimer < diff)
+                 {
+-                    DoCast(me->getVictim(), SPELL_GASEOUS_BLOAT_AURA);
++                    DoCast(me->getVictim(), SPELL_GASEOUS_BLOAT);
+                     m_uiBloatTimer = 5000;
+                 } else m_uiBloatTimer -= diff;
+ 
+@@ -649,13 +702,11 @@
+ 
+             void Reset()
+             {
+-                m_uiBombTimer = 1500;
+                 m_uiBoomTimer = 20000;
+ 
+                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                 me->SetInCombatWithZone();
+                 DoStartNoMovement(me->getVictim());
+-                DoCast(me, SPELL_ORANGE_RADIATION);
+             }
+ 
+             void EnterCombat(Unit* /*who*/) { }
+@@ -689,49 +740,158 @@
+         }
+ };
+ 
+-class npc_abomination : public CreatureScript
++class spell_putricide_mutation_init : public SpellScriptLoader
+ {
+     public:
+-        npc_abomination() : CreatureScript("npc_abomination") { }
++        spell_putricide_mutation_init() : SpellScriptLoader("spell_putricide_mutation_init") { }
+ 
+-        struct npc_abominationAI : public ScriptedAI
++
++        class spell_putricide_mutation_init_AuraScript : public AuraScript
+         {
+-            npc_abominationAI(Creature* pCreature) : ScriptedAI(pCreature), vehicle(pCreature->GetVehicleKit())
++            PrepareAuraScript(spell_putricide_mutation_init_AuraScript);
++
++            void OnRemove(AuraEffect const* /*aurEff*/, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
+             {
+-                assert(vehicle);
++                uint32 spellId = 70311;
++                if (aurApp->GetTarget()->GetMap()->GetSpawnMode() & 1)
++                    spellId = 71503;
++
++                aurApp->GetTarget()->CastSpell(aurApp->GetTarget(), spellId, true);
+             }
+ 
+-            void Reset()
++            void Register()
+             {
+-                m_uiGrabTimer = 500;
+-                bVehicle = false;
++                OnEffectRemove += AuraEffectRemoveFn(spell_putricide_mutation_init_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++            }
++        };
++
++
++        AuraScript* GetAuraScript() const
++        {
++            return new spell_putricide_mutation_init_AuraScript();
++        }
++};
++
++class spell_putricide_mutated_transformation_dismiss : public SpellScriptLoader
++{
++    public:
++        spell_putricide_mutated_transformation_dismiss() : SpellScriptLoader("spell_putricide_mutated_transformation_dismiss") { }
++
++
++        class spell_putricide_mutated_transformation_dismiss_AuraScript : public AuraScript
++        {
++            PrepareAuraScript(spell_putricide_mutated_transformation_dismiss_AuraScript);
++
++
++            void OnRemove(AuraEffect const* /*aurEff*/, AuraApplication const* aurApp, AuraEffectHandleModes /*mode*/)
++            {
++                if (Vehicle* veh = aurApp->GetTarget()->GetVehicleKit())
++                    veh->RemoveAllPassengers();
+             }
+ 
+-            void UpdateAI(const uint32 uiDiff)
++
++            void Register()
+             {
+-                if (m_uiGrabTimer < uiDiff)
+-                {
+-                    if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 2.0f, true))
+-                    {
+-                        if(!bVehicle)
+-                        {
+-                            target->EnterVehicle(vehicle);
+-                            bVehicle = true;
+-                        }
+-                    }
+-                    m_uiGrabTimer = 500;
+-                } else m_uiGrabTimer -= uiDiff;
++                OnEffectRemove += AuraEffectRemoveFn(spell_putricide_mutated_transformation_dismiss_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+             }
+-        private:
+-            Vehicle* vehicle;
+-
+-            bool bVehicle;
+-            uint32 m_uiGrabTimer;
+         };
+ 
+-        CreatureAI* GetAI(Creature* pCreature) const
++
++        AuraScript* GetAuraScript() const
+         {
+-            return new npc_abominationAI(pCreature);
++            return new spell_putricide_mutated_transformation_dismiss_AuraScript();
++        }
++};
++
++class spell_putricide_mutated_transformation : public SpellScriptLoader
++{
++    public:
++        spell_putricide_mutated_transformation() : SpellScriptLoader("spell_putricide_mutated_transformation") { }
++
++
++        class spell_putricide_mutated_transformation_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_putricide_mutated_transformation_SpellScript);
++
++
++            void HandleSummon(SpellEffIndex effIndex)
++            {
++                PreventHitDefaultEffect(effIndex);
++                uint32 entry = GetSpellInfo()->EffectMiscValue[effIndex];
++                SummonPropertiesEntry const* properties = sSummonPropertiesStore.LookupEntry(GetSpellInfo()->EffectMiscValueB[effIndex]);
++                Unit* caster = GetOriginalCaster();
++                if (!caster)
++                    return;
++
++
++                int32 duration = GetSpellDuration(GetSpellInfo());
++
++
++                Position pos;
++                caster->GetPosition(&pos);
++                TempSummon* summon = caster->GetMap()->SummonCreature(entry, pos, properties, duration, caster);
++                if (!summon || !summon->IsVehicle())
++                    return;
++
++
++                caster->CastSpell(summon, SPELL_TRANSFORMATION_NAME, true);
++                summon->CastSpell(summon, SPELL_TRANSFORMATION_DAMAGE, true);
++                caster->EnterVehicle(summon->GetVehicleKit(), 0);
++
++
++                summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, GetSpellInfo()->Id);
++                summon->SetCreatorGUID(caster->GetGUID());
++            }
++
++
++            void Register()
++            {
++                OnEffect += SpellEffectFn(spell_putricide_mutated_transformation_SpellScript::HandleSummon, EFFECT_0, SPELL_EFFECT_SUMMON);
++            }
++        };
++
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_putricide_mutated_transformation_SpellScript();
++        }
++};
++
++class spell_putricide_ooze_summon : public SpellScriptLoader
++{
++    public:
++        spell_putricide_ooze_summon() : SpellScriptLoader("spell_putricide_ooze_summon") { }
++
++
++        class spell_putricide_ooze_summon_AuraScript : public AuraScript
++        {
++            PrepareAuraScript(spell_putricide_ooze_summon_AuraScript);
++
++            void HandleTriggerSpell(AuraEffect const* aurEff, AuraApplication const* aurApp)
++            {
++                PreventDefaultAction();
++                if (Unit* caster = GetCaster())
++                {
++                    uint32 triggerSpellId = GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
++                    float x, y, z;
++                    aurApp->GetTarget()->GetPosition(x, y, z);
++                    z = aurApp->GetTarget()->GetMap()->GetHeight(x, y, z, true, 25.0f);
++                    x += 10.0f * cosf(caster->GetOrientation());
++                    y += 10.0f * sinf(caster->GetOrientation());
++                    caster->CastSpell(x, y, z, triggerSpellId, true, NULL, NULL, GetCasterGUID(), caster);
++                }
++            }
++
++            void Register()
++            {
++                OnEffectPeriodic += AuraEffectPeriodicFn(spell_putricide_ooze_summon_AuraScript::HandleTriggerSpell, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++            }
++        };
++
++
++        AuraScript* GetAuraScript() const
++        {
++            return new spell_putricide_ooze_summon_AuraScript();
+         }
+ };
+ 
+@@ -741,5 +901,8 @@
+     new npc_volatile_ooze();
+     new npc_gas_cloud_icc();
+     new npc_bomb_icc();
+-    new npc_abomination();
++    new spell_putricide_mutation_init();
++    new spell_putricide_mutated_transformation_dismiss();
++    new spell_putricide_mutated_transformation();
++    new spell_putricide_ooze_summon();
+ }
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -815,7 +815,7 @@
+                         ++m_uiIntroPhase;
+                         break;
+                     case 9:
+-                        pTirion->CastSpell(me, SPELL_ICEBLOCK_TRIGGER, true); 
++                        me->CastSpell(me, SPELL_ICEBLOCK_TRIGGER, true); 
+                         m_uiIntroTimer = 2000;
+                         ++m_uiIntroPhase;
+                         break;
+@@ -835,13 +835,9 @@
+                 } else m_uiIntroTimer -= diff;
+ 
+                 if(pInstance->GetData(DATA_LICH_KING_EVENT) != NOT_STARTED)
+-                {
+-                    me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+-                }
+-                else
+-                {
+-                    me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+-                }
++                    me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);               
++                else              
++                    me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);                
+             }
+         private:
+             InstanceScript* pInstance;
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+@@ -111,11 +111,6 @@
+                     DoScriptText(SAY_AGGRO, me);
+                     bIntro = true;
+ 
+-                    //hack, need add coords to creature
+-                    float x,y,z;
+-                    me->GetPosition(x,y,z);
+-                    me->SummonCreature(37950, x, y, z + 5, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+-
+                     ScriptedAI::MoveInLineOfSight(who);
+                 }
+             }
+@@ -223,7 +218,7 @@
+ 
+             void Reset()
+             {
+-                me->SetPhaseMask(17, true);
++                me->SetPhaseMask(16, true);
+                 me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                 me->SendMovementFlagUpdate();
+                 me->SetFlying(true);
+@@ -236,7 +231,7 @@
+             void UpdateAI(const uint32 diff)
+             {
+                 if (pInstance && pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) != IN_PROGRESS)
+-                    me->ForcedDespawn();
++                    return;
+ 
+                 if (m_uiSummonPortalTimer <= diff)
+                 {
+@@ -245,7 +240,7 @@
+                     for(uint8 i = 0; i <= 8; ++i) //need correct count
+                     {
+                         //need correct min and max value
+-                        me->SummonCreature(CREATURE_CLOUD, x + urand(8, 13), y + urand(8, 13), z + urand(3,7), 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
++                        me->SummonCreature(CREATURE_CLOUD, x + urand(20, 35), y + urand(15, 28), z + urand(5,8), 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
+                     }
+                     m_uiSummonPortalTimer = 5000;
+                 } else m_uiSummonPortalTimer -= diff;
+@@ -621,7 +616,7 @@
+ 
+             void Reset()
+             {
+-                me->SetPhaseMask(17, true);
++                me->SetPhaseMask(16, true);
+                 DoCast(SPELL_CLOUD_VISUAL);
+                 me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                 me->SendMovementFlagUpdate();
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/instance_icecrown_citadel.cpp
+@@ -281,6 +281,8 @@
+                         break;
+                     case PROF_DOOR_GREEN:
+                         uiProfDoorGreen = pGo->GetGUID();
++						if (uiEncounter[5] == DONE)
++							HandleGameObject(NULL, true, pGo);
+                         break;
+                     case ORANGE_PIPE:
+                         uiOrangePipe = pGo->GetGUID();
+@@ -294,6 +296,8 @@
+                         break;
+                     case PROF_DOOR_ORANGE:
+                         uiProfDoorOrange = pGo->GetGUID();
++						if (uiEncounter[4] == DONE)
++							 HandleGameObject(NULL, true, pGo);
+                         break;
+                     case ROTFACE_DOOR:
+                         uiGreenMonsterDoor = pGo->GetGUID();

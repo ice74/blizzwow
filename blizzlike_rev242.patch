@@ -1,0 +1,37 @@
+# HG changeset patch
+# User asniker
+# Date 1291128548 -18000
+# Node ID 90a42bde11a8e9fd93856ae5d829b23ecaf3058a
+# Parent  cfccc3e5caa4af78e7cccb2e841a03f21795f792
+���� ��
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -1,4 +1,4 @@
+-SET NAMES 'UTF8';
++﻿SET NAMES 'UTF8';
+ REPLACE INTO `trinity_string` VALUES ('12000', 'Cheater DETECTED> %s  ID:( %u ) Reason> %s', null, null, null, null, null, null, null, 'ЧИТЕР обнаружен:> %s ID:( %u) Причина> %s');
+ 
+ SET NAMES 'UTF8';
+@@ -6048,3 +6048,7 @@
+ DELETE FROM `spell_proc_event` WHERE `entry` IN (57277); 
+ INSERT INTO `spell_proc_event` VALUES (57277, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0);
+ 
++DELETE FROM `spell_bonus_data` WHERE `entry`=25742;
++INSERT INTO `spell_bonus_data` (entry, direct_bonus, ap_bonus, comments) VALUES
++(25742,0,0,'Paladin - Seal of Righteousness Dummy Proc');
++
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -4034,6 +4034,9 @@
+             mSpellCustomAttr[i] |= SPELL_ATTR_CU_IGNORE_ARMOR;
+             count++;
+             break;
++		case 25742:
++            spellInfo->SpellFamilyFlags[0] |= 0x400;
++            break;
+         case 12051:
+             spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
+             count++;

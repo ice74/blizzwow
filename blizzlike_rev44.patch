@@ -1,0 +1,37 @@
+# HG changeset patch
+# User asniker
+# Date 1286688303 -21600
+# Node ID 94f48961bbc7db4a712660bcc32b23e86c49fd38
+# Parent  30ec3601081d3ae8b3b8f02aead7b773fba265f8
+fix spell.cpp warnings
+
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -7260,7 +7260,7 @@
+         std::list<SpellScript::HitHandler>::iterator hookItrEnd = (*scritr)->BeforeHit.end(), hookItr = (*scritr)->BeforeHit.begin();
+         for(; hookItr != hookItrEnd ; ++hookItr)
+         {
+-            ((*scritr)->*(*hookItr))();
++            (*hookItr).Call(*scritr);
+         }
+         (*scritr)->_FinishScriptCall();
+     }
+@@ -7274,7 +7274,7 @@
+         std::list<SpellScript::HitHandler>::iterator hookItrEnd = (*scritr)->OnHit.end(), hookItr = (*scritr)->OnHit.begin();
+         for(; hookItr != hookItrEnd ; ++hookItr)
+         {
+-            ((*scritr)->*(*hookItr))();
++           (*hookItr).Call(*scritr);
+         }
+         (*scritr)->_FinishScriptCall();
+     }
+@@ -7288,7 +7288,7 @@
+         std::list<SpellScript::HitHandler>::iterator hookItrEnd = (*scritr)->AfterHit.end(), hookItr = (*scritr)->AfterHit.begin();
+         for(; hookItr != hookItrEnd ; ++hookItr)
+         {
+-            ((*scritr)->*(*hookItr))();
++            (*hookItr).Call(*scritr);
+         }
+         (*scritr)->_FinishScriptCall();
+     }

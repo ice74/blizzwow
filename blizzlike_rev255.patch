@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1291349902 -18000
+# Node ID a577693c5ec1d5eff351d50bdd2a41a39885b9c0
+# Parent  04dbd9a3880a2a3c9aaf801f51c4fc94bb07f80e
+ядро: ‘икс —пелла у дк http://www.wowhead.com/spell=48792
+
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -662,7 +662,7 @@
+             {
+                 if (caster->GetTypeId() == TYPEID_PLAYER)
+                 {
+-                    int32 value = (-1 * amount) - 10;
++                    int32 value = (-1 * amount);
+                     uint32 defva = uint32(caster->ToPlayer()->GetSkillValue(SKILL_DEFENSE) + caster->ToPlayer()->GetRatingBonusValue(CR_DEFENSE_SKILL));
+ 
+                     if (defva > 400)

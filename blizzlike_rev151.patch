@@ -1,0 +1,36 @@
+# HG changeset patch
+# User asniker
+# Date 1288881425 -18000
+# Node ID bd589f9e0008fc65813c97b6a2b58eb0cbbed667
+# Parent  64349ca36ce199e53f54ca72c664afb0c20dc0ee
+fix proc
+fix warrior spell
+
+diff --git a/src/server/game/Spells/Auras/SpellAuraEffects.cpp b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+--- a/src/server/game/Spells/Auras/SpellAuraEffects.cpp
++++ b/src/server/game/Spells/Auras/SpellAuraEffects.cpp
+@@ -4269,7 +4269,7 @@
+     std::list <AuraType> immunity_list;
+     if (GetMiscValue() & (1<<10))
+         immunity_list.push_back(SPELL_AURA_MOD_STUN);
+-	if ((GetMiscValue() & (1<<7)) && !(apply && GetId() == 46924))
++	if (GetMiscValue() & (1<<7))
+ 		immunity_list.push_back(SPELL_AURA_MOD_DISARM);
+     if (GetMiscValue() & (1<<1))
+         immunity_list.push_back(SPELL_AURA_TRANSFORM);
+diff --git a/src/server/game/Spells/SpellMgr.cpp b/src/server/game/Spells/SpellMgr.cpp
+--- a/src/server/game/Spells/SpellMgr.cpp
++++ b/src/server/game/Spells/SpellMgr.cpp
+@@ -3654,10 +3654,10 @@
+ 
+         switch(i)
+         {
+-			case 71880:
++		case 71880:
+         case 71892:
+             spellInfo->SpellFamilyName = SPELLFAMILY_GENERIC;
+-            spellInfo->procChance = 20;
++            spellInfo->procChance = 10;
+             count++;
+             break;
+         // Natural Shapeshifter

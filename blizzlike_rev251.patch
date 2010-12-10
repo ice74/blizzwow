@@ -1,0 +1,238 @@
+# HG changeset patch
+# User asniker
+# Date 1291216545 -18000
+# Node ID 4bda015fd6fddbbf82cadfe5494cd2ffe35c7161
+# Parent  77acce6c7ec0b07b005e1a71107366049c8c1619
+����/����: ���������� ���
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -2052,7 +2052,7 @@
+ -- Linked spell
+ 
+ DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (72202,70117);
+-DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291, 70338,72846);
++DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291, 70338,72846,69201);
+ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
+ (70360,70347,0,'Eat Ooze'),
+ (72379,72380,0,'Blood Nova'),
+@@ -2077,7 +2077,8 @@
+ (-69290,69291,0, 'Festergut: Gaseous spore'),
+ (-70337,70338,0, 'The Lich King: Necrotic plague initial cast'),
+ (-70337,72846,0, 'The Lich King: Necrotic plague immun'),
+-(-70338,70338,0, 'The Lich King: Necrotic jump');
++(-70338,70338,0, 'The Lich King: Necrotic jump'),
++(-69200,69201,0, 'The Lich King: Raging Spirit');
+ 
+ -- Linked Respawn
+ 
+diff --git a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+--- a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
++++ b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+@@ -188,7 +188,7 @@
+ -- Linked spell
+ 
+ DELETE FROM `spell_linked_spell` WHERE `spell_trigger` IN (72202,70117);
+-DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291, 70338,72846);
++DELETE FROM `spell_linked_spell` WHERE `spell_effect` IN(72202,69166,70347,72380,69706,70702,70311, 69291, 70338,72846,69201);
+ INSERT INTO `spell_linked_spell` (`spell_trigger`,`spell_effect`,`type`,`comment`) VALUES
+ (70360,70347,0,'Eat Ooze'),
+ (72379,72380,0,'Blood Nova'),
+@@ -213,7 +213,8 @@
+ (-69290,69291,0, 'Festergut: Gaseous spore'),
+ (-70337,70338,0, 'The Lich King: Necrotic plague initial cast'),
+ (-70337,72846,0, 'The Lich King: Necrotic plague immun'),
+-(-70338,70338,0, 'The Lich King: Necrotic jump');
++(-70338,70338,0, 'The Lich King: Necrotic jump'),
++(-69200,69201,0, 'The Lich King: Raging Spirit');
+ 
+ -- Linked Respawn
+ 
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_the_lich_king.cpp
+@@ -70,7 +70,7 @@
+     SPELL_SUMMON_RAGING_SPIRIT       = 69200,
+     SPELL_SUMMON_VALKYR              = 74361,
+     SPELL_SUMMON_DEFILE              = 72762,
+-    SPELL_SUMMON_VILE_SPIRIT         = 70498,
++    SPELL_SUMMON_VILE_SPIRIT         = 70498, //????????
+     SPELL_SUMMON_BROKEN_FROSTMOURNE  = 72406,
+     SPELL_SUMMON_SHADOW_TRAP         = 73539,
+     SPELL_INFEST                     = 70541,
+@@ -131,12 +131,6 @@
+     {498.004486f, 2201.573486f, 1046.093872f, 0.0f}  // move valkyr
+ };
+ 
+-//TODO:
+-//Need fixed:
+-//raging spirit aura
+-//raging spirit cast 69198
+-//69200 - must be aura with duration: 5 seconds
+-
+ /*struct Locations
+ {
+     float x,y,z;
+@@ -228,6 +222,11 @@
+                 {
+                     reaper->Targets = 1;
+                 }
++				if(SpellEntry* raging = GET_SPELL(SPELL_SUMMON_RAGING_SPIRIT))
++				{
++				raging->DurationIndex = 28;
++				raging->Effect[0] = 6;
++				}
+             }
+ 
+             void EnterCombat(Unit* /*pWho*/)
+@@ -254,7 +253,14 @@
+ 
+                 summons.DespawnAll();
+ 
+-                PlayerCinematic();
++               Map::PlayerList const &PlList = me->GetMap()->GetPlayers();
++			   
++			   if (PlList.isEmpty())
++			   return;
++			   
++			   for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
++			   if (Player* pPlayer = i->getSource())
++			   pPlayer->SendMovieStart(16);
+             }
+ 
+             void MovementInform(uint32 type, uint32 id)
+@@ -269,23 +275,7 @@
+                     me->GetMotionMaster()->MovementExpired();
+                 }
+             }
+-
+-            void PlayerCinematic()
+-            {
+-                Map::PlayerList const &PlList = me->GetMap()->GetPlayers();
+-
+-                if (PlList.isEmpty())
+-                    return;
+-
+-                for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
+-                {
+-                    if (Player* pPlayer = i->getSource())
+-                    {
+-                    pPlayer->SendMovieStart(16);					
+-                    }
+-                }
+-            }
+-
++          
+             void JustReachedHome()
+             {
+                 if(!pInstance)
+@@ -344,8 +334,7 @@
+ 					    summoned->AI()->AttackStart(me);
+ 						summoned->SetDisplayId(MODEL_INVISIBLE);
+ 						summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+-						break;
+-						
++						break;						
+                 }
+             }
+ 
+@@ -355,6 +344,7 @@
+                 me->AttackStop();
+                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                 SetCombatMovement(false);
++				me->SetInCombatWithZone();
+                 me->GetMotionMaster()->MovePoint(POINT_PLATFORM_CENTRE, MovePos[1]);
+             }
+ 
+@@ -362,6 +352,7 @@
+             {
+                 m_uiPhase = m_uiPhase == 2 ? 3 : 5;
+                 me->SetReactState(REACT_AGGRESSIVE);
++				me->SetInCombatWithZone();
+                 SetCombatMovement(true);
+                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+             }
+@@ -399,7 +390,7 @@
+ 
+             void UpdateAI(const uint32 uiDiff)
+             {
+-               if (!pInstance || pInstance->GetData(DATA_LICH_KING_EVENT) != IN_PROGRESS)
++              if (!pInstance || !UpdateVictim())
+                     return;
+ 
+                 if(!bEnding)
+@@ -579,7 +570,7 @@
+                             me->SetReactState(REACT_PASSIVE);
+                             me->AttackStop();
+                             me->CastStop();
+-                            DoResetThreat();
++                            me->SetInCombatWithZone();
+                             DoScriptText(SAY_10_PROZENT, me);
+                             DoCast(SPELL_FURY_OF_FROSTMOURNE);
+                             m_uiEndingTimer = 15000;
+@@ -850,19 +841,13 @@
+                         m_uiIntroTimer = 2000;
+                         ++m_uiIntroPhase;
+                         break;
+-                    case 10:
+-                        pLichKing->SetUInt32Value(UNIT_NPC_EMOTESTATE, 1);
+-                        DoScriptText(SAY_INTRO_5_KING, pLichKing);
+-                        m_uiIntroTimer = 12000;
+-                        ++m_uiIntroPhase;
+-                        break;
+-                    case 11:
+-                        pLichKing->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
++                    case 10:                        
++                        DoScriptText(SAY_INTRO_5_KING, pLichKing);                     
+                         pLichKing->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                         pLichKing->SetReactState(REACT_AGGRESSIVE);
+-                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                            me->AI()->AttackStart(pTarget);
+-                        m_uiIntroTimer = 6000;
++                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
++					    pLichKing->AI()->AttackStart(pTarget);
++					    m_uiIntroTimer = 12000;
+                         ++m_uiIntroPhase;
+                         break;
+                     }
+@@ -1037,6 +1022,8 @@
+         }
+ };
+ 
++typedef boss_the_lich_king::boss_the_lich_kingAI LichKingAI
++
+ class spell_lich_king_necrotic_plague : public SpellScriptLoader
+ {
+     public:
+@@ -1062,7 +1049,8 @@
+                 //70337 âåøàåò îáû÷íóþ ÷óìó.Â áàçå äåëàåì çàïèñü, ÷òî áû ïðè ñïàäå 70337 êàñòîâàëàñü 70338 è èììóíèòåò
+                 //Äëÿ 70338 â áàçå òàêæå äåëàåì êàñò ïðè ñïàäåò.Êàñòîâàòü áóäåò òîò-æå 70338
+                 //Â Ñêðèïòå îñòàåòñÿ ñäåëàòü óâåëè÷åíèå ñòàêà è ðåàëèçàöèþ à÷èâêè
+-                CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, CAST_CRE(aurApp->GetBase()->GetCaster())->AI())->DoCast(SPELL_PLAGUE_SIPHON);
++                LichKingAI* LichAI = CAST_AI(LichKingAI, pLichKing->AI());
++				LichAI->DoCast(SPELL_PLAGUE_SIPHON);
+             }
+ 
+             void Register()
+@@ -1091,7 +1079,7 @@
+             void OnPeriodic(AuraEffect const* aurEff, AuraApplication const* aurApp)
+             {
+                 PreventDefaultAction();
+-                if(!aurApp->GetTarget()->isAlive() || aurApp->GetTarget()->GetHealthPct() < 90)
++                if(!aurApp || aurApp->GetTarget()->GetHealthPct() < 90 || !aurApp->GetBase()->GetCaster())
+                     return;
+ 
+                 aurApp->GetTarget()->RemoveAurasDueToSpell(SPELL_INFEST);
+@@ -1221,9 +1209,9 @@
+                 {
+                     if (GameObject* floor = GameObject::GetGameObject((*aurApp->GetBase()->GetOwner()), instance->GetData64(DATA_PLATFORM)))
+                     {
++					    LichKingAI* LichAI = CAST_AI(LichKingAI, pLichKing->AI());		
+                         floor->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED);
+-                        CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, pLichKing->AI())->NextPhase();
+-						//CAST_AI(boss_the_lich_king::boss_the_lich_kingAI, CAST_CRE(aurApp->GetBase()->GetCaster())->AI())->DoCast(SPELL_PLAGUE_SIPHON);
++                        LichAI->NextPhase();
+                     }
+                 }
+             }

@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1289989782 -18000
+# Node ID aab11ab0c0dd583e61eff0acf79353f1e7633210
+# Parent  426563870f6a1d33137ed0440c2bc5ba8d48bb6d
+fix crash at arena dalaran
+
+diff --git a/src/server/game/Battlegrounds/Battleground.h b/src/server/game/Battlegrounds/Battleground.h
+--- a/src/server/game/Battlegrounds/Battleground.h
++++ b/src/server/game/Battlegrounds/Battleground.h
+@@ -448,7 +448,7 @@
+         void SetBgMap(BattlegroundMap* map) { m_Map = map; }
+         BattlegroundMap* GetBgMap()
+         {
+-            ASSERT(m_Map);
++ //           ASSERT(m_Map);
+             return m_Map;
+         }
+ 

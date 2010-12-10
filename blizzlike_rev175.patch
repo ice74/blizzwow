@@ -1,0 +1,2241 @@
+# HG changeset patch
+# User asniker
+# Date 1289562118 -18000
+# Node ID 33cfa58c8ce7769b900bd9898c23454c97620ba4
+# Parent  a843f696bf8bc99bf35a961841de0ee3ad00b984
+fix arena
+fix spellhandler
+
+diff --git a/src/server/game/Battlegrounds/ArenaTeam.cpp b/src/server/game/Battlegrounds/ArenaTeam.cpp
+--- a/src/server/game/Battlegrounds/ArenaTeam.cpp
++++ b/src/server/game/Battlegrounds/ArenaTeam.cpp
+@@ -1,19 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "ObjectMgr.h"
+diff --git a/src/server/game/Battlegrounds/ArenaTeam.h b/src/server/game/Battlegrounds/ArenaTeam.h
+--- a/src/server/game/Battlegrounds/ArenaTeam.h
++++ b/src/server/game/Battlegrounds/ArenaTeam.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef TRINITYCORE_ARENATEAM_H
+diff --git a/src/server/game/Battlegrounds/Battleground.cpp b/src/server/game/Battlegrounds/Battleground.cpp
+--- a/src/server/game/Battlegrounds/Battleground.cpp
++++ b/src/server/game/Battlegrounds/Battleground.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Player.h"
+@@ -742,8 +740,8 @@
+             if (sWorld.getBoolConfig(CONFIG_ARENA_LOG_EXTENDED_INFO))
+                 for (Battleground::BattlegroundScoreMap::const_iterator itr = GetPlayerScoresBegin(); itr != GetPlayerScoresEnd(); itr++)
+                     if (Player* player = sObjectMgr.GetPlayer(itr->first))
+-         sLog.outArena("Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
+-		}
++                        sLog.outArena("Statistics for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows", player->GetName(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3), player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone, itr->second->KillingBlows);
++        }
+         else
+         {
+             SetArenaTeamRatingChangeForTeam(ALLIANCE, 0);
+@@ -1021,7 +1019,6 @@
+ 
+         sLog.outDetail("BATTLEGROUND: Removed player %s from Battleground.", plr->GetName());
+         plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId(), true);
+-        plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, ACHIEVEMENT_CRITERIA_CONDITION_MAP, GetMapId(), true);
+     }
+ 
+     //battleground object will be deleted next Battleground::Update() call
+@@ -1060,7 +1057,6 @@
+ {
+     SetStartTime(0);
+     SetLastResurrectTime(0);
+-  
+     // add BG to free slot queue
+     AddToBGFreeSlotQueue();
+ 
+@@ -1174,8 +1170,8 @@
+             plr->SetBattlegroundRaid(group, subgroup);
+         }
+         else
+-        {       
+-            group->AddMember(plr_guid, plr->GetName());         
++        {
++            group->AddMember(plr_guid, plr->GetName());
+             if (Group* originalGroup = plr->GetOriginalGroup())
+                 if (originalGroup->IsLeader(plr_guid))
+                     group->ChangeLeader(plr_guid);
+diff --git a/src/server/game/Battlegrounds/Battleground.h b/src/server/game/Battlegrounds/Battleground.h
+--- a/src/server/game/Battlegrounds/Battleground.h
++++ b/src/server/game/Battlegrounds/Battleground.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUND_H
+diff --git a/src/server/game/Battlegrounds/BattlegroundMgr.cpp b/src/server/game/Battlegrounds/BattlegroundMgr.cpp
+--- a/src/server/game/Battlegrounds/BattlegroundMgr.cpp
++++ b/src/server/game/Battlegrounds/BattlegroundMgr.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Common.h"
+@@ -334,7 +332,7 @@
+                         *data << uint32(((BattlegroundSAScore*)itr2->second)->demolishers_destroyed);
+                         *data << uint32(((BattlegroundSAScore*)itr2->second)->gates_destroyed);
+                         break;
+-                    case 628:                           // IC
++					case 628:                           // IC
+                         *data << (uint32)0x00000002;                // count of next fields
+                         *data << (uint32)((BattlegroundICScore*)itr->second)->BasesAssaulted;       // bases asssulted
+                         *data << (uint32)((BattlegroundICScore*)itr->second)->BasesDefended;        // bases defended
+@@ -342,7 +340,6 @@
+                         *data << uint32(0);
+                         break;
+                 }
+-                break;
+             case BATTLEGROUND_AV:
+                 *data << uint32(0x00000005);                    // count of next fields
+                 *data << uint32(((BattlegroundAVScore*)itr2->second)->GraveyardsAssaulted); // GraveyardsAssaulted
+@@ -370,7 +367,7 @@
+                 *data << uint32(((BattlegroundSAScore*)itr2->second)->demolishers_destroyed);
+                 *data << uint32(((BattlegroundSAScore*)itr2->second)->gates_destroyed);
+                 break;
+-            case BATTLEGROUND_IC:                           // wotlk
++			case BATTLEGROUND_IC:                           // wotlk
+                 *data << (uint32)0x00000002;                // count of next fields
+                 *data << (uint32)((BattlegroundICScore*)itr->second)->BasesAssaulted;       // bases asssulted
+                 *data << (uint32)((BattlegroundICScore*)itr->second)->BasesDefended;        // bases defended
+@@ -380,7 +377,7 @@
+             case BATTLEGROUND_AA:
+             case BATTLEGROUND_RL: //<<  ?? is it normal ? same packet for arena and SOTA ?
+             case BATTLEGROUND_DS:                               // wotlk
+-            case BATTLEGROUND_RV:                               // wotlk
++            case BATTLEGROUND_RV:                               // wotlk         
+                 *data << uint32(0);
+                 break;
+             default:
+diff --git a/src/server/game/Battlegrounds/BattlegroundMgr.h b/src/server/game/Battlegrounds/BattlegroundMgr.h
+--- a/src/server/game/Battlegrounds/BattlegroundMgr.h
++++ b/src/server/game/Battlegrounds/BattlegroundMgr.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDMGR_H
+diff --git a/src/server/game/Battlegrounds/BattlegroundQueue.cpp b/src/server/game/Battlegrounds/BattlegroundQueue.cpp
+--- a/src/server/game/Battlegrounds/BattlegroundQueue.cpp
++++ b/src/server/game/Battlegrounds/BattlegroundQueue.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "BattlegroundQueue.h"
+diff --git a/src/server/game/Battlegrounds/BattlegroundQueue.h b/src/server/game/Battlegrounds/BattlegroundQueue.h
+--- a/src/server/game/Battlegrounds/BattlegroundQueue.h
++++ b/src/server/game/Battlegrounds/BattlegroundQueue.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDQUEUE_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAA.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundAA.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAA.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAA.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAA.h b/src/server/game/Battlegrounds/Zones/BattlegroundAA.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAA.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAA.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __BATTLEGROUNDAA_H
+ #define __BATTLEGROUNDAA_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAB.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "World.h"
+@@ -174,17 +172,6 @@
+     }
+ }
+ 
+-void BattlegroundAB::HandleKillPlayer(Player *player, Player *killer)
+-{
+-    if (GetStatus() != STATUS_IN_PROGRESS)
+-        return;
+-
+-    if (killer->GetAreaId() == player->GetAreaId()) 
+-        killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA);
+-    
+-    Battleground::HandleKillPlayer(player, killer);
+-}
+-
+ void BattlegroundAB::StartingEventCloseDoors()
+ {
+     // despawn banners, auras and buffs
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAB.h b/src/server/game/Battlegrounds/Zones/BattlegroundAB.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAB.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAB.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __BATTLEGROUNDAB_H
+ #define __BATTLEGROUNDAB_H
+@@ -254,7 +252,6 @@
+         virtual void StartingEventCloseDoors();
+         virtual void StartingEventOpenDoors();
+         void RemovePlayer(Player *plr,uint64 guid);
+-        void HandleKillPlayer(Player* player, Player *killer);
+         void HandleAreaTrigger(Player *Source, uint32 Trigger);
+         virtual bool SetupBattleground();
+         virtual void Reset();
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "ObjectMgr.h"
+@@ -54,9 +52,6 @@
+     if (GetStatus() != STATUS_IN_PROGRESS)
+         return;
+ 
+-    if (killer->GetAreaId() == player->GetAreaId()) 
+-        killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA);
+-    
+     Battleground::HandleKillPlayer(player, killer);
+     UpdateScore(player->GetTeam(),-1);
+ }
+@@ -707,7 +702,7 @@
+     if (team == ALLIANCE || team == HORDE)
+     {
+         m_Mine_Reclaim_Timer[mine]=AV_MINE_RECLAIM_TIMER;
+-        char buf[256];
++    char buf[256];
+         sprintf(buf, GetTrinityString(LANG_BG_AV_MINE_TAKEN), GetTrinityString((mine == AV_NORTH_MINE) ? LANG_BG_AV_MINE_NORTH : LANG_BG_AV_MINE_SOUTH), (team == ALLIANCE) ?  GetTrinityString(LANG_BG_AV_ALLY) : GetTrinityString(LANG_BG_AV_HORDE));
+         Creature* creature = GetBGCreature(AV_CPLACE_HERALD);
+         if (creature)
+@@ -717,8 +712,8 @@
+     {
+         if (mine == AV_SOUTH_MINE) //i think this gets called all the time
+         {
+-		       if (Creature* creature = GetBGCreature(AV_CPLACE_MINE_S_3))
+-                YellToAll(creature,LANG_BG_AV_S_MINE_BOSS_CLAIMS,LANG_UNIVERSAL);
++            Creature* creature = GetBGCreature(AV_CPLACE_MINE_S_3);
++            YellToAll(creature,LANG_BG_AV_S_MINE_BOSS_CLAIMS,LANG_UNIVERSAL);
+         }
+     }
+     return;
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAV.h b/src/server/game/Battlegrounds/Zones/BattlegroundAV.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAV.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAV.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDAV_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundBE.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundBE.h b/src/server/game/Battlegrounds/Zones/BattlegroundBE.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundBE.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundBE.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __BATTLEGROUNDBE_H
+ #define __BATTLEGROUNDBE_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundDS.cpp
+@@ -1,19 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+@@ -37,9 +37,10 @@
+     m_StartMessageIds[BG_STARTING_EVENT_SECOND] = LANG_ARENA_THIRTY_SECONDS;
+     m_StartMessageIds[BG_STARTING_EVENT_THIRD]  = LANG_ARENA_FIFTEEN_SECONDS;
+     m_StartMessageIds[BG_STARTING_EVENT_FOURTH] = LANG_ARENA_HAS_BEGUN;
++	
++	m_knockback = 5000;
++    m_knockbackCheck = true;
+ 
+-    m_knockback = 5000;
+-    m_knockbackCheck = true;
+ }
+ 
+ BattlegroundDS::~BattlegroundDS()
+@@ -69,8 +70,8 @@
+     }
+     else
+         setWaterFallTimer(getWaterFallTimer() - diff);
+-
+-        if (GetStatus() == STATUS_IN_PROGRESS)
++		
++		if (GetStatus() == STATUS_IN_PROGRESS)
+         {
+                 if(m_knockback < diff && m_knockbackCheck)
+                 {
+@@ -107,9 +108,10 @@
+ 
+     for (uint32 i = BG_DS_OBJECT_WATER_1; i <= BG_DS_OBJECT_WATER_2; ++i)
+         SpawnBGObject(i, getWaterFallTimer());
++		
++	m_knockback = 5000;
++    m_knockbackCheck = true;
+ 
+-    m_knockback = 5000;
+-    m_knockbackCheck = true;
+ }
+ 
+ void BattlegroundDS::AddPlayer(Player *plr)
+@@ -182,8 +184,9 @@
+ {
+     //call parent's class reset
+     Battleground::Reset();
+-    m_knockback = 5000;
++	m_knockback = 5000;
+     m_knockbackCheck = true;
++
+ }
+ 
+ 
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundDS.h b/src/server/game/Battlegrounds/Zones/BattlegroundDS.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundDS.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundDS.h
+@@ -1,20 +1,21 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
++
+ #ifndef __BATTLEGROUNDDS_H
+ #define __BATTLEGROUNDDS_H
+ 
+@@ -42,7 +43,8 @@
+ };
+ 
+ enum BattlegroundDSData
+-{
++
++    {
+     BG_DS_WATERFALL_TIMER_MIN                    = 35000,
+     BG_DS_WATERFALL_TIMER_MAX                    = 60000,
+     BG_DS_WATERFALL_DURATION                     = 30000,
+@@ -80,7 +82,7 @@
+     private:
+         uint32 m_waterTimer;
+         bool m_waterfallActive;
+-        bool m_knockbackCheck;
++		bool m_knockbackCheck;
+         uint32 m_knockback;
+         void KnockBackPlayer(Unit *pPlayer, float angle, float horizontalSpeed, float verticalSpeed);
+     protected:
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundEY.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "ObjectMgr.h"
+@@ -581,9 +579,6 @@
+     if (GetStatus() != STATUS_IN_PROGRESS)
+         return;
+ 
+-    if (killer->GetAreaId() == player->GetAreaId()) 
+-        killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA);
+-
+     Battleground::HandleKillPlayer(player, killer);
+     EventPlayerDroppedFlag(player);
+ }
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundEY.h b/src/server/game/Battlegrounds/Zones/BattlegroundEY.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundEY.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundEY.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDEY_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundIC.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundIC.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundIC.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundIC.cpp
+@@ -1,19 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Player.h"
+@@ -27,13 +27,14 @@
+ #include "Vehicle.h"
+ #include "Transport.h"
+ 
++
+ BattlegroundIC::BattlegroundIC()
+ {
+     m_BgCreatures.resize(BG_IC_NPC_MAX);
+     m_BgObjects.resize(BG_IC_MAX_OBJECT);
+-    for (int i=0;i<BG_IC_NPC_MAX;i++)
++    for (int i=0;i<BG_IC_NPC_MAX;i)
+         m_BgCreatures[i]=NULL;
+-    for (int i=0;i<BG_IC_MAX_OBJECT;i++)
++    for (int i=0;i<BG_IC_MAX_OBJECT;i)
+         m_BgObjects[i]=NULL;
+ 
+     //Setting the start message 2 minute 1 minute 30 sec and start (missing the 15 sec)
+@@ -63,13 +64,13 @@
+ void BattlegroundIC::Update(uint32 diff)
+ {
+     Battleground::Update(diff);
+-    if (GetStatus() == STATUS_IN_PROGRESS)
++ if (GetStatus() == STATUS_IN_PROGRESS)
+     {
+         if(m_OpenDoors)
+ 		{
+             if(m_uiOpenDoorTimer<=diff)
+             {
+-                for (int i = 0 ; i < BG_IC_MAXDOOR; ++i)
++                for (int i = 0 ; i < BG_IC_MAXDOOR; i)
+                     if(GetBGObject(m_IC_DoorData[i].object_door)) GetBGObject(m_IC_DoorData[i].object_door)->SetGoState(GO_STATE_READY); //On ouvre les porte
+                 m_OpenDoors=false;
+                 m_ActivMODoors=true;
+@@ -78,11 +79,11 @@
+ 			else m_uiOpenDoorTimer -= diff;
+         }
+ 
+-        if(m_ActivMODoors)
++if(m_ActivMODoors)
+ 		{
+             if(m_uiActivMODoorsTimer<=diff)
+             {
+-                for (int i = 0 ; i < BG_IC_MAXDOOR; ++i){
++                for (int i = 0 ; i < BG_IC_MAXDOOR; i){
+                     if(GetBGObject(m_IC_DoorData[i].object_door)) DelObject(m_IC_DoorData[i].object_door);
+                     if(GetBGObject(m_IC_DoorData[i].object_build))
+                     {
+@@ -98,7 +99,7 @@
+ 			else m_uiActivMODoorsTimer -= diff;
+         }
+ 
+-        for (uint8 i = 0; i < BG_IC_DYNAMIC_NODES_COUNT; i++)
++        for (uint8 i = 0; i < BG_IC_DYNAMIC_NODES_COUNT; i)
+ 		{
+             if (m_IC_NodeData[i].current == STATE_BANNER_CONT_A || m_IC_NodeData[i].current ==STATE_BANNER_CONT_H)
+             {
+@@ -134,7 +135,7 @@
+ 
+ void BattlegroundIC::StartingEventOpenDoors()
+ {
+-    for (int i = 0 ; i < MAX_BG_IC_OBJ; i++)
++for (int i = 0 ; i < MAX_BG_IC_OBJ; i)
+     {
+         uint8 id=BG_IC_OBJ[i].id;
+         switch(BG_IC_OBJ[i].type)
+@@ -147,12 +148,12 @@
+             break;
+         case IC_TYPE_DOOR_A:
+         case IC_TYPE_DOOR_H:
+-            if(GetBGObject(id+1)) GetBGObject(id+1)->SetGoState(GO_STATE_ACTIVE); //On ouvre les porte
++            if(GetBGObject(id1)) GetBGObject(id1)->SetGoState(GO_STATE_ACTIVE); //On ouvre les porte
+             break;
+         case IC_TYPE_TELEPORT_H:
+         case IC_TYPE_TELEPORT_A:
+             if(GetBGObject(id)) GetBGObject(id)->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE); //T?l?porteur cliquable
+-            if(GetBGObject(id+1)) GetBGObject(id+1)->SetGoState(GO_STATE_ACTIVE);    //Aura active
++            if(GetBGObject(id1)) GetBGObject(id1)->SetGoState(GO_STATE_ACTIVE);    //Aura active
+             break;
+         }
+     }
+@@ -165,7 +166,7 @@
+     Battleground::AddPlayer(plr);
+     //create score and add it to map, default values are set in constructor
+     BattlegroundICScore* sc = new BattlegroundICScore;
+-    if(sc)
++ if(sc)
+ 	{
+ 		sc->BasesAssaulted=0;
+ 		sc->BasesDefended=0;
+@@ -181,7 +182,7 @@
+ 
+ void BattlegroundIC::SendTransportInit(Player *player)
+ {
+-    if(!m_GunshipA)
++if(!m_GunshipA)
+         return;
+ 		
+     if(!m_GunshipH)
+@@ -197,8 +198,8 @@
+ 
+ void BattlegroundIC::RemovePlayer(Player* plr,uint64 /*guid*/)
+ {
+-    plr->RemoveAura(OIL_REFINERY);
+-    plr->RemoveAura(QUARRY);
++   plr->RemoveAura(OIL_REFINERY);
++   plr->RemoveAura(QUARRY);
+ }
+ 
+ void BattlegroundIC::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, bool doAddHonor)
+@@ -211,10 +212,10 @@
+     switch(type)
+     {
+         case SCORE_BASES_ASSAULTED:
+-            ((BattlegroundICScore*)itr->second)->BasesAssaulted += value;
++            ((BattlegroundICScore*)itr->second)->BasesAssaulted = value;
+             break;
+         case SCORE_BASES_DEFENDED:
+-            ((BattlegroundICScore*)itr->second)->BasesDefended += value;
++            ((BattlegroundICScore*)itr->second)->BasesDefended = value;
+             break;
+         default:
+             Battleground::UpdatePlayerScore(Source,type,value, doAddHonor);
+@@ -228,21 +229,21 @@
+     data << uint32(BG_IC_HORDE_RENFORT_SET) << uint32(1);
+     data << uint32(BG_IC_ALLIANCE_RENFORT) << uint32(m_Team_Scores[0]);
+     data << uint32(BG_IC_HORDE_RENFORT) << uint32(m_Team_Scores[1]);
+-    for (uint8 i = 0 ; i < BG_IC_MAXDOOR; ++i)
++    for (uint8 i = 0 ; i < BG_IC_MAXDOOR; i)
+     {
+         if(m_IC_DoorData[i].state == BG_IC_GATE_DESTROYED)
+             data<<uint32(m_IC_DoorData[i].worldstate[0])<< uint32(1);
+         else
+             data<<uint32(m_IC_DoorData[i].worldstate[1])<< uint32(1);
+     }
+-    for (uint8 i = 0 ; i < BG_IC_DYNAMIC_NODES_COUNT ; i++)
++    for (uint8 i = 0 ; i < BG_IC_DYNAMIC_NODES_COUNT ; i)
+         data << uint32(m_IC_NodeData[i].worldstate[m_IC_NodeData[i].current]) << uint32(1);
+ }
+ 
+ bool BattlegroundIC::SetupBattleground()
+ {
+     // Spawn all GameObjects
+-    for (uint8 i = 0 ; i < MAX_BG_IC_OBJ; i++)
++    for (uint8 i = 0 ; i < MAX_BG_IC_OBJ; i)
+     {
+     	//Coordinate of GameObject
+         float x,y,z,o;
+@@ -268,14 +269,14 @@
+ 
+ 		  m_IC_NodeData[NodeId].current=BG_IC_OBJ[i].state;
+ 		  m_IC_NodeData[NodeId].previous=BG_IC_OBJ[i].state;
+-		  m_IC_NodeData[NodeId].object_aura=id+2;
+-		  m_IC_NodeData[NodeId].object_flag=id+1;
++		  m_IC_NodeData[NodeId].object_aura=id2;
++		  m_IC_NodeData[NodeId].object_flag=id1;
+ 		  m_IC_NodeData[NodeId].timeleft=0;
+ 
+-		  for(int ws=0 ;ws<5 ;ws++)
++		  for(int ws=0 ;ws<5 ;ws)
+ 		      m_IC_NodeData[NodeId].worldstate[ws]=IC_InitNodeData[NodeId].worldstate[ws];
+ 
+-		  for(int gobid=0 ;gobid<5 ;gobid++)
++		  for(int gobid=0 ;gobid<5 ;gobid)
+ 		      m_IC_NodeData[NodeId].gobentry[gobid]=IC_InitNodeData[NodeId].gobentry[gobid];
+ 
+ 		  uint8 state=BG_IC_OBJ[i].state;
+@@ -296,21 +297,21 @@
+ 		      return false;
+ 
+ 		  //Spaw the aura
+-		  if(!AddObject(id+2,BanneAura,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
++		  if(!AddObject(id2,BanneAura,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
+ 		      return false;
+ 
+ 		  //Spawn the Flag
+-		  if(!AddObject(id+1,BannerFlag,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
++		  if(!AddObject(id1,BannerFlag,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
+ 		      return false;
+ 
+ 		  //Set flag faction
+-		  GetBGObject(id+1)->SetUInt32Value(GAMEOBJECT_FACTION, BG_IC_OBJ[i].faction);
++		  GetBGObject(id1)->SetUInt32Value(GAMEOBJECT_FACTION, BG_IC_OBJ[i].faction);
+ 
+ 		  //if flag is clickable or not on start (like flag in the keep):
+ 		  if(BG_IC_OBJ[i].usable)
+-		      GetBGObject(id+1)->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
++		      GetBGObject(id1)->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+ 		  else
+-		      GetBGObject(id+1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
++		      GetBGObject(id1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+ 
+ 		  break;
+ 		}
+@@ -327,22 +328,22 @@
+ 		      return false;
+ 
+ 		  //Spawn door
+-		  if(!AddObject(id+1,BG_IC_OBJECTID_GATE_H,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
++		  if(!AddObject(id1,BG_IC_OBJECTID_GATE_H,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
+ 		      return false;
+ 
+ 		  //Door faction
+ 		  GetBGObject(id)->SetUInt32Value(GAMEOBJECT_FACTION, BG_IC_OBJ[i].faction);
+ 		  GetBGObject(id)->SetGoState(GO_STATE_ACTIVE);//As on retail
+ 		  //Door must not be usable
+-		  GetBGObject(id+1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
++		  GetBGObject(id1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+ 
+ 		  //Stock door data for use it in script after
+-		  m_IC_DoorData[DoorId].object_door=id+1;
++		  m_IC_DoorData[DoorId].object_door=id1;
+ 		  m_IC_DoorData[DoorId].object_build=id;
+ 		  m_IC_DoorData[DoorId].state=IC_InitDoorData[DoorId].state;
+ 
+ 		  //Worldstate
+-		  for(int ws=0 ;ws<2 ;ws++)
++		  for(int ws=0 ;ws<2 ;ws)
+ 		      m_IC_DoorData[DoorId].worldstate[ws]=IC_InitDoorData[DoorId].worldstate[ws];
+ 
+ 		  break;
+@@ -360,7 +361,7 @@
+ 		      return false;
+ 
+ 		  //Spawn door
+-		  if(!AddObject(id+1,BG_IC_OBJECTID_GATE_A,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
++		  if(!AddObject(id1,BG_IC_OBJECTID_GATE_A,x,y,z,o,0,0,0,0,RESPAWN_ONE_DAY))
+ 		      return false;
+ 
+ 		  //DoorFaction
+@@ -368,15 +369,15 @@
+ 		  GetBGObject(id)->SetGoState(GO_STATE_ACTIVE);//As on retail
+ 
+ 		  //Door must not be usable
+-		  GetBGObject(id+1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
++		  GetBGObject(id1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+ 
+ 		  //Stock door data for use it in script after
+-		  m_IC_DoorData[DoorId].object_door=id+1;
++		  m_IC_DoorData[DoorId].object_door=id1;
+ 		  m_IC_DoorData[DoorId].object_build=id;
+ 		  m_IC_DoorData[DoorId].state=IC_InitDoorData[DoorId].state;
+ 
+ 		  //Worldstate
+-		  for(int ws=0 ;ws<2 ;ws++)
++		  for(int ws=0 ;ws<2 ;ws)
+ 		      m_IC_DoorData[DoorId].worldstate[ws]=IC_InitDoorData[DoorId].worldstate[ws];
+ 
+ 		  break;
+@@ -391,12 +392,12 @@
+ 		      return false;
+ 
+ 		  // Spawn Aura
+-		  if(!AddObject(id+1,BG_IC_OBJECTID_AURA_TELEPORTER_H,x,y,z+0.2f,o,0,0,0,0,RESPAWN_ONE_DAY))
++		  if(!AddObject(id1,BG_IC_OBJECTID_AURA_TELEPORTER_H,x,y,z0.2f,o,0,0,0,0,RESPAWN_ONE_DAY))
+ 		      return false;
+ 
+ 		  //Disable teleporter, must be active on battle start.
+ 		  GetBGObject(id)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+-		  GetBGObject(id+1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
++		  GetBGObject(id1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+ 		  GetBGObject(id)->SetUInt32Value(GAMEOBJECT_FACTION, BG_IC_OBJ[i].faction);
+ 
+ 		  break;
+@@ -411,12 +412,12 @@
+ 		      return false;
+ 
+ 		  // Spawn Aura
+-		  if(!AddObject(id+1,BG_IC_OBJECTID_AURA_TELEPORTER_A,x,y,z+0.000676f,o,0,0,0,0,RESPAWN_ONE_DAY))
++		  if(!AddObject(id1,BG_IC_OBJECTID_AURA_TELEPORTER_A,x,y,z0.000676f,o,0,0,0,0,RESPAWN_ONE_DAY))
+ 		      return false;
+ 
+ 		  //Disable teleporter, must be active on battle start.
+ 		  GetBGObject(id)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+-		  GetBGObject(id+1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
++		  GetBGObject(id1)->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_IN_USE);
+ 		  GetBGObject(id)->SetUInt32Value(GAMEOBJECT_FACTION, BG_IC_OBJ[i].faction);
+ 
+ 		  break;
+@@ -463,11 +464,11 @@
+     }
+ 
+     //GameObject are create but no spawn, now we must spawn (set visible)
+-    for (int obj = 0 ; obj < BG_IC_MAX_OBJECT; obj++)
++    for (int obj = 0 ; obj < BG_IC_MAX_OBJECT; obj)
+         SpawnBGObject(obj, RESPAWN_IMMEDIATELY);
+ 
+     //Spawn all spirit guide in each GY
+-    for(int i=BG_IC_ALLIANCE_KEEP;i<BG_IC_ALL_NODES_COUNT;i++)
++    for(int i=BG_IC_ALLIANCE_KEEP;i<BG_IC_ALL_NODES_COUNT;i)
+         if (!AddSpiritGuide(i, BG_IC_SpiritGuidePos[i][0], BG_IC_SpiritGuidePos[i][1], BG_IC_SpiritGuidePos[i][2], BG_IC_SpiritGuidePos[i][3], BG_IC_graveInitTeam[i]))
+         {
+             sLog.outError("Failed to spawn spirit guide! point: %u, team: %u,", i, BG_IC_graveInitTeam[i]);
+@@ -475,7 +476,7 @@
+         }
+     
+     //Npc spawning
+-    for (int i = 0 ; i < MAX_BG_IC_NPC; ++i)
++    for (int i = 0 ; i < MAX_BG_IC_NPC; i)
+     {
+         float x,y,z,o;
+         x=BG_IC_NPC[i].x;
+@@ -500,7 +501,7 @@
+     m_GunshipH = MakeTransport(195276,120000,"IC - alliance gunship");
+ 
+     //Send transport init packet to all player in map
+-    for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end();itr++)
++    for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end();itr)
+         {
+             if (Player* p = sObjectMgr.GetPlayer(itr->first))
+             {
+@@ -516,8 +517,8 @@
+     if (GetStatus() != STATUS_IN_PROGRESS)
+        return;
+ 
+-    uint32 entry = pUnit->GetEntry();
+-    if (entry == BG_IC_NPCID_HIGH_COMMANDER_HALFORD_WYRMBANE)
++   uint32 entry = pUnit->GetEntry();
++   if (entry == BG_IC_NPCID_HIGH_COMMANDER_HALFORD_WYRMBANE)
+     {
+         RewardHonorToTeam(500,HORDE);
+         EndBattleground(HORDE);
+@@ -537,7 +538,7 @@
+ //This method is used for spawn all npc of the same type, like vehicle in node.
+ void BattlegroundIC::SpawnNpcType(uint32 type)
+ {
+-    for (int i = 0 ; i < MAX_BG_IC_NPC; ++i)
++    for (int i = 0 ; i < MAX_BG_IC_NPC; i)
+     {
+         float x,y,z,o;
+         x=BG_IC_NPC[i].x;
+@@ -563,7 +564,7 @@
+ 
+ void BattlegroundIC::DeSpawnNpcType(uint32 type)
+ {
+-    for (int i = 0 ; i < MAX_BG_IC_NPC; ++i)
++    for (int i = 0 ; i < MAX_BG_IC_NPC; i)
+     {
+         uint8 id=BG_IC_NPC[i].id;
+         if(type==BG_IC_NPC[i].type)
+@@ -628,7 +629,7 @@
+         t->SetMap(GetBgMap());
+ 
+         // On spawn les npc li? au transport
+-        QueryResult npc_transport = WorldDatabase.PQuery("SELECT npc_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote, guid FROM creature_transport WHERE entry = '%u'", entry);
++        QueryResult npc_transport = WorldDatabase.PQuery("SELECT npc_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote, guid FROM creature_transport WHERE transport_entry = '%u'", entry);
+         if(npc_transport)
+         {
+             do
+@@ -664,7 +665,7 @@
+     if (node == BG_IC_NODE_QUARRY)
+     {
+         uint32 otherTeam = GetOtherTeam(team);
+-        for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
++        for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); itr)
+         {
+             if (itr->second.OfflineRemoveTime)
+                 continue;
+@@ -688,7 +689,7 @@
+     if (node == BG_IC_NODE_REFINERY)
+     {
+         uint32 otherTeam = GetOtherTeam(team);
+-        for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
++        for (BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); itr)
+         {
+             if (itr->second.OfflineRemoveTime)
+                 continue;
+@@ -740,7 +741,7 @@
+         if (m_GunshipH)    
+             m_GunshipH->BuildStartMovePacket(GetBgMap());
+ 
+-        for (int i = 0 ; i < MAX_BG_IC_OBJ; ++i)
++        for (int i = 0 ; i < MAX_BG_IC_OBJ; i)
+         {
+             if(BG_IC_OBJ[i].type == IC_TYPE_GUNSHIPTELEPORTER)
+             {
+@@ -770,7 +771,7 @@
+     if (!ghost_list.empty())
+     {
+         WorldSafeLocsEntry const *ClosestGrave = NULL;
+-        for (std::vector<uint64>::const_iterator itr = ghost_list.begin(); itr != ghost_list.end(); ++itr)
++        for (std::vector<uint64>::const_iterator itr = ghost_list.begin(); itr != ghost_list.end(); itr)
+         {
+             Player* plr = sObjectMgr.GetPlayer(*itr);
+             if (!plr)
+@@ -800,7 +801,7 @@
+         DeSpawnNpcType(IC_TYPE_DOCKVEHICLE_H);
+         break ;
+     case BG_IC_NODE_HANGAR:
+-        for (int i = 0 ; i < MAX_BG_IC_OBJ; ++i)
++        for (int i = 0 ; i < MAX_BG_IC_OBJ; i)
+         {
+             if(BG_IC_OBJ[i].type == IC_TYPE_GUNSHIPTELEPORTER)
+                 DelObject(BG_IC_OBJ[i].id);
+@@ -852,12 +853,12 @@
+ {
+     if (GetStatus() != STATUS_IN_PROGRESS)
+         return;
+-    if(!target_obj)
++		if(!target_obj)
+         return;
+     int selectednode=-1;
+     uint32 gobid=target_obj->GetEntry();
+     uint32 teamIndex=source->GetTeamId();
+-    for(int node=0;node<BG_IC_DYNAMIC_NODES_COUNT;node++)
++    for(int node=0;node<BG_IC_DYNAMIC_NODES_COUNT;node)
+         if(m_IC_NodeData[node].gobentry[m_IC_NodeData[node].current]==gobid){
+             selectednode=node;
+             break;
+@@ -932,7 +933,7 @@
+         plr->SetTransport(m_GunshipA);
+         plr->m_movementInfo.t_pos.m_positionX=7.305609f;
+         plr->m_movementInfo.t_pos.m_positionY=-0.095246f;
+-        plr->m_movementInfo.t_pos.m_positionZ=34.51022f;
++        plr->m_movementInfo.t_pos.m_positionZ=34.51022;
+         plr->m_movementInfo.t_guid=m_GunshipA->GetGUID();
+         plr->TeleportTo(GetMapId(),661,-1244,288,0,TELE_TO_NOT_LEAVE_TRANSPORT);
+         }       
+@@ -944,7 +945,7 @@
+         plr->SetTransport(m_GunshipH);
+         plr->m_movementInfo.t_pos.m_positionX=7.305609f;
+         plr->m_movementInfo.t_pos.m_positionY=-0.095246f;
+-        plr->m_movementInfo.t_pos.m_positionZ=34.51022f;
++        plr->m_movementInfo.t_pos.m_positionZ=34.51022;
+         plr->m_movementInfo.t_guid=m_GunshipH->GetGUID();
+         plr->TeleportTo(GetMapId(),661,-1244,288,0,TELE_TO_NOT_LEAVE_TRANSPORT);
+         }
+@@ -967,8 +968,8 @@
+ 
+     // Is there any occupied node for this team?
+     std::vector<uint8> nodes;
+-    for (uint8 i = 0; i < BG_IC_DYNAMIC_NODES_COUNT; i++)
+-        if (m_IC_NodeData[i].current == teamIndex + 3) //Alliance : teamIndex=0 et STATE_BANNER_ALLY=3 Horde:teamIndex=1 et STATE_BANNER_HORDE=4
++    for (uint8 i = 0; i < BG_IC_DYNAMIC_NODES_COUNT; i)
++        if (m_IC_NodeData[i].current == teamIndex  3) //Alliance : teamIndex=0 et STATE_BANNER_ALLY=3 Horde:teamIndex=1 et STATE_BANNER_HORDE=4
+             nodes.push_back(i);
+ 
+     WorldSafeLocsEntry const* good_entry = NULL;
+@@ -979,14 +980,14 @@
+         float plr_y = player->GetPositionY();
+ 
+         float mindist = 999999.0f;
+-        for (uint8 i = 0; i < nodes.size(); ++i)
++        for (uint8 i = 0; i < nodes.size(); i)
+         {
+             if(i == BG_IC_NODE_QUARRY || i == BG_IC_NODE_REFINERY)
+                 continue;
+             WorldSafeLocsEntry const*entry = sWorldSafeLocsStore.LookupEntry(BG_IC_GraveyardIds[nodes[i]]);
+             if (!entry)
+                 continue;
+-            float dist = (entry->x - plr_x)*(entry->x - plr_x)+(entry->y - plr_y)*(entry->y - plr_y);
++            float dist = (entry->x - plr_x)*(entry->x - plr_x)(entry->y - plr_y)*(entry->y - plr_y);
+             if (mindist > dist)
+             {
+                 mindist = dist;
+@@ -997,7 +998,7 @@
+     }
+     // If not, place ghost on starting location
+     if (!good_entry)
+-        good_entry = sWorldSafeLocsStore.LookupEntry(BG_IC_GraveyardIds[teamIndex+BG_IC_DYNAMIC_NODES_COUNT]);
++        good_entry = sWorldSafeLocsStore.LookupEntry(BG_IC_GraveyardIds[teamIndexBG_IC_DYNAMIC_NODES_COUNT]);
+     //BG_IC_DYNAMIC_NODES_COUNT=7 Alliance : teamIndex=0 et BG_IC_LAST_RESORT_GV_ALLIANCE=7 Horde:teamIndex=1 et BG_IC_LAST_RESORT_GV_HORDE=8
+ 
+     return good_entry; 
+@@ -1039,7 +1040,7 @@
+         case BG_IC_H_WEST:
+         case BG_IC_H_EAST:
+             {
+-                for (int i = 0 ; i < MAX_BG_IC_OBJ; ++i)
++                for (int i = 0 ; i < MAX_BG_IC_OBJ; i)
+                 {
+                     uint8 id=BG_IC_OBJ[i].id;
+                     switch(BG_IC_OBJ[i].type)
+@@ -1057,7 +1058,7 @@
+         case BG_IC_A_WEST:
+         case BG_IC_A_EAST:
+             {
+-                for (int i = 0 ; i < MAX_BG_IC_OBJ; ++i)
++                for (int i = 0 ; i < MAX_BG_IC_OBJ; i)
+                 {
+                     uint8 id=BG_IC_OBJ[i].id;
+                     switch(BG_IC_OBJ[i].type)
+@@ -1097,7 +1098,7 @@
+ { //note: to remove reinforcementpoints points must be negative, for adding reinforcements points must be positive
+     assert(team == ALLIANCE || team == HORDE);
+     uint8 teamindex = GetTeamIndexByTeamId(team); //0=ally 1=horde
+-    m_Team_Scores[teamindex] += points;
++    m_Team_Scores[teamindex] = points;
+ 
+     UpdateWorldState(((teamindex == BG_TEAM_HORDE)?BG_IC_HORDE_RENFORT:BG_IC_ALLIANCE_RENFORT), m_Team_Scores[teamindex]);
+     if (points < 0)
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundIC.h b/src/server/game/Battlegrounds/Zones/BattlegroundIC.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundIC.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundIC.h
+@@ -1,19 +1,20 @@
+-﻿/*
++.ANNOUNCE . 
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDIC_H
+@@ -346,44 +347,44 @@
+     {BG_IC_OBJECT_HORDE,    1284.151f, -704.8736f, 48.917f, 0.0f            ,BG_IC_OBJECTID_FLAGPOLE,STATE_BANNER_HORDE,false,FACTION_GOB_ALLIANCE,IC_TYPE_FLAG,BG_IC_ALLIANCE_KEEP},
+     {BG_IC_OBJECT_ALLIANCE,    298.80f, -784.221f, 48.916f, 0.0f                ,BG_IC_OBJECTID_FLAGPOLE,STATE_BANNER_ALLY,false,FACTION_GOB_HORDE,IC_TYPE_FLAG,BG_IC_HORDE_KEEP},
+ 
+-    {BG_IC_OBJECT_DOOR_H_FRONT, 1150.90283f, -762.6059f, 47.50768f, 3.14159274f    ,BG_IC_OBJECTID_GATE_FRONT_H,STATE_NEUTRAL,false,FACTION_DOOR_HORDE,IC_TYPE_DOOR_H,BG_IC_H_FRONT},
+-    {BG_IC_OBJECT_DOOR_H_WEST, 1217.89929f, -676.947937f, 47.6340752f, 1.57079577f,BG_IC_OBJECTID_GATE_WEST_H,STATE_NEUTRAL,false,FACTION_DOOR_HORDE,IC_TYPE_DOOR_H,BG_IC_H_WEST},
+-    {BG_IC_OBJECT_DOOR_H_EAST, 1218.743f, -851.154541f, 48.2532845f, -1.57079577f,BG_IC_OBJECTID_GATE_EAST_H,STATE_NEUTRAL,false,FACTION_DOOR_HORDE,IC_TYPE_DOOR_H,BG_IC_H_EAST},
+-    {BG_IC_OBJECT_DOOR_A_FRONT, 413.479156f, -833.949646f, 48.5237579f, 3.14159274f    ,BG_IC_OBJECTID_GATE_FRONT_A,STATE_NEUTRAL,false,FACTION_DOOR_ALLIANCE,IC_TYPE_DOOR_A,BG_IC_A_FRONT},
+-    {BG_IC_OBJECT_DOOR_A_WEST, 351.6146f, -762.75f, 48.91625f, -1.57079577f        ,BG_IC_OBJECTID_GATE_WEST_A,STATE_NEUTRAL,false,FACTION_DOOR_ALLIANCE,IC_TYPE_DOOR_A,BG_IC_A_WEST},
+-    {BG_IC_OBJECT_DOOR_A_EAST, 351.024323f, -903.3264f, 48.9247169f, 1.57079577f,BG_IC_OBJECTID_GATE_EAST_A,STATE_NEUTRAL,false,FACTION_DOOR_ALLIANCE,IC_TYPE_DOOR_A,BG_IC_A_EAST},
+-    {BG_IC_OBJECT_TELEPORT_H_FRONT_IN,1143.25f, -779.598f, 48.628f, 1.640f        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0}, 
+-    {BG_IC_OBJECT_TELEPORT_H_EAST_IN,1235.08f, -857.8f, 48.916f, 3.071f            ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
+-    {BG_IC_OBJECT_TELEPORT_H_WEST_IN, 1236.531f, -669.41f, 48.272f, 0.1047f        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
+-    {BG_IC_OBJECT_TELEPORT_H_FRONT_OUT,1158.76f, -746.182f, 48.627f, -1.518f    ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0}, 
+-    {BG_IC_OBJECT_TELEPORT_H_EAST_OUT, 1233.27f, -844.526f, 48.882f, -0.017f    ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
+-    {BG_IC_OBJECT_TELEPORT_H_WEST_OUT, 1235.52f, -683.871f, 49.3039f, -3.089f    ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
+-    {BG_IC_OBJECT_TELEPORT_A_FRONT_IN, 397.088f, -859.381f, 48.899f, 1.640f        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
+-    {BG_IC_OBJECT_TELEPORT_A_EAST_IN, 323.539f, -888.361f, 48.919f, 0.034f        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
+-    {BG_IC_OBJECT_TELEPORT_A_WEST_IN, 326.284f, -777.366f, 49.0208f, 3.124f        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
+-    {BG_IC_OBJECT_TELEPORT_A_FRONT_OUT,425.675f, -857.090f, 48.510f,-1.605f        ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},    
+-    {BG_IC_OBJECT_TELEPORT_A_EAST_OUT, 311.920f, -913.972f, 48.815f, 3.089f        ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
+-    {BG_IC_OBJECT_TELEPORT_A_WEST_OUT, 324.635f, -749.128f, 49.360f, 0.017f        ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
+-    {BG_IC_OBJECT_BONFIRE_1,1281.06f,-732.978f,87.7611f,4.63149f                ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
+-    {BG_IC_OBJECT_BONFIRE_2,1281.26f,-800.212f,87.6619f,4.9535f                    ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
+-    {BG_IC_OBJECT_BONFIRE_3,1358.13f,-798.515f,87.7575f,1.96114f                ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
+-    {BG_IC_OBJECT_BONFIRE_4,1358.01f,-731.696f,87.7261f,3.43297f                ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
+-    {BG_IC_OBJECT_BONFIRE_5,1161.225f, -790.863f, 48.947f,3.43297f            ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},    
+-    {BG_IC_OBJECT_BONFIRE_6,1161.225f, -736.131f, 48.844f,3.43297f            ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},    
+-    {BG_IC_OBJECT_BOMB_1,1268.30908f, -745.783f, 48.9187775f, 0.785396755f        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_2,1268.50867f, -738.1215f, 48.9175f, -1.04719758f        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_3,1273.066f, -786.572937f, 48.9419174f, -0.94247663f        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_4,1273.849f, -796.2778f, 48.9364281f, -2.75761318f        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_5,297.3212f, -851.321167f, 48.91627f, -0.94247663f        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_6,298.104156f, -861.026062f, 48.916275f, -2.75761318f    ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_7,300.371521f, -818.732666f, 48.91625f, 0.785396755f        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_8,302.1354f, -810.7083f, 48.91625f, -1.04719758f            ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_L_1,749.250f,-862.724f, 13.357f,1.57865f                ,BG_IC_OBJECTID_LITTLE_BOMB,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_OBJECT_BOMB_L_2,786.712f,-862.724f, 13.1756f,1.57865f                ,BG_IC_OBJECTID_LITTLE_BOMB,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
+-    {BG_IC_TOWER_DOOR_1,1156.88586f, -843.9983f, 48.63224f, 0.732934f            ,BG_IC_OBJECTID_TOWER_HORDE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
+-    {BG_IC_TOWER_DOOR_2,1157.04712f, -682.3604f, 48.6322479f, -0.829132438f        ,BG_IC_OBJECTID_TOWER_HORDE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
+-    {BG_IC_TOWER_DOOR_3,399.801941f, -885.2075f, 50.1938553f, 2.51599526f        ,BG_IC_OBJECTID_TOWER_ALLY,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
+-    {BG_IC_TOWER_DOOR_4,401.024048f, -780.723755f, 49.94822f, -2.52896214f        ,BG_IC_OBJECTID_TOWER_ALLY,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
++    {BG_IC_OBJECT_DOOR_H_FRONT, 1150.90283, -762.6059, 47.50768, 3.14159274    ,BG_IC_OBJECTID_GATE_FRONT_H,STATE_NEUTRAL,false,FACTION_DOOR_HORDE,IC_TYPE_DOOR_H,BG_IC_H_FRONT},
++    {BG_IC_OBJECT_DOOR_H_WEST, 1217.89929, -676.947937, 47.6340752, 1.57079577,BG_IC_OBJECTID_GATE_WEST_H,STATE_NEUTRAL,false,FACTION_DOOR_HORDE,IC_TYPE_DOOR_H,BG_IC_H_WEST},
++    {BG_IC_OBJECT_DOOR_H_EAST, 1218.743, -851.154541, 48.2532845, -1.57079577,BG_IC_OBJECTID_GATE_EAST_H,STATE_NEUTRAL,false,FACTION_DOOR_HORDE,IC_TYPE_DOOR_H,BG_IC_H_EAST},
++    {BG_IC_OBJECT_DOOR_A_FRONT, 413.479156, -833.949646, 48.5237579, 3.14159274    ,BG_IC_OBJECTID_GATE_FRONT_A,STATE_NEUTRAL,false,FACTION_DOOR_ALLIANCE,IC_TYPE_DOOR_A,BG_IC_A_FRONT},
++    {BG_IC_OBJECT_DOOR_A_WEST, 351.6146, -762.75, 48.91625, -1.57079577        ,BG_IC_OBJECTID_GATE_WEST_A,STATE_NEUTRAL,false,FACTION_DOOR_ALLIANCE,IC_TYPE_DOOR_A,BG_IC_A_WEST},
++    {BG_IC_OBJECT_DOOR_A_EAST, 351.024323, -903.3264, 48.9247169, 1.57079577,BG_IC_OBJECTID_GATE_EAST_A,STATE_NEUTRAL,false,FACTION_DOOR_ALLIANCE,IC_TYPE_DOOR_A,BG_IC_A_EAST},
++    {BG_IC_OBJECT_TELEPORT_H_FRONT_IN,1143.25, -779.598, 48.628, 1.640        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0}, 
++    {BG_IC_OBJECT_TELEPORT_H_EAST_IN,1235.08, -857.8, 48.916, 3.071            ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
++    {BG_IC_OBJECT_TELEPORT_H_WEST_IN, 1236.531, -669.41, 48.272, 0.1047        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
++    {BG_IC_OBJECT_TELEPORT_H_FRONT_OUT,1158.76, -746.182, 48.627, -1.518    ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0}, 
++    {BG_IC_OBJECT_TELEPORT_H_EAST_OUT, 1233.27, -844.526, 48.882, -0.017    ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
++    {BG_IC_OBJECT_TELEPORT_H_WEST_OUT, 1235.52, -683.871, 49.3039, -3.089    ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_H,STATE_NEUTRAL,false,FACTION_GOB_HORDE,IC_TYPE_TELEPORT_H,0},
++    {BG_IC_OBJECT_TELEPORT_A_FRONT_IN, 397.088, -859.381, 48.899, 1.640        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
++    {BG_IC_OBJECT_TELEPORT_A_EAST_IN, 323.539, -888.361, 48.919, 0.034        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
++    {BG_IC_OBJECT_TELEPORT_A_WEST_IN, 326.284, -777.366, 49.0208, 3.124        ,BG_IC_OBJECTID_TELEPORTER_IN_OUT_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
++    {BG_IC_OBJECT_TELEPORT_A_FRONT_OUT,425.675, -857.090, 48.510,-1.605        ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},    
++    {BG_IC_OBJECT_TELEPORT_A_EAST_OUT, 311.920, -913.972, 48.815, 3.089        ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
++    {BG_IC_OBJECT_TELEPORT_A_WEST_OUT, 324.635, -749.128, 49.360, 0.017        ,BG_IC_OBJECTID_TELEPORTER_OUT_IN_A,STATE_NEUTRAL,false,FACTION_GOB_ALLIANCE,IC_TYPE_TELEPORT_A,0},
++    {BG_IC_OBJECT_BONFIRE_1,1281.06,-732.978,87.7611,4.63149                ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
++    {BG_IC_OBJECT_BONFIRE_2,1281.26,-800.212,87.6619,4.9535                    ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
++    {BG_IC_OBJECT_BONFIRE_3,1358.13,-798.515,87.7575,1.96114                ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
++    {BG_IC_OBJECT_BONFIRE_4,1358.01,-731.696,87.7261,3.43297                ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},
++    {BG_IC_OBJECT_BONFIRE_5,1161.225f, -790.863f, 48.947f,3.43297            ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},    
++    {BG_IC_OBJECT_BONFIRE_6,1161.225f, -736.131f, 48.844f,3.43297            ,BG_IC_OBJECTID_BONFIRE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_DECORATION,0},    
++    {BG_IC_OBJECT_BOMB_1,1268.30908, -745.783, 48.9187775, 0.785396755        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_2,1268.50867, -738.1215, 48.9175, -1.04719758        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_3,1273.066, -786.572937, 48.9419174, -0.94247663        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_4,1273.849, -796.2778, 48.9364281, -2.75761318        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_5,297.3212, -851.321167, 48.91627, -0.94247663        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_6,298.104156, -861.026062, 48.916275, -2.75761318    ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_7,300.371521, -818.732666, 48.91625, 0.785396755        ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_8,302.1354, -810.7083, 48.91625, -1.04719758            ,BG_IC_OBJECTID_SEAFORIUM,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_L_1,749.250f,-862.724f, 13.357f,1.57865                ,BG_IC_OBJECTID_LITTLE_BOMB,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_OBJECT_BOMB_L_2,786.712f,-862.724f, 13.1756f,1.57865                ,BG_IC_OBJECTID_LITTLE_BOMB,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_BOMB,0},
++    {BG_IC_TOWER_DOOR_1,1156.88586, -843.9983, 48.63224, 0.732934            ,BG_IC_OBJECTID_TOWER_HORDE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
++    {BG_IC_TOWER_DOOR_2,1157.04712, -682.3604, 48.6322479, -0.829132438        ,BG_IC_OBJECTID_TOWER_HORDE,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
++    {BG_IC_TOWER_DOOR_3,399.801941, -885.2075, 50.1938553, 2.51599526        ,BG_IC_OBJECTID_TOWER_ALLY,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
++    {BG_IC_TOWER_DOOR_4,401.024048, -780.723755, 49.94822, -2.52896214        ,BG_IC_OBJECTID_TOWER_ALLY,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_TOWER_DOOR,0},
+     {BG_IC_GUNSHIP_TP_1,828.056f, -993.916f, 134.132f, 5.628f                ,0    ,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_GUNSHIPTELEPORTER,0},
+     {BG_IC_GUNSHIP_TP_2,738.460f, -1106.996f, 134.7189f, 5.628f                ,0    ,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_GUNSHIPTELEPORTER,0},
+     {BG_IC_GUNSHIP_TP_3,672.152f, -1157.334f, 133.704f, 5.628f                ,0    ,STATE_NEUTRAL,false,FACTION_GOB_NEUTRAL,IC_TYPE_GUNSHIPTELEPORTER,0},
+@@ -475,13 +476,13 @@
+     BG_IC_TOWER_H_GUN_10,
+     BG_IC_TOWER_H_GUN_11,
+     BG_IC_TOWER_H_GUN_12,
+-    //Boss horde + 4 add
++    //Boss horde  4 add
+     BG_IC_NPC_OVERLORD_AGMAR,
+     BG_IC_NPC_H_ADD_1,
+     BG_IC_NPC_H_ADD_2,
+     BG_IC_NPC_H_ADD_3,
+     BG_IC_NPC_H_ADD_4,
+-    //Boss alliance + 4 add
++    //Boss alliance  4 add
+     BG_IC_NPC_HIGH_COMMANDER_HALFORD_WYRMBANE,
+     BG_IC_NPC_A_ADD_1,
+     BG_IC_NPC_A_ADD_2,
+@@ -517,66 +518,66 @@
+ 
+ const ICNpc BG_IC_NPC[MAX_BG_IC_NPC]=
+ {    
+-    {BG_IC_TOWER_A_GUN_1,415.277f,-911.552f,87.9619f,4.64663f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_2,406.047f,-755.747f,87.7159f,1.60951f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_3,416.925f,-754.642f,87.7161f,1.66841f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_4,428.073f,-781.504f,87.7164f,5.87029f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_5,402.085f,-910.381f,87.9619f,4.60793f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_6,424.651f,-880.262f,87.9622f,0.389539f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_7,408.402f,-911.213f,87.9619f,4.58045f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_8,425.612f,-786.81f,87.7164f,5.84336f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_9,426.734f,-885.28f,87.9622f,0.408575f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_10,429.368f,-891.332f,87.9622f,0.413433f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_11,411.235f,-755.277f,87.7156f,1.64348f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_A_GUN_12,430.576f,-776.358f,87.7164f,5.84359f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},    
+-    {BG_IC_TOWER_H_GUN_1,1135.32f,-841.482f,87.8928f,2.33312f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_2,1143.94f,-833.972f,87.8754f,2.3565f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_3,1138.4f,-836.268f,88.3325f,2.33312f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_4,1166.1f,-858.237f,87.8699f,5.37732f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_5,1157.07f,-865.976f,87.8623f,5.44565f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_6,1159.59f,-660.741f,87.9104f,0.775668f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_7,1166.99f,-668.854f,87.9144f,0.775668f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_8,1162.51f,-863.159f,88.3046f,5.44565f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_9,1164.02f,-664.332f,88.2895f,0.736398f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_10,1141.85f,-691.039f,87.9605f,3.78012f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_11,1135.28f,-682.692f,87.859f,3.78012f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    {BG_IC_TOWER_H_GUN_12,1137.99f,-688.115f,88.3004f,3.85473f    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
+-    //Boss horde + 4 add
+-    {BG_IC_NPC_OVERLORD_AGMAR,1295.29f,-769.952f,69.9586f,0.311803f    ,BG_IC_NPCID_OVERLORD_AGMAR,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_H_ADD_1,1296.01f,-773.256f,69.958f,0.292168f            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_H_ADD_2,1295.94f,-757.756f,69.9587f,6.02165f            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_H_ADD_3,1295.09f,-760.927f,69.9587f,5.94311f            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_H_ADD_4,1295.67f,-765.636f,69.9745f,0.048692f       ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    //Boss alliance + 4 add
+-    {BG_IC_NPC_HIGH_COMMANDER_HALFORD_WYRMBANE,224.159f,-831.012f,60.8201f,0.0191563f,BG_IC_NPCID_HIGH_COMMANDER_HALFORD_WYRMBANE,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_A_ADD_1,223.969f,-822.958f,60.8151f,0.46337f            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_A_ADD_2,224.211f,-826.952f,60.8188f,6.25961f            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_A_ADD_3,223.119f,-838.386f,60.8145f,5.64857f            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+-    {BG_IC_NPC_A_ADD_4,223.889f,-835.102f,60.8201f,6.21642f            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_1,415.277,-911.552,87.9619,4.64663    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_2,406.047,-755.747,87.7159,1.60951    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_3,416.925,-754.642,87.7161,1.66841    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_4,428.073,-781.504,87.7164,5.87029    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_5,402.085,-910.381,87.9619,4.60793    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_6,424.651,-880.262,87.9622,0.389539    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_7,408.402,-911.213,87.9619,4.58045    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_8,425.612,-786.81,87.7164,5.84336    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_9,426.734,-885.28,87.9622,0.408575    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_10,429.368,-891.332,87.9622,0.413433    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_11,411.235,-755.277,87.7156,1.64348    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_A_GUN_12,430.576,-776.358,87.7164,5.84359    ,BG_IC_NPCID_KEEP_CANNON,FACTION_ALLIANCE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},    
++    {BG_IC_TOWER_H_GUN_1,1135.32,-841.482,87.8928,2.33312    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_2,1143.94,-833.972,87.8754,2.3565    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_3,1138.4,-836.268,88.3325,2.33312    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_4,1166.1,-858.237,87.8699,5.37732    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_5,1157.07,-865.976,87.8623,5.44565    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_6,1159.59,-660.741,87.9104,0.775668    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_7,1166.99,-668.854,87.9144,0.775668    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_8,1162.51,-863.159,88.3046,5.44565    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_9,1164.02,-664.332,88.2895,0.736398    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_10,1141.85,-691.039,87.9605,3.78012    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_11,1135.28,-682.692,87.859,3.78012    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    {BG_IC_TOWER_H_GUN_12,1137.99,-688.115,88.3004,3.85473    ,BG_IC_NPCID_KEEP_CANNON,FACTION_HORDE,IC_TYPE_KEEP_GUN,RESPAWN_ONE_DAY},
++    //Boss horde  4 add
++    {BG_IC_NPC_OVERLORD_AGMAR,1295.29,-769.952,69.9586,0.311803    ,BG_IC_NPCID_OVERLORD_AGMAR,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_H_ADD_1,1296.01,-773.256,69.958,0.292168            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_H_ADD_2,1295.94,-757.756,69.9587,6.02165            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_H_ADD_3,1295.09,-760.927,69.9587,5.94311            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_H_ADD_4,1295.67,-765.636,69.9745,0.048692        ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    //Boss alliance  4 add
++    {BG_IC_NPC_HIGH_COMMANDER_HALFORD_WYRMBANE,224.159,-831.012,60.8201,0.0191563,BG_IC_NPCID_HIGH_COMMANDER_HALFORD_WYRMBANE,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_A_ADD_1,223.969,-822.958,60.8151,0.46337            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_A_ADD_2,224.211,-826.952,60.8188,6.25961            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_A_ADD_3,223.119,-838.386,60.8145,5.64857            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
++    {BG_IC_NPC_A_ADD_4,223.889,-835.102,60.8201,6.21642            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+     //Dock
+-    {BG_IC_CATAPULT_1_H,803.944f, -343.237f, 12.609f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_2_H,797.233f, -343.237f, 12.083f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_3_H,774.005f, -343.237f, 12.115f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_4_H,766.961f, -343.237f, 12.094f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
+-    {BG_IC_GLAIVE_THROWER_1_H,788.516f,-343.237f,12.598f,4.71239f    ,BG_IC_NPCID_GLAIVE_THROWER_H,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
+-    {BG_IC_GLAIVE_THROWER_2_H,782.273f,-343.237f,12.602f,4.71239f    ,BG_IC_NPCID_GLAIVE_THROWER_H,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_1_A,803.944f, -343.237f, 12.609f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_2_A,797.233f, -343.237f, 12.083f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_3_A,774.005f, -343.237f, 12.115f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
+-    {BG_IC_CATAPULT_4_A,766.961f, -343.237f, 12.094f,4.71239f        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
+-    {BG_IC_GLAIVE_THROWER_1_A,788.516f,-343.237f,12.598f,4.71239f    ,BG_IC_NPCID_GLAIVE_THROWER_A,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
+-    {BG_IC_GLAIVE_THROWER_2_A,782.273f,-343.237f,12.602f,4.71239f    ,BG_IC_NPCID_GLAIVE_THROWER_A,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_1_H,803.944, -343.237, 12.609,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_2_H,797.233, -343.237, 12.083,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_3_H,774.005, -343.237, 12.115,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_4_H,766.961, -343.237, 12.094,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
++    {BG_IC_GLAIVE_THROWER_1_H,788.516,-343.237,12.598,4.71239    ,BG_IC_NPCID_GLAIVE_THROWER_H,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
++    {BG_IC_GLAIVE_THROWER_2_H,782.273,-343.237,12.602,4.71239    ,BG_IC_NPCID_GLAIVE_THROWER_H,FACTION_HORDE,IC_TYPE_DOCKVEHICLE_H,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_1_A,803.944, -343.237, 12.609,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_2_A,797.233, -343.237, 12.083,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_3_A,774.005, -343.237, 12.115,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
++    {BG_IC_CATAPULT_4_A,766.961, -343.237, 12.094,4.71239        ,BG_IC_NPCID_CATAPULT,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
++    {BG_IC_GLAIVE_THROWER_1_A,788.516,-343.237,12.598,4.71239    ,BG_IC_NPCID_GLAIVE_THROWER_A,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
++    {BG_IC_GLAIVE_THROWER_2_A,782.273,-343.237,12.602,4.71239    ,BG_IC_NPCID_GLAIVE_THROWER_A,FACTION_ALLIANCE,IC_TYPE_DOCKVEHICLE_A,RESPAWN_ONE_DAY},
+     // Workshop
+-    {BG_IC_DEMOLISHER_H_1,760.571f,-853.102f,12.4412f,1.65484f        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
+-    {BG_IC_DEMOLISHER_H_2,752.082f,-853.817f,12.4412f,1.65484f        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
+-    {BG_IC_DEMOLISHER_H_3,791.213f,-853.526f,12.4596f,1.5174f        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
+-    {BG_IC_DEMOLISHER_H_4,783.065f,-852.904f,12.4552f,1.5174f        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
+-    {BG_IC_DEMOLISHER_A_1,760.571f,-853.102f,12.4412f,1.65484f        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
+-    {BG_IC_DEMOLISHER_A_2,752.082f,-853.817f,12.4412f,1.65484f        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
+-    {BG_IC_DEMOLISHER_A_3,791.213f,-853.526f,12.4596f,1.5174f        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
+-    {BG_IC_DEMOLISHER_A_4,783.065f,-852.904f,12.4552f,1.5174f        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
+-    {BG_IC_SIEGE_ENGINE_H,773.623f, -884.381f, 16.725f, 1.530f        ,BG_IC_NPCID_SIEGE_ENGINE_H,FACTION_HORDE,IC_TYPE_SIEGE_H,0},
+-    {BG_IC_SIEGE_ENGINE_A,773.623f, -884.381f, 16.725f, 1.530f        ,BG_IC_NPCID_SIEGE_ENGINE_A,FACTION_ALLIANCE,IC_TYPE_SIEGE_A,0},
++    {BG_IC_DEMOLISHER_H_1,760.571,-853.102,12.4412,1.65484        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
++    {BG_IC_DEMOLISHER_H_2,752.082,-853.817,12.4412,1.65484        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
++    {BG_IC_DEMOLISHER_H_3,791.213,-853.526,12.4596,1.5174        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
++    {BG_IC_DEMOLISHER_H_4,783.065,-852.904,12.4552,1.5174        ,BG_IC_NPCID_DEMOLISHER,FACTION_HORDE,IC_TYPE_DEMOLISSER_H,0},
++    {BG_IC_DEMOLISHER_A_1,760.571,-853.102,12.4412,1.65484        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
++    {BG_IC_DEMOLISHER_A_2,752.082,-853.817,12.4412,1.65484        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
++    {BG_IC_DEMOLISHER_A_3,791.213,-853.526,12.4596,1.5174        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
++    {BG_IC_DEMOLISHER_A_4,783.065,-852.904,12.4552,1.5174        ,BG_IC_NPCID_DEMOLISHER,FACTION_ALLIANCE,IC_TYPE_DEMOLISSER_A,0},
++    {BG_IC_SIEGE_ENGINE_H,773.623, -884.381, 16.725, 1.530        ,BG_IC_NPCID_SIEGE_ENGINE_H,FACTION_HORDE,IC_TYPE_SIEGE_H,0},
++    {BG_IC_SIEGE_ENGINE_A,773.623, -884.381, 16.725, 1.530        ,BG_IC_NPCID_SIEGE_ENGINE_A,FACTION_ALLIANCE,IC_TYPE_SIEGE_A,0},
+ };
+ 
+ /*
+@@ -600,7 +601,7 @@
+     public:
+         BattlegroundICScore() {};
+         virtual ~BattlegroundICScore() {};
+-        uint32 BasesAssaulted;
++		uint32 BasesAssaulted;
+         uint32 BasesDefended;
+ };
+ 
+@@ -617,9 +618,9 @@
+         virtual void AddPlayer(Player *plr);
+         virtual void StartingEventCloseDoors(){};
+         virtual void StartingEventOpenDoors();
+-        virtual void Reset();
++		virtual void Reset();
+ 		
+-        void FillInitialWorldStates(WorldPacket& data);
++		void FillInitialWorldStates(WorldPacket& data);
+         void RemovePlayer(Player *plr,uint64 guid);
+         bool SetupBattleground();
+         void SpawnLeader(uint32 teamid);
+@@ -628,21 +629,22 @@
+ 		void HandleKillPlayer(Player *player, Player *killer);
+         void EndBattleground(uint32 winner);
+         void EventPlayerClickedOnFlag(Player *source, GameObject* /*target_obj*/);
++		
+ 		void EventPlayerCapturedFlag(Player* plr);
+-		
++
+         /* Scorekeeping */
+         void UpdatePlayerScore(Player *Source, uint32 type, uint32 value, bool doAddHonor = true);
+-
++		
+ 		virtual WorldSafeLocsEntry const* GetClosestGraveYard(Player* player);
+ 
+         void UpdateScore(uint16 team, int16 points);
+         Transport* MakeTransport(uint32 entry,uint32 period,std::string name);
+         uint32 GetGateIDFromDestroyEventID(uint32 id);
+         void SendTransportInit(Player *player);
+-		
++
+     private:
+ 	
+-		void SpawnNpcType(uint32 type);
++	void SpawnNpcType(uint32 type);
+         void DeSpawnNpcType(uint32 type);
+         void _NodeOccupied(uint8 node,Team team);
+         void _NodeDeOccupied(uint8 node);
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundNA.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundNA.h b/src/server/game/Battlegrounds/Zones/BattlegroundNA.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundNA.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundNA.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __BATTLEGROUNDNA_H
+ #define __BATTLEGROUNDNA_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRB.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundRB.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRB.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRB.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Player.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRB.h b/src/server/game/Battlegrounds/Zones/BattlegroundRB.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRB.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRB.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDRB_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRL.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRL.h b/src/server/game/Battlegrounds/Zones/BattlegroundRL.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRL.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRL.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __BATTLEGROUNDRL_H
+ #define __BATTLEGROUNDRL_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRV.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundRV.h b/src/server/game/Battlegrounds/Zones/BattlegroundRV.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundRV.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundRV.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ #ifndef __BATTLEGROUNDRV_H
+ #define __BATTLEGROUNDRV_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundSA.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundSA.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundSA.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundSA.cpp
+@@ -1,19 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundSA.h b/src/server/game/Battlegrounds/Zones/BattlegroundSA.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundSA.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundSA.h
+@@ -1,19 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDSA_H
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundWS.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundWS.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundWS.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundWS.cpp
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include "Battleground.h"
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundWS.h b/src/server/game/Battlegrounds/Zones/BattlegroundWS.h
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundWS.h
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundWS.h
+@@ -1,21 +1,19 @@
+-﻿/*
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+  *
+- * Copyright (C) 2008-2010 Trinity <http://www.trinitycore.org/>
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
+  *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
+  *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef __BATTLEGROUNDWS_H
+diff --git a/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp b/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
+@@ -222,13 +222,7 @@
+         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+         return;
+     }
+-	if (proto->Flags & ITEM_PROTO_FLAG_OPENABLE); //ga}|{E HE gyMau'
+-       else
+-       {
+-               KickPlayer(); //gep}|{u Cyka! 
+-               return;
+-       }
+-
++	
+ 	   // Verify that the bag is an actual bag that can be used "normally"
+ 	   if(!(proto->Flags & ITEM_PROTO_FLAG_OPENABLE))
+ 	   {

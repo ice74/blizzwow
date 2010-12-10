@@ -1,0 +1,29 @@
+# HG changeset patch
+# User asniker
+# Date 1288862640 -18000
+# Node ID 8216f1e785d3851f63b69107562d81a93548c1ff
+# Parent  17130f74be21521feee8cd598af3fce80a4dbfc9
+fix quest
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -5709,6 +5709,9 @@
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11711;
+ 
+ 
++UPDATE `quest_template` SET `SrcItemId` = '49698' AND `SrcItemCount` = '1' WHERE `entry` = '24451';
++
++
+ 
+ UPDATE `creature_template` SET `npcflag` = '3' WHERE `entry` = '27658';
+ DELETE FROM `creature` WHERE `guid` = '4459255';
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix quest.sql	
+@@ -36,3 +36,5 @@
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11940;
+ UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 11711;
+ 
++UPDATE `quest_template` SET `SrcItemId` = '49698' AND `SrcItemCount` = '1' WHERE `entry` = '24451';
++

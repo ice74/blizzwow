@@ -1,0 +1,16 @@
+# HG changeset patch
+# User asniker
+# Date 1288960198 -18000
+# Node ID 1b7b36cc3ff780707f3954f6bf1ec073777dd0c7
+# Parent  bd095f661df23c819013bcfd5509e1129cb04df8
+fix unholy blight
+
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix unholy blight.sql b/sql/Blizzlike@Sacred-core/new fix/fix unholy blight.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Blizzlike@Sacred-core/new fix/fix unholy blight.sql	
+@@ -0,0 +1,3 @@
++﻿DELETE FROM `spell_bonus_data` WHERE `entry` IN ('50536');
++INSERT INTO `spell_bonus_data` (`entry`, `direct_bonus`, `dot_bonus`, `ap_bonus`, `ap_dot_bonus`, `comments`) VALUES
++('50536','0','0','0','0','Death Knight - Unholy Blight');
+\ No newline at end of file

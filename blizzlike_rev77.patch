@@ -1,0 +1,50 @@
+# HG changeset patch
+# User asniker
+# Date 1287065926 -21600
+# Node ID d4610e94045bc934227964b4c663f3ca85f862ba
+# Parent  4bf95b73cdcdbfab619fa08dbf2801cb5c7af224
+fix spell replenishment
+
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -2733,6 +2733,19 @@
+                         unitList.sort(Trinity::HealthPctOrderPred());
+                         unitList.resize(maxSize);
+                     }
++					 // Replenishment: refresh existing auras
++                    if (m_spellInfo->Id == 57669)
++                        for (std::list<Unit *>::iterator itr = unitList.begin(); itr != unitList.end();)
++                            if (AuraEffect * aurEff = (*itr)->GetAuraEffect(SPELL_AURA_PERIODIC_ENERGIZE, SPELLFAMILY_GENERIC, 3184, EFFECT_0))
++                            {
++                                aurEff->SetAmount((*itr)->GetMaxPower(POWER_MANA) * 25 / 10000);
++                                aurEff->GetBase()->RefreshDuration();
++
++                                itr = unitList.erase(itr);
++                            }
++                            else
++                                ++itr;
++
+                 }
+                 else
+                 {
+@@ -2748,6 +2761,19 @@
+                         unitList.sort(Trinity::PowerPctOrderPred((Powers)power));
+                         unitList.resize(maxSize);
+                     }
++					  // Replenishment: refresh existing auras
++                    if (m_spellInfo->Id == 57669)
++                        for (std::list<Unit *>::iterator itr = unitList.begin(); itr != unitList.end();)
++                            if (AuraEffect * aurEff = (*itr)->GetAuraEffect(SPELL_AURA_PERIODIC_ENERGIZE, SPELLFAMILY_GENERIC, 3184, EFFECT_0))
++                            {
++                                aurEff->SetAmount((*itr)->GetMaxPower(POWER_MANA) * 25 / 10000);
++                                aurEff->GetBase()->RefreshDuration();
++
++                                itr = unitList.erase(itr);
++                            }
++                            else
++                                ++itr;
++
+                 }
+             }
+ 

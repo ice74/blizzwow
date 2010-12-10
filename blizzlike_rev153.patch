@@ -1,0 +1,61 @@
+# HG changeset patch
+# User asniker
+# Date 1288959451 -18000
+# Node ID bd095f661df23c819013bcfd5509e1129cb04df8
+# Parent  b278a859bb78ce81414ed662ea808bc85c84b35e
+fix druid bug
+fix icecrown citadel
+fix argent tour.
+
+diff --git a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql
+--- a/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql	
++++ b/sql/Blizzlike@Sacred-core/new fix/fix icecrown_citadel.sql	
+@@ -2,4 +2,4 @@
+ UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37972';
+ UPDATE `creature_template` SET `dynamicflags` = '8' WHERE `entry` = '37973';
+ 
+-UPDATE `creature_template` SET `spell2` = ' ' WHERE `entry` = '37126';
+\ No newline at end of file
++UPDATE `creature_template` SET `spell2` = '0' WHERE `entry` = '37126';
+\ No newline at end of file
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -7356,7 +7356,7 @@
+         return;
+ 		
+     // don't apply/remove mods if the weapon is disarmed
+-    if (item->GetSlot() == EQUIPMENT_SLOT_MAINHAND && !IsUseEquipedWeapon(true))
++    if (item->GetSlot() == EQUIPMENT_SLOT_MAINHAND && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
+         return;		
+ 
+     // not apply/remove mods for broken item
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -16856,7 +16856,24 @@
+     {
+             case 35644: //Argent Warhorse
+             case 36558: //Argent Battleworg
+-                if (!pPlayer->HasItemOrGemWithIdEquipped(46106,1)) //Check item Argent Lance
++                    case 33870: // Stabled Argent Warhorse
++                if (!pPlayer->HasItemOrGemWithIdEquipped(46106,1)) // Check item Argent Lance
++                    return false;
++            case 33843: // Stabled Quel'dorei Steed
++            case 33794: // Stabled Darnassian Nightsaber
++            case 33800: // Stabled Stormwind Steed
++            case 33793: // Stabled Gnomeregan Mechanostrider
++            case 33795: // Stabled Ironfoge Ram
++            case 33790: // Stabled Azuremyst Elekk
++                if (!pPlayer->HasItemOrGemWithIdEquipped(46069,1)) // Check item Alliance Lance
++                    return false;
++            case 33842: // Stabled Sunreaver Hawkstrider
++            case 33796: // Stabled Darkspear Raptor
++            case 33798: // Stabled Forsaken Warhorse
++            case 33799: // Stabled Orgrimmar Wolf
++            case 33791: // Stabled Silvermoon Hawksrider
++            case 33792: // Stabled Thunder Bluff Kodo
++                if (!pPlayer->HasItemOrGemWithIdEquipped(46070,1)) // Check item Horde Lance
+                     return false;
+             default:
+                 return true;

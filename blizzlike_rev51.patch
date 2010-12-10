@@ -1,0 +1,32 @@
+# HG changeset patch
+# User asniker
+# Date 1286780690 -21600
+# Node ID 9f78b7fbb0cf426c71c9998dfdabde5b8e0053e8
+# Parent  da0126bbc0bfe729ef7b92d9cd88ad34f014e19a
+fix spell
+
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -3485,6 +3485,21 @@
+         Player* item_owner = itemTarget->GetOwner();
+         if (!item_owner)
+             return;
++        
++        // Prevent applying enchanements with Use: spell on items that already have a Use: effect, this is usually blocked from client side and 
++        // can only be bypassed with memory manipulation.
++        for (int s = 0; s < 3; ++s) {
++            if (pEnchant->type[s] == ITEM_ENCHANTMENT_TYPE_USE_SPELL) {
++                for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i) {
++                    ItemPrototype const *proto = itemTarget->GetProto();
++                    if (proto->Spells[i].SpellId && proto->Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE) {
++                        sLog.outError("Exploiting attempt: Player %s(GUID: %u) tried to apply an enchanement with Use: spell on an item that already has a Use: effect,"
++                                      " this should be blocked from client side.", p_caster->GetName(), p_caster->GetGUIDLow());
++                        return;
++                    }
++                }
++            }
++        }
+ 
+         if (item_owner != p_caster && p_caster->GetSession()->GetSecurity() > SEC_PLAYER && sWorld.getBoolConfig(CONFIG_GM_LOG_TRADE))
+         {

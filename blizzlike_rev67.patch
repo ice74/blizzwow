@@ -1,0 +1,21 @@
+# HG changeset patch
+# User asniker
+# Date 1286904010 -21600
+# Node ID 78a8e392d42f2c7dfd95ddcf548a6acb4dcd87b1
+# Parent  8e7e48df3bc98479f6dc46c40d8cf3ea05a49890
+перевод госсипа в »„
+
+diff --git a/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp b/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp
+--- a/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp
++++ b/src/server/scripts/Northrend/CrusadersColiseum/TrialOfTheChampion/trial_of_the_champion.cpp
+@@ -19,8 +19,8 @@
+ #include "trial_of_the_champion.h"
+ #include "Vehicle.h"
+ 
+-#define GOSSIP_START_EVENT1     "I'm ready to start challenge."
+-#define GOSSIP_START_EVENT2     "I'm ready for the next challenge."
++#define GOSSIP_START_EVENT1     "я готов к старту испытани€."
++#define GOSSIP_START_EVENT2     "я готов к следующему испытанию."
+ 
+ #define ORIENTATION             4.714f
+ 

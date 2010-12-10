@@ -1,0 +1,45 @@
+# HG changeset patch
+# User asniker
+# Date 1291350714 -18000
+# Node ID 79184dee76e4c8e116fdc4ecaaa6e87a6228a24c
+# Parent  3f37830c20ce6d7126e6f5d4ba22fbdf969fda9e
+ядро: фикс ачива
+
+diff --git a/src/server/scripts/Northrend/grizzly_hills.cpp b/src/server/scripts/Northrend/grizzly_hills.cpp
+--- a/src/server/scripts/Northrend/grizzly_hills.cpp
++++ b/src/server/scripts/Northrend/grizzly_hills.cpp
+@@ -868,7 +868,7 @@
+ 				{
+ 					pPlayer->RemoveAura(SPELL_WARTSBGONE_LIP_BALM);	//On enleve le buff mis par l'objet de quete
+ 					me->AddAura(SPELL_FROG_LOVE,me); //On ajoute l'aura a la grenouille (les coeurs)
+-					StartFollow(pPlayer, 35, NULL); //La grenouille suis le joueur
++					pPlayer->RemoveAura(SPELL_WARTSBGONE_LIP_BALM);	//It removes the buff set by the object of quest
+ 					following=true;
+ 				}
+ 			}
+diff --git a/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/instance_serpent_shrine.cpp b/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/instance_serpent_shrine.cpp
+--- a/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/instance_serpent_shrine.cpp
++++ b/src/server/scripts/Outland/CoilfangReservoir/SerpentShrine/instance_serpent_shrine.cpp
+@@ -35,6 +35,7 @@
+ #define SPELL_LURKER_HOOK_ACHIEVEMENT 54587  //The Lurker Hook Achievement
+ 
+ #define MIN_KILLS 30
++#define ACHIEVEMENT_LURKER_ABOVE 144
+ 
+ //NOTE: there are 6 platforms
+ //there should be 3 shatterers and 2 priestess on all platforms, total of 30 elites, else it won't work!
+@@ -165,6 +166,14 @@
+                             pFisher->CastSpell(pFisher,SPELL_LURKER_HOOK_ACHIEVEMENT,true);                                                
+                             LurkerSubEvent = LURKER_HOOKED;
+                             SetData(DATA_STRANGE_POOL, IN_PROGRESS);//just fished, signal Lurker script to emerge and start fight, we use IN_PROGRESS so it won't get saved and lurker will be alway invis at start if server restarted
++							// "Hackfix" per dare l'achievement "The Lurker Above"
++							Map* pMap = me->GetMap();
++							if (pMap)
++							{
++								Map::PlayerList const &players = pMap->GetPlayers();
++								if (players.getSize() == 1)
++									DoCompleteAchievement(ACHIEVEMENT_LURKER_ABOVE);
++							}
+                         }
+                 } else FishingTimer -= diff;
+             }

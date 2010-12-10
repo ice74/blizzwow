@@ -1,0 +1,146 @@
+# HG changeset patch
+# User asniker
+# Date 1287047699 -21600
+# Node ID 0cc6c63c35c0a53944214ea007e85e43b8f3f64d
+# Parent  2a9afc92e6357765bbc6ca6f25369a07bf041985
+fix some warnings
+
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_valithria_dreamwalker.cpp
+@@ -1,4 +1,4 @@
+-п»ї/*
++/*
+ * Copyright (C) 2009 - 2010 TrinityCore <http://www.trinitycore.org/>
+ *
+ * This program is free software; you can redistribute it and/or modify
+@@ -111,6 +111,11 @@
+                     DoScriptText(SAY_AGGRO, me);
+                     bIntro = true;
+ 
++                    //hack, need add coords to creature
++                    float x,y,z;
++                    me->GetPosition(x,y,z);
++                    me->SummonCreature(37950, x, y, z + 5, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
++
+                     ScriptedAI::MoveInLineOfSight(who);
+                 }
+             }
+@@ -204,7 +209,60 @@
+         }
+ };
+ 
+-class npc_dreamportal_icc : public CreatureScript //РїРѕСЂС‚Р°Р» РІ РєРѕРјРЅР°С‚Рµ
++class npc_valithria_alternative : public CreatureScript
++{
++    public:
++        npc_valithria_alternative() : CreatureScript("npc_valithria_alternative") { }
++
++        struct npc_valithria_alternativeAI : public ScriptedAI
++        {
++            npc_valithria_alternativeAI(Creature* pCreature) : ScriptedAI(pCreature)
++            {
++                pInstance = pCreature->GetInstanceScript();
++            }
++
++            void Reset()
++            {
++                me->SetPhaseMask(17, true);
++                me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
++                me->SendMovementFlagUpdate();
++                me->SetFlying(true);
++                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
++                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
++
++                m_uiSummonPortalTimer = 5000;
++            }
++
++            void UpdateAI(const uint32 diff)
++            {
++                if (pInstance && pInstance->GetData(DATA_VALITHRIA_DREAMWALKER_EVENT) != IN_PROGRESS)
++                    me->ForcedDespawn();
++
++                if (m_uiSummonPortalTimer <= diff)
++                {
++                    float x, y, z;
++                    me->GetPosition(x,y,z);
++                    for(uint8 i = 0; i <= 8; ++i) //need correct count
++                    {
++                        //need correct min and max value
++                        me->SummonCreature(CREATURE_CLOUD, x + urand(8, 13), y + urand(8, 13), z + urand(3,7), 0, TEMPSUMMON_TIMED_DESPAWN, 15000);
++                    }
++                    m_uiSummonPortalTimer = 5000;
++                } else m_uiSummonPortalTimer -= diff;
++            }
++        private:
++            InstanceScript* pInstance;
++
++            uint32 m_uiSummonPortalTimer;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_valithria_alternativeAI(pCreature);
++        }
++};
++
++class npc_dreamportal_icc : public CreatureScript //портал в комнате
+ {
+     public:
+         npc_dreamportal_icc() : CreatureScript("npc_dreamportal_icc") { }
+@@ -564,7 +622,7 @@
+         }
+ };
+ 
+-class npc_dreamcloud_icc : public CreatureScript //РѕР±Р»Р°РєРѕ РІ РєРѕРјРЅР°С‚Рµ
++class npc_dreamcloud_icc : public CreatureScript //облако в комнате
+ {
+     public:
+         npc_dreamcloud_icc() : CreatureScript("npc_dreamcloud_icc") { }
+@@ -575,6 +633,7 @@
+ 
+             void Reset()
+             {
++                me->SetPhaseMask(17, true);
+                 DoCast(SPELL_CLOUD_VISUAL);
+                 me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                 me->SendMovementFlagUpdate();
+@@ -631,7 +690,7 @@
+ 
+             void JustSummoned(Creature* pSummoned)
+             {
+-                if (Creature* valithria = Unit::GetCreature(*me, instance->GetData64(DATA_VALITHRIA_DREAMWALKER)))
++                if (Creature* valithria = Unit::GetCreature(*me, pInstance->GetData64(DATA_VALITHRIA_DREAMWALKER)))
+                     pSummoned->AI()->AttackStart(valithria);
+ 
+                 summons.Summon(pSummoned);
+@@ -655,7 +714,7 @@
+             private:
+                 InstanceScript* pInstance;
+ 
+-                m_uiSummonTimer;
++                uint32 m_uiSummonTimer;
+                 SummonList summons;
+         };
+ 
+@@ -677,4 +736,5 @@
+     new npc_blistzombie_icc();
+     new npc_dreamcloud_icc();
+     new npc_icc_combat_stalker();
++    new npc_valithria_alternative();
+ }
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
+--- a/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
++++ b/src/server/scripts/Northrend/IcecrownCitadel/icecrown_citadel.h
+@@ -173,6 +173,10 @@
+     CREATURE_BLOOD_QUEEN_LANATHEL    = 37955,
+     CREATURE_SWARMING_SHADOWS        = 38163,
+     CREATURE_VALITHRIA_DREAMWALKER   = 36789,
++	CREATURE_PORTAL_NORMAL_MODE_PRE  = 38186,
++    CREATURE_PORTAL_NORMAL_MODE_NPC  = 37945,
++    CREATURE_PORTAL_HEROIC_MODE_PRE  = 38429,
++    CREATURE_PORTAL_HEROIC_MODE_NPC  = 38430,
+     CREATURE_WORM                    = 37907,
+     CREATURE_PORTAL                  = 37945,
+     CREATURE_CLOUD                   = 37985,

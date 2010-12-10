@@ -1,0 +1,19 @@
+# HG changeset patch
+# User asniker
+# Date 1290526823 -18000
+# Node ID 0b3528c670f1c806145032606363e9609d323249
+# Parent  dda331b62f9f9c1bc4a6da9f0dd4385c4f43e206
+ядро: правка
+
+diff --git a/src/server/game/DungeonFinding/LFGMgr.cpp b/src/server/game/DungeonFinding/LFGMgr.cpp
+--- a/src/server/game/DungeonFinding/LFGMgr.cpp
++++ b/src/server/game/DungeonFinding/LFGMgr.cpp
+@@ -1455,7 +1455,7 @@
+                 damage++;
+         }
+     }
+-    return true;
++    return (tank + healer + damage) == groles.size();
+ }
+ 
+ /// <summary>

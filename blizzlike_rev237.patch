@@ -1,0 +1,21 @@
+# HG changeset patch
+# User asniker
+# Date 1290524919 -18000
+# Node ID 5c5d935cf90a127f74f8773d9b742339056e7522
+# Parent  66a1a81ac40e2a16fde8ee74db94f8419daee369
+ядро: фикс ошибки
+
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -7320,7 +7320,9 @@
+         ExecuteLogEffectSummonObject(i, summon);
+     }
+ }
+-
++           }
++		}
++	}	
+ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 count)
+ {
+     pos.SetOrientation(m_caster->GetOrientation());

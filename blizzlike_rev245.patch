@@ -1,0 +1,576 @@
+# HG changeset patch
+# User asniker
+# Date 1291132121 -18000
+# Node ID 28b7f85d6004a7bfb7ec905ab4be3bc41c9f5c77
+# Parent  b5fc38365c006c4f17ad4c2d61fb63513fa9ac93
+ßäðî: îáíîâëåíèå öëê
+
+diff --git a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql
+--- a/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
++++ b/sql/Blizzlike@Sacred-core/Full sql and scripts/3) FULL sql.sql	
+@@ -1916,7 +1916,6 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_frost_bomb' WHERE `entry`= 37186;
+ UPDATE `creature_template` SET `ScriptName`='npc_icc_puddle_stalker' WHERE `entry`= 37824;
+ 
+-UPDATE `creature_template` SET `ScriptName`='npc_sticky_ooze' WHERE `entry`= 37006;
+ UPDATE `creature_template` SET `ScriptName`='npc_ooze_explode_stalker' WHERE `entry` = 38107;
+ UPDATE `creature_template` SET `ScriptName`='npc_gas_cloud_icc' WHERE `entry` = 37562;
+ UPDATE `creature_template` SET `ScriptName`='npc_bomb_icc' WHERE `entry` = 38159;
+@@ -1960,6 +1959,7 @@
+ UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
+ UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
+ UPDATE `creature_template` SET  `dynamicflags` = 8 WHERE entry IN (37970, 38401, 38784, 38785)
++UPDATE `creature_template` SET `RegenHealth` = '0' WHERE `entry` =38174;
+ 
+ 
+ -- Spell
+@@ -1982,7 +1982,7 @@
+ 	
+ 
+ DELETE FROM `creature_addon` WHERE `guid` IN (136107,104365);
+-DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918);
++DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918,37006);
+ 
+ INSERT INTO creature_addon (`guid`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (136107, 0, 0, 0, 1, 0, '18950 0 18950 1 72242 0');
+@@ -1997,7 +1997,8 @@
+ (37945, 0, 0, 0, 0, 0, '70763 0'),
+ (38429, 0, 0, 0, 0, 0, '71986 0'),
+ (38430, 0, 0, 0, 0, 0, '71994 0'),
+-(37918, 0, 0, 0, 0, 0, '70715 0');
++(37918, 0, 0, 0, 0, 0, '70715 0'),
++(37006, 0, 0, 0, 0, 0, '69776 0');
+ 
+ -- Thanks YTDB
+ 
+@@ -2126,6 +2127,8 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72999 AND `ScriptName`='spell_blood_council_shadow_prison_damage';
++DELETE FROM `spell_script_names` WHERE `spell_id`=69537 AND `ScriptName`='spell_rotface_little_ooze_combine';
++DELETE FROM `spell_script_names` WHERE `spell_id`=69552 AND `ScriptName`='spell_rotface_large_ooze_combine';
+ 
+ 
+ 
+@@ -2184,7 +2187,10 @@
+ (72080,'spell_valanar_kinetic_bomb'),
+ (72087,'spell_valanar_kinetic_bomb_knockback'),
+ (73001,'spell_blood_council_shadow_prison'),
+-(72999,'spell_blood_council_shadow_prison_damage');
++(72999,'spell_blood_council_shadow_prison_damage'),
++(72999,'spell_blood_council_shadow_prison_damage'),
++(69538,'spell_rotface_little_ooze_combine'),
++(69553,'spell_rotface_large_ooze_combine');
+ 
+ 
+ -- ***_scripts table
+@@ -2787,7 +2793,6 @@
+ 
+ 
+ 
+-
+ UPDATE gameobject_template SET size=2.151325 WHERE entry=195451;
+ UPDATE gameobject_template SET size=2.151325 WHERE entry=195452;
+ UPDATE gameobject_template SET size=3.163336 WHERE entry=195223;
+diff --git a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+--- a/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
++++ b/sql/Blizzlike@Sacred-core/world/IcecrownCitadel.sql
+@@ -52,7 +52,6 @@
+ UPDATE `creature_template` SET `ScriptName`='npc_frost_bomb' WHERE `entry`= 37186;
+ UPDATE `creature_template` SET `ScriptName`='npc_icc_puddle_stalker' WHERE `entry`= 37824;
+ 
+-UPDATE `creature_template` SET `ScriptName`='npc_sticky_ooze' WHERE `entry`= 37006;
+ UPDATE `creature_template` SET `ScriptName`='npc_ooze_explode_stalker' WHERE `entry` = 38107;
+ UPDATE `creature_template` SET `ScriptName`='npc_gas_cloud_icc' WHERE `entry` = 37562;
+ UPDATE `creature_template` SET `ScriptName`='npc_bomb_icc' WHERE `entry` = 38159;
+@@ -96,6 +95,7 @@
+ UPDATE `creature_model_info` SET `bounding_radius`=0.5425,`combat_reach`=1.75 WHERE `modelid` IN (30856,30857,30858);
+ UPDATE `creature_template` SET `RegenHealth`=0 WHERE `entry`=38369; -- Dark Nucleus
+ UPDATE `creature_template` SET  `dynamicflags` = 8 WHERE entry IN (37970, 38401, 38784, 38785)
++UPDATE `creature_template` SET `RegenHealth` = '0' WHERE `entry` =38174;
+ 
+ 
+ -- Spell
+@@ -118,7 +118,7 @@
+ 	
+ 
+ DELETE FROM `creature_addon` WHERE `guid` IN (136107,104365);
+-DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918);
++DELETE FROM `creature_template_addon` WHERE `entry` IN (37690,37672,36659,38186,37945,38429,38430,37918,37006);
+ 
+ INSERT INTO creature_addon (`guid`, `path_id`, `mount`, `bytes1`, `bytes2`, `emote`, `auras`) VALUES
+ (136107, 0, 0, 0, 1, 0, '18950 0 18950 1 72242 0');
+@@ -133,7 +133,8 @@
+ (37945, 0, 0, 0, 0, 0, '70763 0'),
+ (38429, 0, 0, 0, 0, 0, '71986 0'),
+ (38430, 0, 0, 0, 0, 0, '71994 0'),
+-(37918, 0, 0, 0, 0, 0, '70715 0');
++(37918, 0, 0, 0, 0, 0, '70715 0'),
++(37006, 0, 0, 0, 0, 0, '69776 0');
+ 
+ -- Thanks YTDB
+ 
+@@ -262,6 +263,8 @@
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72087 AND `ScriptName`='spell_valanar_kinetic_bomb_knockback';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=73001 AND `ScriptName`='spell_blood_council_shadow_prison';
+ DELETE FROM `spell_script_names` WHERE `spell_id`=72999 AND `ScriptName`='spell_blood_council_shadow_prison_damage';
++DELETE FROM `spell_script_names` WHERE `spell_id`=69537 AND `ScriptName`='spell_rotface_little_ooze_combine';
++DELETE FROM `spell_script_names` WHERE `spell_id`=69552 AND `ScriptName`='spell_rotface_large_ooze_combine';
+ 
+ 
+ 
+@@ -320,7 +323,10 @@
+ (72080,'spell_valanar_kinetic_bomb'),
+ (72087,'spell_valanar_kinetic_bomb_knockback'),
+ (73001,'spell_blood_council_shadow_prison'),
+-(72999,'spell_blood_council_shadow_prison_damage');
++(72999,'spell_blood_council_shadow_prison_damage'),
++(72999,'spell_blood_council_shadow_prison_damage'),
++(69538,'spell_rotface_little_ooze_combine'),
++(69553,'spell_rotface_large_ooze_combine');
+ 
+ 
+ -- ***_scripts table
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
+@@ -38,12 +38,90 @@
+ {
+     SPELL_SABER_SLASH        = 69055,
+     SPELL_COLD_FLAME         = 69146,
++	SPELL_BONE_SPIKE         = 73142,
+     SPELL_SPIKE_IMPALING     = 69065,
+     SPELL_BONE_STORM         = 69076,
+     SPELL_COLD_FLAME_SPAWN   = 69138,
+     SPELL_COLD_FLAME_SPAWN_B = 72701
+ };
+ 
++class npc_bone_spike : public CreatureScript
++{
++    public:
++        npc_bone_spike() : CreatureScript("npc_bone_spike") { }
++ 
++        struct npc_bone_spikeAI : public Scripted_NoMovementAI
++        {
++            npc_bone_spikeAI(Creature *pCreature) : Scripted_NoMovementAI(pCreature), vehicle(pCreature->GetVehicleKit())
++            {
++                ASSERT(vehicle);
++                BoneSpikeGUID = 0;
++                pInstance = pCreature->GetInstanceScript();
++            }
++
++            void SetPrisoner(const uint64& guid)
++            {
++                BoneSpikeGUID = guid;
++                if (Player* boned = ObjectAccessor::GetPlayer(*me, BoneSpikeGUID))
++                    boned->EnterVehicle(vehicle, 0);
++            }
++
++            void Reset()
++            {
++                BoneSpikeGUID = 0;
++            }
++
++            void JustDied(Unit* /*pKiller*/)
++            {
++                if (Player* boned = ObjectAccessor::GetPlayer(*me, BoneSpikeGUID))
++                    boned->RemoveAurasDueToSpell(SPELL_SPIKE_IMPALING);
++            }
++
++            void KilledUnit(Unit* /*pVictim*/)
++            {
++                me->Kill(me);
++            }
++
++            void PassengerBoarded(Unit * who, int8 /*seatId*/, bool apply)
++            {
++                if (!apply)
++                    return;
++
++                who->AddAura(SPELL_SPIKE_IMPALING, who);
++                m_uiAchievBonedTimer = 8000;
++            }
++
++            void UpdateAI(const uint32 uiDiff)
++            {
++                if (!BoneSpikeGUID || !pInstance)
++                    return;
++
++                if (Player* boned = ObjectAccessor::GetPlayer(*me, BoneSpikeGUID))
++                    if (!boned->HasAura(SPELL_SPIKE_IMPALING))
++                        me->Kill(me);
++
++                if (m_uiAchievBonedTimer <= uiDiff)
++                {
++                    pInstance->SetData(DATA_BONED, FAIL);
++                    m_uiAchievBonedTimer = 8000;
++                } else m_uiAchievBonedTimer -= uiDiff;
++            }
++
++        private:
++            InstanceScript* pInstance;
++
++            uint64 BoneSpikeGUID;
++            uint32 m_uiAchievBonedTimer;
++
++            Vehicle* vehicle;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_bone_spikeAI(pCreature);
++        }
++};
++
+ class npc_cold_flame : public CreatureScript
+ {
+     public:
+@@ -65,7 +143,7 @@
+                     spell->EffectRadiusIndex[0] = 16; //prevent stack damage
+                 DoCast(me, SPELL_COLD_FLAME);
+ 
+-                me->SetVisibility(VISIBILITY_ON);
++                me->SetVisibility(VISIBILITY_OFF);
+                 DoStartNoMovement(me->getVictim());
+ 
+                 m_uiStage = 1;
+@@ -241,8 +319,26 @@
+                     DoScriptText(SAY_BERSERK, me);
+                     DoCast(SPELL_BERSERK);
+                     m_uiBerserkTimer = 600000;
+-                } else m_uiBerserkTimer -= uiDiff;              
++                } else m_uiBerserkTimer -= uiDiff; 
+ 
++                 if (IsHeroic() || !me->HasAura(SPELL_BONE_STORM))
++                {
++                    if (m_uiBoneSpikeGraveyardTimer < uiDiff)
++                    {
++                        for (uint8 i = 1; i <= m_uiBoneCount; ++i)
++                        {
++                            if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true, -SPELL_SPIKE_IMPALING))
++                            {
++                                Creature* pBone = me->SummonCreature(CREATURE_BONE_SPIKE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 999999);
++                                CAST_AI(npc_bone_spike::npc_bone_spikeAI, pBone->AI())->SetPrisoner(pTarget->GetGUID());
++                                pTarget->AddAura(SPELL_SPIKE_IMPALING, pTarget);
++                            }
++                        }
++                        DoScriptText(RAND(SAY_SPIKE_1,SAY_SPIKE_2,SAY_SPIKE_3), me);
++                        m_uiBoneSpikeGraveyardTimer = 15000;
++                    } else m_uiBoneSpikeGraveyardTimer -= uiDiff;
++                }
++				
+                 if (!me->HasAura(SPELL_BONE_STORM))
+                 {
+                     if (m_uiBoneStormTimer <= uiDiff)
+@@ -370,7 +466,8 @@
+ 
+ void AddSC_boss_lord_marrowgar()
+ {   
+-    new npc_cold_flame();
++    new npc_bone_spike();
++	new npc_cold_flame();
+     new boss_lord_marrowgar();
+ 	new spell_lord_marrowgar_bone_storm();
+ 
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_rotface.cpp
+@@ -58,7 +58,10 @@
+     SPELL_INFECTION_AURA     = 69674,
+     SPELL_MORTAL_WOUND       = 71127,
+     SPELL_DECIMATE           = 71123,
+-    SPELL_PRECIOUS_RIBBON    = 70404
++    SPELL_PRECIOUS_RIBBON    = 70404,
++    SPELL_LITTLE_OOZE        = 69537,
++    SPELL_LARGE_OOZE         = 69552
++
+ };
+ 
+ const Position SpawnLoc[]=
+@@ -194,7 +197,7 @@
+                 if (m_uiInfectionTimer <= diff)
+                 {
+                     if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true, -SPELL_INFECTION_AURA))
+-						DoCast(pTarget, SPELL_INFECTION_AURA);
++						 me->AddAura(SPELL_INFECTION_AURA, pTarget);
+                     m_uiInfectionTimer = 14000;
+                 } else m_uiInfectionTimer -= diff;
+ 
+@@ -294,6 +297,7 @@
+ 
+                 DoCast(SPELL_UNSTABLE_OOZE);
+                 DoCast(SPELL_RADIATING_OOZE_1);
++				DoCast(SPELL_LARGE_OOZE);
+                 me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
+                 me->SetSpeed(MOVE_WALK, 0.5f);
+                 me->SetSpeed(MOVE_RUN, 0.5);               
+@@ -313,21 +317,7 @@
+                     DoCast(me->getVictim(), SPELL_STICKY_OOZE);
+                     m_uiStickyOozeTimer = 10000;
+                 } else m_uiStickyOozeTimer -= diff;
+-
+-                Creature* little = me->FindNearestCreature(CREATURE_LITTLE_OOZE, 7.0f, true);
+-                if(little && little->isAlive())
+-                {
+-                    DoCast(SPELL_UNSTABLE_OOZE);
+-                    me->Kill(little);
+-                }
+-
+-                Creature* big = me->FindNearestCreature(CREATURE_BIG_OOZE, 7.0f, true);
+-                if(big && big->GetGUID() != me->GetGUID() && big->isAlive())
+-                {
+-                    DoCast(SPELL_UNSTABLE_OOZE);
+-                    me->Kill(big);
+-                }
+-
++              
+                 DoMeleeAttackIfReady();
+             }
+         private:
+@@ -360,6 +350,7 @@
+                 bMerge = false;
+ 
+                 DoCast(SPELL_RADIATING_OOZE);
++				DoCast(SPELL_LITTLE_OOZE);
+                 me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
+                 me->SetSpeed(MOVE_WALK, 0.5f);
+                 me->SetSpeed(MOVE_RUN, 0.5f);
+@@ -379,19 +370,7 @@
+                     DoCast(me->getVictim(), SPELL_STICKY_OOZE);
+                     m_uiStickyOozeTimer = 11000;
+                 } else m_uiStickyOozeTimer -= diff;
+-
+-                if(!bMerge)
+-                {
+-                    Creature* little = me->FindNearestCreature(CREATURE_LITTLE_OOZE, 7.0f, true);
+-                    if(little && little->GetGUID() != me->GetGUID() && little->isAlive())
+-                    {
+-                        little->CastSpell(little, SPELL_MERGE_OOZE, true);
+-                        me->Kill(little);
+-                        me->Kill(me);
+-                        bMerge = true;
+-                    }
+-                }
+-
++             
+                 DoMeleeAttackIfReady();
+             }
+         private:
+@@ -406,36 +385,6 @@
+         }
+ };
+ 
+-class npc_sticky_ooze : public CreatureScript
+-{
+-    public:
+-        npc_sticky_ooze() : CreatureScript("npc_sticky_ooze") { }
+-
+-        struct npc_sticky_oozeAI : public ScriptedAI
+-        {
+-            npc_sticky_oozeAI(Creature* pCreature) : ScriptedAI(pCreature)
+-            {
+-                pInstance = pCreature->GetInstanceScript();
+-            }
+-
+-            void Reset()
+-            {
+-                DoCast(me, SPELL_STICKY_OOZE_1);
+-
+-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+-                me->SetInCombatWithZone();
+-                DoStartNoMovement(me->getVictim());
+-            }
+-        private:
+-            InstanceScript* pInstance;
+-        };
+-
+-        CreatureAI* GetAI(Creature* pCreature) const
+-        {
+-            return new npc_sticky_oozeAI(pCreature);
+-        }
+-};
+-
+ class npc_icc_puddle_stalker : public CreatureScript
+ {
+     public:
+@@ -596,14 +545,95 @@
+         }
+ };
+ 
++class spell_rotface_little_ooze_combine : public SpellScriptLoader
++{
++    public:
++        spell_rotface_little_ooze_combine() : SpellScriptLoader("spell_rotface_little_ooze_combine") { }
++
++
++        class spell_rotface_little_ooze_combine_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_rotface_little_ooze_combine_SpellScript);
++
++            void HandleScript(SpellEffIndex /*effIndex*/)
++            {
++                if (!(GetHitUnit() && GetHitUnit()->isAlive()))
++                    return;
++
++                GetCaster()->RemoveAurasDueToSpell(SPELL_LITTLE_OOZE);
++                GetHitUnit()->RemoveAurasDueToSpell(SPELL_LITTLE_OOZE);
++                GetHitUnit()->CastSpell(GetCaster(), SPELL_MERGE_OOZE, true);
++                if (TempSummon* summ = GetHitUnit()->ToTempSummon())
++                    summ->UnSummon();
++                else
++                    GetHitCreature()->ForcedDespawn();
++            }
++
++            void Register()
++            {
++                OnEffect += SpellEffectFn(spell_rotface_little_ooze_combine_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
++            }
++        };
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_rotface_little_ooze_combine_SpellScript();
++        }
++};
++
++class spell_rotface_large_ooze_combine : public SpellScriptLoader
++{
++    public:
++        spell_rotface_large_ooze_combine() : SpellScriptLoader("spell_rotface_large_ooze_combine") { }
++
++
++        class spell_rotface_large_ooze_combine_SpellScript : public SpellScript
++        {
++            PrepareSpellScript(spell_rotface_large_ooze_combine_SpellScript);
++
++            void HandleScript(SpellEffIndex /*effIndex*/)
++            {
++                if (!(GetHitUnit() && GetHitUnit()->isAlive()))
++                    return;
++
++                if (Aura* unstable = GetCaster()->GetAura(SPELL_UNSTABLE_OOZE))
++                {
++                    if (Aura* targetAura = GetHitUnit()->GetAura(SPELL_UNSTABLE_OOZE))
++                        unstable->ModStackAmount(targetAura->GetStackAmount());
++                    else
++                        unstable->ModStackAmount(1);
++                }
++
++                GetHitUnit()->RemoveAurasDueToSpell(SPELL_LARGE_OOZE);
++
++                if (TempSummon* summ = GetHitUnit()->ToTempSummon())
++                    summ->UnSummon();
++                else if (GetHitCreature())
++                    GetHitCreature()->ForcedDespawn();
++            }
++
++            void Register()
++            {
++                OnEffect += SpellEffectFn(spell_rotface_large_ooze_combine_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
++            }
++        };
++
++
++        SpellScript* GetSpellScript() const
++        {
++            return new spell_rotface_large_ooze_combine_SpellScript();
++        }
++};
++
+ void AddSC_boss_rotface()
+ {
+     new boss_rotface();
+     new npc_ooze_big();
+-    new npc_ooze_little();
+-    new npc_sticky_ooze();
++    new npc_ooze_little();   
+     new npc_icc_puddle_stalker();
+     new npc_ooze_explode_stalker();
+     new npc_precious_icc();
+     new spell_rotface_unstable_explosion();
++	new spell_rotface_little_ooze_combine();
++    new spell_rotface_large_ooze_combine();
+ }
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_sindragosa.cpp
+@@ -46,8 +46,7 @@
+     SPELL_CLEAVE              = 19983,
+     SPELL_TAIL_SMASH          = 71077,
+     SPELL_FROST_BREATH        = 73061,
+-    SPELL_PERMEATING_CHILL    = 70107, //
+-    SPELL_PERMEATING_AURA     = 70106,
++    SPELL_PERMEATING_CHILL    = 70109,
+     SPELL_UNCHAINED_MAGIC     = 69762, // Ð½ÑƒÐ¶Ð½Ð¾ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ Ð¼ÐµÑ…Ð°Ð½Ð¸ÐºÑƒ Ð½Ð° Ð¾Ñ„Ðµ
+     SPELL_ICY_TRIP_PULL       = 70117,
+     SPELL_BOMB_VISUAL_1       = 64624,
+@@ -98,8 +97,7 @@
+                 m_uiBreathTimer = 15000;
+                 m_uiTailSmashTimer = 15000;
+                 m_uiBlisteringColdTimer = 30000;
+-                m_uiMarkTimer = 25000;
+-                m_uiPermatingChilTimer = 12000;
++                m_uiMarkTimer = 25000;               
+                 m_uiBerserkTimer = 600000;
+                 m_uiChangePhaseTimer = 110000;
+                 m_uiUnchainedMagicTimer = 12000;
+@@ -123,6 +121,7 @@
+                     pInstance->SetData(DATA_SINDRAGOSA_EVENT, IN_PROGRESS);
+ 
+                 DoCast(me, SPELL_FROST_AURA);
++				DoCast(me, SPELL_PERMEATING_CHILL);
+                 DoScriptText(SAY_AGGRO, me);
+             }
+ 
+@@ -186,14 +185,7 @@
+ 						 DoScriptText(SAY_UNCHAIND_MAGIC, me);
+ 						 m_uiUnchainedMagicTimer = 12000;
+                     } else m_uiUnchainedMagicTimer -= uiDiff;
+-
+-                    if (m_uiPermatingChilTimer <= uiDiff)
+-                    {
+-                        if(Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 10.0f, true, -SPELL_PERMEATING_CHILL))                      
+-                            DoCast(pTarget, SPELL_PERMEATING_CHILL);                        
+-                        m_uiPermatingChilTimer = 20000;
+-                    } else m_uiPermatingChilTimer -= uiDiff;
+-
++                  
+                     if (m_uiBreathTimer <= uiDiff)
+                     {
+                         DoScriptText(SAY_BREATH, me);
+@@ -281,15 +273,15 @@
+ 						return;
+ 
+ 					 switch (m_uiPhase)
+-                        {
+-                            case 1:
+-								 DoScriptText(SAY_AIR_PHASE, me);
+-								 m_uiPhase = 2;
+-								 break;
+-							case 2:
+-								m_uiPhase = 1;
+-								break;
+-                        }                      
++                    {
++                        case 1:
++                            DoScriptText(SAY_AIR_PHASE, me);
++                            m_uiPhase = 2;
++                            break;
++                        case 2:
++                            m_uiPhase = 1;
++                            break;
++                    }                  
+                     m_uiChangePhaseTimer = 110000;
+                 } else m_uiChangePhaseTimer -= uiDiff;
+ 
+@@ -306,9 +298,8 @@
+             uint32 m_uiBlisteringColdTimer;
+             uint32 m_uiBerserkTimer;
+             uint32 m_uiMarkTimer;
+-            uint32 m_uiPermatingChilTimer;
+-            uint32 m_uiChangePhaseTimer;
+             uint32 m_uiUnchainedMagicTimer;
++            uint32 m_uiChangePhaseTimer;           
+             uint32 m_uiBombTimer;          
+ 
+             bool bSwitch;

@@ -1,0 +1,3690 @@
+# HG changeset patch
+# User asniker
+# Date 1289991041 -18000
+# Node ID 0d0db438181ba0b6848600f46a118c0516d31f72
+# Parent  86af3860b01e79aa080d801d5b16348ad36266f8
+ßäðî: äîáàâèë ñêðèïòû àíêàõåò è àçæîë-íåðóá
+
+diff --git a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/azjol_nerub.h b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/azjol_nerub.h
+--- a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/azjol_nerub.h
++++ b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/azjol_nerub.h
+@@ -1,37 +1,37 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#ifndef DEF_AZJOL_NERUB_H
+-#define DEF_AZJOL_NERUB_H
+-
+-enum Data64
+-{
+-    DATA_KRIKTHIR_THE_GATEWATCHER,
+-    DATA_HADRONOX,
+-    DATA_ANUBARAK,
+-    DATA_WATCHER_GASHRA,
+-    DATA_WATCHER_SILTHIK,
+-    DATA_WATCHER_NARJIL
+-};
+-enum Data
+-{
+-    DATA_KRIKTHIR_THE_GATEWATCHER_EVENT,
+-    DATA_HADRONOX_EVENT,
+-    DATA_ANUBARAK_EVENT
+-};
+-
+-#endif
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef DEF_AZJOL_NERUB_H
++#define DEF_AZJOL_NERUB_H
++
++enum Data64
++{
++    DATA_KRIKTHIR_THE_GATEWATCHER,
++    DATA_HADRONOX,
++    DATA_ANUBARAK,
++    DATA_WATCHER_GASHRA,
++    DATA_WATCHER_SILTHIK,
++    DATA_WATCHER_NARJIL
++};
++enum Data
++{
++    DATA_KRIKTHIR_THE_GATEWATCHER_EVENT,
++    DATA_HADRONOX_EVENT,
++    DATA_ANUBARAK_EVENT
++};
++
++#endif
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_anubarak.cpp b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_anubarak.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_anubarak.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_anubarak.cpp
+@@ -1,358 +1,358 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#include "ScriptPCH.h"
+-#include "azjol_nerub.h"
+-
+-enum Spells
+-{
+-    SPELL_CARRION_BEETLES                         = 53520,
+-    SPELL_SUMMON_CARRION_BEETLES                  = 53521,
+-    SPELL_LEECHING_SWARM                          = 53467,
+-    SPELL_POUND                                   = 53472,
+-    SPELL_POUND_H                                 = 59433,
+-    SPELL_SUBMERGE                                = 53421,
+-    SPELL_IMPALE_DMG                              = 53454,
+-    SPELL_IMPALE_DMG_H                            = 59446,
+-    SPELL_IMPALE_SHAKEGROUND                      = 53455,
+-    SPELL_IMPALE_SPIKE                            = 53539,   //this is not the correct visual effect
+-    //SPELL_IMPALE_TARGET                           = 53458,
+-};
+-
+-enum Creatures
+-{
+-    CREATURE_GUARDIAN                             = 29216,
+-    CREATURE_VENOMANCER                           = 29217,
+-    CREATURE_DATTER                               = 29213,
+-    CREATURE_IMPALE_TARGET                        = 89,
+-    DISPLAY_INVISIBLE                             = 11686
+-};
+-
+-// not in db
+-enum Yells
+-{
+-    SAY_INTRO                                     = -1601010,
+-    SAY_AGGRO                                     = -1601000,
+-    SAY_SLAY_1                                    = -1601001,
+-    SAY_SLAY_2                                    = -1601002,
+-    SAY_SLAY_3                                    = -1601003,
+-    SAY_LOCUST_1                                  = -1601005,
+-    SAY_LOCUST_2                                  = -1601006,
+-    SAY_LOCUST_3                                  = -1601007,
+-    SAY_SUBMERGE_1                                = -1601008,
+-    SAY_SUBMERGE_2                                = -1601009,
+-    SAY_DEATH                                     = -1601004
+-};
+-
+-enum
+-{
+-    ACHIEV_TIMED_START_EVENT                      = 20381,
+-};
+-
+-enum Phases
+-{
+-    PHASE_MELEE                                   = 0,
+-    PHASE_UNDERGROUND                             = 1,
+-    IMPALE_PHASE_TARGET                           = 0,
+-    IMPALE_PHASE_ATTACK                           = 1,
+-    IMPALE_PHASE_DMG                              = 2
+-};
+-
+-const Position SpawnPoint[2] =
+-{
+-    { 550.7f, 282.8f, 224.3f, 0.0f },
+-    { 551.1f, 229.4f, 224.3f, 0.0f },
+-};
+-
+-const Position SpawnPointGuardian[2] =
+-{
+-    { 550.348633f, 316.006805f, 234.2947f, 0.0f },
+-    { 550.188660f, 324.264557f, 237.7412f, 0.0f },
+-};
+-
+-class boss_anub_arak : public CreatureScript
+-{
+-public:
+-    boss_anub_arak() : CreatureScript("boss_anub_arak") { }
+-
+-    struct boss_anub_arakAI : public ScriptedAI
+-    {
+-        boss_anub_arakAI(Creature *c) : ScriptedAI(c), lSummons(me)
+-        {
+-            pInstance = c->GetInstanceScript();
+-        }
+-
+-        InstanceScript *pInstance;
+-
+-        bool bChanneling;
+-        bool bGuardianSummoned;
+-        bool bVenomancerSummoned;
+-        bool bDatterSummoned;
+-        uint8 uiPhase;
+-        uint32 uiUndergroundPhase;
+-        uint32 uiCarrionBeetlesTimer;
+-        uint32 uiLeechingSwarmTimer;
+-        uint32 uiPoundTimer;
+-        uint32 uiSubmergeTimer;
+-        uint32 uiUndergroundTimer;
+-        uint32 uiVenomancerTimer;
+-        uint32 uiDatterTimer;
+-
+-        uint32 uiImpaleTimer;
+-        uint32 uiImpalePhase;
+-        uint64 uiImpaleTarget;
+-
+-        SummonList lSummons;
+-
+-        void Reset()
+-        {
+-            uiCarrionBeetlesTimer = 8*IN_MILLISECONDS;
+-            uiLeechingSwarmTimer = 20*IN_MILLISECONDS;
+-            uiImpaleTimer = 9*IN_MILLISECONDS;
+-            uiPoundTimer = 15*IN_MILLISECONDS;
+-
+-            uiPhase = PHASE_MELEE;
+-            uiUndergroundPhase = 0;
+-            bChanneling = false;
+-            uiImpalePhase = IMPALE_PHASE_TARGET;
+-
+-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
+-            me->RemoveAura(SPELL_SUBMERGE);
+-
+-            lSummons.DespawnAll();
+-
+-            if (pInstance)
+-            {
+-                pInstance->SetData(DATA_ANUBARAK_EVENT, NOT_STARTED);
+-                pInstance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMED_START_EVENT);
+-            }
+-        }
+-
+-        Creature* DoSummonImpaleTarget(Unit *pTarget)
+-        {
+-            Position targetPos;
+-            pTarget->GetPosition(&targetPos);
+-
+-            if (TempSummon* pImpaleTarget = me->SummonCreature(CREATURE_IMPALE_TARGET, targetPos, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 6*IN_MILLISECONDS))
+-            {
+-                uiImpaleTarget = pImpaleTarget->GetGUID();
+-                pImpaleTarget->SetReactState(REACT_PASSIVE);
+-                pImpaleTarget->SetDisplayId(DISPLAY_INVISIBLE);
+-                pImpaleTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE|UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
+-                return pImpaleTarget;
+-            }
+-
+-            return NULL;
+-        }
+-
+-        void EnterCombat(Unit * /*pWho*/)
+-        {
+-            DoScriptText(SAY_AGGRO, me);
+-            if (pInstance)
+-            {
+-                pInstance->SetData(DATA_ANUBARAK_EVENT, IN_PROGRESS);
+-                pInstance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMED_START_EVENT);
+-            }
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            switch (uiPhase)
+-            {
+-            case PHASE_UNDERGROUND:
+-                if (uiImpaleTimer <= diff)
+-                {
+-                    switch(uiImpalePhase)
+-                    {
+-                    case IMPALE_PHASE_TARGET:
+-                        if (Unit *target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                        {
+-                            if (Creature *pImpaleTarget = DoSummonImpaleTarget(target))
+-                                pImpaleTarget->CastSpell(pImpaleTarget, SPELL_IMPALE_SHAKEGROUND, true);
+-                            uiImpaleTimer = 3*IN_MILLISECONDS;
+-                            uiImpalePhase = IMPALE_PHASE_ATTACK;
+-                        }
+-                        break;
+-                    case IMPALE_PHASE_ATTACK:
+-                        if (Creature* pImpaleTarget = Unit::GetCreature(*me, uiImpaleTarget))
+-                        {
+-                            pImpaleTarget->CastSpell(pImpaleTarget, SPELL_IMPALE_SPIKE, false);
+-                            pImpaleTarget->RemoveAurasDueToSpell(SPELL_IMPALE_SHAKEGROUND);
+-                        }
+-                        uiImpalePhase = IMPALE_PHASE_DMG;
+-                        uiImpaleTimer = 1*IN_MILLISECONDS;
+-                        break;
+-                    case IMPALE_PHASE_DMG:
+-                        if (Creature* pImpaleTarget = Unit::GetCreature(*me, uiImpaleTarget))
+-                            me->CastSpell(pImpaleTarget, DUNGEON_MODE(SPELL_IMPALE_DMG, SPELL_IMPALE_DMG_H), true);
+-                        uiImpalePhase = IMPALE_PHASE_TARGET;
+-                        uiImpaleTimer = 9*IN_MILLISECONDS;
+-                        break;
+-                    }
+-                } else uiImpaleTimer -= diff;
+-
+-                if (!bGuardianSummoned)
+-                {
+-                    for (uint8 i = 0; i < 2; ++i)
+-                    {
+-                        if (Creature *Guardian = me->SummonCreature(CREATURE_GUARDIAN,SpawnPointGuardian[i],TEMPSUMMON_CORPSE_DESPAWN,0))
+-                        {
+-                            Guardian->AddThreat(me->getVictim(), 0.0f);
+-                            DoZoneInCombat(Guardian);
+-                        }
+-                    }
+-                    bGuardianSummoned = true;
+-                }
+-
+-                if (!bVenomancerSummoned)
+-                {
+-                    if (uiVenomancerTimer <= diff)
+-                    {
+-                        if (uiUndergroundPhase > 1)
+-                        {
+-                            for (uint8 i = 0; i < 2; ++i)
+-                            {
+-                                if (Creature *Venomancer = me->SummonCreature(CREATURE_VENOMANCER,SpawnPoint[i],TEMPSUMMON_CORPSE_DESPAWN,0))
+-                                {
+-                                    Venomancer->AddThreat(me->getVictim(), 0.0f);
+-                                    DoZoneInCombat(Venomancer);
+-                                }
+-                            }
+-                            bVenomancerSummoned = true;
+-                        }
+-                    } else uiVenomancerTimer -= diff;
+-                }
+-
+-                if (!bDatterSummoned)
+-                {
+-                    if (uiDatterTimer <= diff)
+-                    {
+-                        if (uiUndergroundPhase > 2)
+-                        {
+-                            for (uint8 i = 0; i < 2; ++i)
+-                            {
+-                                if (Creature *Datter = me->SummonCreature(CREATURE_DATTER,SpawnPoint[i],TEMPSUMMON_CORPSE_DESPAWN,0))
+-                                {
+-                                    Datter->AddThreat(me->getVictim(), 0.0f);
+-                                    DoZoneInCombat(Datter);
+-                                }
+-                            }
+-                            bDatterSummoned = true;
+-                        }
+-                    } else uiDatterTimer -= diff;
+-                }
+-
+-                if (uiUndergroundTimer <= diff)
+-                {
+-                    me->RemoveAura(SPELL_SUBMERGE);
+-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
+-                    uiPhase = PHASE_MELEE;
+-                } else uiUndergroundTimer -= diff;
+-                break;
+-
+-            case PHASE_MELEE:
+-                if (((uiUndergroundPhase == 0 && HealthBelowPct(75))
+-                    || (uiUndergroundPhase == 1 && HealthBelowPct(50))
+-                    || (uiUndergroundPhase == 2 && HealthBelowPct(25)))
+-                    && !me->hasUnitState(UNIT_STAT_CASTING))
+-                {
+-                    bGuardianSummoned = false;
+-                    bVenomancerSummoned = false;
+-                    bDatterSummoned = false;
+-
+-                    uiUndergroundTimer = 40*IN_MILLISECONDS;
+-                    uiVenomancerTimer = 25*IN_MILLISECONDS;
+-                    uiDatterTimer = 32*IN_MILLISECONDS;
+-
+-                    uiImpalePhase = 0;
+-                    uiImpaleTimer = 9*IN_MILLISECONDS;
+-
+-                    DoCast(me, SPELL_SUBMERGE, false);
+-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
+-
+-                    uiPhase = PHASE_UNDERGROUND;
+-                    ++uiUndergroundPhase;
+-                }
+-
+-                if (bChanneling == true)
+-                {
+-                    for (uint8 i = 0; i < 8; ++i)
+-                    DoCast(me->getVictim(), SPELL_SUMMON_CARRION_BEETLES, true);
+-                    bChanneling = false;
+-                }
+-                else if (uiCarrionBeetlesTimer <= diff)
+-                {
+-                    bChanneling = true;
+-                    DoCastVictim(SPELL_CARRION_BEETLES);
+-                    uiCarrionBeetlesTimer = 25*IN_MILLISECONDS;
+-                } else uiCarrionBeetlesTimer -= diff;
+-
+-                if (uiLeechingSwarmTimer <= diff)
+-                {
+-                    DoCast(me, SPELL_LEECHING_SWARM, true);
+-                    uiLeechingSwarmTimer = 19*IN_MILLISECONDS;
+-                } else uiLeechingSwarmTimer -= diff;
+-
+-                if (uiPoundTimer <= diff)
+-                {
+-                    if (Unit *target = me->getVictim())
+-                    {
+-                        if (Creature *pImpaleTarget = DoSummonImpaleTarget(target))
+-                            me->CastSpell(pImpaleTarget, DUNGEON_MODE(SPELL_POUND, SPELL_POUND_H), false);
+-                    }
+-                    uiPoundTimer = 16500;
+-                } else uiPoundTimer -= diff;
+-
+-                DoMeleeAttackIfReady();
+-                break;
+-            }
+-        }
+-
+-        void JustDied(Unit * /*pKiller*/)
+-        {
+-            DoScriptText(SAY_DEATH, me);
+-            lSummons.DespawnAll();
+-            if (pInstance)
+-                pInstance->SetData(DATA_ANUBARAK_EVENT, DONE);
+-        }
+-
+-        void KilledUnit(Unit *pVictim)
+-        {
+-            if (pVictim == me)
+-                return;
+-            DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2,SAY_SLAY_3), me);
+-        }
+-
+-        void JustSummoned(Creature* summon)
+-        {
+-            lSummons.Summon(summon);
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new boss_anub_arakAI(creature);
+-    }
+-};
+-
+-void AddSC_boss_anub_arak()
+-{
+-    new boss_anub_arak;
+-}
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "ScriptPCH.h"
++#include "azjol_nerub.h"
++
++enum Spells
++{
++    SPELL_CARRION_BEETLES                         = 53520,
++    SPELL_SUMMON_CARRION_BEETLES                  = 53521,
++    SPELL_LEECHING_SWARM                          = 53467,
++    SPELL_POUND                                   = 53472,
++    SPELL_POUND_H                                 = 59433,
++    SPELL_SUBMERGE                                = 53421,
++    SPELL_IMPALE_DMG                              = 53454,
++    SPELL_IMPALE_DMG_H                            = 59446,
++    SPELL_IMPALE_SHAKEGROUND                      = 53455,
++    SPELL_IMPALE_SPIKE                            = 53539,   //this is not the correct visual effect
++    //SPELL_IMPALE_TARGET                           = 53458,
++};
++
++enum Creatures
++{
++    CREATURE_GUARDIAN                             = 29216,
++    CREATURE_VENOMANCER                           = 29217,
++    CREATURE_DATTER                               = 29213,
++    CREATURE_IMPALE_TARGET                        = 89,
++    DISPLAY_INVISIBLE                             = 11686
++};
++
++// not in db
++enum Yells
++{
++    SAY_INTRO                                     = -1601010,
++    SAY_AGGRO                                     = -1601000,
++    SAY_SLAY_1                                    = -1601001,
++    SAY_SLAY_2                                    = -1601002,
++    SAY_SLAY_3                                    = -1601003,
++    SAY_LOCUST_1                                  = -1601005,
++    SAY_LOCUST_2                                  = -1601006,
++    SAY_LOCUST_3                                  = -1601007,
++    SAY_SUBMERGE_1                                = -1601008,
++    SAY_SUBMERGE_2                                = -1601009,
++    SAY_DEATH                                     = -1601004
++};
++
++enum
++{
++    ACHIEV_TIMED_START_EVENT                      = 20381,
++};
++
++enum Phases
++{
++    PHASE_MELEE                                   = 0,
++    PHASE_UNDERGROUND                             = 1,
++    IMPALE_PHASE_TARGET                           = 0,
++    IMPALE_PHASE_ATTACK                           = 1,
++    IMPALE_PHASE_DMG                              = 2
++};
++
++const Position SpawnPoint[2] =
++{
++    { 550.7f, 282.8f, 224.3f, 0.0f },
++    { 551.1f, 229.4f, 224.3f, 0.0f },
++};
++
++const Position SpawnPointGuardian[2] =
++{
++    { 550.348633f, 316.006805f, 234.2947f, 0.0f },
++    { 550.188660f, 324.264557f, 237.7412f, 0.0f },
++};
++
++class boss_anub_arak : public CreatureScript
++{
++public:
++    boss_anub_arak() : CreatureScript("boss_anub_arak") { }
++
++    struct boss_anub_arakAI : public ScriptedAI
++    {
++        boss_anub_arakAI(Creature *c) : ScriptedAI(c), lSummons(me)
++        {
++            pInstance = c->GetInstanceScript();
++        }
++
++        InstanceScript *pInstance;
++
++        bool bChanneling;
++        bool bGuardianSummoned;
++        bool bVenomancerSummoned;
++        bool bDatterSummoned;
++        uint8 uiPhase;
++        uint32 uiUndergroundPhase;
++        uint32 uiCarrionBeetlesTimer;
++        uint32 uiLeechingSwarmTimer;
++        uint32 uiPoundTimer;
++        uint32 uiSubmergeTimer;
++        uint32 uiUndergroundTimer;
++        uint32 uiVenomancerTimer;
++        uint32 uiDatterTimer;
++
++        uint32 uiImpaleTimer;
++        uint32 uiImpalePhase;
++        uint64 uiImpaleTarget;
++
++        SummonList lSummons;
++
++        void Reset()
++        {
++            uiCarrionBeetlesTimer = 8*IN_MILLISECONDS;
++            uiLeechingSwarmTimer = 20*IN_MILLISECONDS;
++            uiImpaleTimer = 9*IN_MILLISECONDS;
++            uiPoundTimer = 15*IN_MILLISECONDS;
++
++            uiPhase = PHASE_MELEE;
++            uiUndergroundPhase = 0;
++            bChanneling = false;
++            uiImpalePhase = IMPALE_PHASE_TARGET;
++
++            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
++            me->RemoveAura(SPELL_SUBMERGE);
++
++            lSummons.DespawnAll();
++
++            if (pInstance)
++            {
++                pInstance->SetData(DATA_ANUBARAK_EVENT, NOT_STARTED);
++                pInstance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMED_START_EVENT);
++            }
++        }
++
++        Creature* DoSummonImpaleTarget(Unit *pTarget)
++        {
++            Position targetPos;
++            pTarget->GetPosition(&targetPos);
++
++            if (TempSummon* pImpaleTarget = me->SummonCreature(CREATURE_IMPALE_TARGET, targetPos, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 6*IN_MILLISECONDS))
++            {
++                uiImpaleTarget = pImpaleTarget->GetGUID();
++                pImpaleTarget->SetReactState(REACT_PASSIVE);
++                pImpaleTarget->SetDisplayId(DISPLAY_INVISIBLE);
++                pImpaleTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE|UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
++                return pImpaleTarget;
++            }
++
++            return NULL;
++        }
++
++        void EnterCombat(Unit * /*pWho*/)
++        {
++            DoScriptText(SAY_AGGRO, me);
++            if (pInstance)
++            {
++                pInstance->SetData(DATA_ANUBARAK_EVENT, IN_PROGRESS);
++                pInstance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMED_START_EVENT);
++            }
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            switch (uiPhase)
++            {
++            case PHASE_UNDERGROUND:
++                if (uiImpaleTimer <= diff)
++                {
++                    switch(uiImpalePhase)
++                    {
++                    case IMPALE_PHASE_TARGET:
++                        if (Unit *target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                        {
++                            if (Creature *pImpaleTarget = DoSummonImpaleTarget(target))
++                                pImpaleTarget->CastSpell(pImpaleTarget, SPELL_IMPALE_SHAKEGROUND, true);
++                            uiImpaleTimer = 3*IN_MILLISECONDS;
++                            uiImpalePhase = IMPALE_PHASE_ATTACK;
++                        }
++                        break;
++                    case IMPALE_PHASE_ATTACK:
++                        if (Creature* pImpaleTarget = Unit::GetCreature(*me, uiImpaleTarget))
++                        {
++                            pImpaleTarget->CastSpell(pImpaleTarget, SPELL_IMPALE_SPIKE, false);
++                            pImpaleTarget->RemoveAurasDueToSpell(SPELL_IMPALE_SHAKEGROUND);
++                        }
++                        uiImpalePhase = IMPALE_PHASE_DMG;
++                        uiImpaleTimer = 1*IN_MILLISECONDS;
++                        break;
++                    case IMPALE_PHASE_DMG:
++                        if (Creature* pImpaleTarget = Unit::GetCreature(*me, uiImpaleTarget))
++                            me->CastSpell(pImpaleTarget, DUNGEON_MODE(SPELL_IMPALE_DMG, SPELL_IMPALE_DMG_H), true);
++                        uiImpalePhase = IMPALE_PHASE_TARGET;
++                        uiImpaleTimer = 9*IN_MILLISECONDS;
++                        break;
++                    }
++                } else uiImpaleTimer -= diff;
++
++                if (!bGuardianSummoned)
++                {
++                    for (uint8 i = 0; i < 2; ++i)
++                    {
++                        if (Creature *Guardian = me->SummonCreature(CREATURE_GUARDIAN,SpawnPointGuardian[i],TEMPSUMMON_CORPSE_DESPAWN,0))
++                        {
++                            Guardian->AddThreat(me->getVictim(), 0.0f);
++                            DoZoneInCombat(Guardian);
++                        }
++                    }
++                    bGuardianSummoned = true;
++                }
++
++                if (!bVenomancerSummoned)
++                {
++                    if (uiVenomancerTimer <= diff)
++                    {
++                        if (uiUndergroundPhase > 1)
++                        {
++                            for (uint8 i = 0; i < 2; ++i)
++                            {
++                                if (Creature *Venomancer = me->SummonCreature(CREATURE_VENOMANCER,SpawnPoint[i],TEMPSUMMON_CORPSE_DESPAWN,0))
++                                {
++                                    Venomancer->AddThreat(me->getVictim(), 0.0f);
++                                    DoZoneInCombat(Venomancer);
++                                }
++                            }
++                            bVenomancerSummoned = true;
++                        }
++                    } else uiVenomancerTimer -= diff;
++                }
++
++                if (!bDatterSummoned)
++                {
++                    if (uiDatterTimer <= diff)
++                    {
++                        if (uiUndergroundPhase > 2)
++                        {
++                            for (uint8 i = 0; i < 2; ++i)
++                            {
++                                if (Creature *Datter = me->SummonCreature(CREATURE_DATTER,SpawnPoint[i],TEMPSUMMON_CORPSE_DESPAWN,0))
++                                {
++                                    Datter->AddThreat(me->getVictim(), 0.0f);
++                                    DoZoneInCombat(Datter);
++                                }
++                            }
++                            bDatterSummoned = true;
++                        }
++                    } else uiDatterTimer -= diff;
++                }
++
++                if (uiUndergroundTimer <= diff)
++                {
++                    me->RemoveAura(SPELL_SUBMERGE);
++                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
++                    uiPhase = PHASE_MELEE;
++                } else uiUndergroundTimer -= diff;
++                break;
++
++            case PHASE_MELEE:
++                if (((uiUndergroundPhase == 0 && HealthBelowPct(75))
++                    || (uiUndergroundPhase == 1 && HealthBelowPct(50))
++                    || (uiUndergroundPhase == 2 && HealthBelowPct(25)))
++                    && !me->hasUnitState(UNIT_STAT_CASTING))
++                {
++                    bGuardianSummoned = false;
++                    bVenomancerSummoned = false;
++                    bDatterSummoned = false;
++
++                    uiUndergroundTimer = 40*IN_MILLISECONDS;
++                    uiVenomancerTimer = 25*IN_MILLISECONDS;
++                    uiDatterTimer = 32*IN_MILLISECONDS;
++
++                    uiImpalePhase = 0;
++                    uiImpaleTimer = 9*IN_MILLISECONDS;
++
++                    DoCast(me, SPELL_SUBMERGE, false);
++                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);
++
++                    uiPhase = PHASE_UNDERGROUND;
++                    ++uiUndergroundPhase;
++                }
++
++                if (bChanneling == true)
++                {
++                    for (uint8 i = 0; i < 8; ++i)
++                    DoCast(me->getVictim(), SPELL_SUMMON_CARRION_BEETLES, true);
++                    bChanneling = false;
++                }
++                else if (uiCarrionBeetlesTimer <= diff)
++                {
++                    bChanneling = true;
++                    DoCastVictim(SPELL_CARRION_BEETLES);
++                    uiCarrionBeetlesTimer = 25*IN_MILLISECONDS;
++                } else uiCarrionBeetlesTimer -= diff;
++
++                if (uiLeechingSwarmTimer <= diff)
++                {
++                    DoCast(me, SPELL_LEECHING_SWARM, true);
++                    uiLeechingSwarmTimer = 19*IN_MILLISECONDS;
++                } else uiLeechingSwarmTimer -= diff;
++
++                if (uiPoundTimer <= diff)
++                {
++                    if (Unit *target = me->getVictim())
++                    {
++                        if (Creature *pImpaleTarget = DoSummonImpaleTarget(target))
++                            me->CastSpell(pImpaleTarget, DUNGEON_MODE(SPELL_POUND, SPELL_POUND_H), false);
++                    }
++                    uiPoundTimer = 16500;
++                } else uiPoundTimer -= diff;
++
++                DoMeleeAttackIfReady();
++                break;
++            }
++        }
++
++        void JustDied(Unit * /*pKiller*/)
++        {
++            DoScriptText(SAY_DEATH, me);
++            lSummons.DespawnAll();
++            if (pInstance)
++                pInstance->SetData(DATA_ANUBARAK_EVENT, DONE);
++        }
++
++        void KilledUnit(Unit *pVictim)
++        {
++            if (pVictim == me)
++                return;
++            DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2,SAY_SLAY_3), me);
++        }
++
++        void JustSummoned(Creature* summon)
++        {
++            lSummons.Summon(summon);
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new boss_anub_arakAI(creature);
++    }
++};
++
++void AddSC_boss_anub_arak()
++{
++    new boss_anub_arak;
++}
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_hadronox.cpp
+@@ -1,200 +1,200 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-/*
+-* Comment: No Waves atm and the doors spells are crazy...
+-*
+-* When your group enters the main room (the one after the bridge), you will notice a group of 3 Nerubians.
+-* When you engage them, 2 more groups like this one spawn behind the first one - it is important to pull the first group back,
+-* so you don't aggro all 3. Hadronox will be under you, fighting Nerubians.
+-*
+-* This is the timed gauntlet - waves of non-elite spiders
+-* will spawn from the 3 doors located a little above the main room, and will then head down to fight Hadronox. After clearing the
+-* main room, it is recommended to just stay in it, kill the occasional non-elites that will attack you instead of the boss, and wait for
+-* Hadronox to make his way to you. When Hadronox enters the main room, she will web the doors, and no more non-elites will spawn.
+-*/
+-
+-#include "ScriptPCH.h"
+-#include "azjol_nerub.h"
+-
+-enum Spells
+-{
+-    SPELL_ACID_CLOUD                              = 53400, // Victim
+-    SPELL_LEECH_POISON                            = 53030, // Victim
+-    SPELL_PIERCE_ARMOR                            = 53418, // Victim
+-    SPELL_WEB_GRAB                                = 57731, // Victim
+-    SPELL_WEB_FRONT_DOORS                         = 53177, // Self
+-    SPELL_WEB_SIDE_DOORS                          = 53185, // Self
+-    H_SPELL_ACID_CLOUD                            = 59419,
+-    H_SPELL_LEECH_POISON                          = 59417,
+-    H_SPELL_WEB_GRAB                              = 59421
+-};
+-
+-class boss_hadronox : public CreatureScript
+-{
+-public:
+-    boss_hadronox() : CreatureScript("boss_hadronox") { }
+-
+-    struct boss_hadronoxAI : public ScriptedAI
+-    {
+-        boss_hadronoxAI(Creature* c) : ScriptedAI(c)
+-        {
+-            pInstance = c->GetInstanceScript();
+-            fMaxDistance = 50.0f;
+-            bFirstTime = true;
+-        }
+-
+-        InstanceScript* pInstance;
+-
+-        uint32 uiAcidTimer;
+-        uint32 uiLeechTimer;
+-        uint32 uiPierceTimer;
+-        uint32 uiGrabTimer;
+-        uint32 uiDoorsTimer;
+-        uint32 uiCheckDistanceTimer;
+-
+-        bool bFirstTime;
+-
+-        float fMaxDistance;
+-
+-        void Reset()
+-        {
+-            me->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 9.0f);
+-            me->SetFloatValue(UNIT_FIELD_COMBATREACH, 9.0f);
+-
+-            uiAcidTimer = urand(10*IN_MILLISECONDS,14*IN_MILLISECONDS);
+-            uiLeechTimer = urand(3*IN_MILLISECONDS,9*IN_MILLISECONDS);
+-            uiPierceTimer = urand(1*IN_MILLISECONDS,3*IN_MILLISECONDS);
+-            uiGrabTimer = urand(15*IN_MILLISECONDS,19*IN_MILLISECONDS);
+-            uiDoorsTimer = urand(20*IN_MILLISECONDS,30*IN_MILLISECONDS);
+-            uiCheckDistanceTimer = 2*IN_MILLISECONDS;
+-
+-            if (pInstance && (pInstance->GetData(DATA_HADRONOX_EVENT) != DONE && !bFirstTime))
+-                pInstance->SetData(DATA_HADRONOX_EVENT, FAIL);
+-
+-            bFirstTime = false;
+-        }
+-
+-        //when Hadronox kills any enemy (that includes a party member) she will regain 10% of her HP if the target had Leech Poison on
+-        void KilledUnit(Unit* Victim)
+-        {
+-            // not sure if this aura check is correct, I think it is though
+-            if (!Victim || !Victim->HasAura(DUNGEON_MODE(SPELL_LEECH_POISON, H_SPELL_LEECH_POISON)) || !me->isAlive())
+-                return;
+-
+-            me->ModifyHealth(int32(me->CountPctFromMaxHealth(10)));
+-        }
+-
+-        void JustDied(Unit* /*Killer*/)
+-        {
+-            if (pInstance)
+-                pInstance->SetData(DATA_HADRONOX_EVENT, DONE);
+-        }
+-
+-        void EnterCombat(Unit* /*who*/)
+-        {
+-            if (pInstance)
+-                pInstance->SetData(DATA_HADRONOX_EVENT, IN_PROGRESS);
+-            me->SetInCombatWithZone();
+-        }
+-
+-        void CheckDistance(float dist, const uint32 uiDiff)
+-        {
+-            if (!me->isInCombat())
+-                return;
+-
+-            float x=0.0f, y=0.0f, z=0.0f;
+-            me->GetRespawnCoord(x,y,z);
+-
+-            if (uiCheckDistanceTimer <= uiDiff)
+-                uiCheckDistanceTimer = 5*IN_MILLISECONDS;
+-            else
+-            {
+-                uiCheckDistanceTimer -= uiDiff;
+-                return;
+-            }
+-            if (me->IsInEvadeMode() || !me->getVictim())
+-                return;
+-            if (me->GetDistance(x,y,z) > dist)
+-                EnterEvadeMode();
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            //Return since we have no target
+-            if (!UpdateVictim()) return;
+-
+-            // Without he comes up through the air to players on the bridge after krikthir if players crossing this bridge!
+-            CheckDistance(fMaxDistance, diff);
+-
+-            if (me->HasAura(SPELL_WEB_FRONT_DOORS) || me->HasAura(SPELL_WEB_SIDE_DOORS))
+-            {
+-                if (IsCombatMovement())
+-                    SetCombatMovement(false);
+-            }
+-            else if (!IsCombatMovement())
+-                SetCombatMovement(true);
+-
+-            if (uiPierceTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_PIERCE_ARMOR);
+-                uiPierceTimer = 8*IN_MILLISECONDS;
+-            } else uiPierceTimer -= diff;
+-
+-            if (uiAcidTimer <= diff)
+-            {
+-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_ACID_CLOUD);
+-
+-                uiAcidTimer = urand(20*IN_MILLISECONDS,30*IN_MILLISECONDS);
+-            } else uiAcidTimer -= diff;
+-
+-            if (uiLeechTimer <= diff)
+-            {
+-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_LEECH_POISON);
+-
+-                uiLeechTimer = urand(11*IN_MILLISECONDS,14*IN_MILLISECONDS);
+-            } else uiLeechTimer -= diff;
+-
+-            if (uiGrabTimer <= diff)
+-            {
+-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0)) // Draws all players (and attacking Mobs) to itself.
+-                    DoCast(pTarget, SPELL_WEB_GRAB);
+-
+-                uiGrabTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
+-            } else uiGrabTimer -= diff;
+-
+-            if (uiDoorsTimer <= diff)
+-            {
+-                uiDoorsTimer = urand(30*IN_MILLISECONDS,60*IN_MILLISECONDS);
+-            } else uiDoorsTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new boss_hadronoxAI(creature);
+-    }
+-};
+-
+-void AddSC_boss_hadronox()
+-{
+-    new boss_hadronox;
+-}
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++* Comment: No Waves atm and the doors spells are crazy...
++*
++* When your group enters the main room (the one after the bridge), you will notice a group of 3 Nerubians.
++* When you engage them, 2 more groups like this one spawn behind the first one - it is important to pull the first group back,
++* so you don't aggro all 3. Hadronox will be under you, fighting Nerubians.
++*
++* This is the timed gauntlet - waves of non-elite spiders
++* will spawn from the 3 doors located a little above the main room, and will then head down to fight Hadronox. After clearing the
++* main room, it is recommended to just stay in it, kill the occasional non-elites that will attack you instead of the boss, and wait for
++* Hadronox to make his way to you. When Hadronox enters the main room, she will web the doors, and no more non-elites will spawn.
++*/
++
++#include "ScriptPCH.h"
++#include "azjol_nerub.h"
++
++enum Spells
++{
++    SPELL_ACID_CLOUD                              = 53400, // Victim
++    SPELL_LEECH_POISON                            = 53030, // Victim
++    SPELL_PIERCE_ARMOR                            = 53418, // Victim
++    SPELL_WEB_GRAB                                = 57731, // Victim
++    SPELL_WEB_FRONT_DOORS                         = 53177, // Self
++    SPELL_WEB_SIDE_DOORS                          = 53185, // Self
++    H_SPELL_ACID_CLOUD                            = 59419,
++    H_SPELL_LEECH_POISON                          = 59417,
++    H_SPELL_WEB_GRAB                              = 59421
++};
++
++class boss_hadronox : public CreatureScript
++{
++public:
++    boss_hadronox() : CreatureScript("boss_hadronox") { }
++
++    struct boss_hadronoxAI : public ScriptedAI
++    {
++        boss_hadronoxAI(Creature* c) : ScriptedAI(c)
++        {
++            pInstance = c->GetInstanceScript();
++            fMaxDistance = 50.0f;
++            bFirstTime = true;
++        }
++
++        InstanceScript* pInstance;
++
++        uint32 uiAcidTimer;
++        uint32 uiLeechTimer;
++        uint32 uiPierceTimer;
++        uint32 uiGrabTimer;
++        uint32 uiDoorsTimer;
++        uint32 uiCheckDistanceTimer;
++
++        bool bFirstTime;
++
++        float fMaxDistance;
++
++        void Reset()
++        {
++            me->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 9.0f);
++            me->SetFloatValue(UNIT_FIELD_COMBATREACH, 9.0f);
++
++            uiAcidTimer = urand(10*IN_MILLISECONDS,14*IN_MILLISECONDS);
++            uiLeechTimer = urand(3*IN_MILLISECONDS,9*IN_MILLISECONDS);
++            uiPierceTimer = urand(1*IN_MILLISECONDS,3*IN_MILLISECONDS);
++            uiGrabTimer = urand(15*IN_MILLISECONDS,19*IN_MILLISECONDS);
++            uiDoorsTimer = urand(20*IN_MILLISECONDS,30*IN_MILLISECONDS);
++            uiCheckDistanceTimer = 2*IN_MILLISECONDS;
++
++            if (pInstance && (pInstance->GetData(DATA_HADRONOX_EVENT) != DONE && !bFirstTime))
++                pInstance->SetData(DATA_HADRONOX_EVENT, FAIL);
++
++            bFirstTime = false;
++        }
++
++        //when Hadronox kills any enemy (that includes a party member) she will regain 10% of her HP if the target had Leech Poison on
++        void KilledUnit(Unit* Victim)
++        {
++            // not sure if this aura check is correct, I think it is though
++            if (!Victim || !Victim->HasAura(DUNGEON_MODE(SPELL_LEECH_POISON, H_SPELL_LEECH_POISON)) || !me->isAlive())
++                return;
++
++            me->ModifyHealth(int32(me->CountPctFromMaxHealth(10)));
++        }
++
++        void JustDied(Unit* /*Killer*/)
++        {
++            if (pInstance)
++                pInstance->SetData(DATA_HADRONOX_EVENT, DONE);
++        }
++
++        void EnterCombat(Unit* /*who*/)
++        {
++            if (pInstance)
++                pInstance->SetData(DATA_HADRONOX_EVENT, IN_PROGRESS);
++            me->SetInCombatWithZone();
++        }
++
++        void CheckDistance(float dist, const uint32 uiDiff)
++        {
++            if (!me->isInCombat())
++                return;
++
++            float x=0.0f, y=0.0f, z=0.0f;
++            me->GetRespawnCoord(x,y,z);
++
++            if (uiCheckDistanceTimer <= uiDiff)
++                uiCheckDistanceTimer = 5*IN_MILLISECONDS;
++            else
++            {
++                uiCheckDistanceTimer -= uiDiff;
++                return;
++            }
++            if (me->IsInEvadeMode() || !me->getVictim())
++                return;
++            if (me->GetDistance(x,y,z) > dist)
++                EnterEvadeMode();
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            //Return since we have no target
++            if (!UpdateVictim()) return;
++
++            // Without he comes up through the air to players on the bridge after krikthir if players crossing this bridge!
++            CheckDistance(fMaxDistance, diff);
++
++            if (me->HasAura(SPELL_WEB_FRONT_DOORS) || me->HasAura(SPELL_WEB_SIDE_DOORS))
++            {
++                if (IsCombatMovement())
++                    SetCombatMovement(false);
++            }
++            else if (!IsCombatMovement())
++                SetCombatMovement(true);
++
++            if (uiPierceTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_PIERCE_ARMOR);
++                uiPierceTimer = 8*IN_MILLISECONDS;
++            } else uiPierceTimer -= diff;
++
++            if (uiAcidTimer <= diff)
++            {
++                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                    DoCast(pTarget, SPELL_ACID_CLOUD);
++
++                uiAcidTimer = urand(20*IN_MILLISECONDS,30*IN_MILLISECONDS);
++            } else uiAcidTimer -= diff;
++
++            if (uiLeechTimer <= diff)
++            {
++                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                    DoCast(pTarget, SPELL_LEECH_POISON);
++
++                uiLeechTimer = urand(11*IN_MILLISECONDS,14*IN_MILLISECONDS);
++            } else uiLeechTimer -= diff;
++
++            if (uiGrabTimer <= diff)
++            {
++                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0)) // Draws all players (and attacking Mobs) to itself.
++                    DoCast(pTarget, SPELL_WEB_GRAB);
++
++                uiGrabTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++            } else uiGrabTimer -= diff;
++
++            if (uiDoorsTimer <= diff)
++            {
++                uiDoorsTimer = urand(30*IN_MILLISECONDS,60*IN_MILLISECONDS);
++            } else uiDoorsTimer -= diff;
++
++            DoMeleeAttackIfReady();
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new boss_hadronoxAI(creature);
++    }
++};
++
++void AddSC_boss_hadronox()
++{
++    new boss_hadronox;
++}
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_krikthir_the_gatewatcher.cpp b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_krikthir_the_gatewatcher.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_krikthir_the_gatewatcher.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/boss_krikthir_the_gatewatcher.cpp
+@@ -1,565 +1,565 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-/*
+- * Comment: Find in the future best timers and the event is not implemented.
+- */
+-
+-#include "ScriptPCH.h"
+-#include "azjol_nerub.h"
+-
+-enum Spells
+-{
+-    SPELL_MIND_FLAY                               = 52586,
+-    H_SPELL_MIND_FLAY                             = 59367,
+-    SPELL_CURSE_OF_FATIGUE                        = 52592,
+-    H_SPELL_CURSE_OF_FATIGUE                      = 59368,
+-    SPELL_FRENZY                                  = 28747, //maybe 53361
+-    SPELL_SUMMON_SKITTERING_SWARMER               = 52438, //AOE Effect 140, maybe 52439
+-    SPELL_SUMMON_SKITTERING_SWARMER_1             = 52439, //Summon 3x 28735
+-    H_SPELL_ACID_SPLASH                           = 59363,
+-    SPELL_ACID_SPLASH                             = 52446,
+-    SPELL_CHARGE                                  = 16979,//maybe is another spell
+-    SPELL_BACKSTAB                                = 52540,
+-    SPELL_SHADOW_BOLT                             = 52534,
+-    H_SPELL_SHADOW_BOLT                           = 59357,
+-    SPELL_SHADOW_NOVA                             = 52535,
+-    H_SPELL_SHADOW_NOVA                           = 59358,
+-    SPELL_STRIKE                                  = 52532,
+-    SPELL_CLEAVE                                  = 49806,
+-    SPELL_ENRAGE                                  = 52470,
+-    SPELL_INFECTED_BITE                           = 52469,
+-    H_SPELL_INFECTED_BITE                         = 59364,
+-    SPELL_WEB_WRAP                                = 52086,//the spell is not working properly
+-    SPELL_BLINDING_WEBS                           = 52524,
+-    H_SPELL_BLINDING_WEBS                         = 59365,
+-    SPELL_POSION_SPRAY                            = 52493,
+-    H_SPELL_POSION_SPRAY                          = 59366
+-};
+-
+-enum Mobs
+-{
+-    MOB_SKITTERING_SWARMER                        = 28735,
+-    MOB_SKITTERING_SWARMER_CONTROLLER             = 32593,
+-    MOB_SKITTERING_INFECTIOR                      = 28736
+-};
+-
+-enum Yells
+-{
+-    SAY_AGGRO                                     = -1601011,
+-    SAY_SLAY_1                                    = -1601012,
+-    SAY_SLAY_2                                    = -1601013,
+-    SAY_DEATH                                     = -1601014,
+-    //Not in db
+-    SAY_SEND_GROUP_1                              = -1601020,
+-    SAY_SEND_GROUP_2                              = -1601021,
+-    SAY_SEND_GROUP_3                              = -1601022,
+-    SAY_SWARM_1                                   = -1601015,
+-    SAY_SWARM_2                                   = -1601016,
+-    SAY_PREFIGHT_1                                = -1601017,
+-    SAY_PREFIGHT_2                                = -1601018,
+-    SAY_PREFIGHT_3                                = -1601019
+-};
+-
+-enum Misc
+-{
+-    ACHIEV_WATH_HIM_DIE                           = 1296
+-};
+-
+-const Position SpawnPoint[] =
+-{
+-    { 566.164f, 682.087f, 769.079f, 2.21657f  },
+-    { 529.042f, 706.941f, 777.298f, 1.0821f   },
+-    { 489.975f, 671.239f, 772.131f, 0.261799f },
+-    { 488.556f, 692.95f,  771.764f, 4.88692f  },
+-    { 553.34f,  640.387f, 777.419f, 1.20428f  },
+-    { 517.486f, 706.398f, 777.335f, 5.35816f  },
+-    { 504.01f,  637.693f, 777.479f, 0.506145f },
+-    { 552.625f, 706.408f, 777.177f, 3.4383f   }
+-};
+-
+-class boss_krik_thir : public CreatureScript
+-{
+-public:
+-    boss_krik_thir() : CreatureScript("boss_krik_thir") { }
+-
+-    struct boss_krik_thirAI : public ScriptedAI
+-    {
+-        boss_krik_thirAI(Creature *c) : ScriptedAI(c)
+-        {
+-            pInstance = c->GetInstanceScript();
+-        }
+-
+-        InstanceScript* pInstance;
+-
+-        uint32 uiMindFlayTimer;
+-        uint32 uiCurseFatigueTimer;
+-        uint32 uiSummonTimer;
+-
+-        void Reset()
+-        {
+-            uiMindFlayTimer = 15*IN_MILLISECONDS;
+-            uiCurseFatigueTimer = 12*IN_MILLISECONDS;
+-
+-            if (pInstance)
+-                pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, NOT_STARTED);
+-        }
+-
+-        void EnterCombat(Unit* /*who*/)
+-        {
+-            DoScriptText(SAY_AGGRO, me);
+-            Summon();
+-            uiSummonTimer = 15*IN_MILLISECONDS;
+-
+-            if (pInstance)
+-                pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, IN_PROGRESS);
+-        }
+-
+-        void Summon()
+-        {
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[0],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[0],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[1],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[1],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[2],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[2],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[3],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[3],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_INFECTIOR,SpawnPoint[4],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[4],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_INFECTIOR,SpawnPoint[5],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[5],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_INFECTIOR,SpawnPoint[6],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[6],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[7],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[7],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiSummonTimer <= diff)
+-            {
+-                Summon();
+-                uiSummonTimer = 15*IN_MILLISECONDS;
+-            } else uiSummonTimer -= diff;
+-
+-            if (uiMindFlayTimer <= diff)
+-            {
+-                    DoCast(me->getVictim(), SPELL_MIND_FLAY);
+-                    uiMindFlayTimer = 15*IN_MILLISECONDS;
+-                } else uiMindFlayTimer -= diff;
+-
+-            if (uiCurseFatigueTimer <= diff)
+-            {
+-                //WowWiki say "Curse of Fatigue-Kirk'thir will cast Curse of Fatigue on 2-3 targets periodically."
+-                Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
+-                Unit *pTarget_1 = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true);
+-
+-                DoCast(pTarget, SPELL_CURSE_OF_FATIGUE);
+-                DoCast(pTarget_1, SPELL_CURSE_OF_FATIGUE);
+-
+-                uiCurseFatigueTimer = 10*IN_MILLISECONDS;
+-            } else uiCurseFatigueTimer -= diff;
+-
+-            if (!me->HasAura(SPELL_FRENZY) && HealthBelowPct(10))
+-                DoCast(me, SPELL_FRENZY, true);
+-
+-            DoMeleeAttackIfReady();
+-        }
+-        void JustDied(Unit* /*killer*/)
+-        {
+-            DoScriptText(SAY_DEATH, me);
+-
+-            if (!pInstance)
+-                return;
+-
+-            pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, DONE);
+-            //Achievement: Watch him die
+-            Creature *pAdd = Unit::GetCreature(*me, pInstance->GetData64(DATA_WATCHER_GASHRA));
+-            if (!pAdd || !pAdd->isAlive())
+-                return;
+-
+-            pAdd = Unit::GetCreature(*me, pInstance->GetData64(DATA_WATCHER_SILTHIK));
+-            if (!pAdd || !pAdd->isAlive())
+-                return;
+-
+-            pAdd = Unit::GetCreature(*me, pInstance->GetData64(DATA_WATCHER_NARJIL));
+-            if (!pAdd || !pAdd->isAlive())
+-                return;
+-
+-            pInstance->DoCompleteAchievement(ACHIEV_WATH_HIM_DIE);
+-        }
+-
+-        void KilledUnit(Unit * victim)
+-        {
+-            if (victim == me)
+-                return;
+-
+-            DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
+-        }
+-
+-        void JustSummoned(Creature* summoned)
+-        {
+-            summoned->GetMotionMaster()->MovePoint(0,me->GetPositionX(),me->GetPositionY(),me->GetPositionZ());
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new boss_krik_thirAI(creature);
+-    }
+-};
+-
+-class npc_skittering_infector : public CreatureScript
+-{
+-public:
+-    npc_skittering_infector() : CreatureScript("npc_skittering_infector") { }
+-
+-    struct npc_skittering_infectorAI : public ScriptedAI
+-    {
+-        npc_skittering_infectorAI(Creature *c) : ScriptedAI(c) {}
+-
+-        void JustDied(Unit* /*killer*/)
+-        {
+-            //The spell is not working propperly
+-            DoCast(me->getVictim(),SPELL_ACID_SPLASH, true);
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_skittering_infectorAI(creature);
+-    }
+-};
+-
+-class npc_anub_ar_skirmisher : public CreatureScript
+-{
+-public:
+-    npc_anub_ar_skirmisher() : CreatureScript("npc_anub_ar_skirmisher") { }
+-
+-    struct npc_anub_ar_skirmisherAI : public ScriptedAI
+-    {
+-        npc_anub_ar_skirmisherAI(Creature *c) : ScriptedAI(c) {}
+-
+-        uint32 uiChargeTimer;
+-        uint32 uiBackstabTimer;
+-
+-        void Reset()
+-        {
+-            uiChargeTimer   = 11*IN_MILLISECONDS;
+-            uiBackstabTimer = 7*IN_MILLISECONDS;
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiChargeTimer <= diff)
+-            {
+-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                {
+-                    DoResetThreat();
+-                    me->AddThreat(pTarget,1.0f);
+-                    DoCast(pTarget, SPELL_CHARGE, true);
+-                }
+-                uiChargeTimer = 15*IN_MILLISECONDS;
+-            } else uiChargeTimer -= diff;
+-
+-            if (uiBackstabTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_BACKSTAB);
+-                uiBackstabTimer = 12*IN_MILLISECONDS;
+-            } else uiBackstabTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_anub_ar_skirmisherAI(creature);
+-    }
+-};
+-
+-class npc_anub_ar_shadowcaster : public CreatureScript
+-{
+-public:
+-    npc_anub_ar_shadowcaster() : CreatureScript("npc_anub_ar_shadowcaster") { }
+-
+-    struct npc_anub_ar_shadowcasterAI : public ScriptedAI
+-    {
+-        npc_anub_ar_shadowcasterAI(Creature *c) : ScriptedAI(c) {}
+-
+-        uint32 uiShadowBoltTimer;
+-        uint32 uiShadowNovaTimer;
+-
+-        void Reset()
+-        {
+-            uiShadowBoltTimer = 6*IN_MILLISECONDS;
+-            uiShadowNovaTimer = 15*IN_MILLISECONDS;
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiShadowBoltTimer <= diff)
+-            {
+-                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                     DoCast(pTarget, SPELL_SHADOW_BOLT, true);
+-                uiShadowBoltTimer = 15*IN_MILLISECONDS;
+-            } else uiShadowBoltTimer -= diff;
+-
+-            if (uiShadowNovaTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_SHADOW_NOVA, true);
+-                uiShadowNovaTimer = 17*IN_MILLISECONDS;
+-            } else uiShadowNovaTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_anub_ar_shadowcasterAI(creature);
+-    }
+-};
+-
+-class npc_anub_ar_warrior : public CreatureScript
+-{
+-public:
+-    npc_anub_ar_warrior() : CreatureScript("npc_anub_ar_warrior") { }
+-
+-    struct npc_anub_ar_warriorAI : public ScriptedAI
+-    {
+-        npc_anub_ar_warriorAI(Creature *c) : ScriptedAI(c){}
+-
+-        uint32 uiCleaveTimer;
+-        uint32 uiStrikeTimer;
+-
+-        void Reset()
+-        {
+-            uiCleaveTimer = 11*IN_MILLISECONDS;
+-            uiStrikeTimer = 6*IN_MILLISECONDS;
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiStrikeTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_STRIKE, true);
+-                uiStrikeTimer = 15*IN_MILLISECONDS;
+-            } else uiStrikeTimer -= diff;
+-
+-            if (uiCleaveTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_CLEAVE, true);
+-                uiCleaveTimer = 17*IN_MILLISECONDS;
+-            } else uiCleaveTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_anub_ar_warriorAI(creature);
+-    }
+-};
+-
+-class npc_watcher_gashra : public CreatureScript
+-{
+-public:
+-    npc_watcher_gashra() : CreatureScript("npc_watcher_gashra") { }
+-
+-    struct npc_watcher_gashraAI : public ScriptedAI
+-    {
+-        npc_watcher_gashraAI(Creature *c) : ScriptedAI(c) {}
+-
+-        uint32 uiWebWrapTimer;
+-        uint32 uiInfectedBiteTimer;
+-
+-        void Reset()
+-        {
+-            uiWebWrapTimer      = 11*IN_MILLISECONDS;
+-            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
+-        }
+-
+-        void EnterCombat(Unit* /*who*/)
+-        {
+-            DoCast(me, SPELL_ENRAGE, true);
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiWebWrapTimer <= diff)
+-            {
+-                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_WEB_WRAP, true);
+-                uiWebWrapTimer = 17*IN_MILLISECONDS;
+-            } else uiWebWrapTimer -= diff;
+-
+-            if (uiInfectedBiteTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
+-                uiInfectedBiteTimer = 15*IN_MILLISECONDS;
+-            } else uiInfectedBiteTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_watcher_gashraAI(creature);
+-    }
+-};
+-
+-class npc_watcher_narjil : public CreatureScript
+-{
+-public:
+-    npc_watcher_narjil() : CreatureScript("npc_watcher_narjil") { }
+-
+-    struct npc_watcher_narjilAI : public ScriptedAI
+-    {
+-        npc_watcher_narjilAI(Creature *c) : ScriptedAI(c) {}
+-
+-        uint32 uiWebWrapTimer;
+-        uint32 uiInfectedBiteTimer;
+-        uint32 uiBindingWebsTimer;
+-
+-        void Reset()
+-        {
+-            uiWebWrapTimer      = 11*IN_MILLISECONDS;
+-            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
+-            uiBindingWebsTimer = 17*IN_MILLISECONDS;
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiWebWrapTimer <= diff)
+-            {
+-                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_WEB_WRAP, true);
+-                uiWebWrapTimer = 15*IN_MILLISECONDS;
+-            } else uiWebWrapTimer -= diff;
+-
+-            if (uiInfectedBiteTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
+-                uiInfectedBiteTimer = 11*IN_MILLISECONDS;
+-            } else uiInfectedBiteTimer -= diff;
+-
+-            if (uiBindingWebsTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_BLINDING_WEBS, true);
+-                uiBindingWebsTimer = 17*IN_MILLISECONDS;
+-            } else uiBindingWebsTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_watcher_narjilAI(creature);
+-    }
+-};
+-
+-class npc_watcher_silthik : public CreatureScript
+-{
+-public:
+-    npc_watcher_silthik() : CreatureScript("npc_watcher_silthik") { }
+-
+-    struct npc_watcher_silthikAI : public ScriptedAI
+-    {
+-        npc_watcher_silthikAI(Creature *c) : ScriptedAI(c) {}
+-
+-        uint32 uiWebWrapTimer;
+-        uint32 uiInfectedBiteTimer;
+-        uint32 uiPoisonSprayTimer;
+-
+-        void Reset()
+-        {
+-            uiWebWrapTimer      = 11*IN_MILLISECONDS;
+-            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
+-            uiPoisonSprayTimer  = 15*IN_MILLISECONDS;
+-        }
+-
+-        void UpdateAI(const uint32 diff)
+-        {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (uiWebWrapTimer <= diff)
+-            {
+-                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_WEB_WRAP, true);
+-
+-                uiWebWrapTimer = 15*IN_MILLISECONDS;
+-            } else uiWebWrapTimer -= diff;
+-
+-            if (uiInfectedBiteTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
+-                uiInfectedBiteTimer = 15*IN_MILLISECONDS;
+-            } else uiInfectedBiteTimer -= diff;
+-
+-            if (uiPoisonSprayTimer <= diff)
+-            {
+-                DoCast(me->getVictim(), SPELL_POSION_SPRAY, true);
+-                uiPoisonSprayTimer = 17*IN_MILLISECONDS;
+-            } else uiPoisonSprayTimer -= diff;
+-
+-            DoMeleeAttackIfReady();
+-
+-        }
+-    };
+-
+-    CreatureAI *GetAI(Creature *creature) const
+-    {
+-        return new npc_watcher_silthikAI(creature);
+-    }
+-};
+-
+-void AddSC_boss_krik_thir()
+-{
+-    new boss_krik_thir;
+-    new npc_skittering_infector;
+-    new npc_anub_ar_skirmisher;
+-    new npc_anub_ar_shadowcaster;
+-    new npc_watcher_gashra;
+-    new npc_anub_ar_warrior;
+-    new npc_watcher_silthik;
+-    new npc_watcher_narjil;
+-}
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * Comment: Find in the future best timers and the event is not implemented.
++ */
++
++#include "ScriptPCH.h"
++#include "azjol_nerub.h"
++
++enum Spells
++{
++    SPELL_MIND_FLAY                               = 52586,
++    H_SPELL_MIND_FLAY                             = 59367,
++    SPELL_CURSE_OF_FATIGUE                        = 52592,
++    H_SPELL_CURSE_OF_FATIGUE                      = 59368,
++    SPELL_FRENZY                                  = 28747, //maybe 53361
++    SPELL_SUMMON_SKITTERING_SWARMER               = 52438, //AOE Effect 140, maybe 52439
++    SPELL_SUMMON_SKITTERING_SWARMER_1             = 52439, //Summon 3x 28735
++    H_SPELL_ACID_SPLASH                           = 59363,
++    SPELL_ACID_SPLASH                             = 52446,
++    SPELL_CHARGE                                  = 16979,//maybe is another spell
++    SPELL_BACKSTAB                                = 52540,
++    SPELL_SHADOW_BOLT                             = 52534,
++    H_SPELL_SHADOW_BOLT                           = 59357,
++    SPELL_SHADOW_NOVA                             = 52535,
++    H_SPELL_SHADOW_NOVA                           = 59358,
++    SPELL_STRIKE                                  = 52532,
++    SPELL_CLEAVE                                  = 49806,
++    SPELL_ENRAGE                                  = 52470,
++    SPELL_INFECTED_BITE                           = 52469,
++    H_SPELL_INFECTED_BITE                         = 59364,
++    SPELL_WEB_WRAP                                = 52086,//the spell is not working properly
++    SPELL_BLINDING_WEBS                           = 52524,
++    H_SPELL_BLINDING_WEBS                         = 59365,
++    SPELL_POSION_SPRAY                            = 52493,
++    H_SPELL_POSION_SPRAY                          = 59366
++};
++
++enum Mobs
++{
++    MOB_SKITTERING_SWARMER                        = 28735,
++    MOB_SKITTERING_SWARMER_CONTROLLER             = 32593,
++    MOB_SKITTERING_INFECTIOR                      = 28736
++};
++
++enum Yells
++{
++    SAY_AGGRO                                     = -1601011,
++    SAY_SLAY_1                                    = -1601012,
++    SAY_SLAY_2                                    = -1601013,
++    SAY_DEATH                                     = -1601014,
++    //Not in db
++    SAY_SEND_GROUP_1                              = -1601020,
++    SAY_SEND_GROUP_2                              = -1601021,
++    SAY_SEND_GROUP_3                              = -1601022,
++    SAY_SWARM_1                                   = -1601015,
++    SAY_SWARM_2                                   = -1601016,
++    SAY_PREFIGHT_1                                = -1601017,
++    SAY_PREFIGHT_2                                = -1601018,
++    SAY_PREFIGHT_3                                = -1601019
++};
++
++enum Misc
++{
++    ACHIEV_WATH_HIM_DIE                           = 1296
++};
++
++const Position SpawnPoint[] =
++{
++    { 566.164f, 682.087f, 769.079f, 2.21657f  },
++    { 529.042f, 706.941f, 777.298f, 1.0821f   },
++    { 489.975f, 671.239f, 772.131f, 0.261799f },
++    { 488.556f, 692.95f,  771.764f, 4.88692f  },
++    { 553.34f,  640.387f, 777.419f, 1.20428f  },
++    { 517.486f, 706.398f, 777.335f, 5.35816f  },
++    { 504.01f,  637.693f, 777.479f, 0.506145f },
++    { 552.625f, 706.408f, 777.177f, 3.4383f   }
++};
++
++class boss_krik_thir : public CreatureScript
++{
++public:
++    boss_krik_thir() : CreatureScript("boss_krik_thir") { }
++
++    struct boss_krik_thirAI : public ScriptedAI
++    {
++        boss_krik_thirAI(Creature *c) : ScriptedAI(c)
++        {
++            pInstance = c->GetInstanceScript();
++        }
++
++        InstanceScript* pInstance;
++
++        uint32 uiMindFlayTimer;
++        uint32 uiCurseFatigueTimer;
++        uint32 uiSummonTimer;
++
++        void Reset()
++        {
++            uiMindFlayTimer = 15*IN_MILLISECONDS;
++            uiCurseFatigueTimer = 12*IN_MILLISECONDS;
++
++            if (pInstance)
++                pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, NOT_STARTED);
++        }
++
++        void EnterCombat(Unit* /*who*/)
++        {
++            DoScriptText(SAY_AGGRO, me);
++            Summon();
++            uiSummonTimer = 15*IN_MILLISECONDS;
++
++            if (pInstance)
++                pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, IN_PROGRESS);
++        }
++
++        void Summon()
++        {
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[0],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[0],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[1],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[1],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[2],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[2],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[3],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[3],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_INFECTIOR,SpawnPoint[4],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[4],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_INFECTIOR,SpawnPoint[5],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[5],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_INFECTIOR,SpawnPoint[6],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[6],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[7],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++                me->SummonCreature(MOB_SKITTERING_SWARMER,SpawnPoint[7],TEMPSUMMON_TIMED_DESPAWN,25*IN_MILLISECONDS);
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiSummonTimer <= diff)
++            {
++                Summon();
++                uiSummonTimer = 15*IN_MILLISECONDS;
++            } else uiSummonTimer -= diff;
++
++            if (uiMindFlayTimer <= diff)
++            {
++                    DoCast(me->getVictim(), SPELL_MIND_FLAY);
++                    uiMindFlayTimer = 15*IN_MILLISECONDS;
++                } else uiMindFlayTimer -= diff;
++
++            if (uiCurseFatigueTimer <= diff)
++            {
++                //WowWiki say "Curse of Fatigue-Kirk'thir will cast Curse of Fatigue on 2-3 targets periodically."
++                Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
++                Unit *pTarget_1 = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true);
++
++                DoCast(pTarget, SPELL_CURSE_OF_FATIGUE);
++                DoCast(pTarget_1, SPELL_CURSE_OF_FATIGUE);
++
++                uiCurseFatigueTimer = 10*IN_MILLISECONDS;
++            } else uiCurseFatigueTimer -= diff;
++
++            if (!me->HasAura(SPELL_FRENZY) && HealthBelowPct(10))
++                DoCast(me, SPELL_FRENZY, true);
++
++            DoMeleeAttackIfReady();
++        }
++        void JustDied(Unit* /*killer*/)
++        {
++            DoScriptText(SAY_DEATH, me);
++
++            if (!pInstance)
++                return;
++
++            pInstance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, DONE);
++            //Achievement: Watch him die
++            Creature *pAdd = Unit::GetCreature(*me, pInstance->GetData64(DATA_WATCHER_GASHRA));
++            if (!pAdd || !pAdd->isAlive())
++                return;
++
++            pAdd = Unit::GetCreature(*me, pInstance->GetData64(DATA_WATCHER_SILTHIK));
++            if (!pAdd || !pAdd->isAlive())
++                return;
++
++            pAdd = Unit::GetCreature(*me, pInstance->GetData64(DATA_WATCHER_NARJIL));
++            if (!pAdd || !pAdd->isAlive())
++                return;
++
++            pInstance->DoCompleteAchievement(ACHIEV_WATH_HIM_DIE);
++        }
++
++        void KilledUnit(Unit * victim)
++        {
++            if (victim == me)
++                return;
++
++            DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
++        }
++
++        void JustSummoned(Creature* summoned)
++        {
++            summoned->GetMotionMaster()->MovePoint(0,me->GetPositionX(),me->GetPositionY(),me->GetPositionZ());
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new boss_krik_thirAI(creature);
++    }
++};
++
++class npc_skittering_infector : public CreatureScript
++{
++public:
++    npc_skittering_infector() : CreatureScript("npc_skittering_infector") { }
++
++    struct npc_skittering_infectorAI : public ScriptedAI
++    {
++        npc_skittering_infectorAI(Creature *c) : ScriptedAI(c) {}
++
++        void JustDied(Unit* /*killer*/)
++        {
++            //The spell is not working propperly
++            DoCast(me->getVictim(),SPELL_ACID_SPLASH, true);
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_skittering_infectorAI(creature);
++    }
++};
++
++class npc_anub_ar_skirmisher : public CreatureScript
++{
++public:
++    npc_anub_ar_skirmisher() : CreatureScript("npc_anub_ar_skirmisher") { }
++
++    struct npc_anub_ar_skirmisherAI : public ScriptedAI
++    {
++        npc_anub_ar_skirmisherAI(Creature *c) : ScriptedAI(c) {}
++
++        uint32 uiChargeTimer;
++        uint32 uiBackstabTimer;
++
++        void Reset()
++        {
++            uiChargeTimer   = 11*IN_MILLISECONDS;
++            uiBackstabTimer = 7*IN_MILLISECONDS;
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiChargeTimer <= diff)
++            {
++                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                {
++                    DoResetThreat();
++                    me->AddThreat(pTarget,1.0f);
++                    DoCast(pTarget, SPELL_CHARGE, true);
++                }
++                uiChargeTimer = 15*IN_MILLISECONDS;
++            } else uiChargeTimer -= diff;
++
++            if (uiBackstabTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_BACKSTAB);
++                uiBackstabTimer = 12*IN_MILLISECONDS;
++            } else uiBackstabTimer -= diff;
++
++            DoMeleeAttackIfReady();
++
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_anub_ar_skirmisherAI(creature);
++    }
++};
++
++class npc_anub_ar_shadowcaster : public CreatureScript
++{
++public:
++    npc_anub_ar_shadowcaster() : CreatureScript("npc_anub_ar_shadowcaster") { }
++
++    struct npc_anub_ar_shadowcasterAI : public ScriptedAI
++    {
++        npc_anub_ar_shadowcasterAI(Creature *c) : ScriptedAI(c) {}
++
++        uint32 uiShadowBoltTimer;
++        uint32 uiShadowNovaTimer;
++
++        void Reset()
++        {
++            uiShadowBoltTimer = 6*IN_MILLISECONDS;
++            uiShadowNovaTimer = 15*IN_MILLISECONDS;
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiShadowBoltTimer <= diff)
++            {
++                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                     DoCast(pTarget, SPELL_SHADOW_BOLT, true);
++                uiShadowBoltTimer = 15*IN_MILLISECONDS;
++            } else uiShadowBoltTimer -= diff;
++
++            if (uiShadowNovaTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_SHADOW_NOVA, true);
++                uiShadowNovaTimer = 17*IN_MILLISECONDS;
++            } else uiShadowNovaTimer -= diff;
++
++            DoMeleeAttackIfReady();
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_anub_ar_shadowcasterAI(creature);
++    }
++};
++
++class npc_anub_ar_warrior : public CreatureScript
++{
++public:
++    npc_anub_ar_warrior() : CreatureScript("npc_anub_ar_warrior") { }
++
++    struct npc_anub_ar_warriorAI : public ScriptedAI
++    {
++        npc_anub_ar_warriorAI(Creature *c) : ScriptedAI(c){}
++
++        uint32 uiCleaveTimer;
++        uint32 uiStrikeTimer;
++
++        void Reset()
++        {
++            uiCleaveTimer = 11*IN_MILLISECONDS;
++            uiStrikeTimer = 6*IN_MILLISECONDS;
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiStrikeTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_STRIKE, true);
++                uiStrikeTimer = 15*IN_MILLISECONDS;
++            } else uiStrikeTimer -= diff;
++
++            if (uiCleaveTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_CLEAVE, true);
++                uiCleaveTimer = 17*IN_MILLISECONDS;
++            } else uiCleaveTimer -= diff;
++
++            DoMeleeAttackIfReady();
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_anub_ar_warriorAI(creature);
++    }
++};
++
++class npc_watcher_gashra : public CreatureScript
++{
++public:
++    npc_watcher_gashra() : CreatureScript("npc_watcher_gashra") { }
++
++    struct npc_watcher_gashraAI : public ScriptedAI
++    {
++        npc_watcher_gashraAI(Creature *c) : ScriptedAI(c) {}
++
++        uint32 uiWebWrapTimer;
++        uint32 uiInfectedBiteTimer;
++
++        void Reset()
++        {
++            uiWebWrapTimer      = 11*IN_MILLISECONDS;
++            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
++        }
++
++        void EnterCombat(Unit* /*who*/)
++        {
++            DoCast(me, SPELL_ENRAGE, true);
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiWebWrapTimer <= diff)
++            {
++                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                    DoCast(pTarget, SPELL_WEB_WRAP, true);
++                uiWebWrapTimer = 17*IN_MILLISECONDS;
++            } else uiWebWrapTimer -= diff;
++
++            if (uiInfectedBiteTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
++                uiInfectedBiteTimer = 15*IN_MILLISECONDS;
++            } else uiInfectedBiteTimer -= diff;
++
++            DoMeleeAttackIfReady();
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_watcher_gashraAI(creature);
++    }
++};
++
++class npc_watcher_narjil : public CreatureScript
++{
++public:
++    npc_watcher_narjil() : CreatureScript("npc_watcher_narjil") { }
++
++    struct npc_watcher_narjilAI : public ScriptedAI
++    {
++        npc_watcher_narjilAI(Creature *c) : ScriptedAI(c) {}
++
++        uint32 uiWebWrapTimer;
++        uint32 uiInfectedBiteTimer;
++        uint32 uiBindingWebsTimer;
++
++        void Reset()
++        {
++            uiWebWrapTimer      = 11*IN_MILLISECONDS;
++            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
++            uiBindingWebsTimer = 17*IN_MILLISECONDS;
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiWebWrapTimer <= diff)
++            {
++                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                    DoCast(pTarget, SPELL_WEB_WRAP, true);
++                uiWebWrapTimer = 15*IN_MILLISECONDS;
++            } else uiWebWrapTimer -= diff;
++
++            if (uiInfectedBiteTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
++                uiInfectedBiteTimer = 11*IN_MILLISECONDS;
++            } else uiInfectedBiteTimer -= diff;
++
++            if (uiBindingWebsTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_BLINDING_WEBS, true);
++                uiBindingWebsTimer = 17*IN_MILLISECONDS;
++            } else uiBindingWebsTimer -= diff;
++
++            DoMeleeAttackIfReady();
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_watcher_narjilAI(creature);
++    }
++};
++
++class npc_watcher_silthik : public CreatureScript
++{
++public:
++    npc_watcher_silthik() : CreatureScript("npc_watcher_silthik") { }
++
++    struct npc_watcher_silthikAI : public ScriptedAI
++    {
++        npc_watcher_silthikAI(Creature *c) : ScriptedAI(c) {}
++
++        uint32 uiWebWrapTimer;
++        uint32 uiInfectedBiteTimer;
++        uint32 uiPoisonSprayTimer;
++
++        void Reset()
++        {
++            uiWebWrapTimer      = 11*IN_MILLISECONDS;
++            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
++            uiPoisonSprayTimer  = 15*IN_MILLISECONDS;
++        }
++
++        void UpdateAI(const uint32 diff)
++        {
++            if (!UpdateVictim())
++                return;
++
++            if (uiWebWrapTimer <= diff)
++            {
++                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                    DoCast(pTarget, SPELL_WEB_WRAP, true);
++
++                uiWebWrapTimer = 15*IN_MILLISECONDS;
++            } else uiWebWrapTimer -= diff;
++
++            if (uiInfectedBiteTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
++                uiInfectedBiteTimer = 15*IN_MILLISECONDS;
++            } else uiInfectedBiteTimer -= diff;
++
++            if (uiPoisonSprayTimer <= diff)
++            {
++                DoCast(me->getVictim(), SPELL_POSION_SPRAY, true);
++                uiPoisonSprayTimer = 17*IN_MILLISECONDS;
++            } else uiPoisonSprayTimer -= diff;
++
++            DoMeleeAttackIfReady();
++
++        }
++    };
++
++    CreatureAI *GetAI(Creature *creature) const
++    {
++        return new npc_watcher_silthikAI(creature);
++    }
++};
++
++void AddSC_boss_krik_thir()
++{
++    new boss_krik_thir;
++    new npc_skittering_infector;
++    new npc_anub_ar_skirmisher;
++    new npc_anub_ar_shadowcaster;
++    new npc_watcher_gashra;
++    new npc_anub_ar_warrior;
++    new npc_watcher_silthik;
++    new npc_watcher_narjil;
++}
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/instance_azjol_nerub.cpp b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/instance_azjol_nerub.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/instance_azjol_nerub.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/AzjolNerub/instance_azjol_nerub.cpp
+@@ -1,216 +1,216 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License as published by the
+- * Free Software Foundation; either version 2 of the License, or (at your
+- * option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-#include "ScriptPCH.h"
+-#include "azjol_nerub.h"
+-
+-#define MAX_ENCOUNTER     3
+-
+-/* Azjol Nerub encounters:
+-0 - Krik'thir the Gatewatcher
+-1 - Hadronox
+-2 - Anub'arak
+-*/
+-
+-class instance_azjol_nerub : public InstanceMapScript
+-{
+-public:
+-    instance_azjol_nerub() : InstanceMapScript("instance_azjol_nerub", 601) { }
+-
+-    struct instance_azjol_nerub_InstanceScript : public InstanceScript
+-    {
+-        instance_azjol_nerub_InstanceScript(Map* pMap) : InstanceScript(pMap) {Initialize();};
+-
+-        uint64 uiKrikthir;
+-        uint64 uiHadronox;
+-        uint64 uiAnubarak;
+-        uint64 uiWatcherGashra;
+-        uint64 uiWatcherSilthik;
+-        uint64 uiWatcherNarjil;
+-        uint64 uiAnubarakDoor[3];
+-
+-        uint64 uiKrikthirDoor;
+-
+-        uint32 auiEncounter[MAX_ENCOUNTER];
+-
+-       void Initialize()
+-       {
+-            memset(&auiEncounter, 0, sizeof(auiEncounter));
+-            memset(&uiAnubarakDoor, 0, sizeof(uiAnubarakDoor));
+-
+-            uiKrikthir = 0;
+-            uiHadronox = 0;
+-            uiAnubarak = 0;
+-            uiWatcherGashra = 0;
+-            uiWatcherSilthik = 0;
+-            uiWatcherNarjil = 0;
+-            uiKrikthirDoor = 0;
+-        }
+-
+-        bool IsEncounterInProgress() const
+-        {
+-            for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+-                if (auiEncounter[i] == IN_PROGRESS) return true;
+-
+-            return false;
+-        }
+-
+-        void OnCreatureCreate(Creature* pCreature, bool /*add*/)
+-        {
+-            switch(pCreature->GetEntry())
+-            {
+-                case 28684:    uiKrikthir = pCreature->GetGUID();        break;
+-                case 28921:    uiHadronox = pCreature->GetGUID();        break;
+-                case 29120:    uiAnubarak = pCreature->GetGUID();        break;
+-                case 28730:    uiWatcherGashra = pCreature->GetGUID();   break;
+-                case 28731:    uiWatcherSilthik = pCreature->GetGUID();  break;
+-                case 28729:    uiWatcherNarjil = pCreature->GetGUID();   break;
+-            }
+-        }
+-
+-        void OnGameObjectCreate(GameObject* pGo, bool /*add*/)
+-        {
+-            switch (pGo->GetEntry())
+-            {
+-                case 192395:
+-                    uiKrikthirDoor = pGo->GetGUID();
+-                    if (auiEncounter[0] == DONE)
+-                        HandleGameObject(NULL,true,pGo);
+-                    break;
+-                case 192396:
+-                    uiAnubarakDoor[0] = pGo->GetGUID();
+-                    break;
+-                case 192397:
+-                    uiAnubarakDoor[1] = pGo->GetGUID();
+-                    break;
+-                case 192398:
+-                    uiAnubarakDoor[2] = pGo->GetGUID();
+-                    break;
+-            }
+-        }
+-
+-
+-        uint64 GetData64(uint32 identifier)
+-        {
+-            switch(identifier)
+-            {
+-                case DATA_KRIKTHIR_THE_GATEWATCHER:     return uiKrikthir;
+-                case DATA_HADRONOX:                     return uiHadronox;
+-                case DATA_ANUBARAK:                     return uiAnubarak;
+-                case DATA_WATCHER_GASHRA:               return uiWatcherGashra;
+-                case DATA_WATCHER_SILTHIK:              return uiWatcherSilthik;
+-                case DATA_WATCHER_NARJIL:               return uiWatcherNarjil;
+-            }
+-
+-            return 0;
+-        }
+-
+-        void SetData(uint32 type, uint32 data)
+-        {
+-            switch(type)
+-            {
+-            case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:
+-                auiEncounter[0] = data;
+-                if (data == DONE)
+-                    HandleGameObject(uiKrikthirDoor,true);
+-                break;
+-            case DATA_HADRONOX_EVENT:
+-                auiEncounter[1] = data;
+-                break;
+-            case DATA_ANUBARAK_EVENT:
+-                auiEncounter[2] = data;
+-                if (data == IN_PROGRESS)
+-                    for (uint8 i = 0; i < 3; ++i)
+-                        HandleGameObject(uiAnubarakDoor[i], false);
+-                else if (data == NOT_STARTED || data == DONE)
+-                    for (uint8 i = 0; i < 3; ++i)
+-                        HandleGameObject(uiAnubarakDoor[i], true);
+-                break;
+-            }
+-
+-            if (data == DONE)
+-            {
+-                SaveToDB();
+-            }
+-        }
+-
+-        uint32 GetData(uint32 type)
+-        {
+-            switch(type)
+-            {
+-                case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:   return auiEncounter[0];
+-                case DATA_HADRONOX_EVENT:                   return auiEncounter[1];
+-                case DATA_ANUBARAK_EVENT:                   return auiEncounter[2];
+-            }
+-
+-            return 0;
+-        }
+-
+-       std::string GetSaveData()
+-        {
+-            OUT_SAVE_INST_DATA;
+-
+-            std::ostringstream saveStream;
+-            saveStream << "A N " << auiEncounter[0] << " " << auiEncounter[1] << " "
+-                << auiEncounter[2];
+-
+-            OUT_SAVE_INST_DATA_COMPLETE;
+-            return saveStream.str();
+-        }
+-
+-        void Load(const char* in)
+-        {
+-            if (!in)
+-            {
+-                OUT_LOAD_INST_DATA_FAIL;
+-                return;
+-            }
+-
+-            OUT_LOAD_INST_DATA(in);
+-
+-            char dataHead1, dataHead2;
+-            uint16 data0,data1,data2;
+-
+-            std::istringstream loadStream(in);
+-            loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2;
+-
+-            if (dataHead1 == 'A' && dataHead2 == 'N')
+-            {
+-                auiEncounter[0] = data0;
+-                auiEncounter[1] = data1;
+-                auiEncounter[2] = data2;
+-
+-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+-                    if (auiEncounter[i] == IN_PROGRESS)
+-                        auiEncounter[i] = NOT_STARTED;
+-
+-            } else OUT_LOAD_INST_DATA_FAIL;
+-
+-            OUT_LOAD_INST_DATA_COMPLETE;
+-        }
+-    };
+-
+-    InstanceScript* GetInstanceScript(InstanceMap *map) const
+-    {
+-        return new instance_azjol_nerub_InstanceScript(map);
+-    }
+-};
+-
+-void AddSC_instance_azjol_nerub()
+-{
+-   new instance_azjol_nerub;
+-}
++/*
++ * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "ScriptPCH.h"
++#include "azjol_nerub.h"
++
++#define MAX_ENCOUNTER     3
++
++/* Azjol Nerub encounters:
++0 - Krik'thir the Gatewatcher
++1 - Hadronox
++2 - Anub'arak
++*/
++
++class instance_azjol_nerub : public InstanceMapScript
++{
++public:
++    instance_azjol_nerub() : InstanceMapScript("instance_azjol_nerub", 601) { }
++
++    struct instance_azjol_nerub_InstanceScript : public InstanceScript
++    {
++        instance_azjol_nerub_InstanceScript(Map* pMap) : InstanceScript(pMap) {Initialize();};
++
++        uint64 uiKrikthir;
++        uint64 uiHadronox;
++        uint64 uiAnubarak;
++        uint64 uiWatcherGashra;
++        uint64 uiWatcherSilthik;
++        uint64 uiWatcherNarjil;
++        uint64 uiAnubarakDoor[3];
++
++        uint64 uiKrikthirDoor;
++
++        uint32 auiEncounter[MAX_ENCOUNTER];
++
++       void Initialize()
++       {
++            memset(&auiEncounter, 0, sizeof(auiEncounter));
++            memset(&uiAnubarakDoor, 0, sizeof(uiAnubarakDoor));
++
++            uiKrikthir = 0;
++            uiHadronox = 0;
++            uiAnubarak = 0;
++            uiWatcherGashra = 0;
++            uiWatcherSilthik = 0;
++            uiWatcherNarjil = 0;
++            uiKrikthirDoor = 0;
++        }
++
++        bool IsEncounterInProgress() const
++        {
++            for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
++                if (auiEncounter[i] == IN_PROGRESS) return true;
++
++            return false;
++        }
++
++        void OnCreatureCreate(Creature* pCreature, bool /*add*/)
++        {
++            switch(pCreature->GetEntry())
++            {
++                case 28684:    uiKrikthir = pCreature->GetGUID();        break;
++                case 28921:    uiHadronox = pCreature->GetGUID();        break;
++                case 29120:    uiAnubarak = pCreature->GetGUID();        break;
++                case 28730:    uiWatcherGashra = pCreature->GetGUID();   break;
++                case 28731:    uiWatcherSilthik = pCreature->GetGUID();  break;
++                case 28729:    uiWatcherNarjil = pCreature->GetGUID();   break;
++            }
++        }
++
++        void OnGameObjectCreate(GameObject* pGo, bool /*add*/)
++        {
++            switch (pGo->GetEntry())
++            {
++                case 192395:
++                    uiKrikthirDoor = pGo->GetGUID();
++                    if (auiEncounter[0] == DONE)
++                        HandleGameObject(NULL,true,pGo);
++                    break;
++                case 192396:
++                    uiAnubarakDoor[0] = pGo->GetGUID();
++                    break;
++                case 192397:
++                    uiAnubarakDoor[1] = pGo->GetGUID();
++                    break;
++                case 192398:
++                    uiAnubarakDoor[2] = pGo->GetGUID();
++                    break;
++            }
++        }
++
++
++        uint64 GetData64(uint32 identifier)
++        {
++            switch(identifier)
++            {
++                case DATA_KRIKTHIR_THE_GATEWATCHER:     return uiKrikthir;
++                case DATA_HADRONOX:                     return uiHadronox;
++                case DATA_ANUBARAK:                     return uiAnubarak;
++                case DATA_WATCHER_GASHRA:               return uiWatcherGashra;
++                case DATA_WATCHER_SILTHIK:              return uiWatcherSilthik;
++                case DATA_WATCHER_NARJIL:               return uiWatcherNarjil;
++            }
++
++            return 0;
++        }
++
++        void SetData(uint32 type, uint32 data)
++        {
++            switch(type)
++            {
++            case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:
++                auiEncounter[0] = data;
++                if (data == DONE)
++                    HandleGameObject(uiKrikthirDoor,true);
++                break;
++            case DATA_HADRONOX_EVENT:
++                auiEncounter[1] = data;
++                break;
++            case DATA_ANUBARAK_EVENT:
++                auiEncounter[2] = data;
++                if (data == IN_PROGRESS)
++                    for (uint8 i = 0; i < 3; ++i)
++                        HandleGameObject(uiAnubarakDoor[i], false);
++                else if (data == NOT_STARTED || data == DONE)
++                    for (uint8 i = 0; i < 3; ++i)
++                        HandleGameObject(uiAnubarakDoor[i], true);
++                break;
++            }
++
++            if (data == DONE)
++            {
++                SaveToDB();
++            }
++        }
++
++        uint32 GetData(uint32 type)
++        {
++            switch(type)
++            {
++                case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:   return auiEncounter[0];
++                case DATA_HADRONOX_EVENT:                   return auiEncounter[1];
++                case DATA_ANUBARAK_EVENT:                   return auiEncounter[2];
++            }
++
++            return 0;
++        }
++
++       std::string GetSaveData()
++        {
++            OUT_SAVE_INST_DATA;
++
++            std::ostringstream saveStream;
++            saveStream << "A N " << auiEncounter[0] << " " << auiEncounter[1] << " "
++                << auiEncounter[2];
++
++            OUT_SAVE_INST_DATA_COMPLETE;
++            return saveStream.str();
++        }
++
++        void Load(const char* in)
++        {
++            if (!in)
++            {
++                OUT_LOAD_INST_DATA_FAIL;
++                return;
++            }
++
++            OUT_LOAD_INST_DATA(in);
++
++            char dataHead1, dataHead2;
++            uint16 data0,data1,data2;
++
++            std::istringstream loadStream(in);
++            loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2;
++
++            if (dataHead1 == 'A' && dataHead2 == 'N')
++            {
++                auiEncounter[0] = data0;
++                auiEncounter[1] = data1;
++                auiEncounter[2] = data2;
++
++                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
++                    if (auiEncounter[i] == IN_PROGRESS)
++                        auiEncounter[i] = NOT_STARTED;
++
++            } else OUT_LOAD_INST_DATA_FAIL;
++
++            OUT_LOAD_INST_DATA_COMPLETE;
++        }
++    };
++
++    InstanceScript* GetInstanceScript(InstanceMap *map) const
++    {
++        return new instance_azjol_nerub_InstanceScript(map);
++    }
++};
++
++void AddSC_instance_azjol_nerub()
++{
++   new instance_azjol_nerub;
++}
+\ No newline at end of file
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/ahnkahet.h b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/ahnkahet.h
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/ahnkahet.h
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/ahnkahet.h
+@@ -1,5 +1,7 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_amanitar.cpp b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_amanitar.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_amanitar.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_amanitar.cpp
+@@ -1,4 +1,4 @@
+-ï»¿/*
++/*
+  * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+@@ -13,9 +13,7 @@
+  *
+  * You should have received a copy of the GNU General Public License along
+  * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-/*
++ *
+  * Comment:  Find correct mushrooms spell to make them visible - buffs of the mushrooms not ever applied to the users...
+  */
+ 
+@@ -32,13 +30,15 @@
+     SPELL_POISONOUS_MUSHROOM_POISON_CLOUD         = 57061, // Self - Duration 8 Sec
+     SPELL_POISONOUS_MUSHROOM_VISUAL_AREA          = 61566, // Self
+     SPELL_POISONOUS_MUSHROOM_VISUAL_AURA          = 56741, // Self
+-    SPELL_PUTRID_MUSHROOM                         = 31690, // To make the mushrooms visible
++    SPELL_POWER_MUSHROOM_VISUAL_AURA              = 56740,
++    SPELL_PUTRID_MUSHROOM                         = 31690
+ };
+ 
+ enum Creatures
+ {
+     NPC_HEALTHY_MUSHROOM                          = 30391,
+-    NPC_POISONOUS_MUSHROOM                        = 30435
++    NPC_POISONOUS_MUSHROOM                        = 30435,
++    NPC_HELPER                                    = 19656
+ };
+ 
+ class boss_amanitar : public CreatureScript
+@@ -60,22 +60,25 @@
+         uint32 uiBashTimer;
+         uint32 uiBoltTimer;
+         uint32 uiSpawnTimer;
++        uint32 uiMiniTimer;
+ 
+         bool bFirstTime;
+ 
+         void Reset()
+         {
+-            uiRootTimer = urand(5*IN_MILLISECONDS,9*IN_MILLISECONDS);
+-            uiBashTimer = urand(10*IN_MILLISECONDS,14*IN_MILLISECONDS);
+-            uiBoltTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
+-            uiSpawnTimer = 0;
++            uiRootTimer = urand(5*IN_MILLISECONDS, 9*IN_MILLISECONDS);
++            uiBashTimer = urand(10*IN_MILLISECONDS, 14*IN_MILLISECONDS);
++            uiBoltTimer = urand(15*IN_MILLISECONDS, 20*IN_MILLISECONDS);
++            uiMiniTimer = urand(12*IN_MILLISECONDS, 18*IN_MILLISECONDS);
++            uiSpawnTimer = 5*IN_MILLISECONDS;
+ 
+             me->SetMeleeDamageSchool(SPELL_SCHOOL_NATURE);
+             me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_NATURE, true);
+ 
+             if (pInstance)
+             {
+-                pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_MINI);
++                DoRemoveAurasDueToSpellOnPlayersAndPets(SPELL_MINI);
++
+                 if (!bFirstTime)
+                     pInstance->SetData(DATA_AMANITAR_EVENT, FAIL);
+                 else
+@@ -88,32 +91,57 @@
+             if (pInstance)
+             {
+                 pInstance->SetData(DATA_AMANITAR_EVENT, DONE);
+-                pInstance->DoRemoveAurasDueToSpellOnPlayers(SPELL_MINI);
++                DoRemoveAurasDueToSpellOnPlayersAndPets(SPELL_MINI);
+             }
+         }
+ 
++        void DoRemoveAurasDueToSpellOnPlayersAndPets(uint32 spell)
++        {
++            if (!pInstance)
++                return;
++
++            Map::PlayerList const &PlayerList = pInstance->instance->GetPlayers();
++
++            if (!PlayerList.isEmpty())
++                for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
++                    if (Player* pPlayer = i->getSource())
++                    {
++                        pPlayer->RemoveAurasDueToSpell(spell);
++
++                        if (Pet* pPet = pPlayer->GetPet())
++                            pPet->RemoveAurasDueToSpell(spell);
++                    }
++        }
++
+         void EnterCombat(Unit * /*who*/)
+         {
+             if (pInstance)
+                 pInstance->SetData(DATA_AMANITAR_EVENT, IN_PROGRESS);
+-
+-            DoCast(me, SPELL_MINI, false);
+         }
+ 
+         void SpawnAdds()
+         {
+-            for (uint8 i = 0; i < 30; ++i)
++            uint8 u = 0;
++
++            for (uint8 i = 0; i < 100; ++i)
+             {
+-                Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0);
+-
+-                if (victim)
++                Position pos;
++                me->GetPosition(&pos);
++                me->GetRandomNearPosition(pos, 45.0f);
++                if (Creature* pHelp = me->SummonCreature(NPC_HELPER, pos, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 1*IN_MILLISECONDS))
+                 {
+-                    Position pos;
+-                    victim->GetPosition(&pos);
+-                    me->GetRandomNearPosition(pos, float(urand(5,80)));
+-                    me->SummonCreature(NPC_POISONOUS_MUSHROOM, pos, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30*IN_MILLISECONDS);
+-                    me->GetRandomNearPosition(pos, float(urand(5,80)));
+-                    me->SummonCreature(NPC_HEALTHY_MUSHROOM, pos, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30*IN_MILLISECONDS);
++                    Creature* temp1 = pHelp->FindNearestCreature(NPC_HEALTHY_MUSHROOM, 5.0f, true);
++                    Creature* temp2 = pHelp->FindNearestCreature(NPC_POISONOUS_MUSHROOM, 5.0f, true);
++                    if (temp1 || temp2)
++                    {
++                        pHelp->DisappearAndDie();
++                    }
++                    else  // found good place to spawn
++                    {
++                        u = 1 - u;
++                        pHelp->DisappearAndDie();
++                        me->SummonCreature(u > 0 ? NPC_POISONOUS_MUSHROOM : NPC_HEALTHY_MUSHROOM, pos, TEMPSUMMON_CORPSE_DESPAWN, 3*IN_MILLISECONDS);
++                    }
+                 }
+             }
+         }
+@@ -127,27 +155,46 @@
+             if (uiSpawnTimer <= diff)
+             {
+                 SpawnAdds();
+-                uiSpawnTimer = urand(35*IN_MILLISECONDS,40*IN_MILLISECONDS);
++                uiSpawnTimer = 20*IN_MILLISECONDS;
+             } else uiSpawnTimer -= diff;
+ 
++
++            if (uiMiniTimer <= diff)
++            {
++                if(!me->IsNonMeleeSpellCasted(false))
++                {
++                    DoCast(SPELL_MINI);
++                    uiMiniTimer = urand(25*IN_MILLISECONDS, 30*IN_MILLISECONDS);
++                }
++            } else uiMiniTimer -= diff;
++
+             if (uiRootTimer <= diff)
+             {
+-                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_ENTANGLING_ROOTS);
+-                uiRootTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++                if(!me->IsNonMeleeSpellCasted(false))
++                {
++                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                        DoCast(pTarget, SPELL_ENTANGLING_ROOTS);
++                    uiRootTimer = urand(10*IN_MILLISECONDS, 15*IN_MILLISECONDS);
++                }
+             } else uiRootTimer -= diff;
+ 
+             if (uiBashTimer <= diff)
+             {
+-                DoCastVictim(SPELL_BASH);
+-                uiBashTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++                if(!me->IsNonMeleeSpellCasted(false))
++                {
++                    DoCastVictim(SPELL_BASH);
++                    uiBashTimer = urand(7*IN_MILLISECONDS, 12*IN_MILLISECONDS);
++                }
+             } else uiBashTimer -= diff;
+ 
+             if (uiBoltTimer <= diff)
+             {
+-                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                    DoCast(pTarget, SPELL_VENOM_BOLT_VOLLEY);
+-                uiBoltTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++                if(!me->IsNonMeleeSpellCasted(false))
++                {
++                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                        DoCast(pTarget, SPELL_VENOM_BOLT_VOLLEY);
++                    uiBoltTimer = urand(18*IN_MILLISECONDS, 22*IN_MILLISECONDS);
++                }
+             } else uiBoltTimer -= diff;
+ 
+             DoMeleeAttackIfReady();
+@@ -174,29 +221,22 @@
+ 
+         void Reset()
+         {
+-            DoCast(me, SPELL_PUTRID_MUSHROOM, true); // Hack, to make the mushrooms visible, can't find orig. spell...
++            me->SetDisplayId(26981);
++            DoCast(SPELL_PUTRID_MUSHROOM); // Hack, to make the mushrooms visible, can't find orig. spell...
+ 
+             if (me->GetEntry() == NPC_POISONOUS_MUSHROOM)
+-                DoCast(me, SPELL_POISONOUS_MUSHROOM_VISUAL_AURA, true);
++                DoCast(SPELL_POISONOUS_MUSHROOM_VISUAL_AURA);
++            else
++                DoCast(SPELL_POWER_MUSHROOM_VISUAL_AURA);
+ 
+-            uiAuraTimer = 0;
++            uiAuraTimer = 1*IN_MILLISECONDS;
+             uiDeathTimer = 30*IN_MILLISECONDS;
+         }
+ 
+         void JustDied(Unit *killer)
+         {
+-            if (!killer)
+-                return;
+-
+-            if (me->GetEntry() == NPC_HEALTHY_MUSHROOM && killer->GetTypeId() == TYPEID_PLAYER)
+-            {
+-                me->InterruptNonMeleeSpells(false);
+-                if (killer->HasAura(SPELL_MINI))
+-                    killer->RemoveAurasDueToSpell(SPELL_MINI);
+-                DoCast(killer, SPELL_HEALTHY_MUSHROOM_POTENT_FUNGUS, false);
+-            }
+-            else if (me->GetEntry() == NPC_POISONOUS_MUSHROOM)                  
+-                DoCast(me, SPELL_POISONOUS_MUSHROOM_POISON_CLOUD, false);
++            if (me->GetEntry() == NPC_HEALTHY_MUSHROOM)
++                DoCast(me, SPELL_HEALTHY_MUSHROOM_POTENT_FUNGUS, true);
+         }
+ 
+         void EnterCombat(Unit * /*who*/) {}
+@@ -208,10 +248,11 @@
+             {
+                 if (uiAuraTimer <= diff)
+                 {
+-                    DoCast(me, SPELL_POISONOUS_MUSHROOM_VISUAL_AREA, true);
++                    DoCast(me, SPELL_POISONOUS_MUSHROOM_POISON_CLOUD, false);
+                     uiAuraTimer = 7*IN_MILLISECONDS;
+                 } else uiAuraTimer -= diff;
+             }
++
+             if (uiDeathTimer <= diff)
+                 me->DisappearAndDie();
+             else uiDeathTimer -= diff;
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_elder_nadox.cpp b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_elder_nadox.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_elder_nadox.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_elder_nadox.cpp
+@@ -1,4 +1,4 @@
+-ï»¿/*
++/*
+  * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+@@ -18,6 +18,8 @@
+ #include "ScriptPCH.h"
+ #include "ahnkahet.h"
+ 
++bool DeadAhnkaharGuardian; // needed for achievement: Respect Your Elders(2038)
++
+ enum Achievements
+ {
+     ACHIEV_RESPECT_YOUR_ELDERS                    = 2038
+@@ -41,8 +43,8 @@
+     H_SPELL_BROOD_PLAGUE                          = 59467,
+     H_SPELL_BROOD_RAGE                            = 59465,
+     SPELL_ENRAGE                                  = 26662, // Enraged if too far away from home
+-    SPELL_SUMMON_SWARMERS                         = 56119, //2x 30178  -- 2x every 10secs
+-    SPELL_SUMMON_SWARM_GUARD                      = 56120, //1x 30176  -- every 25secs
++    SPELL_SUMMON_SWARMERS                         = 56119, // 2x 30178  -- 2x every 10secs
++    SPELL_SUMMON_SWARM_GUARD                      = 56120, // 1x 30176  -- every 25%
+ };
+ 
+ enum Creatures
+@@ -52,7 +54,6 @@
+ };
+ 
+ #define EMOTE_HATCHES                       "An Ahn'kahar Guardian hatches!"
+-#define ELDER_NADOX 29309
+ 
+ class boss_elder_nadox : public CreatureScript
+ {
+@@ -67,30 +68,26 @@
+         }
+ 
+         uint32 uiPlagueTimer;
+-        uint32 uiRagueTimer;
++        uint32 uiRageTimer;
+ 
+         uint32 uiSwarmerSpawnTimer;
+-        uint32 uiGuardSpawnTimer;
+-        uint32 uiEnragueTimer;
++        uint32 uiEnrageTimer;
+ 
+-        bool bGuardSpawned;
+-
+-        bool DeadAhnkaharGuardian; // needed for achievement: Respect Your Elders(2038)
++        uint32 uiHealthAmountModifier;
+ 
+         InstanceScript *pInstance;
+ 
+         void Reset()
+         {
+             uiPlagueTimer = 13*IN_MILLISECONDS;
+-            uiRagueTimer = 20*IN_MILLISECONDS;
++            uiRageTimer = 10*IN_MILLISECONDS;
+ 
+             uiSwarmerSpawnTimer = 10*IN_MILLISECONDS;
+-            uiGuardSpawnTimer = 25*IN_MILLISECONDS;
++            uiEnrageTimer = 5*IN_MILLISECONDS;
+ 
+-            uiEnragueTimer = 5*IN_MILLISECONDS;
++            uiHealthAmountModifier = 1;
+ 
+             DeadAhnkaharGuardian = false;
+-            bGuardSpawned = false;
+ 
+             if (pInstance)
+                 pInstance->SetData(DATA_ELDER_NADOX_EVENT, NOT_STARTED);
+@@ -128,25 +125,23 @@
+ 
+             if (uiPlagueTimer <= diff)
+             {
+-                DoCast(me->getVictim(), SPELL_BROOD_PLAGUE);
++                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
++                    DoCast(pTarget, DUNGEON_MODE(SPELL_BROOD_PLAGUE, H_SPELL_BROOD_PLAGUE));
++
+                 uiPlagueTimer = 15*IN_MILLISECONDS;
+             } else uiPlagueTimer -= diff;
+ 
+             if (IsHeroic())
+             {
+-                if (uiRagueTimer <= diff)
++                if (uiRageTimer <= diff)
+                 {
+-                    if (Creature *pSwarmer = me->FindNearestCreature(MOB_AHNKAHAR_SWARMER, 35))
+-                    {
+-                        DoCast(pSwarmer, H_SPELL_BROOD_RAGE, true);
+-                        uiRagueTimer = 15*IN_MILLISECONDS;
+-                    }
+-                } else uiRagueTimer -= diff;
++                    DoCast(H_SPELL_BROOD_RAGE);
++                    uiRageTimer = 5*IN_MILLISECONDS;
++                } else uiRageTimer -= diff;
+             }
+ 
+             if (uiSwarmerSpawnTimer <= diff)
+             {
+-                DoCast(me, SPELL_SUMMON_SWARMERS, true);
+                 DoCast(me, SPELL_SUMMON_SWARMERS);
+                 if (urand(1,3) == 3) // 33% chance of dialog
+                     DoScriptText(RAND(SAY_EGG_SAC_1,SAY_EGG_SAC_2), me);
+@@ -154,26 +149,24 @@
+                 uiSwarmerSpawnTimer = 10*IN_MILLISECONDS;
+             } else uiSwarmerSpawnTimer -= diff;
+ 
+-            if (!bGuardSpawned && uiGuardSpawnTimer <= diff)
++            if (me->HealthBelowPct(100 - uiHealthAmountModifier * 25))
+             {
+                 me->MonsterTextEmote(EMOTE_HATCHES,me->GetGUID(),true);
+                 DoCast(me, SPELL_SUMMON_SWARM_GUARD);
+-                bGuardSpawned = true;
+-            } else uiGuardSpawnTimer -= diff;
++                ++uiHealthAmountModifier;
++            }
+ 
+-            if (uiEnragueTimer <= diff)
++            if (uiEnrageTimer <= diff)
+             {
+                 if (me->HasAura(SPELL_ENRAGE,0))
+                     return;
+ 
+-                float x, y, z, o;
+-                me->GetHomePosition(x, y, z, o);
+-                if (z < 24)
++                if (me->GetPositionZ() < 24.0f)
+                     if (!me->IsNonMeleeSpellCasted(false))
+                         DoCast(me, SPELL_ENRAGE, true);
+ 
+-                uiEnragueTimer = 5*IN_MILLISECONDS;
+-            } else uiEnragueTimer -= diff;
++                uiEnrageTimer = 5*IN_MILLISECONDS;
++            } else uiEnrageTimer -= diff;
+ 
+             DoMeleeAttackIfReady();
+         }
+@@ -188,7 +181,8 @@
+ enum AddSpells
+ {
+     SPELL_SPRINT                                  = 56354,
+-    SPELL_GUARDIAN_AURA                           = 56151
++    SPELL_GUARDIAN_AURA                           = 56151,
++    SPELL_GUARDIAN_AURA_TRIGGERED                 = 56153
+ };
+ 
+ class mob_ahnkahar_nerubian : public CreatureScript
+@@ -210,38 +204,29 @@
+         {
+             if (me->GetEntry() == MOB_AHNKAHAR_GUARDIAN_ENTRY) //magic numbers are bad!
+                 DoCast(me, SPELL_GUARDIAN_AURA, true);
+-            uiSprintTimer = 10*IN_MILLISECONDS;
++
++            uiSprintTimer = 5*IN_MILLISECONDS;
+         }
+ 
+         void JustDied(Unit * /*killer*/)
+         {
+-            if (pInstance)
+-			{
+-				if(IsHeroic())
+-				{
+-					if (Creature* pNadox = me->FindNearestCreature(ELDER_NADOX,60,true))
+-					    CAST_AI(boss_elder_nadox::boss_elder_nadoxAI,pNadox->AI())->DeadAhnkaharGuardian = true;
+-				}
+-			}                
++            if (me->GetEntry() == MOB_AHNKAHAR_GUARDIAN_ENTRY)
++                DeadAhnkaharGuardian = true;
+         }
+ 
+         void EnterCombat(Unit * /*who*/){}
+ 
++        void SpellHit(Unit * /*caster*/, const SpellEntry *spell)
++        {
++            if (spell->Id == SPELL_GUARDIAN_AURA_TRIGGERED && me->GetEntry() == MOB_AHNKAHAR_GUARDIAN_ENTRY)
++                me->RemoveAurasDueToSpell(SPELL_GUARDIAN_AURA_TRIGGERED);
++        }
++
+         void UpdateAI(const uint32 diff)
+         {
+-            if (!UpdateVictim())
+-                return;
+-
+-            if (me->GetEntry() == MOB_AHNKAHAR_GUARDIAN_ENTRY)
+-                me->RemoveAurasDueToSpell(SPELL_GUARDIAN_AURA);
+-
+             if (pInstance)
+-            {
+                 if (pInstance->GetData(DATA_ELDER_NADOX_EVENT) != IN_PROGRESS)
+-                {
+                     me->DisappearAndDie();
+-                }
+-            }
+ 
+             if (!UpdateVictim())
+                 return;
+@@ -249,7 +234,7 @@
+             if (uiSprintTimer <= diff)
+             {
+                 DoCast(me, SPELL_SPRINT);
+-                uiSprintTimer = 25*IN_MILLISECONDS;
++                uiSprintTimer = 20*IN_MILLISECONDS;
+             } else uiSprintTimer -= diff;
+ 
+             DoMeleeAttackIfReady();
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_herald_volazj.cpp b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_herald_volazj.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_herald_volazj.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_herald_volazj.cpp
+@@ -1,5 +1,7 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -15,6 +17,7 @@
+  * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
++
+ /*
+  * Comment: Missing AI for Twisted Visages
+  */
+@@ -173,6 +176,15 @@
+             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+         }
+ 
++        void EnterEvadeMode()
++        {
++            me->RemoveAllAuras();
++            me->SetControlled(false, UNIT_STAT_STUNNED);
++            _EnterEvadeMode();
++            me->GetMotionMaster()->MoveTargetedHome();
++            Reset();
++        }
++
+         void EnterCombat(Unit* /*who*/)
+         {
+             DoScriptText(SAY_AGGRO, me);
+@@ -307,9 +319,12 @@
+             ResetPlayersPhaseMask();
+         }
+ 
+-        void KilledUnit(Unit * /*victim*/)
++        void KilledUnit(Unit* pVictim)
+         {
+             DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2,SAY_SLAY_3), me);
++
++            if (pVictim->GetTypeId() == TYPEID_PLAYER)
++                pVictim->RemoveAurasDueToSpell(GetSpellForPhaseMask(pVictim->GetPhaseMask()));
+         }
+     };
+ 
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_jedoga_shadowseeker.cpp b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_jedoga_shadowseeker.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_jedoga_shadowseeker.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_jedoga_shadowseeker.cpp
+@@ -1,4 +1,4 @@
+-ï»¿/*
++/*
+  * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+@@ -13,9 +13,7 @@
+  *
+  * You should have received a copy of the GNU General Public License along
+  * with this program. If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+-/*
++ *
+  * Comment: Complete - BUT THE TRIGGER NEEDS DATA WHETHER THE PRISON OF TALDARAM IS OFFLINE !
+  */
+ 
+@@ -57,14 +55,17 @@
+     NPC_JEDOGA_CONTROLLER                         = 30181
+ };
+ 
++enum Achievements
++{
++    ACHIEV_VOLUNTEER_WORK                         = 2056
++};
++
+ const Position JedogaPosition[2] =
+ {
+     {372.330994f, -705.278015f, -0.624178f,  5.427970f},
+     {372.330994f, -705.278015f, -16.179716f, 5.427970f}
+ };
+ 
+-#define ACHIEVEMENT_VOLUNTEER_WORK 2056
+-
+ class boss_jedoga_shadowseeker : public CreatureScript
+ {
+ public:
+@@ -81,33 +82,32 @@
+ 
+         InstanceScript* pInstance;
+ 
+-        uint32 uiOpFerTimer;
+         uint32 uiCycloneTimer;
+         uint32 uiBoltTimer;
+         uint32 uiThunderTimer;
++        uint32 uiHealthAmountModifier;
+ 
+         bool bPreDone;
+         bool bOpFerok;
+         bool bOnGround;
+         bool bOpFerokFail;
+         bool bCanDown;
++        bool bAchiev;
+ 
+         bool bFirstTime;
+ 
+-		bool KilledVolunteer;
+-
+         void Reset()
+         {
+-            uiOpFerTimer = urand(15*IN_MILLISECONDS,20*IN_MILLISECONDS);
+-
+             uiCycloneTimer = 3*IN_MILLISECONDS;
+             uiBoltTimer = 7*IN_MILLISECONDS;
+             uiThunderTimer = 12*IN_MILLISECONDS;
++            uiHealthAmountModifier = 1;
+ 
+             bOpFerok = false;
+             bOpFerokFail = false;
+             bOnGround = false;
+             bCanDown = false;
++            bAchiev = true;
+ 
+             if (pInstance)
+             {
+@@ -118,11 +118,10 @@
+                 pInstance->SetData64(DATA_ADD_JEDOGA_OPFER, 0);
+                 pInstance->SetData(DATA_JEDOGA_RESET_INITIANDS, 0);
+             }
++
+             MoveUp();
+ 
+             bFirstTime = false;
+-
+-			KilledVolunteer = false;
+         }
+ 
+         void EnterCombat(Unit* who)
+@@ -155,12 +154,12 @@
+         {
+             DoScriptText(TEXT_DEATH, me);
+             if (pInstance)
+-			{
++            {
+                 pInstance->SetData(DATA_JEDOGA_SHADOWSEEKER_EVENT, DONE);
+ 
+-				if(IsHeroic() && !KilledVolunteer)
+-					pInstance->DoCompleteAchievement(ACHIEVEMENT_VOLUNTEER_WORK);
+-			}
++                if (IsHeroic() && bAchiev)
++                    pInstance->DoCompleteAchievement(ACHIEV_VOLUNTEER_WORK);
++            }
+         }
+ 
+         void MoveInLineOfSight(Unit* who)
+@@ -247,10 +246,10 @@
+             me->GetMotionMaster()->MovePoint(0, JedogaPosition[0]);
+ 
+             pInstance->SetData(DATA_JEDOGA_TRIGGER_SWITCH, 1);
+-            if (pInstance->GetData(DATA_JEDOGA_SHADOWSEEKER_EVENT) == IN_PROGRESS) OpferRufen();
++            if (pInstance->GetData(DATA_JEDOGA_SHADOWSEEKER_EVENT) == IN_PROGRESS) 
++                OpferRufen();
+ 
+             bOnGround = false;
+-            uiOpFerTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
+         }
+ 
+         void OpferRufen()
+@@ -277,6 +276,7 @@
+ 
+             bOpFerok = false;
+             bCanDown = true;
++            bAchiev = false;
+         }
+ 
+         void UpdateAI(const uint32 diff)
+@@ -287,7 +287,8 @@
+             if (pInstance->GetData(DATA_JEDOGA_SHADOWSEEKER_EVENT) != IN_PROGRESS && pInstance->GetData(DATA_ALL_INITIAND_DEAD))
+                 MoveDown();
+ 
+-            if (bOpFerok && !bOnGround && !bCanDown) Opfern();
++            if (bOpFerok && !bOnGround && !bCanDown) 
++                Opfern();
+ 
+             if (bOpFerokFail && !bOnGround && !bCanDown)
+                 bCanDown = true;
+@@ -305,30 +306,40 @@
+ 
+                 if (uiCycloneTimer <= diff)
+                 {
+-                    DoCast(me, SPELL_CYCLONE_STRIKE, false);
+-                    uiCycloneTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        DoCast(me, DUNGEON_MODE(SPELL_CYCLONE_STRIKE, SPELL_CYCLONE_STRIKE_H), false);
++                        uiCycloneTimer = urand(10*IN_MILLISECONDS, 15*IN_MILLISECONDS);
++                    }
+                 } else uiCycloneTimer -= diff;
+ 
+                 if (uiBoltTimer <= diff)
+                 {
+-                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                        me->CastSpell(pTarget, DUNGEON_MODE(SPELL_LIGHTNING_BOLT, SPELL_LIGHTNING_BOLT_H), false);
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, -5, true))
++                            me->CastSpell(pTarget, DUNGEON_MODE(SPELL_LIGHTNING_BOLT, SPELL_LIGHTNING_BOLT_H), false);
+ 
+-                    uiBoltTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++                        uiBoltTimer = urand(8*IN_MILLISECONDS, 12*IN_MILLISECONDS);
++                    }
+                 } else uiBoltTimer -= diff;
+ 
+                 if (uiThunderTimer <= diff)
+                 {
+-                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+-                        me->CastSpell(pTarget, DUNGEON_MODE(SPELL_THUNDERSHOCK, SPELL_THUNDERSHOCK_H), false);
++                    if(!me->IsNonMeleeSpellCasted(false))
++                    {
++                        if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
++                            me->CastSpell(pTarget, DUNGEON_MODE(SPELL_THUNDERSHOCK, SPELL_THUNDERSHOCK_H), false);
+ 
+-                    uiThunderTimer = urand(15*IN_MILLISECONDS,30*IN_MILLISECONDS);
++                        uiThunderTimer = urand(15*IN_MILLISECONDS, 20*IN_MILLISECONDS);
++                    }
+                 } else uiThunderTimer -= diff;
+ 
+-                if (uiOpFerTimer <= diff)
++                if (me->HealthBelowPct(100 - 25 * uiHealthAmountModifier))
++                {
++                    ++uiHealthAmountModifier;
+                     MoveUp();
+-                else
+-                    uiOpFerTimer -= diff;
++                }
+ 
+                 DoMeleeAttackIfReady();
+             }
+@@ -341,8 +352,6 @@
+     }
+ };
+ 
+-#define BOSS_JEDOGA 29310
+-
+ class mob_jedoga_initiand : public CreatureScript
+ {
+ public:
+@@ -387,8 +396,7 @@
+ 
+         void JustDied(Unit* Killer)
+         {
+-            if (!Killer || !pInstance) 
+-                return;
++            if (!Killer || !pInstance) return;
+ 
+             if (bWalking)
+             {
+@@ -400,17 +408,7 @@
+ 
+                 bWalking = false;
+             }
+-
+-            if (Killer->GetTypeId() == TYPEID_PLAYER) 
+-			{
+-				pInstance->SetData64(DATA_PL_JEDOGA_TARGET, Killer->GetGUID());
+-
+-				if(IsHeroic() && (pInstance->GetData(DATA_JEDOGA_SHADOWSEEKER_EVENT) == IN_PROGRESS))
+-				{
+-					if (Creature* pJedoga = me->FindNearestCreature(BOSS_JEDOGA,60,true))
+-					    CAST_AI(boss_jedoga_shadowseeker::boss_jedoga_shadowseekerAI,pJedoga->AI())->KilledVolunteer = true;
+-				}					
+-			}
++            if (Killer->GetTypeId() == TYPEID_PLAYER) pInstance->SetData64(DATA_PL_JEDOGA_TARGET, Killer->GetGUID());
+         }
+ 
+         void EnterCombat(Unit* who)
+@@ -458,6 +456,8 @@
+             {
+                 if (me->GetGUID() == pInstance->GetData64(DATA_ADD_JEDOGA_OPFER) && !bWalking)
+                 {
++                    me->SetMaxHealth(DUNGEON_MODE(25705, 58648));        //TODO: implement npc entry 30385
++                    me->SetHealth(DUNGEON_MODE(25705, 58648));
+                     me->RemoveAurasDueToSpell(SPELL_SPHERE_VISUAL);
+                     me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, false);
+                     me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, false);
+@@ -528,6 +528,7 @@
+     {
+         npc_jedogas_aufseher_triggerAI(Creature* c) : Scripted_NoMovementAI(c)
+         {
++            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); //database?
+             pInstance = c->GetInstanceScript();
+             bRemoved = false;
+             bRemoved2 = false;
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_prince_taldaram.cpp b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_prince_taldaram.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_prince_taldaram.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/boss_prince_taldaram.cpp
+@@ -1,5 +1,7 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -22,9 +24,9 @@
+ {
+     SPELL_BLOODTHIRST                             = 55968, //Trigger Spell + add aura
+     SPELL_CONJURE_FLAME_SPHERE                    = 55931,
+-    SPELL_FLAME_SPHERE_SUMMON_1                   = 55895,// 1x 30106
+-    H_SPELL_FLAME_SPHERE_SUMMON_1                 = 59511,// 1x 31686
+-    H_SPELL_FLAME_SPHERE_SUMMON_2                 = 59512,// 1x 31687
++    SPELL_FLAME_SPHERE_SUMMON_1                   = 55895, // 1x 30106
++    H_SPELL_FLAME_SPHERE_SUMMON_1                 = 59511, // 1x 31686
++    H_SPELL_FLAME_SPHERE_SUMMON_2                 = 59512, // 1x 31687
+     SPELL_FLAME_SPHERE_SPAWN_EFFECT               = 55891,
+     SPELL_FLAME_SPHERE_VISUAL                     = 55928,
+     SPELL_FLAME_SPHERE_PERIODIC                   = 55926,
+@@ -42,7 +44,7 @@
+ {
+     DATA_EMBRACE_DMG                              = 20000,
+     H_DATA_EMBRACE_DMG                            = 40000,
+-    DATA_SPHERE_DISTANCE                          =    15
++    DATA_SPHERE_DISTANCE                          =   100
+ };
+ #define DATA_SPHERE_ANGLE_OFFSET            0.7f
+ #define DATA_GROUND_POSITION_Z             11.4f
+@@ -84,6 +86,18 @@
+             pInstance = c->GetInstanceScript();
+             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
++
++            //SPELL_BLOODTHIRST should trigger effect 1 on self
++            //TODO: move to core
++            SpellEntry *TempSpell;
++            TempSpell = GET_SPELL(SPELL_BLOODTHIRST);
++            if (TempSpell)
++                TempSpell->EffectImplicitTargetA[1] = 1;
++
++            //below may need another adjustment
++            TempSpell = GET_SPELL(DUNGEON_MODE(SPELL_FLAME_SPHERE_PERIODIC, H_SPELL_FLAME_SPHERE_PERIODIC));
++            if (TempSpell)
++                TempSpell->EffectAmplitude[0] = 500;
+         }
+ 
+         uint32 uiBloodthirstTimer;
+@@ -103,7 +117,7 @@
+         void Reset()
+         {
+             uiBloodthirstTimer = 10*IN_MILLISECONDS;
+-            uiVanishTimer = urand(25*IN_MILLISECONDS,35*IN_MILLISECONDS);
++            uiVanishTimer = urand(25*IN_MILLISECONDS, 35*IN_MILLISECONDS);
+             uiEmbraceTimer = 20*IN_MILLISECONDS;
+             uiFlamesphereTimer = 5*IN_MILLISECONDS;
+             uiEmbraceTakenDamage = 0;
+@@ -125,6 +139,7 @@
+         {
+             if (!UpdateVictim())
+                 return;
++
+             if (uiPhaseTimer <= diff)
+             {
+                 switch (Phase)
+@@ -179,8 +194,9 @@
+                         uiPhaseTimer = 1300;
+                         break;
+                     case VANISHED:
++                        me->SetVisibility(VISIBILITY_ON);
+                         if (Unit *pEmbraceTarget = GetEmbraceTarget())
+-                            DoCast(pEmbraceTarget, SPELL_EMBRACE_OF_THE_VAMPYR);
++                            DoCast(pEmbraceTarget, DUNGEON_MODE(SPELL_EMBRACE_OF_THE_VAMPYR, H_SPELL_EMBRACE_OF_THE_VAMPYR));
+                         me->GetMotionMaster()->Clear();
+                         me->SetSpeed(MOVE_WALK, 1.0f, true);
+                         me->GetMotionMaster()->MoveChase(me->getVictim());
+@@ -224,15 +240,16 @@
+                             //He only vanishes if there are 3 or more alive players
+                             if (target_list.size() > 2)
+                             {
+-                                DoScriptText(RAND(SAY_VANISH_1,SAY_VANISH_2), me);
+-                                DoCast(me, SPELL_VANISH);
++                                DoScriptText(RAND(SAY_VANISH_1, SAY_VANISH_2), me);
++                                //DoCast(me, SPELL_VANISH);                             // causes health reset issue?
++                                me->SetVisibility(VISIBILITY_OFF);
+                                 Phase = JUST_VANISHED;
+                                 uiPhaseTimer = 500;
+                                 if (Unit* pEmbraceTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                                     uiEmbraceTarget = pEmbraceTarget->GetGUID();
+ 
+                             }
+-                            uiVanishTimer = urand(25*IN_MILLISECONDS,35*IN_MILLISECONDS);
++                            uiVanishTimer = urand(25*IN_MILLISECONDS, 35*IN_MILLISECONDS);
+                         } else uiVanishTimer -= diff;
+ 
+                         DoMeleeAttackIfReady();
+@@ -316,6 +333,7 @@
+                 return;
+             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE);
+             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
++            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+             me->RemoveAurasDueToSpell(SPELL_BEAM_VISUAL);
+             me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
+             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), DATA_GROUND_POSITION_Z, me->GetOrientation());
+@@ -353,7 +371,7 @@
+             me->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);
+             DoCast(me, SPELL_FLAME_SPHERE_VISUAL);
+             DoCast(me, SPELL_FLAME_SPHERE_SPAWN_EFFECT);
+-            DoCast(me, SPELL_FLAME_SPHERE_PERIODIC);
++            DoCast(me, DUNGEON_MODE(SPELL_FLAME_SPHERE_PERIODIC, H_SPELL_FLAME_SPHERE_PERIODIC));
+             uiDespawnTimer = 10*IN_MILLISECONDS;
+         }
+ 
+diff --git a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/instance_ahnkahet.cpp b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/instance_ahnkahet.cpp
+--- a/src/server/scripts/Northrend/AzjolNerub/ahnkahet/instance_ahnkahet.cpp
++++ b/src/server/scripts/Northrend/AzjolNerub/ahnkahet/instance_ahnkahet.cpp
+@@ -1,5 +1,7 @@
+-ï»¿/*
+- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
++/*
++ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
++ *
++ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+@@ -15,6 +17,7 @@
+  * with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
++
+ #include "ScriptPCH.h"
+ #include "ahnkahet.h"
+ 

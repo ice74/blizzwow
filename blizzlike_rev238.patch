@@ -1,0 +1,18 @@
+# HG changeset patch
+# User asniker
+# Date 1290525087 -18000
+# Node ID 0c13a698fb9f8ba30991b9d5c35f07656f8032f0
+# Parent  5c5d935cf90a127f74f8773d9b742339056e7522
+ядро: фикс краша на бг
+
+diff --git a/src/server/game/Battlegrounds/BattlegroundMgr.cpp b/src/server/game/Battlegrounds/BattlegroundMgr.cpp
+--- a/src/server/game/Battlegrounds/BattlegroundMgr.cpp
++++ b/src/server/game/Battlegrounds/BattlegroundMgr.cpp
+@@ -340,6 +340,7 @@
+                         *data << uint32(0);
+                         break;
+                 }
++				         break;
+             case BATTLEGROUND_AV:
+                 *data << uint32(0x00000005);                    // count of next fields
+                 *data << uint32(((BattlegroundAVScore*)itr2->second)->GraveyardsAssaulted); // GraveyardsAssaulted

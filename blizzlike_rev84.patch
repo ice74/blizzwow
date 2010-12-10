@@ -1,0 +1,968 @@
+# HG changeset patch
+# User asniker
+# Date 1287655094 -21600
+# Node ID 50fa1a46d392d7b083becc346e51aede89bc95ea
+# Parent  fec9ad979147892e5a235bd71b7ff7ba5739cfbc
+�������
+
+diff --git a/sql/Greedy-core/Rus-Instanse/rus_instances.sql b/sql/Greedy-core/Rus-Instanse/rus_instances.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/Greedy-core/Rus-Instanse/rus_instances.sql
+@@ -0,0 +1,166 @@
++﻿SET NAMES 'UTF8';
++
++--Крепость Драк'Тарон
++
++UPDATE `script_texts` SET `content_loc8`='Труп бдыжь!' WHERE `entry`=-1600009;
++UPDATE `script_texts` SET `content_loc8`='Агггггр...' WHERE `entry`=-1600010;
++UPDATE `script_texts` SET `content_loc8`='Так голодно! Надо есть!' WHERE `entry`=-1600008;
++UPDATE `script_texts` SET `content_loc8`='Вам холодно? Это дыхание скорой смерти!' WHERE `entry`=-1600000;
++UPDATE `script_texts` SET `content_loc8`='Защищайте меня! Быстрее, будьте вы прокляты!' WHERE `entry`=-1600003;
++UPDATE `script_texts` SET `content_loc8`='Неужели вы не понимаете всей бесполезности происходящего?' WHERE `entry`=-1600004;
++UPDATE `script_texts` SET `content_loc8`='Ваши усилия напрасны...' WHERE `entry`=-1600002;
++UPDATE `script_texts` SET `content_loc8`='Тарон''джа знает все! Смертным не удастся прервать вечную династию!' WHERE `entry`=-1600011;
++UPDATE `script_texts` SET `content_loc8`='Теперь твоя плоть принадлежит Тарон''джа!' WHERE `entry`=-1600014;
++UPDATE `script_texts` SET `content_loc8`='Ааххх! Тарон''джа нужно больше!' WHERE `entry`=-1600016;
++UPDATE `script_texts` SET `content_loc8`='Не... невозможно! Тарон''джа вечен! тарон''джа...' WHERE `entry`=-1600018;
++
++--Азжол'Неруб(28684 и 29120)
++
++UPDATE `script_texts` SET `content_loc8`='Я чувствую живых. Приготовиться!' WHERE `entry`=-1601019;
++UPDATE `script_texts` SET `content_loc8`='Я слашу шаги. Будьте на чеку!' WHERE `entry`=-1601018;
++UPDATE `script_texts` SET `content_loc8`='Ворота должны выстоять любой ценой. Растерзайте их в клочья!' WHERE `entry`=-1601022;
++UPDATE `script_texts` SET `content_loc8`='Ворота должны выстоять любой ценой. Растерзайте их в клочья!' WHERE `entry`=-1601021;
++UPDATE `script_texts` SET `content_loc8`='Мы в осаде! Идите в атаку и принесите обратно их трупы!' WHERE `entry`=-1601020;
++UPDATE `script_texts` SET `content_loc8`='Это королевство принадлежит Плети. Только мертвые могут пройти!' WHERE `entry`=-1601011;
++UPDATE `script_texts` SET `content_loc8`='Питомцы мои, ужин подан!' WHERE `entry`=-1601016;
++UPDATE `script_texts` SET `content_loc8`='Я поблагодарил бы вас... но я давно забыл, как это делается.' WHERE `entry`=-1601014;
++UPDATE `script_texts` SET `content_loc8`='Вам предстоит вечная агония!' WHERE `entry`=-1601000;
++UPDATE `script_texts` SET `content_loc8`='Уунак-хиссс тик-к-к-к!' WHERE `entry`=-1601006;
++UPDATE `script_texts` SET `content_loc8`='Ауум на-л ак-к-к, ишшш!' WHERE `entry`=-1601008;
++UPDATE `script_texts` SET `content_loc8`='Чума на тебя!' WHERE `entry`=-1601007;
++UPDATE `script_texts` SET `content_loc8`='Восстаньте и вкусите их плоти!' WHERE `entry`=-1601009;
++UPDATE `script_texts` SET `content_loc8`='Ваша броня бессильна против моей саранчи!' WHERE `entry`=-1601005;
++UPDATE `script_texts` SET `content_loc8`='А-ах! Грр! Никогда не думал... что стану свободным от него...' WHERE `entry`=-1601004;
++
++--Очищение Стратхольма
++UPDATE `script_texts` SET `content_loc8`=' Новые игрушки!' WHERE `entry`=-1595030;
++UPDATE `script_texts` SET `content_loc8`='Это не смешно…' WHERE `entry`=-1595031;
++UPDATE `script_texts` SET `content_loc8`='Слишком поздно, герои Лордерона! Пришло время мертвых.' WHERE `entry`=-1595033;
++UPDATE `script_texts` SET `content_loc8`='А, развлечемся!' WHERE `entry`=-1595032;
++UPDATE `script_texts` SET `content_loc8`='Вы всего лишь… часть плана хозяина…' WHERE `entry`=-1595037;
++
++--Гундрак
++
++UPDATE `script_texts` SET `content_loc8`='Мы дали отпор Плети. А вы думаете у ВАС есть шанс?' WHERE `entry`=-1604010;
++UPDATE `script_texts` SET `content_loc8`='Приготовьтесь к чему-то… БОЛЬШОМУ!' WHERE `entry`=-1604015;
++UPDATE `script_texts` SET `content_loc8`='Теперь ты не помеха.' WHERE `entry`=-1604013;
++UPDATE `script_texts` SET `content_loc8`='Кто меня остановит? Ты?' WHERE `entry`=-1604012;
++UPDATE `script_texts` SET `content_loc8`='Земля поглотит вас!' WHERE `entry`=-1604016;
++UPDATE `script_texts` SET `content_loc8`='%s  начинает превращаться!' WHERE `entry`=-1604017;
++UPDATE `script_texts` SET `content_loc8`='Если наши боги могут умереть… то можем и мы…' WHERE `entry`=-1604014;
++
++--Чертоги Молний
++
++UPDATE `script_texts` SET `content_loc8`='Я величайший из сыновей своего отца! Пришел ваш конец!' WHERE `entry`=-1602000;
++UPDATE `script_texts` SET `content_loc8`='Освобождаю тебя от проклятия жизни!' WHERE `entry`=-1602001;
++UPDATE `script_texts` SET `content_loc8`='Плоть... слаба!' WHERE `entry`=-1602002;
++UPDATE `script_texts` SET `content_loc8`='Защищайтесь, хотя врятли это поможет!' WHERE `entry`=-1602005;
++UPDATE `script_texts` SET `content_loc8`='Покажите мне все на что вы способны!' WHERE `entry`=-1602009;
++UPDATE `script_texts` SET `content_loc8`='АААААААА! Узрите же ярость железа и стали!' WHERE `entry`=-1602007;
++UPDATE `script_texts` SET `content_loc8`='Это невозможно… Плоть не может быть сильнее!' WHERE `entry`=-1602004;
++UPDATE `script_texts` SET `content_loc8`='Так это вы убили моих детей? Вы… заплатите!' WHERE `entry`=-1602032;
++UPDATE `script_texts` SET `content_loc8`='Армии из железа покорят всех!' WHERE `entry`=-1602033;
++UPDATE `script_texts` SET `content_loc8`='Ха, ничтожество!' WHERE `entry`=-1602034;
++UPDATE `script_texts` SET `content_loc8`='Из-за тебя я и так уже, слишком многого не сделал!' WHERE `entry`=-1602035;
++UPDATE `script_texts` SET `content_loc8`='У нас безотходные процедуры. Вот увидите…' WHERE `entry`=-1602040;
++UPDATE `script_texts` SET `content_loc8`='Я растопчу вас своими сапогами!' WHERE `entry`=-1602037;
++UPDATE `script_texts` SET `content_loc8`=' Хозяин не зря… беспокоился.' WHERE `entry`=-1602036;
++UPDATE `script_texts` SET `content_loc8`=' Вся моя работа... насмарку!' WHERE `entry`=-1602038;
++UPDATE `script_texts` SET `content_loc8`=' Жизнь из безжизненности... смерть для вас.' WHERE `entry`=-1602038;
++UPDATE `script_texts` SET `content_loc8`='Вы хотите встретиться с господином? Сначала переживите бурю!' WHERE `entry`=-1602011;
++UPDATE `script_texts` SET `content_loc8`='Шокирует, не правда ли?' WHERE `entry`=-1602012;
++UPDATE `script_texts` SET `content_loc8`='Твои попытки тщетны.' WHERE `entry`=-1602013;
++UPDATE `script_texts` SET `content_loc8`='Огонь твоей жизни... поутшен.' WHERE `entry`=-1602014;
++UPDATE `script_texts` SET `content_loc8`='Малейшая искра станет причиной вашей смерти.' WHERE `entry`=-1602016;
++UPDATE `script_texts` SET `content_loc8`='Никто не в безопасности!' WHERE `entry`=-1602017;
++UPDATE `script_texts` SET `content_loc8`=' Господин… к вам гости!' WHERE `entry`=-1602015;
++UPDATE `script_texts` SET `content_loc8`='Я был свидетелем расцвета и падения империй… рождения и исчезновения целых рас… И только безрассудство смертных всегда оставалось неизменным. Ваше присутствие подтверждает это.' WHERE `entry`=-1602019;
++UPDATE `script_texts` SET `content_loc8`='Всего лишь смертные...' WHERE `entry`=-1602021;
++UPDATE `script_texts` SET `content_loc8`='Я... ВЕЧЕН!' WHERE `entry`=-1602022;
++UPDATE `script_texts` SET `content_loc8`='Всё твоё время потеряно напрасно!' WHERE `entry`=-1602023;
++UPDATE `script_texts` SET `content_loc8`='Подойдите поближе. Я сделаю все быстро.' WHERE `entry`=-1602026;
++UPDATE `script_texts` SET `content_loc8`='Есть ли у вас надежда? Нет!' WHERE `entry`=-1602018;
++UPDATE `script_texts` SET `content_loc8`='Вы слепо смотрите в бездну!' WHERE `entry`=-1602028;
++UPDATE `script_texts` SET `content_loc8`='Ваша невежественность поражает. Неужели вы не видите конец этого пути?' WHERE `entry`=-1602029;
++UPDATE `script_texts` SET `content_loc8`='От судьбы не спрячешься!' WHERE `entry`=-1602025;
++UPDATE `script_texts` SET `content_loc8`='Вы перешли границу забвения!' WHERE `entry`=-1602030;
++UPDATE `script_texts` SET `content_loc8`='Моя смерть… предвещает конец этого мира.' WHERE `entry`=-1602024;
++
++--ВЛАДЫКА СУДЕБ КАЗЗАК
++
++UPDATE `script_texts` SET `content_loc8`='Я хорошо помню горечь поражения на исходе третей войны, я слишком долго жаждал мести. Отныне все сущее накроет тень легиона. Еще немного и этот жалкий мир исчезнет без следа.' WHERE `entry`=-1000147;
++UPDATE `script_texts` SET `content_loc8`='Легион покорит вселенную!' WHERE `entry`=-1000148;
++UPDATE `script_texts` SET `content_loc8`='Смертным не место в этом мире!' WHERE `entry`=-1000150;
++UPDATE `script_texts` SET `content_loc8`='Все живое должно быть уничтожено!' WHERE `entry`=-1000149;
++UPDATE `script_texts` SET `content_loc8`='Я сорву плоть с ваших костей!' WHERE `entry`=-1000151;
++UPDATE `script_texts` SET `content_loc8`='Кирел Нарак!' WHERE `entry`=-1000152;
++UPDATE `script_texts` SET `content_loc8`='Презренная тварь!' WHERE `entry`=-1000153;
++UPDATE `script_texts` SET `content_loc8`='Грядет передел вселенной.' WHERE `entry`=-1000154;
++UPDATE `script_texts` SET `content_loc8`='Легион... никогда... не падет.' WHERE `entry`=-1000155;
++
++--СУДЬБОЛОМ
++UPDATE `script_texts` SET `content_loc8`='Не приближайтесь. Вы будете уничтожены!' WHERE `entry`=-1000159;
++UPDATE `script_texts` SET `content_loc8`='Начинаю тектоническую дестабилизацию.' WHERE `entry`=-1000160;
++UPDATE `script_texts` SET `content_loc8`='Магнитуда установлена. Запуск.' WHERE `entry`=-1000161;
++UPDATE `script_texts` SET `content_loc8`='Включаю максимальную скорость.' WHERE `entry`=-1000163;
++UPDATE `script_texts` SET `content_loc8`='Угроза устранена.' WHERE `entry`=-1000164;
++UPDATE `script_texts` SET `content_loc8`='Задача выполнена.' WHERE `entry`=-1000165;
++UPDATE `script_texts` SET `content_loc8`='Цель уничтожена.' WHERE `entry`=-1000166;
++UPDATE `script_texts` SET `content_loc8`='Отказ системы через пять, че-ты-рее...' WHERE `entry`=-1000167;
++
++--ОБСИДИАНОВОЕ СВЯТИЛИЩЕ
++
++--Шадрон
++
++UPDATE `script_texts` SET `content_loc8`='Я не боюсь ничего! Тем более вас!' WHERE `entry`=-1615000;
++UPDATE `script_texts` SET `content_loc8`='Ты ничтожество!' WHERE `entry`=-1615001;
++UPDATE `script_texts` SET `content_loc8`='Какое слабое сопротивление!' WHERE `entry`=-1615002;
++UPDATE `script_texts` SET `content_loc8`='Мы... выше всех! Как это... возможно...?' WHERE `entry`=-1615003;
++UPDATE `script_texts` SET `content_loc8`='Вас легко провести' WHERE `entry`=-1615004;
++UPDATE `script_texts` SET `content_loc8`='Я пожалею тебя Сартарион, но только в этот раз.' WHERE `entry`=-1615005;
++UPDATE `script_texts` SET `content_loc8`='Отец не зря учил меня!' WHERE `entry`=-1615006;
++UPDATE `script_texts` SET `content_loc8`='На колени!' WHERE `entry`=-161507;
++UPDATE `script_texts` SET `content_loc8`='Ученик Шадрон появляется в Сумерках!' WHERE `entry`=-1615008;
++
++--Тенеброн
++
++UPDATE `script_texts` SET `content_loc8`='Вам здесь не место. Ваше место среди усопших.' WHERE `entry`=-1615009;
++UPDATE `script_texts` SET `content_loc8`='Неинтересно.' WHERE `entry`=-1615010;
++UPDATE `script_texts` SET `content_loc8`='Как обычно... Только я вошла во вкус.' WHERE `entry`=-1615011;
++UPDATE `script_texts` SET `content_loc8`='Не надо было... вмешиваться...' WHERE `entry`=-1615012;
++UPDATE `script_texts` SET `content_loc8`='Приговариваю вас... к тьме...' WHERE `entry`=-1615013;
++UPDATE `script_texts` SET `content_loc8`='Занятно наблюдать как ты сражаешься. Хорошо, смотри как это надо делать.' WHERE `entry`=-1615014;
++UPDATE `script_texts` SET `content_loc8`='Самонадеянные мелкие твари! Вы бросаете вызов силам, от понимания которых вы ещё далеки...' WHERE `entry`=-1615015;
++UPDATE `script_texts` SET `content_loc8`='Я не простой дракон! Увидите, совсем, совсем не простой...' WHERE `entry`=-1615016;
++UPDATE `script_texts` SET `content_loc8`='% начинает высиживать яйца в сумерках!' WHERE `entry`=-1615017;
++
++--Сартарион
++
++UPDATE `script_texts` SET `content_loc8`='Моя обязанность оберегать эти яйца. И вы сгорите прежде, чем хоть пальцем тронете их!' WHERE `entry`=-1615018;
++UPDATE `script_texts` SET `content_loc8`='Это смехотворное сражение закончится СЕЙЧАС ЖЕ!' WHERE `entry`=-1615019;
++UPDATE `script_texts` SET `content_loc8`='Гори, злосчастный сброд!' WHERE `entry`=-1615020;
++UPDATE `script_texts` SET `content_loc8`='Шадрон! На помощь! Все на кону!' WHERE `entry`=-1615021;
++UPDATE `script_texts` SET `content_loc8`='Тенеброн! Ты тоже должна защищать яйца!' WHERE `entry`=-1615022;
++UPDATE `script_texts` SET `content_loc8`='Весперон! Кладка в опасности! Помоги мне!' WHERE `entry`=-1615023;
++UPDATE `script_texts` SET `content_loc8`='Такова цена... неудачи...' WHERE `entry`=--1615024;
++UPDATE `script_texts` SET `content_loc8`='Мелкая мошка хорошо горит...' WHERE `entry`=-1615025;
++UPDATE `script_texts` SET `content_loc8`='Ваши обугленные кости завалят весь пол!' WHERE `entry`=-1615026;
++UPDATE `script_texts` SET `content_loc8`='Посмотрим как вы переносите жару!' WHERE `entry`=-1615027;
++UPDATE `script_texts` SET `content_loc8`='От вас останется лишь горстка пепла!' WHERE `entry`=-1615028;
++UPDATE `script_texts` SET `content_loc8`='Из тебя выйдет хорошая закуска для детенышей.' WHERE `entry`=-1615029;
++UPDATE `script_texts` SET `content_loc8`='Тебе смертельно не повезло.' WHERE `entry`=-1615030;
++UPDATE `script_texts` SET `content_loc8`='Вот поэтому мы и называем вас низшими созданиями.' WHERE `entry`=-1615031;
++
++--Весперон
++
++UPDATE `script_texts` SET `content_loc8`='Вы безобидные ничтожные создания... покажите мне на что вы способны!' WHERE `entry`=-1615033;
++UPDATE `script_texts` SET `content_loc8`='Все что тебе удалось - это затеять драку..' WHERE `entry`=-1615034;
++UPDATE `script_texts` SET `content_loc8`='И это все что ты можешь сделать?' WHERE `entry`=-1615035;
++UPDATE `script_texts` SET `content_loc8`='Я все ещё могу... драться...' WHERE `entry`=-1615036;
++UPDATE `script_texts` SET `content_loc8`='Я буду ковыряться в зубах, вашими костями!' WHERE `entry`=-1615037;
++UPDATE `script_texts` SET `content_loc8`='Отец был прав насчет тебя, Сартарион... Ты слаб!' WHERE `entry`=-1615038;
++UPDATE `script_texts` SET `content_loc8`='С вами не просто... Но и со мной не легко...' WHERE `entry`=-1615039;
++UPDATE `script_texts` SET `content_loc8`='В отличии от вас, я кое-что умею.' WHERE `entry`=-1615040;
++UPDATE `script_texts` SET `content_loc8`='Ученик Весперон появляется в Сумерках' WHERE `entry`=-1615041;
++UPDATE `script_texts` SET `content_loc8`='% начинает открывать Врата Сумерек!' WHERE `entry`=-1615042;
++
+diff --git a/sql/Greedy-core/world/vanish.sql b/sql/Greedy-core/world/vanish.sql
+deleted file mode 100644
+--- a/sql/Greedy-core/world/vanish.sql
++++ /dev/null
+@@ -1,5 +0,0 @@
+-DELETE FROM `spell_linked_spell` WHERE `spell_trigger` = -1784;
+-INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+-(-1784, -11327, 0, 'Vanish - Rank 1'),
+-(-1784, -11329, 0, 'Vanish - Rank 2'),
+-(-1784, -26888, 0, 'Vanish - Rank 3');
+diff --git a/sql/updates/10206_world_creature_classlevelstats.sql b/sql/updates/10206_world_creature_classlevelstats.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10206_world_creature_classlevelstats.sql
+@@ -0,0 +1,6 @@
++UPDATE `creature_classlevelstats` SET `basehp1`=4731 WHERE `class`=8 AND `level`=65;
++UPDATE `creature_classlevelstats` SET `basehp1`=6906 WHERE `class`=2 AND `level`=66;
++UPDATE `creature_classlevelstats` SET `basehp1`=4892 WHERE `class`=8 AND `level`=66;
++UPDATE `creature_classlevelstats` SET `basehp1`=5060 WHERE `class`=8 AND `level`=67;
++UPDATE `creature_classlevelstats` SET `basehp1`=11570 WHERE `class`=1 AND `level`=83;
++
+diff --git a/sql/updates/10208_world_script_name.sql b/sql/updates/10208_world_script_name.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10208_world_script_name.sql
+@@ -0,0 +1,8 @@
++-- Razorscale
++UPDATE `creature_template` SET `ScriptName` = 'boss_razorscale' WHERE `entry`=33186;
++UPDATE `creature_template` SET `ScriptName` = 'npc_devouring_flame' WHERE `entry`=34188;
++UPDATE `creature_template` SET `ScriptName` = 'npc_mole_machine_trigger' WHERE `entry`=33245;
++UPDATE `creature_template` SET `ScriptName` = 'npc_expedition_commander' WHERE `entry`=33210;
++UPDATE `creature_template` SET `ScriptName` = 'npc_darkrune_guardian' WHERE `entry`=33388;
++UPDATE `creature_template` SET `ScriptName` = 'npc_darkrune_sentinel' WHERE `entry`=33846;
++UPDATE `creature_template` SET `ScriptName` = 'npc_darkrune_watcher' WHERE `entry`=33453;
+diff --git a/sql/updates/10208_world_script_texts.sql b/sql/updates/10208_world_script_texts.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10208_world_script_texts.sql
+@@ -0,0 +1,16 @@
++DELETE FROM `script_texts` WHERE `entry` IN (-1603268,-1603267,-1603266);
++INSERT INTO `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) VALUES
++(33186, -1603268, 'Razorscale grounded permanently!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0, 'EMOTE_PERMA'),
++(33186, -1603267, 'Razorscale takes a deep breath...', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0, 'EMOTE_BREATH'),
++(33287, -1603266, 'Harpoon Turret is ready for use!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,2,0,0, 'EMOTE_HARPOON');
++
++DELETE FROM `script_texts` WHERE `entry` IN (-1603265,-1603264,-1603263,-1603262);
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(33287, -1603265, 'Fires out! Let''s rebuild those turrets!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_TURRETS'),
++(33287, -1603264, 'Ready to move out, keep those dwarves off of our backs!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_AGGRO_3'),
++(33287, -1603263, 'Be on the lookout! Mole machines will be surfacing soon with those nasty Iron dwarves aboard!', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_AGGRO_2'),
++(33287, -1603262, 'Give us a moment to prepare to build the turrets.', NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,1,0,0, 'SAY_AGGRO_1');
++
++-- Razorscale emotes
++UPDATE `script_texts` SET `content_default` = "Welcome, champions! All of our attempts at grounding her have failed. We could use a hand in bring her down with these harpoon guns.", `type`=0  WHERE `entry`=-1603260;
++UPDATE `script_texts` SET `content_default` = "Move! Quickly! She won't remain grounded for long.", `type`=1  WHERE `entry`=-1603261;
+diff --git a/sql/updates/10213_world_script_texts.sql b/sql/updates/10213_world_script_texts.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10213_world_script_texts.sql
+@@ -0,0 +1,12 @@
++DELETE FROM `script_texts` WHERE `entry` IN (-1000002,-1000003);
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(0,-1000002,'%s goes into a frenzy!',0,2,0,0,'EMOTE_GENERIC_FRENZY'),
++(0,-1000003,'%s becomes enraged!',0,2,0,0,'EMOTE_GENERIC_ENRAGED');
++ 
++DELETE FROM `script_texts` WHERE `entry` IN (-1575023,-1575024,-1575025,-1575026,-1575027);
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(26668,-1575023,'Your death approaches.',13850,1,0,0,'svala SAY_SACRIFICE_1'),
++(26668,-1575024,'Go now to my master.',13851,1,0,0,'svala SAY_SACRIFICE_2'),
++(26668,-1575025,'Your end is inevitable.',13852,1,0,0,'svala SAY_SACRIFICE_3'),
++(26668,-1575026,'Yor-guul mak!',13853,1,0,0,'svala SAY_SACRIFICE_4'),
++(26668,-1575027,'Any last words?',13854,1,0,0,'svala SAY_SACRIFICE_5');
+diff --git a/sql/updates/10215_world_spell_script_names.sql b/sql/updates/10215_world_spell_script_names.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10215_world_spell_script_names.sql
+@@ -0,0 +1,4 @@
++DELETE FROM `spell_script_names` WHERE `spell_id` = 31261 AND `ScriptName`='spell_creature_permanent_feign_death';
++INSERT INTO `spell_script_names` (`spell_id`,`ScriptName`) VALUES
++(31261, 'spell_creature_permanent_feign_death');
++
+diff --git a/sql/updates/10219_world_spelldifficulty_dbc.sql b/sql/updates/10219_world_spelldifficulty_dbc.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10219_world_spelldifficulty_dbc.sql
+@@ -0,0 +1,13 @@
++-- Delete redundant data first
++DELETE FROM `spelldifficulty_dbc` WHERE `id` IN (3042,3043,3044,3045,3046,3047,3048,3053,3055,3056,3057,3058,3059,3060,3061,3063,3073,3074,3075,3076,3077,3078,3079,3080,3081,3082,3083,3084,3085,3086,3087,3088,3089,3090,3091,3092,3093,3094,3095);
++INSERT INTO `spelldifficulty_dbc` (`id`, `spellid0`, `spellid1`, `spellid2`, `spellid3`) VALUES
++-- Razorscale spells
++(3042, 62796, 63815, 0, 0), -- SPELL_FIREBALL_10 / SPELL_FIREBALL_25
++(3043, 64709, 64734, 0, 0), -- SPELL_FLAME_GROUND_10 / SPELL_FLAME_GROUND_25
++(3044, 63317, 64021, 0, 0), -- SPELL_FLAMEBREATH_10 / SPELL_FLAMEBREATH_25
++-- Ignis spells
++(3045, 62680, 63472, 0, 0), -- SPELL_FLAME_JETS_10 / SPELL_FLAME_JETS_25
++(3046, 62546, 63474, 0, 0), -- SPELL_SCORCH_10 / SPELL_SCORCH_25
++(3047, 62717, 63477, 0, 0), -- SPELL_SLAG_POT_10 / SPELL_SLAG_POT_25
++(3048, 62836, 63536, 0, 0), -- SPELL_SLAG_IMBUED_10 / SPELL_SLAG_IMBUED_25
++(3053, 62548, 63476, 0, 0); -- SPELL_GROUND_10 / SPELL_GROUND_25
+diff --git a/sql/updates/10223_world_spell_proc_event.sql b/sql/updates/10223_world_spell_proc_event.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10223_world_spell_proc_event.sql
+@@ -0,0 +1,5 @@
++-- Crusader Strike proc Righteous Vengeance
++UPDATE `spell_proc_event` SET `SpellFamilyMask1`=163840 WHERE `entry`=53380;
++UPDATE `spell_proc_event` SET `SpellFamilyMask1`=163840 WHERE `entry`=53381;
++UPDATE `spell_proc_event` SET `SpellFamilyMask1`=163840 WHERE `entry`=53382;
++
+diff --git a/sql/updates/10228_world_trinity_string.sql b/sql/updates/10228_world_trinity_string.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10228_world_trinity_string.sql
+@@ -0,0 +1,2 @@
++DELETE FROM `trinity_string` WHERE `entry` = 819;
++INSERT INTO `trinity_string` (`entry`, `content_default`) VALUES (819, "City");
+diff --git a/sql/updates/10230_world_script_texts.sql b/sql/updates/10230_world_script_texts.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10230_world_script_texts.sql
+@@ -0,0 +1,13 @@
++DELETE FROM `script_texts` WHERE `entry` BETWEEN -1631114 AND -1631104;
++INSERT INTO `script_texts` (`npc_entry`,`entry`,`content_default`,`content_loc1`,`content_loc2`,`content_loc3`,`content_loc4`,`content_loc5`,`content_loc6`,`content_loc7`,`content_loc8`,`sound`,`type`,`language`,`emote`,`comment`) VALUES
++(36678,-1631104,'Good news, everyone! I think I perfected a plague that will destroy all life on Azeroth!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17114,1,0,0,'SAY_AGGRO'),
++(36678,-1631105,'%s begins to cast Unstable Experiment!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_UNSTABLE_EXPERIMENT'),
++(36678,-1631106,'Two oozes, one room! So many delightful possibilities...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17122,1,0,0,'SAY_PHASE_TRANSITION_HEROIC'),
++(36678,-1631107,'Hmm. I don''t feel a thing. Whaa...? Where''d those come from?',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17120,1,0,15,'SAY_TRANSFORM_1'),
++(36678,-1631108,'Tastes like... Cherry! Oh! Excuse me!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17121,1,0,15,'SAY_TRANSFORM_2'),
++(36678,-1631109,'|TInterface\Icons\inv_misc_herb_evergreenmoss.blp:16|t%s cast |cFF00FF00Malleable Goo!|r',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_MALLEABLE_GOO'),
++(36678,-1631110,'%s cast |cFFFF7F00Choking Gas Bomb!|r',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,3,0,0,'EMOTE_CHOKING_GAS_BOMB'),
++(36678,-1631111,'Hmm... Interesting...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17115,1,0,0,'SAY_KILL_1'),
++(36678,-1631112,'That was unexpected!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17116,1,0,0,'SAY_KILL_2'),
++(36678,-1631113,'Great news, everyone!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17118,1,0,0,'SAY_BERSERK'),
++(36678,-1631114,'Bad news, everyone! I don''t think I''m going to make it.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,17117,1,0,0,'SAY_DEATH');
+diff --git a/sql/updates/10230_world_scriptname.sql b/sql/updates/10230_world_scriptname.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10230_world_scriptname.sql
+@@ -0,0 +1,1 @@
++UPDATE `creature_template` SET `ScriptName`='npc_volatile_ooze' WHERE `entry`=37697;
+diff --git a/sql/updates/10230_world_spell_proc_event.sql b/sql/updates/10230_world_spell_proc_event.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10230_world_spell_proc_event.sql
+@@ -0,0 +1,6 @@
++DELETE FROM `spell_proc_event` WHERE `entry` IN (70215,72858,72859,72860);
++INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFamilyMask0`,`SpellFamilyMask1`,`SpellFamilyMask2`,`procFlags`,`procEx`,`ppmRate`,`CustomChance`,`Cooldown`) VALUES
++(70215,0x00,0,0x00000000,0x00000000,0x00000000,0x00000004,0x00000000,0,100,0), -- Gaseous Bloat
++(72858,0x00,0,0x00000000,0x00000000,0x00000000,0x00000004,0x00000000,0,100,0), -- Gaseous Bloat
++(72859,0x00,0,0x00000000,0x00000000,0x00000000,0x00000004,0x00000000,0,100,0), -- Gaseous Bloat
++(72860,0x00,0,0x00000000,0x00000000,0x00000000,0x00000004,0x00000000,0,100,0); -- Gaseous Bloat
+diff --git a/sql/updates/10230_world_spell_script_names.sql b/sql/updates/10230_world_spell_script_names.sql
+new file mode 100644
+--- /dev/null
++++ b/sql/updates/10230_world_spell_script_names.sql
+@@ -0,0 +1,47 @@
++DELETE FROM `spell_script_names` WHERE `spell_id`=70701 AND `ScriptName`='spell_putricide_expunged_gas';
++DELETE FROM `spell_script_names` WHERE `spell_id`=70343 AND `ScriptName`='spell_putricide_slime_puddle';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70351,71966,71967,71968) AND `ScriptName`='spell_putricide_unstable_experiment';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (71412,71415) AND `ScriptName`='spell_putricide_ooze_summon';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70672,72455,72832,72833) AND `ScriptName`='spell_putricide_gaseous_bloat';
++DELETE FROM `spell_script_names` WHERE `spell_id`=70459 AND `ScriptName`='spell_putricide_ooze_eruption_searcher';
++DELETE FROM `spell_script_names` WHERE `spell_id`=71255 AND `ScriptName`='spell_putricide_choking_gas_bomb';
++DELETE FROM `spell_script_names` WHERE `spell_id`=70920 AND `ScriptName`='spell_putricide_unbound_plague';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70360,72527) AND `ScriptName`='spell_putricide_eat_ooze';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (72451,72463,72671,72672) AND `ScriptName`='spell_putricide_mutated_plague';
++DELETE FROM `spell_script_names` WHERE `spell_id`=70308 AND `ScriptName`='spell_putricide_mutation_init';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70311,71503) AND `ScriptName`='spell_putricide_mutated_transformation';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70405,72508,72509,72510) AND `ScriptName`='spell_putricide_mutated_transformation_dismiss';
++DELETE FROM `spell_script_names` WHERE `spell_id` IN (70539,72457,72875,72876) AND `ScriptName`='spell_putricide_regurgitated_ooze';
++INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
++(70701,'spell_putricide_expunged_gas'),
++(70343,'spell_putricide_slime_puddle'),
++(70351,'spell_putricide_unstable_experiment'),
++(71966,'spell_putricide_unstable_experiment'),
++(71967,'spell_putricide_unstable_experiment'),
++(71968,'spell_putricide_unstable_experiment'),
++(71412,'spell_putricide_ooze_summon'),
++(71415,'spell_putricide_ooze_summon'),
++(70672,'spell_putricide_gaseous_bloat'),
++(72455,'spell_putricide_gaseous_bloat'),
++(72832,'spell_putricide_gaseous_bloat'),
++(72833,'spell_putricide_gaseous_bloat'),
++(70459,'spell_putricide_ooze_eruption_searcher'),
++(71255,'spell_putricide_choking_gas_bomb'),
++(70920,'spell_putricide_unbound_plague'),
++(70360,'spell_putricide_eat_ooze'),
++(72527,'spell_putricide_eat_ooze'),
++(72451,'spell_putricide_mutated_plague'),
++(72463,'spell_putricide_mutated_plague'),
++(72671,'spell_putricide_mutated_plague'),
++(72672,'spell_putricide_mutated_plague'),
++(70308,'spell_putricide_mutation_init'),
++(70311,'spell_putricide_mutated_transformation'),
++(71503,'spell_putricide_mutated_transformation'),
++(70405,'spell_putricide_mutated_transformation_dismiss'),
++(72508,'spell_putricide_mutated_transformation_dismiss'),
++(72509,'spell_putricide_mutated_transformation_dismiss'),
++(72510,'spell_putricide_mutated_transformation_dismiss'),
++(70539,'spell_putricide_regurgitated_ooze'),
++(72457,'spell_putricide_regurgitated_ooze'),
++(72875,'spell_putricide_regurgitated_ooze'),
++(72876,'spell_putricide_regurgitated_ooze');
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp
+new file mode 100644
+--- /dev/null
++++ b/src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp
+@@ -0,0 +1,288 @@
++/* Copyright (C) 2009 - 2010 TrinityCore <http://www.trinitycore.org/>
++*
++* This program is free software; you can redistribute it and/or modify
++* it under the terms of the GNU General Public License as published by
++* the Free Software Foundation; either version 2 of the License, or
++* (at your option) any later version.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++* GNU General Public License for more details.
++*
++* You should have received a copy of the GNU General Public License
++* along with this program; if not, write to the Free Software
++* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
++*/
++
++#include "ScriptPCH.h"
++#include "icecrown_citadel.h"
++
++enum Yells
++{
++    SAY_AGGRO            = -1666054,
++    SAY_VAMP_BITE_1      = -1666055,
++    SAY_VAMP_BITE_2      = -1666056,
++    SAY_SWARM_SHADOWS    = -1666057,
++    SAY_PACT_DARKFALLEN  = -1666058,
++    SAY_MIND_CONTROLL    = -1666059,
++    SAY_AIR_PHASE        = -1666060,
++    SAY_BERSERK          = -1666061,
++    SAY_DEATH            = -1666062
++};
++
++enum Spells
++{
++    SPELL_PRESENCE_OF_DARKFALLEN    = 71952,
++    SPELL_SHROUD_OF_SORROW          = 72981,
++    SPELL_DELIRIOUS_SLASH           = 71623,
++    SPELL_BLOOD_MIRROR_1            = 70821,
++    SPELL_BLOOD_MIRROR_2            = 71510,
++    SPELL_VAMPIRIC_BITE             = 71726,
++    SPELL_PACT_OF_THE_DARKFALLEN_1  = 71340,
++    SPELL_PACT_OF_THE_DARKFALLEN_2  = 71341,
++    SPELL_SWARMING_SHADOWS          = 71264,
++    SPELL_TWILIGHT_BLOODBOLT        = 71446,
++    SPELL_BLOODBOLT_WHIRL           = 71899,
++    SPELL_BLOODBOLT_SPLASH          = 71447,
++    SPELL_INCITE_TERROR             = 73070,
++    SPELL_SWARMING_SHADOWS_VISUAL   = 71267,
++    SPELL_SWARMING_SHADOW           = 71267,
++    SPELL_ESSENCE_OF_BLOOD_QWEEN    = 70867,
++    SPELL_FRENZIED_BLOODTHIRST      = 70877,
++    SPELL_UNCONTROLLABLE_FRENZY     = 70923
++};
++
++const Position SpawnLoc[]=
++{
++    {4595.640f, 2769.195f, 400.137f, 0.0f}, //phase 2 pos
++    {4595.904f, 2769.315f, 421.838f, 0.0f} //fly pos
++};
++
++class boss_blood_queen_lanathel : public CreatureScript
++{
++    public:
++        boss_blood_queen_lanathel() : CreatureScript("boss_blood_queen_lanathel") { }
++
++        struct boss_blood_queen_lanathelAI : public BossAI
++        {
++            boss_blood_queen_lanathelAI(Creature* pCreature) : BossAI(pCreature, DATA_BLOOD_QUEEN_LANATHEL)
++            {
++                pInstance = me->GetInstanceScript();
++            }
++
++            void Reset()
++            {
++                m_uiPhase = 1;
++                m_uiPhaseTimer = 90000;
++                m_uiTwilightBloodboltTimer = 10000;
++                m_uiVampBiteTimer  = 15000;
++                m_uiSwarmingShadowsTimer = 30000;
++                m_uiPactofDarkfallenTimer  = 5000;
++                m_uiSetHoverTimer = 90000;
++                m_uiBloodboldSplashTimer = 900000;
++                m_uiLandingTimer = 900000;
++                m_uiFlyingFalseTimer = 900000;
++                m_uiBerserkTimer = 330000;
++
++                memset(&Darkfallen, 0, sizeof(Darkfallen));
++
++                if (pInstance && me->isAlive())
++                    pInstance->SetData(DATA_BLOOD_QUEEN_LANATHEL_EVENT, NOT_STARTED);
++            }
++
++            void EnterCombat(Unit* /*who*/)
++            {
++                DoScriptText(SAY_AGGRO, me);
++                DoCast(SPELL_SHROUD_OF_SORROW);
++
++                if (pInstance)
++                    pInstance->SetData(DATA_BLOOD_QUEEN_LANATHEL_EVENT, IN_PROGRESS);
++            }
++
++            void KilledUnit(Unit* pVictim)
++            {
++                pVictim->RemoveAllAuras();
++            }
++
++            void JustDied(Unit* /*Killer*/)
++            {
++                DoScriptText(SAY_DEATH, me);
++
++                if (pInstance)
++                    pInstance->SetData(DATA_BLOOD_QUEEN_LANATHEL_EVENT, DONE);
++            }
++
++            void UpdateAI(const uint32 uiDiff)
++            {
++                if (!UpdateVictim())
++                    return;
++
++                if (!me->HasAura(SPELL_SHROUD_OF_SORROW))
++                    DoCast(me, SPELL_SHROUD_OF_SORROW);
++
++                if (m_uiBerserkTimer < uiDiff)
++                {
++                    DoScriptText(SAY_BERSERK, me);
++                    DoCast(me, SPELL_BERSERK);
++                    m_uiBerserkTimer = 330000;
++                } else m_uiBerserkTimer -= uiDiff;
++
++                if (m_uiPhase == 1)
++                {
++                    if (m_uiPactofDarkfallenTimer <= uiDiff)
++                    {
++                        DoScriptText(SAY_PACT_DARKFALLEN, me);
++                        m_uiPactofDarkfallenExplosionCount = 0;
++                        m_uiPactofDarkfallenExplodeTimer = 2000;
++                        m_uiPactofDarkfallenTimer = 25000;
++                    } else m_uiPactofDarkfallenTimer -= uiDiff;
++
++                    if (m_uiSwarmingShadowsTimer < uiDiff)
++                    {
++                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
++                        DoCast(pTarget, SPELL_SWARMING_SHADOWS);
++                        m_uiSwarmingShadowsTimer = 30000;
++                    } else m_uiSwarmingShadowsTimer -= uiDiff;
++
++                    if (m_uiTwilightBloodboltTimer < uiDiff)
++                    {
++                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
++                        DoCast(pTarget, SPELL_TWILIGHT_BLOODBOLT);
++                        m_uiTwilightBloodboltTimer = 9000;
++                    } else m_uiTwilightBloodboltTimer -= uiDiff;
++
++                    if (m_uiVampBiteTimer < uiDiff)
++                    {
++                        DoScriptText(RAND(SAY_VAMP_BITE_1,SAY_VAMP_BITE_2), me);
++                        DoCast(me->getVictim(), SPELL_VAMPIRIC_BITE);
++                        m_uiVampBiteTimer = 40000;
++                    } else m_uiVampBiteTimer -= uiDiff;
++
++                    if (m_uiPhaseTimer < uiDiff)
++                    {
++                        DoScriptText(SAY_AIR_PHASE, me);
++                        DoCast(me, SPELL_INCITE_TERROR);
++                        me->GetMotionMaster()->MovePoint(0, SpawnLoc[0]);
++                        me->SetReactState(REACT_PASSIVE);
++                        me->AttackStop();
++                        m_uiPhase = 2;
++                        m_uiPhaseTimer = 90000;
++                        m_uiSetHoverTimer = 5000;
++                        m_uiBloodboldSplashTimer = 10000;
++                        m_uiLandingTimer = 26000;
++                        m_uiFlyingFalseTimer = 30000;
++                    } else m_uiPhaseTimer -= uiDiff;
++                }
++
++                if (m_uiPhase == 2)
++                {
++                    if (m_uiSetHoverTimer < uiDiff)
++                    {
++                        me->GetMotionMaster()->MovePoint(0, SpawnLoc[1]);
++                        me->SetUnitMovementFlags(MOVEMENTFLAG_JUMPING);
++                        me->SetFlying(true);
++                        m_uiSetHoverTimer = 90000;
++                    } else m_uiSetHoverTimer -= uiDiff;
++
++                    if (m_uiBloodboldSplashTimer < uiDiff)
++                    {
++                        std::list<Unit*> targets;
++                        SelectTargetList(targets, 5, SELECT_TARGET_RANDOM, 80, true);
++                        for (std::list<Unit*>::const_iterator i = targets.begin(); i != targets.end(); ++i)
++                            DoCast(*i, SPELL_TWILIGHT_BLOODBOLT);
++                        m_uiBloodboldSplashTimer = 2000;
++                    } else m_uiBloodboldSplashTimer -= uiDiff;
++
++                    if (m_uiLandingTimer < uiDiff)
++                    {
++                        me->GetMotionMaster()->MovePoint(0, SpawnLoc[0]);
++                        me->SetUnitMovementFlags(MOVEMENTFLAG_JUMPING);
++                        m_uiLandingTimer = 900000;
++                        m_uiBloodboldSplashTimer = 900000;
++                    } else m_uiLandingTimer -= uiDiff;
++
++                    if (m_uiFlyingFalseTimer < uiDiff)
++                    {
++                        me->SetFlying(false);
++                        me->RemoveAllAuras();
++                        me->SetReactState(REACT_AGGRESSIVE);
++                        me->GetMotionMaster()->MoveChase(me->getVictim());
++                        m_uiPhase = 1;
++                        m_uiFlyingFalseTimer = 900000;
++                    } else m_uiFlyingFalseTimer -= uiDiff;
++                }
++
++                DoMeleeAttackIfReady();
++            }
++        private:
++            InstanceScript* pInstance;
++
++            uint32 m_uiTwilightBloodboltTimer;
++            uint32 m_uiPhaseTimer;
++            uint32 m_uiVampBiteTimer;
++            uint32 m_uiSwarmingShadowsTimer;
++            uint32 m_uiPactofDarkfallenTimer;
++            uint32 m_uiPactofDarkfallenExplodeTimer;
++            uint32 m_uiPactofDarkfallenExplosionCount;
++            uint32 m_uiPhase;
++            uint32 m_uiBerserkTimer;
++            uint32 m_uiSetHoverTimer;
++            uint32 m_uiLandingTimer;
++            uint32 m_uiFlyingFalseTimer;
++            uint32 m_uiBloodboldSplashTimer;
++            uint32 m_uiResetTimer;
++            Unit* Darkfallen[5];
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new boss_blood_queen_lanathelAI(pCreature);
++        }
++};
++
++class npc_swarming_shadows : public CreatureScript
++{
++    public:
++        npc_swarming_shadows() : CreatureScript("npc_swarming_shadows") { }
++
++        struct npc_swarming_shadowsAI : public Scripted_NoMovementAI
++        {
++            npc_swarming_shadowsAI(Creature *pCreature) : Scripted_NoMovementAI(pCreature)
++            {
++                pInstance = pCreature->GetInstanceScript();
++            }
++
++            void Reset()
++            {
++                m_uiSwarmingShadowTimer = 1200;
++            }
++
++            void UpdateAI(const uint32 uiDiff)
++            {
++                if (!me->HasAura(SPELL_SWARMING_SHADOWS_VISUAL))
++                    DoCast(me, SPELL_SWARMING_SHADOWS_VISUAL);
++
++                if (m_uiSwarmingShadowTimer < uiDiff)
++                {
++                    DoCast(me, SPELL_SWARMING_SHADOW);
++                    m_uiSwarmingShadowTimer = 2000;
++                } else m_uiSwarmingShadowTimer -= uiDiff;
++            }
++        private:
++            InstanceScript* pInstance;
++
++            uint32 m_uiSwarmingShadowTimer;
++        };
++
++        CreatureAI* GetAI(Creature* pCreature) const
++        {
++            return new npc_swarming_shadowsAI(pCreature);
++        }
++};
++
++void AddSC_boss_blood_queen_lana_thel()
++{
++    new boss_blood_queen_lanathel();
++    new npc_swarming_shadows();
++}
+diff --git a/src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lanathel.cpp b/src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lanathel.cpp
+deleted file mode 100644
+--- a/src/server/scripts/Northrend/IcecrownCitadel/boss_blood_queen_lanathel.cpp
++++ /dev/null
+@@ -1,289 +0,0 @@
+-/*
+- * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+- * Copyright (C) 2010 Bolvor <http://bitbucket.org/bolvor/icecrown-citadel/>
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#include "ScriptPCH.h"
+-#include "icecrown_citadel.h"
+-
+-enum Yells
+-{
+-    SAY_AGGRO            = -1666054,
+-    SAY_VAMP_BITE_1      = -1666055,
+-    SAY_VAMP_BITE_2      = -1666056,
+-    SAY_SWARM_SHADOWS    = -1666057,
+-    SAY_PACT_DARKFALLEN  = -1666058,
+-    SAY_MIND_CONTROLL    = -1666059,
+-    SAY_AIR_PHASE        = -1666060,
+-    SAY_BERSERK          = -1666061,
+-    SAY_DEATH            = -1666062
+-};
+-
+-enum Spells
+-{
+-    SPELL_PRESENCE_OF_DARKFALLEN    = 71952,
+-    SPELL_SHROUD_OF_SORROW          = 72981,
+-    SPELL_DELIRIOUS_SLASH           = 71623,
+-    SPELL_BLOOD_MIRROR_1            = 70821,
+-    SPELL_BLOOD_MIRROR_2            = 71510,
+-    SPELL_VAMPIRIC_BITE             = 71726,
+-    SPELL_PACT_OF_THE_DARKFALLEN_1  = 71340,
+-    SPELL_PACT_OF_THE_DARKFALLEN_2  = 71341,
+-    SPELL_SWARMING_SHADOWS          = 71264,
+-    SPELL_TWILIGHT_BLOODBOLT        = 71446,
+-    SPELL_BLOODBOLT_WHIRL           = 71899,
+-    SPELL_BLOODBOLT_SPLASH          = 71447,
+-    SPELL_INCITE_TERROR             = 73070,
+-    SPELL_SWARMING_SHADOWS_VISUAL   = 71267,
+-    SPELL_SWARMING_SHADOW           = 71267,
+-    SPELL_ESSENCE_OF_BLOOD_QWEEN    = 70867,
+-    SPELL_FRENZIED_BLOODTHIRST      = 70877,
+-    SPELL_UNCONTROLLABLE_FRENZY     = 70923
+-};
+-
+-const Position SpawnLoc[]=
+-{
+-    {4595.640f, 2769.195f, 400.137f, 0.0f}, //phase 2 pos
+-    {4595.904f, 2769.315f, 421.838f, 0.0f} //fly pos
+-};
+-
+-class boss_blood_queen_lanathel : public CreatureScript
+-{
+-    public:
+-        boss_blood_queen_lanathel() : CreatureScript("boss_blood_queen_lanathel") { }
+-
+-        struct boss_blood_queen_lanathelAI : public BossAI
+-        {
+-            boss_blood_queen_lanathelAI(Creature* pCreature) : BossAI(pCreature, DATA_BLOOD_QUEEN_LANATHEL)
+-            {
+-                pInstance = me->GetInstanceScript();
+-            }
+-
+-            void Reset()
+-            {
+-                m_uiPhase = 1;
+-                m_uiPhaseTimer = 90000;
+-                m_uiTwilightBloodboltTimer = 10000;
+-                m_uiVampBiteTimer  = 15000;
+-                m_uiSwarmingShadowsTimer = 30000;
+-                m_uiPactofDarkfallenTimer  = 5000;
+-                m_uiSetHoverTimer = 90000;
+-                m_uiBloodboldSplashTimer = 900000;
+-                m_uiLandingTimer = 900000;
+-                m_uiFlyingFalseTimer = 900000;
+-                m_uiBerserkTimer = 330000;
+-
+-                memset(&Darkfallen, 0, sizeof(Darkfallen));
+-
+-                if (pInstance && me->isAlive())
+-                    pInstance->SetData(DATA_BLOOD_QUEEN_LANATHEL_EVENT, NOT_STARTED);
+-            }
+-
+-            void EnterCombat(Unit* /*who*/)
+-            {
+-                DoScriptText(SAY_AGGRO, me);
+-                DoCast(SPELL_SHROUD_OF_SORROW);
+-
+-                if (pInstance)
+-                    pInstance->SetData(DATA_BLOOD_QUEEN_LANATHEL_EVENT, IN_PROGRESS);
+-            }
+-
+-            void KilledUnit(Unit* pVictim)
+-            {
+-                pVictim->RemoveAllAuras();
+-            }
+-
+-            void JustDied(Unit* /*Killer*/)
+-            {
+-                DoScriptText(SAY_DEATH, me);
+-
+-                if (pInstance)
+-                    pInstance->SetData(DATA_BLOOD_QUEEN_LANATHEL_EVENT, DONE);
+-            }
+-
+-            void UpdateAI(const uint32 uiDiff)
+-            {
+-                if (!UpdateVictim())
+-                    return;
+-
+-                if (!me->HasAura(SPELL_SHROUD_OF_SORROW))
+-                    DoCast(me, SPELL_SHROUD_OF_SORROW);
+-
+-                if (m_uiBerserkTimer < uiDiff)
+-                {
+-                    DoScriptText(SAY_BERSERK, me);
+-                    DoCast(me, SPELL_BERSERK);
+-                    m_uiBerserkTimer = 330000;
+-                } else m_uiBerserkTimer -= uiDiff;
+-
+-                if (m_uiPhase == 1)
+-                {
+-                    if (m_uiPactofDarkfallenTimer <= uiDiff)
+-                    {
+-                        DoScriptText(SAY_PACT_DARKFALLEN, me);
+-                        m_uiPactofDarkfallenExplosionCount = 0;
+-                        m_uiPactofDarkfallenExplodeTimer = 2000;
+-                        m_uiPactofDarkfallenTimer = 25000;
+-                    } else m_uiPactofDarkfallenTimer -= uiDiff;
+-
+-                    if (m_uiSwarmingShadowsTimer < uiDiff)
+-                    {
+-                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                        DoCast(pTarget, SPELL_SWARMING_SHADOWS);
+-                        m_uiSwarmingShadowsTimer = 30000;
+-                    } else m_uiSwarmingShadowsTimer -= uiDiff;
+-
+-                    if (m_uiTwilightBloodboltTimer < uiDiff)
+-                    {
+-                        if(Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+-                        DoCast(pTarget, SPELL_TWILIGHT_BLOODBOLT);
+-                        m_uiTwilightBloodboltTimer = 9000;
+-                    } else m_uiTwilightBloodboltTimer -= uiDiff;
+-
+-                    if (m_uiVampBiteTimer < uiDiff)
+-                    {
+-                        DoScriptText(RAND(SAY_VAMP_BITE_1,SAY_VAMP_BITE_2), me);
+-                        DoCast(me->getVictim(), SPELL_VAMPIRIC_BITE);
+-                        m_uiVampBiteTimer = 40000;
+-                    } else m_uiVampBiteTimer -= uiDiff;
+-
+-                    if (m_uiPhaseTimer < uiDiff)
+-                    {
+-                        DoScriptText(SAY_AIR_PHASE, me);
+-                        DoCast(me, SPELL_INCITE_TERROR);
+-                        me->GetMotionMaster()->MovePoint(0, SpawnLoc[0]);
+-                        me->SetReactState(REACT_PASSIVE);
+-                        me->AttackStop();
+-                        m_uiPhase = 2;
+-                        m_uiPhaseTimer = 90000;
+-                        m_uiSetHoverTimer = 5000;
+-                        m_uiBloodboldSplashTimer = 10000;
+-                        m_uiLandingTimer = 26000;
+-                        m_uiFlyingFalseTimer = 30000;
+-                    } else m_uiPhaseTimer -= uiDiff;
+-                }
+-
+-                if (m_uiPhase == 2)
+-                {
+-                    if (m_uiSetHoverTimer < uiDiff)
+-                    {
+-                        me->GetMotionMaster()->MovePoint(0, SpawnLoc[1]);
+-                        me->SetUnitMovementFlags(MOVEMENTFLAG_JUMPING);
+-                        me->SetFlying(true);
+-                        m_uiSetHoverTimer = 90000;
+-                    } else m_uiSetHoverTimer -= uiDiff;
+-
+-                    if (m_uiBloodboldSplashTimer < uiDiff)
+-                    {
+-                        std::list<Unit*> targets;
+-                        SelectTargetList(targets, 5, SELECT_TARGET_RANDOM, 80, true);
+-                        for (std::list<Unit*>::const_iterator i = targets.begin(); i != targets.end(); ++i)
+-                            DoCast(*i, SPELL_TWILIGHT_BLOODBOLT);
+-                        m_uiBloodboldSplashTimer = 2000;
+-                    } else m_uiBloodboldSplashTimer -= uiDiff;
+-
+-                    if (m_uiLandingTimer < uiDiff)
+-                    {
+-                        me->GetMotionMaster()->MovePoint(0, SpawnLoc[0]);
+-                        me->SetUnitMovementFlags(MOVEMENTFLAG_JUMPING);
+-                        m_uiLandingTimer = 900000;
+-                        m_uiBloodboldSplashTimer = 900000;
+-                    } else m_uiLandingTimer -= uiDiff;
+-
+-                    if (m_uiFlyingFalseTimer < uiDiff)
+-                    {
+-                        me->SetFlying(false);
+-                        me->RemoveAllAuras();
+-                        me->SetReactState(REACT_AGGRESSIVE);
+-                        me->GetMotionMaster()->MoveChase(me->getVictim());
+-                        m_uiPhase = 1;
+-                        m_uiFlyingFalseTimer = 900000;
+-                    } else m_uiFlyingFalseTimer -= uiDiff;
+-                }
+-
+-                DoMeleeAttackIfReady();
+-            }
+-        private:
+-            InstanceScript* pInstance;
+-
+-            uint32 m_uiTwilightBloodboltTimer;
+-            uint32 m_uiPhaseTimer;
+-            uint32 m_uiVampBiteTimer;
+-            uint32 m_uiSwarmingShadowsTimer;
+-            uint32 m_uiPactofDarkfallenTimer;
+-            uint32 m_uiPactofDarkfallenExplodeTimer;
+-            uint32 m_uiPactofDarkfallenExplosionCount;
+-            uint32 m_uiPhase;
+-            uint32 m_uiBerserkTimer;
+-            uint32 m_uiSetHoverTimer;
+-            uint32 m_uiLandingTimer;
+-            uint32 m_uiFlyingFalseTimer;
+-            uint32 m_uiBloodboldSplashTimer;
+-            uint32 m_uiResetTimer;
+-            Unit* Darkfallen[5];
+-        };
+-
+-        CreatureAI* GetAI(Creature* pCreature) const
+-        {
+-            return new boss_blood_queen_lanathelAI(pCreature);
+-        }
+-};
+-
+-class npc_swarming_shadows : public CreatureScript
+-{
+-    public:
+-        npc_swarming_shadows() : CreatureScript("npc_swarming_shadows") { }
+-
+-        struct npc_swarming_shadowsAI : public Scripted_NoMovementAI
+-        {
+-            npc_swarming_shadowsAI(Creature *pCreature) : Scripted_NoMovementAI(pCreature)
+-            {
+-                pInstance = pCreature->GetInstanceScript();
+-            }
+-
+-            void Reset()
+-            {
+-                m_uiSwarmingShadowTimer = 1200;
+-            }
+-
+-            void UpdateAI(const uint32 uiDiff)
+-            {
+-                if (!me->HasAura(SPELL_SWARMING_SHADOWS_VISUAL))
+-                    DoCast(me, SPELL_SWARMING_SHADOWS_VISUAL);
+-
+-                if (m_uiSwarmingShadowTimer < uiDiff)
+-                {
+-                    DoCast(me, SPELL_SWARMING_SHADOW);
+-                    m_uiSwarmingShadowTimer = 2000;
+-                } else m_uiSwarmingShadowTimer -= uiDiff;
+-            }
+-        private:
+-            InstanceScript* pInstance;
+-
+-            uint32 m_uiSwarmingShadowTimer;
+-        };
+-
+-        CreatureAI* GetAI(Creature* pCreature) const
+-        {
+-            return new npc_swarming_shadowsAI(pCreature);
+-        }
+-};
+-
+-void AddSC_boss_blood_queen_lanathel()
+-{
+-    new boss_blood_queen_lanathel();
+-    new npc_swarming_shadows();
+-}

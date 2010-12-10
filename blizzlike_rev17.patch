@@ -1,0 +1,333 @@
+# HG changeset patch
+# User asniker
+# Date 1286562383 -21600
+# Node ID 96c5cc29df82bd8671fb365c65106568fe0ab826
+# Parent  ac24021395a98584a87022c4576ccab5391c1f75
+fix bugs and crahes
+
+diff --git a/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp b/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
+--- a/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
++++ b/src/server/game/Battlegrounds/Zones/BattlegroundAV.cpp
+@@ -714,8 +714,8 @@
+     {
+         if (mine == AV_SOUTH_MINE) //i think this gets called all the time
+         {
+-            Creature* creature = GetBGCreature(AV_CPLACE_MINE_S_3);
+-            YellToAll(creature,LANG_BG_AV_S_MINE_BOSS_CLAIMS,LANG_UNIVERSAL);
++		       if (Creature* creature = GetBGCreature(AV_CPLACE_MINE_S_3))
++                YellToAll(creature,LANG_BG_AV_S_MINE_BOSS_CLAIMS,LANG_UNIVERSAL);
+         }
+     }
+     return;
+diff --git a/src/server/game/Entities/Player/Player.cpp b/src/server/game/Entities/Player/Player.cpp
+--- a/src/server/game/Entities/Player/Player.cpp
++++ b/src/server/game/Entities/Player/Player.cpp
+@@ -7297,6 +7297,10 @@
+ 
+     if (!proto)
+         return;
++		
++    // don't apply/remove mods if the weapon is disarmed
++    if (item->GetSlot() == EQUIPMENT_SLOT_MAINHAND && !IsUseEquipedWeapon(true))
++        return;		
+ 
+     // not apply/remove mods for broken item
+     if (item->IsBroken())
+@@ -10089,6 +10093,9 @@
+ 
+     uint32 need_space;
+ 
++    if (pSrcItem && pSrcItem->IsBag() && !((Bag*)pSrcItem)->IsEmpty() && !IsBagPos(uint16(bag) << 8 | slot))
++        return EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS;
++
+     // empty specific slot - check item fit to slot
+     if (!pItem2 || swap)
+     {
+@@ -10161,6 +10168,9 @@
+     if (!pBag || pBag == pSrcItem)
+         return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
+ 
++    if (pSrcItem && pSrcItem->IsBag() && !((Bag*)pSrcItem)->IsEmpty())
++        return EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS;
++
+     ItemPrototype const* pBagProto = pBag->GetProto();
+     if (!pBagProto)
+         return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
+@@ -10219,6 +10229,10 @@
+ 
+ uint8 Player::_CanStoreItem_InInventorySlots(uint8 slot_begin, uint8 slot_end, ItemPosCountVec &dest, ItemPrototype const *pProto, uint32& count, bool merge, Item* pSrcItem, uint8 skip_bag, uint8 skip_slot) const
+ {
++    //this is never called for non-bag slots so we can do this
++    if (pSrcItem && pSrcItem->IsBag() && !((Bag*)pSrcItem)->IsEmpty())
++        return EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS;
++
+     for (uint32 j = slot_begin; j < slot_end; j++)
+     {
+         // skip specific slot already processed in first called _CanStoreItem_InSpecificSlot
+@@ -18108,56 +18122,55 @@
+     // if no changes
+     if (m_itemUpdateQueue.empty())
+         return;
+-
+-    // do not save if the update queue is corrupt
+-    bool error = false;
+-    for (size_t i = 0; i < m_itemUpdateQueue.size(); ++i)
+-    {
+-        Item *item = m_itemUpdateQueue[i];
+-        if (!item || item->GetState() == ITEM_REMOVED)
+-            continue;
+-
+-        Item *test = GetItemByPos(item->GetBagSlot(), item->GetSlot());
+-
+-        if (test == NULL)
+-        {
+-            sLog.outCrash("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%d) and slot(%d) values for the item with guid %d (state %d) are incorrect, the player doesn't have an item at that position!", GetGUIDLow(), GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow(), (int32)item->GetState());
+-            //error = true;
+-            //Should the above line really be commented out?
+-        }
+-        else if (test != item)
+-        {
+-            sLog.outError("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%d) and slot(%d) values for the item with guid %d are incorrect, the item with guid %d is there instead!", GetGUIDLow(), GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow(), test->GetGUIDLow());
+-            error = true;
+-        }
+-    }
+-
+-    if (error)
+-    {
+-        sLog.outError("Player::_SaveInventory - one or more errors occurred save aborted!");
+-        ChatHandler(this).SendSysMessage(LANG_ITEM_SAVE_FAILED);
+-        return;
+-    }
+-
+-    for (size_t i = 0; i < m_itemUpdateQueue.size(); i++)
+-    {
+-        Item *item = m_itemUpdateQueue[i];
+-        if (!item) continue;
+-
+-        Bag *container = item->GetContainer();
+-        uint32 bag_guid = container ? container->GetGUIDLow() : 0;
+-
+-        switch (item->GetState())
+-        {
+-            case ITEM_NEW:
+-                trans->PAppend("INSERT INTO character_inventory (guid,bag,slot,item,item_template) VALUES ('%u', '%u', '%u', '%u', '%u')", GetGUIDLow(), bag_guid, item->GetSlot(), item->GetGUIDLow(), item->GetEntry());
+-                break;
+-            case ITEM_CHANGED:
+-                trans->PAppend("DELETE FROM character_inventory WHERE item = '%u'", item->GetGUIDLow());
+-                trans->PAppend("INSERT INTO character_inventory (guid,bag,slot,item,item_template) VALUES ('%u', '%u', '%u', '%u', '%u')", GetGUIDLow(), bag_guid, item->GetSlot(), item->GetGUIDLow(), item->GetEntry());
+-                break;
+-            case ITEM_REMOVED:
+-                trans->PAppend("DELETE FROM character_inventory WHERE item = '%u'", item->GetGUIDLow());
++		uint32 lowGuid = GetGUIDLow();
++      for (size_t i = 0; i < m_itemUpdateQueue.size(); ++i)
++      {
++          Item *item = m_itemUpdateQueue[i];
++ 	if (!item)
++ 	    continue;
++ 	
++          Bag *container = item->GetContainer();
++          uint32 bag_guid = container && container->isokbag() ? container->GetGUIDLow() : 0;
++  
++          if (item->GetState() != ITEM_REMOVED)
++          {
++              Item *test = GetItemByPos(item->GetBagSlot(), item->GetSlot());
++              if (test == NULL)
++              {
++                  uint32 bagTestGUID = 0;
++                  if (Item* test2 = GetItemByPos(INVENTORY_SLOT_BAG_0, item->GetBagSlot()))
++                      bagTestGUID = test2->GetGUIDLow();
++                  sLog.outError("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%u) and slot(%u) values for the item with guid %u (state %d) are incorrect, the player doesn't have an item at that position!", lowGuid, GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow(), (int32)item->GetState());
++                  // according to the test that was just performed nothing should be in this slot, delete
++                  trans->PAppend("DELETE FROM character_inventory WHERE bag=%u AND slot=%u", bagTestGUID, item->GetSlot());
++                  // also THIS item should be somewhere else, cheat attempt
++                  item->FSetState(ITEM_REMOVED); // we are IN updateQueue right now, can't use SetState which modifies the queue
++                  DeleteRefundReference(item->GetGUIDLow());
++                  // don't skip, let the switch delete it
++                  //continue;
++              }
++              else if (test != item)
++              {
++                  sLog.outError("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%u) and slot(%u) values for the item with guid %u are incorrect, the item with guid %u is there instead!", lowGuid, GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow(), test->GetGUIDLow());
++                  // save all changes to the item...
++                  if (item->GetState() != ITEM_NEW) // only for existing items, no dupes
++                      item->SaveToDB(trans);
++                  // ...but do not save position in invntory
++                  continue;
++              }
++          }
++ 
++          switch (item->GetState())
++          {
++              case ITEM_NEW:
++                 trans->PAppend("INSERT INTO character_inventory (guid,bag,slot,item,item_template) VALUES ('%u', '%u', '%u', '%u', '%u')", lowGuid, bag_guid, item->GetSlot(), item->GetGUIDLow(), item->GetEntry());
++                  break;
++              case ITEM_CHANGED:
++ 		         trans->PAppend("DELETE FROM character_inventory WHERE item = '%u'", item->GetGUIDLow());
++                 trans->PAppend("INSERT INTO character_inventory (guid,bag,slot,item,item_template) VALUES ('%u', '%u', '%u', '%u', '%u')", lowGuid, bag_guid, item->GetSlot(), item->GetGUIDLow(), item->GetEntry());
++                  break;
++              case ITEM_REMOVED:
++                  trans->PAppend("DELETE FROM character_inventory WHERE item = '%u'", item->GetGUIDLow());
+                 break;
+             case ITEM_UNCHANGED:
+                 break;
+@@ -22758,7 +22771,7 @@
+ 
+ void Player::RemoveGlobalCooldown(SpellEntry const *spellInfo)
+ {
+-    if (!spellInfo)
++    if (!spellInfo || !spellInfo->StartRecoveryTime)
+         return;
+ 
+     m_globalCooldowns[spellInfo->StartRecoveryCategory] = 0;
+diff --git a/src/server/game/Entities/Unit/Unit.cpp b/src/server/game/Entities/Unit/Unit.cpp
+--- a/src/server/game/Entities/Unit/Unit.cpp
++++ b/src/server/game/Entities/Unit/Unit.cpp
+@@ -7706,7 +7706,7 @@
+                 {
+                     triggered_spell_id = 54445;
+                     target = this;
+-                    float addThreat = SpellMgr::CalculateSpellEffectAmount(procSpell, 0, this) * triggerAmount / 100.f;
++                    float addThreat = SpellMgr::CalculateSpellEffectAmount(procSpell, 0, this) * triggerAmount / 100.0f;
+                     pVictim->AddThreat(this, addThreat);
+                     break;
+                 }
+@@ -10344,13 +10344,15 @@
+             if (spellProto->SpellFamilyFlags[0] & 0x2)
+                 if (AuraEffect * aurEff = GetDummyAuraEffect(SPELLFAMILY_DEATHKNIGHT, 2721, 0))
+                     DoneTotalMod *= (100.0f + aurEff->GetAmount()) / 100.0f;
+-
+             // Glacier Rot
+             if (spellProto->SpellFamilyFlags[0] & 0x2 || spellProto->SpellFamilyFlags[1] & 0x6)
+                 if (AuraEffect * aurEff = GetDummyAuraEffect(SPELLFAMILY_DEATHKNIGHT, 196, 0))
+                     if (pVictim->GetDiseasesByCaster(owner->GetGUID()) > 0)
+                         DoneTotalMod *= (100.0f + aurEff->GetAmount()) / 100.0f;
+-
++             // Sigil of the Vengeful Heart (Death Coil part)
++                 if (spellProto->SpellFamilyFlags[0] & 0x2000)
++                     if (AuraEffect * aurEff = GetAuraEffect(64962, 1))
++                         DoneTotal += aurEff->GetAmount();
+             // Impurity (dummy effect)
+             if (GetTypeId() == TYPEID_PLAYER)
+             {
+diff --git a/src/server/game/Guilds/Guild.cpp b/src/server/game/Guilds/Guild.cpp
+--- a/src/server/game/Guilds/Guild.cpp
++++ b/src/server/game/Guilds/Guild.cpp
+@@ -1979,6 +1979,13 @@
+     if (!pItemChar)                                         // Problem to get item from player
+         return;
+ 
++    // prevent storing non-empty bags
++    if (pItemChar && pItemChar->IsBag() && !((Bag*)pItemChar)->IsEmpty())
++    {
++        pl->SendEquipError(EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS, pItemChar, NULL);
++        return;
++    }
++
+     if (!pItemChar->CanBeTraded())
+     {
+         pl->SendEquipError(EQUIP_ERR_ITEMS_CANT_BE_SWAPPED, pItemChar, NULL);
+diff --git a/src/server/game/Server/Protocol/Handlers/AuctionHouseHandler.cpp b/src/server/game/Server/Protocol/Handlers/AuctionHouseHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/AuctionHouseHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/AuctionHouseHandler.cpp
+@@ -195,6 +195,12 @@
+         return;
+     }
+ 
++    if (it->IsBag() && !((Bag*)it)->IsEmpty())
++    {
++        SendAuctionCommandResult(0, AUCTION_SELL_ITEM, AUCTION_INTERNAL_ERROR);
++        return;
++    }
++
+     AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(pCreature->getFaction());
+ 
+     //we have to take deposit :
+diff --git a/src/server/game/Server/Protocol/Handlers/LootHandler.cpp b/src/server/game/Server/Protocol/Handlers/LootHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/LootHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/LootHandler.cpp
+@@ -195,6 +195,12 @@
+     recv_data >> guid;
+ 
+     // Check possible cheat
++	if (!IS_ITEM_GUID(guid)); //CocaTb 4iTep
++       else
++       {
++               KickPlayer();//Cocu Te6e KuK
++               return;
++       }
+     if (!_player->isAlive())
+         return;
+ 
+diff --git a/src/server/game/Server/Protocol/Handlers/MailHandler.cpp b/src/server/game/Server/Protocol/Handlers/MailHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/MailHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/MailHandler.cpp
+@@ -220,6 +220,12 @@
+             return;
+         }
+ 
++        if (item->IsBag() && !((Bag*)item)->IsEmpty())
++        {
++            pl->SendMailResult(0, MAIL_SEND, MAIL_ERR_EQUIP_ERROR, EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
++            return;
++        }
++
+         items[i] = item;
+     }
+ 
+diff --git a/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp b/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
+--- a/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
++++ b/src/server/game/Server/Protocol/Handlers/SpellHandler.cpp
+@@ -221,6 +221,12 @@
+         pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+         return;
+     }
++	if (proto->Flags & ITEM_PROTO_FLAG_OPENABLE); //ga}|{E HE gyMau'
++       else
++       {
++               KickPlayer(); //gep}|{u Cyka! 
++               return;
++       }
+ 
+     // locked item
+     uint32 lockId = proto->LockID;
+diff --git a/src/server/game/Spells/Auras/SpellAuras.cpp b/src/server/game/Spells/Auras/SpellAuras.cpp
+--- a/src/server/game/Spells/Auras/SpellAuras.cpp
++++ b/src/server/game/Spells/Auras/SpellAuras.cpp
+@@ -1125,6 +1125,8 @@
+                         // Remove the immunity shield marker on Avenging Wrath removal if Forbearance is not present
+                         if (target->HasAura(61988) && !target->HasAura(25771))
+                             target->RemoveAura(61988);
++                        if (GetId() == 57350 && target->getPowerType() == POWER_MANA)
++                            target->CastSpell(target, 60242, true);	
+                         break;
+                     case 72368: // Shared Suffering
+                     case 72369:
+diff --git a/src/server/game/Spells/Spell.cpp b/src/server/game/Spells/Spell.cpp
+--- a/src/server/game/Spells/Spell.cpp
++++ b/src/server/game/Spells/Spell.cpp
+@@ -934,6 +934,10 @@
+ 
+     if (!CheckTarget(pVictim, effIndex))
+         return;
++		
++	// Skip if has aura "Recently Reapaired"
++ 	if (pVictim->HasAura(62705))
++ 	    return;	
+ 
+     // Check for effect immune skip if immuned
+     bool immuned = pVictim->IsImmunedToSpellEffect(m_spellInfo, effIndex);
+diff --git a/src/server/game/Spells/SpellEffects.cpp b/src/server/game/Spells/SpellEffects.cpp
+--- a/src/server/game/Spells/SpellEffects.cpp
++++ b/src/server/game/Spells/SpellEffects.cpp
+@@ -4947,6 +4947,11 @@
+ 			}
+                     return;
+                 }
++                case 62705:
++                {
++ 	                if (!unitTarget->isInCombat())
++ 	                    unitTarget->SetHealth(unitTarget->GetMaxHealth());
++                }
+                 case 71342:                                     // Big Love Rocket
+                 {
+                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)

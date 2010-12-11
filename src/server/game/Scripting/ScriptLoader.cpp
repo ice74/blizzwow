@@ -462,22 +462,20 @@ void AddSC_instance_halls_of_reflection();   // Halls of Reflection
 void AddSC_halls_of_reflection();
 void AddSC_boss_falric();
 void AddSC_boss_marwyn();
+void AddSC_instance_icecrown_citadel(); //Icecrown Citadel
 void AddSC_boss_saurfang();
 void AddSC_boss_festergut();
 void AddSC_boss_lady_deathwhisper();
 void AddSC_boss_lord_marrowgar();
+void AddSC_boss_professor_putricide();
 void AddSC_boss_sindragosa();
 void AddSC_boss_lichking();
 void AddSC_boss_rotface();
-void AddSC_boss_professor_putricide();
-void AddSC_boss_blood_prince_council();
-void AddSC_boss_blood_queen_lana_thel();
-void AddSC_icecrown_citadel_teleport();
 void AddSC_boss_rat_des_blutes();
 void AddSC_icecrown_citadel();
+void AddSC_boss_blood_queen_lana_thel();
 void AddSC_boss_valithria();
-
-void AddSC_dalaran();
+void AddSC_dalaran();        //Northrend Locations
 void AddSC_borean_tundra();
 void AddSC_dragonblight();
 void AddSC_grizzly_hills();
@@ -488,7 +486,6 @@ void AddSC_storm_peaks();
 void AddSC_zuldrak();
 void AddSC_crystalsong_forest();
 void AddSC_isle_of_conquest();
-
 void AddSC_boss_baltharus();	//RubySanctum
 void AddSC_boss_halion();
 void AddSC_boss_ragefire();
@@ -1161,23 +1158,20 @@ void AddNorthrendScripts()
     AddSC_halls_of_reflection();
     AddSC_boss_falric();
     AddSC_boss_marwyn();
-    
-	
+	AddSC_instance_icecrown_citadel(); //Icecrown Citadel
     AddSC_boss_saurfang();
     AddSC_boss_festergut();
     AddSC_boss_lady_deathwhisper();
     AddSC_boss_lord_marrowgar();
+    AddSC_boss_professor_putricide();
     AddSC_boss_sindragosa();
     AddSC_boss_lichking();
     AddSC_boss_rotface();
-    AddSC_boss_professor_putricide();
-    AddSC_boss_blood_queen_lana_thel();
     AddSC_boss_rat_des_blutes();
     AddSC_icecrown_citadel();
     AddSC_boss_blood_queen_lana_thel();
     AddSC_boss_valithria();
-
-    AddSC_dalaran();
+    AddSC_dalaran();          //Northrend Locations
     AddSC_borean_tundra();
     AddSC_dragonblight();
     AddSC_grizzly_hills();
@@ -1187,10 +1181,10 @@ void AddNorthrendScripts()
     AddSC_storm_peaks();
     AddSC_zuldrak();
     AddSC_crystalsong_forest();
-<<<<<<< .mine    AddSC_wintergrasp();
+	AddSC_wintergrasp();
 	AddSC_isle_of_conquest();
-=======    AddSC_wintergrasp();
->>>>>>> .theirs#endif
+	AddSC_wintergrasp();
+#endif
 }
 
 void AddOutdoorPvPScripts()

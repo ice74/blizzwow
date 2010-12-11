@@ -145,6 +145,7 @@ set(scripts_STAT_SRCS
   Northrend/IcecrownCitadel/boss_blood_queen_lana_thel.cpp
   Northrend/IcecrownCitadel/boss_deathbringer_saurfang.cpp
   Northrend/IcecrownCitadel/boss_festergut.cpp
+  Northrend/IcecrownCitadel/boss_gunship_battle.cpp
   Northrend/IcecrownCitadel/boss_lady_deathwhisper.cpp
   Northrend/IcecrownCitadel/boss_lord_marrowgar.cpp
   Northrend/IcecrownCitadel/boss_professor_putricide.cpp

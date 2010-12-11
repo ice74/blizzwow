@@ -1023,8 +1023,9 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (isBattleground() && GetStatus() < STATUS_WAIT_LEAVE)
         {
             // a player has left the battleground, so there are free slots -> add to queue
-           	AddToBGFreeSlotQueue();
+            AddToBGFreeSlotQueue();
 			sBattlegroundMgr.ScheduleQueueUpdate(0, 0, bgQueueTypeId, bgTypeId, GetBracketId());
+			
         }
         // Let others know
         WorldPacket data;

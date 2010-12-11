@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ScriptPCH.h"
@@ -48,7 +48,7 @@ public:
 
         uint64 uiJainaOrSylvanas1;
         uint64 uiJainaOrSylvanas2;
-
+		uint64 uiIceWall;
         uint32 uiTeamInInstance;
         uint32 uiEncounter[MAX_ENCOUNTER];
 
@@ -61,6 +61,7 @@ public:
             uiKrick = 0;
             uiIck = 0;
             uiTyrannus = 0;
+			uiIceWall = 0;
         }
 
         bool IsEncounterInProgress() const
@@ -74,14 +75,6 @@ public:
 
         void OnCreatureCreate(Creature* creature)
         {
-            Map::PlayerList const &players = instance->GetPlayers();
-
-            if (!players.isEmpty())
-            {
-                if (Player* pPlayer = players.begin()->getSource())
-                    uiTeamInInstance = pPlayer->GetTeam();
-            }
-
             switch(creature->GetEntry())
             {
                 case CREATURE_KRICK:
@@ -136,6 +129,17 @@ public:
                     break;
             }
         }
+		
+		void OnGameObjectCreate(GameObject* go)
+		{
+			switch(go->GetEntry())
+			{
+			case GO_ICE_WALL:
+				uiIceWall = go->GetGUID();
+				HandleGameObject(0, false, go);
+				break;
+			}
+		}
 
         uint64 GetData64(uint32 identifier)
         {
@@ -165,7 +169,9 @@ public:
                     uiEncounter[1] = data;
                     break;
                 case DATA_KRICKANDICK_EVENT:
-                    uiEncounter[2] = data;
+					uiEncounter[2] = data;
+					if(data == DONE)
+						HandleGameObject(uiIceWall, true);
                     break;
             }
 
@@ -180,6 +186,7 @@ public:
                 case DATA_GARFROST_EVENT:            return uiEncounter[0];
                 case DATA_TYRANNUS_EVENT:            return uiEncounter[1];
                 case DATA_KRICKANDICK_EVENT:         return uiEncounter[2];
+                case DATA_TEAM_IN_INSTANCE:          return uiTeamInInstance;
             }
 
             return 0;
@@ -198,6 +205,11 @@ public:
 
             OUT_SAVE_INST_DATA_COMPLETE;
             return str_data;
+        }
+
+        void OnPlayerEnter(Player *m_player)
+        {
+            uiTeamInInstance = m_player->GetTeamId();
         }
 
         void Load(const char* in)

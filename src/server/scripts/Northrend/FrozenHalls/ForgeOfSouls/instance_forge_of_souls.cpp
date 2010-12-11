@@ -28,33 +28,34 @@
 class instance_forge_of_souls : public InstanceMapScript
 {
     public:
-        instance_forge_of_souls() : InstanceMapScript(FoSScriptName, 632) { }
+        instance_forge_of_souls() : InstanceMapScript("instance_forge_of_souls", 632) { }
 
         struct instance_forge_of_souls_InstanceScript : public InstanceScript
         {
-            instance_forge_of_souls_InstanceScript(Map* map) : InstanceScript(map)
+            instance_forge_of_souls_InstanceScript(Map* pMap) : InstanceScript(pMap)
             {
                 SetBossNumber(MAX_ENCOUNTER);
-                bronjahm = 0;
-                devourerOfSouls = 0;
+                uiBronjahm = 0;
+                uiDevourer = 0;
 
-                teamInInstance = 0;
+                uiTeamInInstance = 0;
             }
 
-            void OnCreatureCreate(Creature* creature)
+            void OnCreatureCreate(Creature* pCreature, bool /*add*/)
             {
                 Map::PlayerList const &players = instance->GetPlayers();
-                if (!players.isEmpty())
-                    if (Player* player = players.begin()->getSource())
-                        teamInInstance = player->GetTeamId();
 
-                switch (creature->GetEntry())
+                if (!players.isEmpty())
+                    if (Player* pPlayer = players.begin()->getSource())
+                        uiTeamInInstance = pPlayer->GetTeamId();
+
+                switch (pCreature->GetEntry())
                 {
                     case CREATURE_BRONJAHM:
-                        bronjahm = creature->GetGUID();
+                        uiBronjahm = pCreature->GetGUID();
                         break;
                     case CREATURE_DEVOURER:
-                        devourerOfSouls = creature->GetGUID();
+                        uiDevourer = pCreature->GetGUID();
                         break;
                 }
             }
@@ -64,7 +65,7 @@ class instance_forge_of_souls : public InstanceMapScript
                 switch (type)
                 {
                     case DATA_TEAM_IN_INSTANCE:
-                        return teamInInstance;
+                        return uiTeamInInstance;
                     default:
                         break;
                 }
@@ -72,14 +73,14 @@ class instance_forge_of_souls : public InstanceMapScript
                 return 0;
             }
 
-            uint64 GetData64(uint32 type)
+            uint64 GetData64(uint32 identifier)
             {
-                switch (type)
+                switch (identifier)
                 {
                     case DATA_BRONJAHM:
-                        return bronjahm;
+                        return uiBronjahm;
                     case DATA_DEVOURER:
-                        return devourerOfSouls;
+                        return uiDevourer;
                     default:
                         break;
                 }
@@ -129,10 +130,10 @@ class instance_forge_of_souls : public InstanceMapScript
             }
 
         private:
-            uint64 bronjahm;
-            uint64 devourerOfSouls;
+            uint64 uiBronjahm;
+            uint64 uiDevourer;
 
-            uint32 teamInInstance;
+            uint32 uiTeamInInstance;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap *map) const

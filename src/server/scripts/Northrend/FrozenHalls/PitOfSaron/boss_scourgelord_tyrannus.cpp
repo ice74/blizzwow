@@ -149,6 +149,27 @@ public:
                 pInstance->SetData(DATA_TYRANNUS_EVENT, DONE);
                 if (Creature* pRimefang = GetRimefang())
                     pRimefang->ForcedDespawn();
+					
+					
+					
+					
+				
+                Creature* pJainaOrSylvanas = NULL;
+                Position spawnPoint = { 993.056f, 206.891f, 628.156f, 5.059f };
+                if (pInstance->GetData(DATA_TEAM_IN_INSTANCE) == TEAM_ALLIANCE)
+                {
+                    if (Creature* pJainaOrSylvanas = me->SummonCreature(NPC_JAINA_PART2, spawnPoint, TEMPSUMMON_MANUAL_DESPAWN))
+                        DoScriptText(SAY_JAYNA_OUTRO_4, pJainaOrSylvanas);
+                }
+                else
+                {
+                    if (Creature* pJainaOrSylvanas = me->SummonCreature(NPC_SYLVANAS_PART2, spawnPoint, TEMPSUMMON_MANUAL_DESPAWN))
+                        DoScriptText(SAY_SYLVANAS_OUTRO_4, pJainaOrSylvanas);
+                }	
+					
+					
+					
+					
             }
         }
 

@@ -462,6 +462,7 @@ void AddSC_instance_halls_of_reflection();   // Halls of Reflection
 void AddSC_halls_of_reflection();
 void AddSC_boss_falric();
 void AddSC_boss_marwyn();
+void AddSC_boss_the_lich_king_hor();
 void AddSC_instance_icecrown_citadel(); //Icecrown Citadel
 void AddSC_boss_saurfang();
 void AddSC_boss_festergut();
@@ -1064,7 +1065,7 @@ void AddNorthrendScripts()
     AddSC_boss_jaraxxus();
     AddSC_trial_of_the_crusader();
     AddSC_boss_twin_valkyr();
-    AddSC_boss_northrend_beasts();
+    AddSC_boss_beasts_of_northrend();
     AddSC_instance_trial_of_the_crusader();
     AddSC_boss_krik_thir();             //Azjol-Nerub Azjol-Nerub
     AddSC_boss_hadronox();
@@ -1158,6 +1159,7 @@ void AddNorthrendScripts()
     AddSC_halls_of_reflection();
     AddSC_boss_falric();
     AddSC_boss_marwyn();
+	AddSC_boss_the_lich_king_hor();
 	AddSC_instance_icecrown_citadel(); //Icecrown Citadel
     AddSC_boss_saurfang();
     AddSC_boss_festergut();

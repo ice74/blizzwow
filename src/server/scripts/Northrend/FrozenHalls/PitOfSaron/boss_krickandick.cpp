@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ScriptPCH.h"
@@ -343,19 +343,11 @@ public:
                     }
                     me->SetVisible(true);
 
-                    Creature* pJainaOrSylvanas = me->GetCreature(*me, pInstance->GetData64(DATA_JAINA_SYLVANAS_1));
-                    if (pJainaOrSylvanas) {
-                        Position pos;
-                        me->GetNearPosition(pos, 5.0f, 0);
-                        pJainaOrSylvanas->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(),
-                            pos.GetAngle(me->GetPositionX(), me->GetPositionY()));
-                    }
-                    else {
-                        if (pInstance->GetData(DATA_TEAM_IN_INSTANCE) == TEAM_ALLIANCE)
-                            pJainaOrSylvanas = me->SummonCreature(NPC_SYLVANAS_PART1, *me, TEMPSUMMON_MANUAL_DESPAWN);
-                        else
-                            pJainaOrSylvanas = me->SummonCreature(NPC_JAINA_PART1, *me, TEMPSUMMON_MANUAL_DESPAWN);
-                    }
+                    Creature* pJainaOrSylvanas = NULL;
+                    if (pInstance->GetData(DATA_TEAM_IN_INSTANCE) == TEAM_ALLIANCE)
+                        pJainaOrSylvanas = me->SummonCreature(NPC_JAINA_PART1, *me, TEMPSUMMON_MANUAL_DESPAWN);
+                    else
+                        pJainaOrSylvanas = me->SummonCreature(NPC_SYLVANAS_PART1, *me, TEMPSUMMON_MANUAL_DESPAWN);
 
                     if (pJainaOrSylvanas)
                     {
@@ -385,7 +377,7 @@ public:
                     case EVENT_OUTRO_1:
                     {
                         DoScriptText(SAY_KRICK_OUTRO_1, me);
-                        events.ScheduleEvent(EVENT_OUTRO_2, 14000);
+                        events.ScheduleEvent(EVENT_OUTRO_2, 7000);
                         break;
                     }
                     case EVENT_OUTRO_2:
@@ -398,12 +390,12 @@ public:
                             else
                                 DoScriptText(SAY_SYLVANAS_OUTRO_2, pNpcDialog);
                         }
-                        events.ScheduleEvent(EVENT_OUTRO_3, 8500);
+                        events.ScheduleEvent(EVENT_OUTRO_3, 7000);
                         break;
                     }
                     case EVENT_OUTRO_3:
                         DoScriptText(SAY_KRICK_OUTRO_3, me);
-                        events.ScheduleEvent(EVENT_OUTRO_4, 12000);
+                        events.ScheduleEvent(EVENT_OUTRO_4, 17000);
                         break;
                     case EVENT_OUTRO_4:
                     {
@@ -420,7 +412,7 @@ public:
                     }
                     case EVENT_OUTRO_5:
                         DoScriptText(SAY_KRICK_OUTRO_5, me);
-                        events.ScheduleEvent(EVENT_OUTRO_6, 4000);
+                        events.ScheduleEvent(EVENT_OUTRO_6, 5000);
                         break;
                     case EVENT_OUTRO_6:
                         // TODO spawn Tyrannus at some distance and MovePoint near-by (flying on rimefang)

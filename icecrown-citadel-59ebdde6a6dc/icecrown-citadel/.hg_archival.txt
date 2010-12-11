@@ -1,5 +1,0 @@
-repo: febe0f97a5892086ccca11999b6d50bb15e3e616
-node: 59ebdde6a6dc388f7b7a2f7fe0a11e2b3f961a3d
-branch: default
-latesttag: All saurfang spell - work and work correctly
-latesttagdistance: 184

@@ -186,7 +186,7 @@ public:
 	    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
 	    {
 		pPlayer->CLOSE_GOSSIP_MENU();
-		pCreature->SummonCreature(NPC_ARGENT_VALIANT,8575.451,952.472,547.554,0.38);
+		pCreature->SummonCreature(NPC_ARGENT_VALIANT,8575.451f,952.472f,547.554f,0.38f);
 	    }
 	    //else
 		//pPlayer->SEND_GOSSIP_MENU(???, pCreature->GetGUID()); Missing text
@@ -1270,7 +1270,7 @@ public:
 	    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
 	    {
 		pPlayer->CLOSE_GOSSIP_MENU();
-		pCreature->SummonCreature(NPC_ARGENT_CHAMPION,8562.836914,1099.153931,556.787598,5.026550); // TODO (R?cup?rer les coordonn?es r?elles)
+		pCreature->SummonCreature(NPC_ARGENT_CHAMPION,8562.836914f,1099.153931f,556.787598f,5.026550f); // TODO (R?cup?rer les coordonn?es r?elles)
 	    }
 	    //else
 		//pPlayer->SEND_GOSSIP_MENU(???, pCreature->GetGUID()); Missing text
@@ -1317,7 +1317,7 @@ public:
 	    {
 		me->CastSpell(me, SPELL_DEFEND_CHAMPION, true);
 		me->CastSpell(me, SPELL_DEFEND_CHAMPION, true);
-		pCreature->GetMotionMaster()->MovePoint(0,8552.469727,1124.128784,556.787598); // TODO (Trouver les coordonn?es exactes)
+		pCreature->GetMotionMaster()->MovePoint(0,8552.469727f,1124.128784f,556.787598f); // TODO (Trouver les coordonn?es exactes)
 		pCreature->setFaction(35); //wrong faction in db?
 	    }
 

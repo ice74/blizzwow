@@ -1,5 +1,9 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ *
+ * Copyright (C) 2010 Myth Project <https://mythcore.googlecode.com/hg/mythcore/>
+ *
+ * Copyright (C) 2010 Lol Project <http://hg.assembla.com/lol_trinity/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -209,7 +213,7 @@ public:
                 if (!me->hasUnitState(UNIT_STAT_CASTING))
                 {
                     if (bIsUndead)
-                        DoCast(me->getVictim(), SPELL_WOE_STRIKE);
+                    DoCast(me->getVictim(), DUNGEON_MODE(SPELL_WOE_STRIKE,H_SPELL_WOE_STRIKE));
                     else
                         DoCast(me->getVictim(), SPELL_CLEAVE);
                     uiCleaveTimer = rand()%5000 + 2000;
@@ -223,7 +227,7 @@ public:
                     if (bIsUndead)
                         DoCast(me->getVictim(), SPELL_DARK_SMASH);
                     else
-                        DoCast(me->getVictim(), SPELL_SMASH);
+                    DoCast(me->getVictim(), DUNGEON_MODE(SPELL_SMASH,H_SPELL_SMASH));
                     uiSmashTimer = 10000;
                 }
             } else uiSmashTimer -= diff;
@@ -232,7 +236,7 @@ public:
             {
                 if (uiEnrageTimer <= diff)
                 {
-                    DoCast(me, SPELL_ENRAGE);
+                DoCast(me, DUNGEON_MODE(SPELL_ENRAGE,H_SPELL_ENRAGE));
                     uiEnrageTimer = 10000;
                 } else uiEnrageTimer -= diff;
             } else // In Undead form used to summon weapon
@@ -259,9 +263,9 @@ public:
                 if (!me->hasUnitState(UNIT_STAT_CASTING))
                 {
                     if (bIsUndead)
-                        DoCast(me, SPELL_DREADFUL_ROAR);
+                    DoCast(me, DUNGEON_MODE(SPELL_DREADFUL_ROAR,H_SPELL_DREADFUL_ROAR));
                     else
-                        DoCast(me, SPELL_STAGGERING_ROAR);
+                    DoCast(me, DUNGEON_MODE(SPELL_STAGGERING_ROAR,H_SPELL_STAGGERING_ROAR));
                     uiRoarTimer = 10000;
                 }
             } else uiRoarTimer -= diff;
@@ -422,7 +426,7 @@ public:
             Unit *pTarget = me->FindNearestCreature(ENTRY_THROW_TARGET,50);
             if (pTarget)
             {
-                DoCast(me, SPELL_SHADOW_AXE_DAMAGE);
+            DoCast(me, DUNGEON_MODE(SPELL_SHADOW_AXE_DAMAGE,H_SPELL_SHADOW_AXE_DAMAGE));
                 float x,y,z;
                 pTarget->GetPosition(x,y,z);
                 me->GetMotionMaster()->MovePoint(0,x,y,z);

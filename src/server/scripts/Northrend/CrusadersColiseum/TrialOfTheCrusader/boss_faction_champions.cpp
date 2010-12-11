@@ -1,19 +1,17 @@
-/*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
 /* ScriptData
@@ -32,8 +30,10 @@ EndScriptData */
 
 enum eYell
 {
-    SAY_GARROSH_KILL_ALLIANCE_PLAYER4 = -1649118,
-    SAY_VARIAN_KILL_HORDE_PLAYER4     = -1649123,
+    SAY_GARROSH_KILL_ALLIANCE_PLAYER4 = -1760035,
+    SAY_VARIAN_KILL_HORDE_PLAYER4     = -1760039,
+    SAY_WIN_A                         = -1760040,
+    SAY_WIN_H                         = -1760041
 };
 
 enum eAIs
@@ -41,16 +41,127 @@ enum eAIs
     AI_MELEE    = 0,
     AI_RANGED   = 1,
     AI_HEALER   = 2,
-    AI_PET      = 3,
+    AI_PET      = 3
 };
 
-enum eSpells
-{
-    SPELL_ANTI_AOE      = 68595,
-    SPELL_PVP_TRINKET   = 65547,
+enum Spells {
+    SPELL_ANTI_AOE              = 68595,
+    SPELL_PVP_TRINKET           = 65547,
+    SPELL_LIFEBLOOM             = 66093,
+    SPELL_NOURISH               = 66066,
+    SPELL_REGROWTH              = 66067,
+    SPELL_REJUVENATION          = 66065,
+    SPELL_TRANQUILITY           = 66086,
+    SPELL_BARKSKIN              = 65860,
+    SPELL_THORNS                = 66068,
+    SPELL_NATURE_GRASP          = 66071,
+    SPELL_HEALING_WAVE          = 66055,
+    SPELL_RIPTIDE               = 66053,
+    SPELL_SPIRIT_CLEANSE        = 66056,
+    SPELL_HEROISM               = 65983,
+    SPELL_BLOODLUST             = 65980,
+    SPELL_HEX                   = 66054,
+    SPELL_EARTH_SHIELD          = 66063,
+    SPELL_EARTH_SHOCK           = 65973,
+    AURA_EXHAUSTION             = 57723,
+    AURA_SATED                  = 57724,
+    SPELL_HAND_OF_FREEDOM       = 68757,
+    SPELL_BUBBLE                = 66010,
+    SPELL_CLEANSE               = 66116,
+    SPELL_FLASH_OF_LIGHT        = 66113,
+    SPELL_HOLY_LIGHT            = 66112,
+    SPELL_HOLY_SHOCK            = 66114,
+    SPELL_HAND_OF_PROTECTION    = 66009,
+    SPELL_HAMMER_OF_JUSTICE     = 66613,
+    SPELL_RENEW                 = 66177,
+    SPELL_SHIELD                = 66099,
+    SPELL_FLASH_HEAL            = 66104,
+    SPELL_DISPEL                = 65546,
+    SPELL_PSYCHIC_SCREAM        = 65543,
+    SPELL_MANA_BURN             = 66100,
+    SPELL_SILENCE               = 65542,
+    SPELL_VAMPIRIC_TOUCH        = 65490,
+    SPELL_SW_PAIN               = 65541,
+    SPELL_MIND_FLAY             = 65488,
+    SPELL_MIND_BLAST            = 65492,
+    SPELL_HORROR                = 65545,
+    SPELL_DISPERSION            = 65544,
+    SPELL_SHADOWFORM            = 16592,
+    SPELL_HELLFIRE              = 65816,
+    SPELL_CORRUPTION            = 65810,
+    SPELL_CURSE_OF_AGONY        = 65814,
+    SPELL_CURSE_OF_EXHAUSTION   = 65815,
+    SPELL_FEAR                  = 65809,
+    SPELL_SEARING_PAIN          = 65819,
+    SPELL_SHADOW_BOLT           = 65821,
+    SPELL_UNSTABLE_AFFLICTION   = 65812,
+    SPELL_SUMMON_FELHUNTER      = 67514,
+    H_SPELL_UNSTABLE_AFFLICTION = 68155,
+    SPELL_ARCANE_BARRAGE        = 65799,
+    SPELL_ARCANE_BLAST          = 65791,
+    SPELL_ARCANE_EXPLOSION      = 65800,
+    SPELL_BLINK                 = 65793,
+    SPELL_COUNTERSPELL          = 65790,
+    SPELL_FROST_NOVA            = 65792,
+    SPELL_FROSTBOLT             = 65807,
+    SPELL_ICE_BLOCK             = 65802,
+    SPELL_POLYMORPH             = 65801,
+    SPELL_AIMED_SHOT            = 65883,
+    SPELL_DETERRENCE            = 65871,
+    SPELL_DISENGAGE             = 65869,
+    SPELL_EXPLOSIVE_SHOT        = 65866,
+    SPELL_FROST_TRAP            = 65880,
+    SPELL_SHOOT                 = 65868,
+    SPELL_STEADY_SHOT           = 65867,
+    SPELL_WING_CLIP             = 66207,
+    SPELL_WYVERN_STING          = 65877,
+    SPELL_CALL_PET              = 67777,
+    SPELL_CYCLONE               = 65859,
+    SPELL_ENTANGLING_ROOTS      = 65857,
+    SPELL_FAERIE_FIRE           = 65863,
+    SPELL_FORCE_OF_NATURE       = 65861,
+    SPELL_INSECT_SWARM          = 65855,
+    SPELL_MOONFIRE              = 65856,
+    SPELL_STARFIRE              = 65854,
+    SPELL_WRATH                 = 65862,
+    SPELL_BLADESTORM            = 65947,
+    SPELL_INTIMIDATING_SHOUT    = 65930,
+    SPELL_MORTAL_STRIKE         = 65926,
+    SPELL_CHARGE                = 68764,
+    SPELL_DISARM                = 65935,
+    SPELL_OVERPOWER             = 65924,
+    SPELL_SUNDER_ARMOR          = 65936,
+    SPELL_SHATTERING_THROW      = 65940,
+    SPELL_RETALIATION           = 65932,
+    SPELL_CHAINS_OF_ICE         = 66020,
+    SPELL_DEATH_COIL            = 66019,
+    SPELL_DEATH_GRIP            = 66017,
+    SPELL_FROST_STRIKE          = 66047,
+    SPELL_ICEBOUND_FORTITUDE    = 66023,
+    SPELL_ICY_TOUCH             = 66021,
+    SPELL_STRANGULATE           = 66018,
+    SPELL_FAN_OF_KNIVES         = 65955,
+    SPELL_BLIND                 = 65960,
+    SPELL_CLOAK                 = 65961,
+    SPELL_BLADE_FLURRY          = 65956,
+    SPELL_SHADOWSTEP            = 66178,
+    SPELL_HEMORRHAGE            = 65954,
+    SPELL_EVISCERATE            = 65957,
+    SPELL_LAVA_LASH             = 65974,
+    SPELL_STORMSTRIKE           = 65970,
+    SPELL_AVENGING_WRATH        = 66011,
+    SPELL_CRUSADER_STRIKE       = 66003,
+    SPELL_DIVINE_SHIELD         = 66010,
+    SPELL_DIVINE_STORM          = 66006,
+    SPELL_JUDGEMENT_OF_COMMAND  = 66005,
+    SPELL_REPENTANCE            = 66008,
+    SPELL_SEAL_OF_COMMAND       = 66004,
+    SPELL_DEVOUR_MAGIC          = 67518,
+    SPELL_SPELL_LOCK            = 67519,
+    SPELL_CLAW                  = 67793
 };
 
-class boss_toc_champion_controller : public CreatureScript
+/*class boss_toc_champion_controller : public CreatureScript
 {
 public:
     boss_toc_champion_controller() : CreatureScript("boss_toc_champion_controller") { }
@@ -64,7 +175,7 @@ public:
     {
         boss_toc_champion_controllerAI(Creature* pCreature) : ScriptedAI(pCreature), Summons(me)
         {
-            m_pInstance = (InstanceScript *) pCreature->GetInstanceScript();
+            m_pInstance = pCreature->GetInstanceScript();
         }
 
         InstanceScript* m_pInstance;
@@ -231,7 +342,7 @@ public:
         }
     };
 
-};
+};*/
 
 
 struct boss_faction_championsAI : public ScriptedAI
@@ -258,10 +369,10 @@ struct boss_faction_championsAI : public ScriptedAI
 
     void JustReachedHome()
     {
+        if (m_pInstance && m_pInstance->GetBossState(DATA_FACTION_CHAMPIONS) != FAIL)
+            m_pInstance->SetBossState(DATA_FACTION_CHAMPIONS, FAIL);
         if (m_pInstance)
-            if (Creature* pChampionController = Unit::GetCreature((*me),m_pInstance->GetData64(NPC_CHAMPIONS_CONTROLLER)))
-                pChampionController->AI()->SetData(2, FAIL);
-        me->ForcedDespawn();
+            m_pInstance->SetData(RESET_TO_FIGHT, DATA_FACTION_CHAMPIONS);
     }
 
     float CalculateThreat(float distance, float armor, uint32 health)
@@ -275,16 +386,19 @@ struct boss_faction_championsAI : public ScriptedAI
     void UpdateThreat()
     {
         std::list<HostileReference*> const& tList = me->getThreatManager().getThreatList();
-        for (std::list<HostileReference*>::const_iterator itr = tList.begin(); itr != tList.end(); ++itr)
+        std::list<HostileReference*>::const_iterator itr;
+        bool empty = true;
+        for(itr = tList.begin(); itr!=tList.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*me), (*itr)->getUnitGuid());
             if (pUnit && me->getThreatManager().getThreat(pUnit))
             {
-                if (pUnit->GetTypeId()==TYPEID_PLAYER)
+                if(pUnit->GetTypeId()==TYPEID_PLAYER)
                 {
                     float threat = CalculateThreat(me->GetDistance2d(pUnit), (float)pUnit->GetArmor(), pUnit->GetHealth());
                     me->getThreatManager().modifyThreatPercent(pUnit, -100);
                     me->AddThreat(pUnit, 1000000.0f * threat);
+                    empty = false;
                 }
             }
         }
@@ -292,9 +406,9 @@ struct boss_faction_championsAI : public ScriptedAI
 
     void UpdatePower()
     {
-        if (me->getPowerType() == POWER_MANA)
+        if(me->getPowerType() == POWER_MANA)
             me->ModifyPower(POWER_MANA, me->GetMaxPower(POWER_MANA) / 3);
-        //else if (me->getPowerType() == POWER_ENERGY)
+        //else if(me->getPowerType() == POWER_ENERGY)
         //    me->ModifyPower(POWER_ENERGY, 100);
     }
 
@@ -308,46 +422,59 @@ struct boss_faction_championsAI : public ScriptedAI
         //DoCast(me, SPELL_PVP_TRINKET);
     }
 
-    void JustDied(Unit* /*killer*/)
+    void JustDied(Unit* who)
     {
-        if (mAIType != AI_PET)
-            if (m_pInstance)
-                if (Creature* pChampionController = Unit::GetCreature((*me),m_pInstance->GetData64(NPC_CHAMPIONS_CONTROLLER)))
-                    pChampionController->AI()->SetData(2, DONE);
+        bool noOneAlive = true;
+
+        for (int i = BOSS_CHAMPION_DK; i <= BOSS_CHAMPION_WAREK; ++i)
+        {
+            Creature* champion = ObjectAccessor::GetCreatureOrPetOrVehicle((*me), m_pInstance->GetData64(i));
+            if (champion && champion->GetGUID() != me->GetGUID() && champion->isAlive())
+                noOneAlive = false;
+        }
+
+        if (noOneAlive)
+        {
+            uint32 team = m_pInstance->GetData(DATA_TEAM);
+
+            if (team == HORDE)
+            {
+                if (Creature* garrosh = ObjectAccessor::GetCreatureOrPetOrVehicle((*me), m_pInstance->GetData64(GAROSH_HELLSCREAM)))
+                    DoScriptText(SAY_WIN_H, garrosh);
+            }
+            else if (team == ALLIANCE)
+            {
+                if (Creature* varian = ObjectAccessor::GetCreatureOrPetOrVehicle((*me), m_pInstance->GetData64(WARIAN_VRYNN)))
+                    DoScriptText(SAY_WIN_A, varian);
+            }
+
+            m_pInstance->SetBossState(DATA_FACTION_CHAMPIONS, DONE);
+        }
     }
 
-    void EnterCombat(Unit* /*who*/)
+    void EnterCombat(Unit *who)
     {
         DoCast(me, SPELL_ANTI_AOE, true);
         me->SetInCombatWithZone();
-        if (m_pInstance)
-            if (Creature* pChampionController = Unit::GetCreature((*me),m_pInstance->GetData64(NPC_CHAMPIONS_CONTROLLER)))
-                pChampionController->AI()->SetData(2, IN_PROGRESS);
+        if (m_pInstance && m_pInstance->GetBossState(DATA_FACTION_CHAMPIONS) != IN_PROGRESS)
+            m_pInstance->SetBossState(DATA_FACTION_CHAMPIONS, IN_PROGRESS);
     }
 
     void KilledUnit(Unit* who)
     {
         if (who->GetTypeId() == TYPEID_PLAYER)
         {
-            Map::PlayerList const &players = me->GetMap()->GetPlayers();
-            uint32 TeamInInstance = 0;
-
-            if (!players.isEmpty())
-                if (Player* pPlayer = players.begin()->getSource())
-                    TeamInInstance = pPlayer->GetTeam();
-
             if (m_pInstance)
             {
+                uint32 TeamInInstance = m_pInstance->GetData(DATA_TEAM);
                 if (TeamInInstance == ALLIANCE)
-                {
-                    if (Creature* pTemp = Unit::GetCreature(*me,m_pInstance->GetData64(NPC_VARIAN)))
+                    if (Creature* pTemp = Unit::GetCreature(*me,m_pInstance->GetData64(WARIAN_VRYNN)))
                         DoScriptText(SAY_VARIAN_KILL_HORDE_PLAYER4+urand(0,3), pTemp); // + cause we are on negative
-                }
                 else
-                    if (Creature* pTemp = me->FindNearestCreature(NPC_GARROSH, 300.f))
+                    if (Creature* pTemp = Unit::GetCreature(*me, m_pInstance->GetData64(GAROSH_HELLSCREAM)))
                         DoScriptText(SAY_GARROSH_KILL_ALLIANCE_PLAYER4+urand(0,3), pTemp); // + cause we are on negative
 
-                m_pInstance->SetData(DATA_TRIBUTE_TO_IMMORTALITY_ELEGIBLE, 0);
+                m_pInstance->SetData(UPDATE_DEATHS_COUNT, 0);
             }
         }
     }
@@ -356,22 +483,22 @@ struct boss_faction_championsAI : public ScriptedAI
     {
         std::list<Creature *> lst = DoFindFriendlyMissingBuff(40.0f, spell);
         std::list<Creature *>::const_iterator itr = lst.begin();
-        if (lst.empty())
+        if(lst.empty())
             return NULL;
         advance(itr, rand()%lst.size());
         return (*itr);
     }
 
-    Unit* SelectEnemyCaster(bool /*casting*/)
+    Unit* SelectEnemyCaster(bool casting)
     {
         std::list<HostileReference*> const& tList = me->getThreatManager().getThreatList();
         std::list<HostileReference*>::const_iterator iter;
-        Unit *target;
-        for (iter = tList.begin(); iter!=tList.end(); ++iter)
+        for(iter = tList.begin(); iter!=tList.end(); ++iter)
         {
-            target = Unit::GetUnit((*me),(*iter)->getUnitGuid());
-            if (target && target->getPowerType() == POWER_MANA)
-                return target;
+            Unit *target;
+            if(target = Unit::GetUnit((*me),(*iter)->getUnitGuid()))
+                if(target->getPowerType() == POWER_MANA)
+                    return target;
         }
         return NULL;
     }
@@ -381,11 +508,11 @@ struct boss_faction_championsAI : public ScriptedAI
         std::list<HostileReference*> const& tList = me->getThreatManager().getThreatList();
         std::list<HostileReference*>::const_iterator iter;
         uint32 count = 0;
-        Unit *target;
-        for (iter = tList.begin(); iter!=tList.end(); ++iter)
+        for(iter = tList.begin(); iter!=tList.end(); ++iter)
         {
-            target = Unit::GetUnit((*me),(*iter)->getUnitGuid());
-                if (target && me->GetDistance2d(target) < distance)
+            Unit *target;
+            if(target = Unit::GetUnit((*me),(*iter)->getUnitGuid()))
+                if(me->GetDistance2d(target) < distance)
                     ++count;
         }
         return count;
@@ -401,7 +528,7 @@ struct boss_faction_championsAI : public ScriptedAI
             me->SetInCombatWith(pWho);
             pWho->SetInCombatWith(me);
 
-            if (mAIType == AI_MELEE || mAIType == AI_PET)
+            if(mAIType == AI_MELEE || mAIType == AI_PET)
                 DoStartMovement(pWho);
             else
                 DoStartMovement(pWho, 20.0f);
@@ -411,7 +538,7 @@ struct boss_faction_championsAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (ThreatTimer < uiDiff)
+        if(ThreatTimer < uiDiff)
         {
             UpdatePower();
             UpdateThreat();
@@ -419,34 +546,21 @@ struct boss_faction_championsAI : public ScriptedAI
         }
         else ThreatTimer -= uiDiff;
 
-        if (mAIType != AI_PET)
-        {
-            if (CCTimer < uiDiff)
+        if(mAIType != AI_PET)
+            if(CCTimer < uiDiff)
             {
                 RemoveCC();
                 CCTimer = 8000+rand()%2000;
             }
             else CCTimer -= uiDiff;
-        }
 
-        if (mAIType == AI_MELEE || mAIType == AI_PET) DoMeleeAttackIfReady();
+        if(mAIType == AI_MELEE || mAIType == AI_PET) DoMeleeAttackIfReady();
     }
 };
 
 /********************************************************************
                             HEALERS
 ********************************************************************/
-enum eDruidSpells
-{
-    SPELL_LIFEBLOOM         = 66093,
-    SPELL_NOURISH           = 66066,
-    SPELL_REGROWTH          = 66067,
-    SPELL_REJUVENATION      = 66065,
-    SPELL_TRANQUILITY       = 66086,
-    SPELL_BARKSKIN          = 65860, //1 min cd
-    SPELL_THORNS            = 66068,
-    SPELL_NATURE_GRASP      = 66071, //1 min cd, self buff
-};
 
 class mob_toc_druid : public CreatureScript
 {
@@ -517,7 +631,7 @@ public:
                         DoCast(me,SPELL_REJUVENATION);
                         break;
                     case 4:
-                        if (Creature* pTarget = SelectRandomFriendlyMissingBuff(SPELL_THORNS))
+                        if(Creature* pTarget = SelectRandomFriendlyMissingBuff(SPELL_THORNS))
                             DoCast(pTarget,SPELL_THORNS);
                         break;
                 }
@@ -528,20 +642,6 @@ public:
         }
     };
 
-};
-
-enum eShamanSpells
-{
-    SPELL_HEALING_WAVE          = 66055,
-    SPELL_RIPTIDE               = 66053,
-    SPELL_SPIRIT_CLEANSE        = 66056, //friendly only
-    SPELL_HEROISM               = 65983,
-    SPELL_BLOODLUST             = 65980,
-    SPELL_HEX                   = 66054,
-    SPELL_EARTH_SHIELD          = 66063,
-    SPELL_EARTH_SHOCK           = 65973,
-    AURA_EXHAUSTION             = 57723,
-    AURA_SATED                  = 57724,
 };
 
 class mob_toc_shaman : public CreatureScript
@@ -578,10 +678,8 @@ public:
             if (m_uiHeroismOrBloodlustTimer <= uiDiff)
             {
                 if (me->getFaction()) //Am i alliance?
-                {
                     if (!me->HasAura(AURA_EXHAUSTION))
                         DoCastAOE(SPELL_HEROISM);
-                }
                 else
                     if (!me->HasAura(AURA_SATED))
                         DoCastAOE(SPELL_BLOODLUST);
@@ -612,7 +710,7 @@ public:
                         DoCast(me,SPELL_SPIRIT_CLEANSE);
                         break;
                     case 5:
-                        if (Unit *pTarget = SelectRandomFriendlyMissingBuff(SPELL_EARTH_SHIELD))
+                        if(Unit *pTarget = SelectRandomFriendlyMissingBuff(SPELL_EARTH_SHIELD))
                             DoCast(pTarget,SPELL_EARTH_SHIELD);
                         break;
                 }
@@ -623,18 +721,6 @@ public:
         }
     };
 
-};
-
-enum ePaladinSpells
-{
-    SPELL_HAND_OF_FREEDOM     = 68757, //25 sec cd
-    SPELL_BUBBLE              = 66010, //5 min cd
-    SPELL_CLEANSE             = 66116,
-    SPELL_FLASH_OF_LIGHT      = 66113,
-    SPELL_HOLY_LIGHT          = 66112,
-    SPELL_HOLY_SHOCK          = 66114,
-    SPELL_HAND_OF_PROTECTION  = 66009,
-    SPELL_HAMMER_OF_JUSTICE   = 66613,
 };
 
 class mob_toc_paladin : public CreatureScript
@@ -677,15 +763,15 @@ public:
             if (m_uiBubbleTimer <= uiDiff)
             {
                 //cast bubble at 20% hp
-                if (HealthBelowPct(20))
+                if(HealthBelowPct(20))
                     DoCast(me,SPELL_BUBBLE);
                 m_uiBubbleTimer = urand(0*IN_MILLISECONDS,360*IN_MILLISECONDS);
             } else m_uiBubbleTimer -= uiDiff;
 
             if (m_uiHandOfProtectionTimer <= uiDiff)
             {
-                if (Unit *pTarget = DoSelectLowestHpFriendly(40.0f))
-                    if (pTarget->HealthBelowPct(15))
+                if(Unit *pTarget = DoSelectLowestHpFriendly(40.0f))
+                    if(pTarget->GetHealth() * 100 < pTarget->GetMaxHealth() * 15) // HealthBelowPct(15)
                         DoCast(pTarget,SPELL_HAND_OF_PROTECTION);
                 m_uiHandOfProtectionTimer = urand(0*IN_MILLISECONDS,360*IN_MILLISECONDS);
             } else m_uiHandOfProtectionTimer -= uiDiff;
@@ -699,7 +785,7 @@ public:
 
             if (m_uiHandOfFreedomTimer <= uiDiff)
             {
-                if (Unit *pTarget = SelectRandomFriendlyMissingBuff(SPELL_HAND_OF_FREEDOM))
+                if(Unit *pTarget = SelectRandomFriendlyMissingBuff(SPELL_HAND_OF_FREEDOM))
                     DoCast(pTarget,SPELL_HAND_OF_FREEDOM);
                 m_uiHandOfFreedomTimer = urand(25*IN_MILLISECONDS,40*IN_MILLISECONDS);
             } else m_uiHandOfFreedomTimer -= uiDiff;
@@ -734,16 +820,6 @@ public:
 
 };
 
-enum ePriestSpells
-{
-    SPELL_RENEW             = 66177,
-    SPELL_SHIELD            = 66099,
-    SPELL_FLASH_HEAL        = 66104,
-    SPELL_DISPEL            = 65546,
-    SPELL_PSYCHIC_SCREAM    = 65543,
-    SPELL_MANA_BURN         = 66100,
-};
-
 class mob_toc_priest : public CreatureScript
 {
 public:
@@ -775,7 +851,7 @@ public:
 
             if (m_uiPsychicScreamTimer <= uiDiff)
             {
-                if (EnemiesInRange(10.0f) > 2)
+                if(EnemiesInRange(10.0f) > 2)
                     DoCastAOE(SPELL_PSYCHIC_SCREAM);
                 m_uiPsychicScreamTimer = urand(5*IN_MILLISECONDS,25*IN_MILLISECONDS);
             } else m_uiPsychicScreamTimer -= uiDiff;
@@ -794,7 +870,7 @@ public:
                         DoCast(me,SPELL_FLASH_HEAL);
                         break;
                     case 4:
-                        if (Unit *pTarget = urand(0,1) ? SelectUnit(SELECT_TARGET_RANDOM,0) : DoSelectLowestHpFriendly(40.0f))
+                        if(Unit *pTarget = urand(0,1) ? SelectUnit(SELECT_TARGET_RANDOM,0) : DoSelectLowestHpFriendly(40.0f))
                             DoCast(pTarget, SPELL_DISPEL);
                         break;
                     case 5:
@@ -813,17 +889,6 @@ public:
 /********************************************************************
                             RANGED
 ********************************************************************/
-enum eShadowPriestSpells
-{
-    SPELL_SILENCE           = 65542,
-    SPELL_VAMPIRIC_TOUCH    = 65490,
-    SPELL_SW_PAIN           = 65541,
-    SPELL_MIND_FLAY         = 65488,
-    SPELL_MIND_BLAST        = 65492,
-    SPELL_HORROR            = 65545,
-    SPELL_DISPERSION        = 65544,
-    SPELL_SHADOWFORM        = 16592,
-};
 
 class mob_toc_shadow_priest : public CreatureScript
 {
@@ -868,21 +933,21 @@ public:
 
             if (m_uiPsychicScreamTimer <= uiDiff)
             {
-                if (EnemiesInRange(10.0f) > 2)
+                if(EnemiesInRange(10.0f) > 2)
                     DoCastAOE(SPELL_PSYCHIC_SCREAM);
                 m_uiPsychicScreamTimer = urand(5*IN_MILLISECONDS,25*IN_MILLISECONDS);
             } else m_uiPsychicScreamTimer -= uiDiff;
 
             if (m_uiDispersionTimer <= uiDiff)
             {
-                if (HealthBelowPct(20))
+                if(HealthBelowPct(20))
                     DoCast(me,SPELL_DISPERSION);
                 m_uiDispersionTimer = urand(1*IN_MILLISECONDS,180*IN_MILLISECONDS);
             } else m_uiDispersionTimer -= uiDiff;
 
             if (m_uiSilenceTimer <= uiDiff)
             {
-                if (Unit *pTarget = SelectEnemyCaster(false))
+                if(Unit *pTarget = SelectEnemyCaster(false))
                     DoCast(pTarget,SPELL_SILENCE);
                 m_uiSilenceTimer = urand(8*IN_MILLISECONDS,15*IN_MILLISECONDS);
             } else m_uiSilenceTimer -= uiDiff;
@@ -911,7 +976,7 @@ public:
                             DoCast(pTarget,SPELL_SW_PAIN);
                         break;
                    case 4:
-                        if (Unit *pTarget = urand(0,1) ? SelectUnit(SELECT_TARGET_RANDOM,0) : DoSelectLowestHpFriendly(40.0f))
+                        if(Unit *pTarget = urand(0,1) ? SelectUnit(SELECT_TARGET_RANDOM,0) : DoSelectLowestHpFriendly(40.0f))
                             DoCast(pTarget, SPELL_DISPEL);
                         break;
                 }
@@ -922,20 +987,6 @@ public:
         }
     };
 
-};
-
-enum eWarlockSpells
-{
-    SPELL_HELLFIRE              = 65816,
-    SPELL_CORRUPTION            = 65810,
-    SPELL_CURSE_OF_AGONY        = 65814,
-    SPELL_CURSE_OF_EXHAUSTION   = 65815,
-    SPELL_FEAR                  = 65809, //8s
-    SPELL_SEARING_PAIN          = 65819,
-    SPELL_SHADOW_BOLT           = 65821,
-    SPELL_UNSTABLE_AFFLICTION   = 65812,
-    SPELL_SUMMON_FELHUNTER      = 67514,
-    H_SPELL_UNSTABLE_AFFLICTION  = 68155, //15s
 };
 
 class mob_toc_warlock : public CreatureScript
@@ -1032,19 +1083,6 @@ public:
 
 };
 
-enum eMageSpells
-{
-    SPELL_ARCANE_BARRAGE    = 65799, //3s
-    SPELL_ARCANE_BLAST      = 65791,
-    SPELL_ARCANE_EXPLOSION  = 65800,
-    SPELL_BLINK             = 65793, //15s
-    SPELL_COUNTERSPELL      = 65790, //24s
-    SPELL_FROST_NOVA        = 65792, //25s
-    SPELL_FROSTBOLT         = 65807,
-    SPELL_ICE_BLOCK         = 65802, //5min
-    SPELL_POLYMORPH         = 65801, //15s
-};
-
 class mob_toc_mage : public CreatureScript
 {
 public:
@@ -1134,20 +1172,6 @@ public:
 
 };
 
-enum eHunterSpells
-{
-    SPELL_AIMED_SHOT        = 65883,
-    SPELL_DETERRENCE        = 65871, //90s
-    SPELL_DISENGAGE         = 65869, //30s
-    SPELL_EXPLOSIVE_SHOT    = 65866,
-    SPELL_FROST_TRAP        = 65880, //30s
-    SPELL_SHOOT             = 65868, //1.7s
-    SPELL_STEADY_SHOT       = 65867, //3s
-    SPELL_WING_CLIP         = 66207, //6s
-    SPELL_WYVERN_STING      = 65877, //60s
-    SPELL_CALL_PET          = 67777,
-};
-
 class mob_toc_hunter : public CreatureScript
 {
 public:
@@ -1193,14 +1217,14 @@ public:
 
             if (m_uiDisengageTimer <= uiDiff)
             {
-                if (EnemiesInRange(10.0f) > 3)
+                if(EnemiesInRange(10.0f) > 3)
                     DoCast(SPELL_DISENGAGE);
                 m_uiDisengageTimer = urand(12*IN_MILLISECONDS,20*IN_MILLISECONDS);
             } else m_uiDisengageTimer -= uiDiff;
 
             if (m_uiDeterrenceTimer <= uiDiff)
             {
-                if (HealthBelowPct(20))
+                if(HealthBelowPct(20))
                     DoCast(SPELL_DETERRENCE);
                 m_uiDeterrenceTimer = urand(20*IN_MILLISECONDS,120*IN_MILLISECONDS);
             } else m_uiDeterrenceTimer -= uiDiff;
@@ -1250,18 +1274,6 @@ public:
         }
     };
 
-};
-
-enum eBoomkinSpells
-{
-    SPELL_CYCLONE           = 65859, //6s
-    SPELL_ENTANGLING_ROOTS  = 65857, //10s
-    SPELL_FAERIE_FIRE       = 65863,
-    SPELL_FORCE_OF_NATURE   = 65861, //180s
-    SPELL_INSECT_SWARM      = 65855,
-    SPELL_MOONFIRE          = 65856, //5s
-    SPELL_STARFIRE          = 65854,
-    SPELL_WRATH             = 65862,
 };
 
 class mob_toc_boomkin : public CreatureScript
@@ -1355,18 +1367,6 @@ public:
 /********************************************************************
                             MELEE
 ********************************************************************/
-enum eWarriorSpells
-{
-    SPELL_BLADESTORM            = 65947,
-    SPELL_INTIMIDATING_SHOUT    = 65930,
-    SPELL_MORTAL_STRIKE         = 65926,
-    SPELL_CHARGE                = 68764,
-    SPELL_DISARM                = 65935,
-    SPELL_OVERPOWER             = 65924,
-    SPELL_SUNDER_ARMOR          = 65936,
-    SPELL_SHATTERING_THROW      = 65940,
-    SPELL_RETALIATION           = 65932,
-};
 
 class mob_toc_warrior : public CreatureScript
 {
@@ -1471,17 +1471,6 @@ public:
 
 };
 
-enum eDeathKnightSpells
-{
-    SPELL_CHAINS_OF_ICE       = 66020, //8sec
-    SPELL_DEATH_COIL          = 66019, //5sec
-    SPELL_DEATH_GRIP          = 66017, //35sec
-    SPELL_FROST_STRIKE        = 66047, //6sec
-    SPELL_ICEBOUND_FORTITUDE  = 66023, //1min
-    SPELL_ICY_TOUCH           = 66021, //8sec
-    SPELL_STRANGULATE         = 66018, //2min
-};
-
 class mob_toc_dk : public CreatureScript
 {
 public:
@@ -1523,14 +1512,14 @@ public:
 
             if (m_uiIceboundFortitudeTimer <= uiDiff)
             {
-                if (HealthBelowPct(50))
+                if(HealthBelowPct(50))
                     DoCast(me,SPELL_ICEBOUND_FORTITUDE);
                 m_uiIceboundFortitudeTimer = urand(5*IN_MILLISECONDS,90*IN_MILLISECONDS);
             } else m_uiIceboundFortitudeTimer -= uiDiff;
 
             if (m_uiChainsOfIceTimer <= uiDiff)
             {
-                if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if(Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
                     DoCast(pTarget,SPELL_CHAINS_OF_ICE);
                 m_uiChainsOfIceTimer = urand(5*IN_MILLISECONDS,15*IN_MILLISECONDS);
             } else m_uiChainsOfIceTimer -= uiDiff;
@@ -1543,7 +1532,7 @@ public:
 
             if (m_uiStrangulateTimer <= uiDiff)
             {
-                if (Unit *pTarget = SelectEnemyCaster(false))
+                if(Unit *pTarget = SelectEnemyCaster(false))
                     DoCast(pTarget,SPELL_STRANGULATE);
                 m_uiStrangulateTimer = urand(10*IN_MILLISECONDS,90*IN_MILLISECONDS);
             } else m_uiStrangulateTimer -= uiDiff;
@@ -1562,7 +1551,7 @@ public:
 
             if (m_uiDeathGripTimer <= uiDiff)
             {
-                if (me->IsInRange(me->getVictim(), 10.0f, 30.0f, false))
+                if(me->IsInRange(me->getVictim(), 10.0f, 30.0f, false))
                     DoCastVictim(SPELL_DEATH_GRIP);
                 m_uiDeathGripTimer = urand(5*IN_MILLISECONDS,15*IN_MILLISECONDS);
             } else m_uiDeathGripTimer -= uiDiff;
@@ -1571,17 +1560,6 @@ public:
         }
     };
 
-};
-
-enum eRogueSpells
-{
-    SPELL_FAN_OF_KNIVES         = 65955, //2sec
-    SPELL_BLIND                 = 65960, //2min
-    SPELL_CLOAK                 = 65961, //90sec
-    SPELL_BLADE_FLURRY          = 65956, //2min
-    SPELL_SHADOWSTEP            = 66178, //30sec
-    SPELL_HEMORRHAGE            = 65954,
-    SPELL_EVISCERATE            = 65957,
 };
 
 class mob_toc_rogue : public CreatureScript
@@ -1625,7 +1603,7 @@ public:
 
             if (m_uiFanOfKnivesTimer <= uiDiff)
             {
-                if (EnemiesInRange(15.0f) > 2)
+                if(EnemiesInRange(15.0f) > 2)
                     DoCastAOE(SPELL_FAN_OF_KNIVES);
                 m_uiFanOfKnivesTimer = urand(8*IN_MILLISECONDS,10*IN_MILLISECONDS);
             } else m_uiFanOfKnivesTimer -= uiDiff;
@@ -1644,22 +1622,22 @@ public:
 
             if (m_uiShadowstepTimer <= uiDiff)
             {
-                if (me->IsInRange(me->getVictim(), 10.0f, 40.0f))
+                if(me->IsInRange(me->getVictim(), 10.0f, 40.0f))
                     DoCastVictim(SPELL_SHADOWSTEP);
                 m_uiShadowstepTimer = urand(10*IN_MILLISECONDS,80*IN_MILLISECONDS);
             } else m_uiShadowstepTimer -= uiDiff;
 
             if (m_uiBlindTimer <= uiDiff)
             {
-                if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,1))
-                    if (me->IsInRange(pTarget, 0.0f, 15.0f, false))
+                if(Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,1))
+                    if(me->IsInRange(pTarget, 0.0f, 15.0f, false))
                         DoCast(pTarget,SPELL_BLIND);
                 m_uiBlindTimer = urand(7*IN_MILLISECONDS,8*IN_MILLISECONDS);
             } else m_uiBlindTimer -= uiDiff;
 
             if (m_uiCloakTimer <= uiDiff)
             {
-                if (HealthBelowPct(50))
+                if(HealthBelowPct(50))
                     DoCast(me,SPELL_CLOAK);
                 m_uiCloakTimer = urand(20*IN_MILLISECONDS,120*IN_MILLISECONDS);
             } else m_uiCloakTimer -= uiDiff;
@@ -1674,13 +1652,6 @@ public:
         }
     };
 
-};
-
-enum eEnhShamanSpells
-{
-    SPELL_EARTH_SHOCK_ENH   = 65973,
-    SPELL_LAVA_LASH         = 65974,
-    SPELL_STORMSTRIKE       = 65970,
 };
 
 class mob_toc_enh_shaman : public CreatureScript
@@ -1727,7 +1698,7 @@ public:
             Summons.Summon(pSummoned);
         }
 
-        void SummonedCreatureDespawn(Creature* /*pSummoned*/)
+        void SummonedCreatureDespawn(Creature* pSummoned)
         {
             --m_uiTotemCount;
         }
@@ -1763,10 +1734,8 @@ public:
             if (m_uiHeroismOrBloodlustTimer <= uiDiff)
             {
                 if (me->getFaction()) //Am i alliance?
-                {
                     if (!me->HasAura(AURA_EXHAUSTION))
                         DoCastAOE(SPELL_HEROISM);
-                }
                 else
                     if (!me->HasAura(AURA_SATED))
                         DoCastAOE(SPELL_BLOODLUST);
@@ -1775,7 +1744,7 @@ public:
 
             if (m_uiEarthShockTimer <= uiDiff)
             {
-                DoCastVictim(SPELL_EARTH_SHOCK_ENH);
+                DoCastVictim(SPELL_EARTH_SHOCK);
                 m_uiEarthShockTimer = urand(5*IN_MILLISECONDS,8*IN_MILLISECONDS);
             } else m_uiEarthShockTimer -= uiDiff;
 
@@ -1802,19 +1771,6 @@ public:
         }
     };
 
-};
-
-enum eRetroPaladinSpells
-{
-    SPELL_AVENGING_WRATH        = 66011, //3min cd
-    SPELL_CRUSADER_STRIKE       = 66003, //6sec cd
-    SPELL_DIVINE_SHIELD         = 66010, //5min cd
-    SPELL_DIVINE_STORM          = 66006, //10sec cd
-    SPELL_HAMMER_OF_JUSTICE_RET = 66007, //40sec cd
-    SPELL_HAND_OF_PROTECTION_RET = 66009, //5min cd
-    SPELL_JUDGEMENT_OF_COMMAND  = 66005, //8sec cd
-    SPELL_REPENTANCE            = 66008, //60sec cd
-    SPELL_SEAL_OF_COMMAND       = 66004, //no cd
 };
 
 class mob_toc_retro_paladin : public CreatureScript
@@ -1862,7 +1818,7 @@ public:
 
             if (m_uiRepeteanceTimer <= uiDiff)
             {
-                if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if(Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
                     DoCast(pTarget,SPELL_REPENTANCE);
                 m_uiRepeteanceTimer = 60*IN_MILLISECONDS;
             } else m_uiRepeteanceTimer -= uiDiff;
@@ -1881,7 +1837,7 @@ public:
 
             if (m_uiDivineShieldTimer <= uiDiff)
             {
-                if (HealthBelowPct(20))
+                if(HealthBelowPct(20))
                     DoCast(me,SPELL_DIVINE_SHIELD);
                 m_uiDivineShieldTimer = urand(0*IN_MILLISECONDS,360*IN_MILLISECONDS);
             } else m_uiDivineShieldTimer -= uiDiff;
@@ -1902,12 +1858,6 @@ public:
         }
     };
 
-};
-
-enum eWarlockPetSpells
-{
-    SPELL_DEVOUR_MAGIC  = 67518,
-    SPELL_SPELL_LOCK  = 67519,
 };
 
 class mob_toc_pet_warlock : public CreatureScript
@@ -1956,11 +1906,6 @@ public:
 
 };
 
-enum eHunterPetSpells
-{
-    SPELL_CLAW  = 67793,
-};
-
 class mob_toc_pet_hunter : public CreatureScript
 {
 public:
@@ -2003,7 +1948,7 @@ public:
 
 void AddSC_boss_faction_champions()
 {
-    new boss_toc_champion_controller();
+    //new boss_toc_champion_controller();
     new mob_toc_druid();
     new mob_toc_shaman();
     new mob_toc_paladin();

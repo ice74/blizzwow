@@ -370,7 +370,7 @@ void AddSC_trial_of_the_champion();
 void AddSC_boss_anubarak_trial();        //Trial of the Crusader
 void AddSC_boss_faction_champions();
 void AddSC_boss_jaraxxus();
-void AddSC_boss_northrend_beasts();
+void AddSC_boss_beasts_of_northrend();
 void AddSC_boss_twin_valkyr();
 void AddSC_trial_of_the_crusader();
 void AddSC_instance_trial_of_the_crusader();

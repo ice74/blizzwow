@@ -22,3 +22,4 @@ REPLACE INTO `quest_template` (`entry`, `Method`, `ZoneOrSort`, `SkillOrClassMas
 
 UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 12701; 
 UPDATE `quest_template` SET `Method` = 0 WHERE `entry` = 24451; 
+UPDATE `quest_template` SET `SrcItemId` = '49698' AND `SrcItemCount` = '1' WHERE `entry` = '24451';

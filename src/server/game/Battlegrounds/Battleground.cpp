@@ -334,7 +334,7 @@ void Battleground::Update(uint32 diff)
 
     // if less then minimum players are in on one side, then start premature finish timer
 	UpdateBalance();
-    if (GetStatus() == STATUS_IN_PROGRESS && !isArena() && sBattlegroundMgr.GetPrematureFinishTime() && (GetPlayersCountByTeam(ALLIANCE) < GetMinPlayersPerTeam() || GetPlayersCountByTeam(HORDE) < GetMinPlayersPerTeam()))
+     if (GetStatus() == STATUS_IN_PROGRESS && !isArena() && sBattlegroundMgr.GetPrematureFinishTime() && (GetPlayersCountByTeam(ALLIANCE) < GetMinPlayersPerTeam() || GetPlayersCountByTeam(HORDE) < GetMinPlayersPerTeam()))
     {
         if (!m_PrematureCountDown)
         {
@@ -1023,7 +1023,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (isBattleground() && GetStatus() < STATUS_WAIT_LEAVE)
         {
             // a player has left the battleground, so there are free slots -> add to queue
-            AddToBGFreeSlotQueue();
+           	AddToBGFreeSlotQueue();
 			sBattlegroundMgr.ScheduleQueueUpdate(0, 0, bgQueueTypeId, bgTypeId, GetBracketId());
         }
         // Let others know
@@ -1334,7 +1334,7 @@ bool Battleground::HasFreeSlots() const
 
 void Battleground::UpdateBalance()
 {
-+	if (GetPlayersCountByTeam(ALLIANCE) < GetPlayersCountByTeam(HORDE))
+	if (GetPlayersCountByTeam(ALLIANCE) < GetPlayersCountByTeam(HORDE))
 		m_balance = GetPlayersCountByTeam(HORDE) - GetPlayersCountByTeam(ALLIANCE);
 	else if (GetPlayersCountByTeam(HORDE) < GetPlayersCountByTeam(ALLIANCE))
 		m_balance = GetPlayersCountByTeam(ALLIANCE) - GetPlayersCountByTeam(HORDE);

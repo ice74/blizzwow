@@ -69,36 +69,36 @@ public:
             return false;
         }
 
-        void OnCreatureCreate(Creature* creature)
+        void OnCreatureCreate(Creature* pCreature, bool /*add*/)
         {
-            switch(creature->GetEntry())
+            switch(pCreature->GetEntry())
             {
-                case 28684:    uiKrikthir = creature->GetGUID();        break;
-                case 28921:    uiHadronox = creature->GetGUID();        break;
-                case 29120:    uiAnubarak = creature->GetGUID();        break;
-                case 28730:    uiWatcherGashra = creature->GetGUID();   break;
-                case 28731:    uiWatcherSilthik = creature->GetGUID();  break;
-                case 28729:    uiWatcherNarjil = creature->GetGUID();   break;
+                case 28684:    uiKrikthir = pCreature->GetGUID();        break;
+                case 28921:    uiHadronox = pCreature->GetGUID();        break;
+                case 29120:    uiAnubarak = pCreature->GetGUID();        break;
+                case 28730:    uiWatcherGashra = pCreature->GetGUID();   break;
+                case 28731:    uiWatcherSilthik = pCreature->GetGUID();  break;
+                case 28729:    uiWatcherNarjil = pCreature->GetGUID();   break;
             }
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* pGo, bool /*add*/)
         {
-            switch (go->GetEntry())
+            switch (pGo->GetEntry())
             {
                 case 192395:
-                    uiKrikthirDoor = go->GetGUID();
+                    uiKrikthirDoor = pGo->GetGUID();
                     if (auiEncounter[0] == DONE)
-                        HandleGameObject(NULL,true,go);
+                        HandleGameObject(NULL,true,pGo);
                     break;
                 case 192396:
-                    uiAnubarakDoor[0] = go->GetGUID();
+                    uiAnubarakDoor[0] = pGo->GetGUID();
                     break;
                 case 192397:
-                    uiAnubarakDoor[1] = go->GetGUID();
+                    uiAnubarakDoor[1] = pGo->GetGUID();
                     break;
                 case 192398:
-                    uiAnubarakDoor[2] = go->GetGUID();
+                    uiAnubarakDoor[2] = pGo->GetGUID();
                     break;
             }
         }

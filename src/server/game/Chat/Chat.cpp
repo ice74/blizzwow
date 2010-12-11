@@ -448,9 +448,10 @@ ChatCommand * ChatHandler::getCommandTable()
         { "bindsight",      SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleBindSightCommand>,           "", NULL },
         { "unbindsight",    SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleUnbindSightCommand>,         "", NULL },
         { "playall",        SEC_GAMEMASTER,  false, OldHandler<&ChatHandler::HandlePlayAllCommand>,             "", NULL },
-		{ "wg",             SEC_ADMINISTRATOR,  false, NULL,                                           "", wintergraspCommandTable },
+<<<<<<< .mine		{ "wg",             SEC_ADMINISTRATOR,  false, NULL,                                           "", wintergraspCommandTable },
 		{ "findflyhacker",  SEC_PLAYER,         false, &ChatHandler::HandleFlyHackerCommand,         "", NULL },
-        { NULL,             0,                  false, NULL,                                           "", NULL }
+=======		{ "wg",             SEC_ADMINISTRATOR,  false, NULL,                                           "", wintergraspCommandTable },
+>>>>>>> .theirs        { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
     // cache for commands, needed because some commands are loaded dynamically through ScriptMgr

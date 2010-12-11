@@ -35,7 +35,6 @@
 #include "BattlegroundSA.h"
 #include "BattlegroundDS.h"
 #include "BattlegroundRV.h"
-#include "BattlegroundIC.h"
 #include "BattlegroundRB.h"
 #include "Chat.h"
 #include "Map.h"
@@ -332,13 +331,6 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket *data, Battleground *bg)
                         *data << uint32(((BattlegroundSAScore*)itr2->second)->demolishers_destroyed);
                         *data << uint32(((BattlegroundSAScore*)itr2->second)->gates_destroyed);
                         break;
-                    case 628:                           // IC
-                        *data << (uint32)0x00000002;                // count of next fields
-                        *data << (uint32)((BattlegroundICScore*)itr->second)->BasesAssaulted;       // bases asssulted
-                        *data << (uint32)((BattlegroundICScore*)itr->second)->BasesDefended;        // bases defended
-                    default:
-                        *data << uint32(0);
-                        break;
                 }
             case BATTLEGROUND_AV:
                 *data << uint32(0x00000005);                    // count of next fields
@@ -366,11 +358,6 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket *data, Battleground *bg)
                 *data << uint32(0x00000002);                    // count of next fields
                 *data << uint32(((BattlegroundSAScore*)itr2->second)->demolishers_destroyed);
                 *data << uint32(((BattlegroundSAScore*)itr2->second)->gates_destroyed);
-                break;
-            case BATTLEGROUND_IC:                           // wotlk
-                *data << (uint32)0x00000002;                // count of next fields
-                *data << (uint32)((BattlegroundICScore*)itr->second)->BasesAssaulted;       // bases asssulted
-                *data << (uint32)((BattlegroundICScore*)itr->second)->BasesDefended;        // bases defended
                 break;
             case BATTLEGROUND_NA:
             case BATTLEGROUND_BE:
@@ -589,9 +576,6 @@ Battleground * BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId bgTypeI
         case BATTLEGROUND_RV:
             bg = new BattlegroundRV(*(BattlegroundRV*)bg_template);
             break;
-        case BATTLEGROUND_IC:
-            bg = new BattlegroundIC(*(BattlegroundIC*)bg_template);
-            break;
         case BATTLEGROUND_RB:
             bg = new BattlegroundRB(*(BattlegroundRB*)bg_template);
             break;
@@ -639,7 +623,6 @@ uint32 BattlegroundMgr::CreateBattleground(BattlegroundTypeId bgTypeId, bool IsA
         case BATTLEGROUND_SA: bg = new BattlegroundSA; break;
         case BATTLEGROUND_DS: bg = new BattlegroundDS; break;
         case BATTLEGROUND_RV: bg = new BattlegroundRV; break;
-        case BATTLEGROUND_IC: bg = new BattlegroundIC; break;
         case BATTLEGROUND_RB: bg = new BattlegroundRB; break;
         default:
             bg = new Battleground;

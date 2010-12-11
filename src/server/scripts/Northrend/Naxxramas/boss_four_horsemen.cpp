@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+ 
 #include "ScriptPCH.h"
 #include "naxxramas.h"
 
@@ -129,6 +129,7 @@ public:
             encounterActionReset = false;
             doDelayPunish = false;
             _Reset();
+             
         }
 
         bool DoEncounterAction(Unit *who, bool attack, bool reset, bool checkAllDead)
@@ -324,9 +325,19 @@ public:
             else
                 DoScriptText(SAY_AGGRO[id], me);
 
-            events.ScheduleEvent(EVENT_MARK, 15000);
+            events.ScheduleEvent(EVENT_MARK, 24000);
             events.ScheduleEvent(EVENT_CAST, 20000+rand()%5000);
             events.ScheduleEvent(EVENT_BERSERK, 15*100*1000);
+        }
+
+        void SpellHitTarget(Unit* target, const SpellEntry *spell)
+        {
+            if(target->GetTypeId() != TYPEID_PLAYER)
+                return;
+
+            if(spell->Id == SPELL_MARK[0] || spell->Id == SPELL_MARK[1] || spell->Id == SPELL_MARK[2] || spell->Id == SPELL_MARK[3])
+                me->getThreatManager().modifyThreatPercent(target,-50);
+
         }
 
         void UpdateAI(const uint32 diff)
@@ -350,28 +361,34 @@ public:
                 switch(eventId)
                 {
                     case EVENT_MARK:
-                        if (!(rand()%5))
-                            DoScriptText(SAY_SPECIAL[id], me);
-                        DoCastAOE(SPELL_MARK[id]);
-                        events.ScheduleEvent(EVENT_MARK, 15000);
+                        if(!me->IsNonMeleeSpellCasted(false))
+                        {
+                            if (!(rand()%5))
+                                DoScriptText(SAY_SPECIAL[id], me);
+                            DoCastAOE(SPELL_MARK[id]);
+                            events.ScheduleEvent(EVENT_MARK, caster ? 15000 : 12000);
+                        }
                         break;
                     case EVENT_CAST:
-                        if (!(rand()%5))
-                            DoScriptText(SAY_TAUNT[rand()%3][id], me);
-
-                        if (caster)
+                        if(!me->IsNonMeleeSpellCasted(false))
                         {
-                            if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 45.0f))
-                                DoCast(pTarget, SPELL_PRIMARY(id));
-                        }
-                        else
-                            DoCast(me->getVictim(), SPELL_PRIMARY(id));
+                            if (!(rand()%5))
+                                DoScriptText(SAY_TAUNT[rand()%3][id], me);
 
-                        events.ScheduleEvent(EVENT_CAST, 15000);
+                            if (caster)
+                            {
+                                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 45.0f))
+                                    DoCast(pTarget, SPELL_PRIMARY(id));
+                            }
+                            else
+                                DoCast(me->getVictim(), SPELL_PRIMARY(id));
+
+                            events.ScheduleEvent(EVENT_CAST, 15000);
+                        }
                         break;
                     case EVENT_BERSERK:
                         DoScriptText(SAY_SPECIAL[id], me);
-                        DoCast(me, EVENT_BERSERK);
+                        DoCast(me, SPELL_BERSERK, true);
                         break;
                 }
             }

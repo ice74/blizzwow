@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ScriptPCH.h"
@@ -29,6 +29,7 @@
 #define SPELL_BLINK                     RAND(29208,29209,29210,29211)
 #define SPELL_CRIPPLE                   RAID_MODE(29212,54814)
 #define SPELL_TELEPORT                  29216
+#define SPELL_BERSERK                   27680
 
 #define MOB_WARRIOR         16984
 #define MOB_CHAMPION        16983
@@ -103,6 +104,7 @@ public:
                 EnterEvadeMode();
             else
             {
+                me->getThreatManager().resetAllAggro();
                 events.ScheduleEvent(EVENT_BALCONY, 110000);
                 events.ScheduleEvent(EVENT_CURSE, 10000+rand()%15000);
                 events.ScheduleEvent(EVENT_WARRIOR, 30000);
@@ -134,7 +136,7 @@ public:
         {
             for (uint32 i = 0; i < num; ++i)
             {
-                uint32 pos = rand()%MAX_SUMMON_POS;
+                uint32 pos = RAID_MODE(RAND(2,3), rand()%MAX_SUMMON_POS);
                 me->SummonCreature(entry, SummonPos[pos][0], SummonPos[pos][1], SummonPos[pos][2],
                     SummonPos[pos][3], TEMPSUMMON_CORPSE_DESPAWN, 60000);
             }
@@ -152,8 +154,11 @@ public:
                 switch(eventId)
                 {
                     case EVENT_CURSE:
-                        DoCastAOE(SPELL_CURSE_PLAGUEBRINGER);
-                        events.ScheduleEvent(EVENT_CURSE, 50000 + rand()%10000);
+                        if(!me->IsNonMeleeSpellCasted(false))
+                        {
+                            DoCastAOE(SPELL_CURSE_PLAGUEBRINGER);
+                            events.ScheduleEvent(EVENT_CURSE, 50000 + rand()%10000);
+                        }
                         return;
                     case EVENT_WARRIOR:
                         DoScriptText(SAY_SUMMON, me);
@@ -161,10 +166,13 @@ public:
                         events.ScheduleEvent(EVENT_WARRIOR, 30000);
                         return;
                     case EVENT_BLINK:
-                        DoCastAOE(SPELL_CRIPPLE, true);
-                        DoCastAOE(SPELL_BLINK);
-                        DoResetThreat();
-                        events.ScheduleEvent(EVENT_BLINK, 40000);
+                        if(!me->IsNonMeleeSpellCasted(false))
+                        {
+                            DoCastAOE(SPELL_CRIPPLE, true);
+                            DoCastAOE(SPELL_BLINK);
+                            DoResetThreat();
+                            events.ScheduleEvent(EVENT_BLINK, 20000);
+                        }
                         return;
                     case EVENT_BALCONY:
                         me->SetReactState(REACT_PASSIVE);
@@ -172,8 +180,9 @@ public:
                         me->AttackStop();
                         me->RemoveAllAuras();
                         me->NearTeleportTo(TELE_X, TELE_Y, TELE_Z, TELE_O);
+                        me->getThreatManager().resetAllAggro();
                         events.Reset();
-                        events.ScheduleEvent(EVENT_WAVE, 2000 + rand()%3000);
+                        events.ScheduleEvent(EVENT_WAVE, 10000);
                         waveCount = 0;
                         return;
                     case EVENT_WAVE:
@@ -188,7 +197,7 @@ public:
                                     SummonUndead(MOB_GUARDIAN, RAID_MODE(5,10));break;
                         }
                         ++waveCount;
-                        events.ScheduleEvent(waveCount < 2 ? EVENT_WAVE : EVENT_GROUND, 30000 + rand()%15000);
+                        events.ScheduleEvent(waveCount < 2 ? EVENT_WAVE : EVENT_GROUND, 30000);
                         return;
                     case EVENT_GROUND:
                     {
@@ -201,6 +210,12 @@ public:
                         return;
                     }
                 }
+            }
+
+            if(balconyCount > 3)
+            {
+                if(!me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE) && !me->HasAura(SPELL_BERSERK))
+                    DoCast(me,SPELL_BERSERK,true);
             }
 
             if (me->HasReactState(REACT_AGGRESSIVE))

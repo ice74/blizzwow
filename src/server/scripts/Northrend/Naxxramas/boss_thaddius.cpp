@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ScriptPCH.h"
@@ -137,6 +137,35 @@ public:
         bool checkFeugenAlive;
         uint32 uiAddsTimer;
 
+        void Reset()
+        {
+            _Reset();
+
+            if (Creature *pFeugen = me->GetCreature(*me, instance->GetData64(DATA_FEUGEN)))
+            {
+                pFeugen->Respawn(true);
+                checkFeugenAlive = pFeugen->isAlive();
+            }
+
+            if (Creature *pStalagg = me->GetCreature(*me, instance->GetData64(DATA_STALAGG)))
+            {
+                pStalagg->Respawn(true);
+                checkStalaggAlive = pStalagg->isAlive();
+            }
+
+            if (!checkFeugenAlive && !checkStalaggAlive)
+            {
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED);
+                me->SetReactState(REACT_AGGRESSIVE);
+            }
+            else
+            {
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED);
+                me->SetReactState(REACT_PASSIVE);
+            }
+
+        }
+
         void KilledUnit(Unit* /*victim*/)
         {
             if (!(rand()%5))
@@ -240,6 +269,7 @@ public:
                         events.ScheduleEvent(EVENT_CHAIN, urand(10000,20000));
                         return;
                     case EVENT_BERSERK:
+                        me->InterruptNonMeleeSpells(false);
                         DoCast(me, SPELL_BERSERK);
                         return;
                 }
@@ -318,9 +348,11 @@ public:
 
                         // reset aggro to be sure that feugen will not follow the jump
                         pFeugen->getThreatManager().modifyThreatPercent(pFeugenVictim, -100);
+                        pFeugen->getThreatManager().modifyThreatPercent(pStalaggVictim, 100);
                         pFeugenVictim->JumpTo(me, 0.3f);
 
                         me->getThreatManager().modifyThreatPercent(pStalaggVictim, -100);
+                        me->getThreatManager().modifyThreatPercent(pFeugenVictim, 100);
                         pStalaggVictim->JumpTo(pFeugen, 0.3f);
                     }
                 }

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ScriptPCH.h"
@@ -26,6 +26,7 @@
 #define SPELL_SPELL_DISRUPTION  29310
 #define SPELL_DECREPIT_FEVER    RAID_MODE(29998,55011)
 #define SPELL_PLAGUE_CLOUD      29350
+#define ACHIEV_SAFETY_DANCE     RAID_MODE(1996,2139)
 
 enum Events
 {
@@ -60,6 +61,11 @@ public:
         bool eruptDirection;
         Phases phase;
 
+        void Reset()
+        {
+            _Reset();
+        }
+
         void KilledUnit(Unit* /*Victim*/)
         {
             if (!(rand()%5))
@@ -75,6 +81,7 @@ public:
         void EnterCombat(Unit * /*who*/)
         {
             _EnterCombat();
+            TeleportCheaters();
             DoScriptText(SAY_AGGRO, me);
             EnterPhase(PHASE_FIGHT);
         }
@@ -86,6 +93,7 @@ public:
             eruptSection = 3;
             if (phase == PHASE_FIGHT)
             {
+                me->GetMotionMaster()->MoveChase(me->getVictim());
                 events.ScheduleEvent(EVENT_DISRUPT, urand(10000, 25000));
                 events.ScheduleEvent(EVENT_FEVER, urand(15000, 20000));
                 events.ScheduleEvent(EVENT_PHASE, 90000);
@@ -96,6 +104,7 @@ public:
                 float x, y, z, o;
                 me->GetHomePosition(x, y, z, o);
                 me->NearTeleportTo(x, y, z, o);
+                me->GetMotionMaster()->MoveIdle();
                 DoCastAOE(SPELL_PLAGUE_CLOUD);
                 events.ScheduleEvent(EVENT_PHASE, 45000);
                 events.ScheduleEvent(EVENT_ERUPT, 8000);
@@ -136,7 +145,7 @@ public:
 
                         eruptDirection ? ++eruptSection : --eruptSection;
 
-                        events.ScheduleEvent(EVENT_ERUPT, phase == PHASE_FIGHT ? 10000 : 3000);
+                        events.ScheduleEvent(EVENT_ERUPT, phase == PHASE_FIGHT ? 10000 : 4000);
                         break;
                 }
             }

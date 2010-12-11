@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+ 
 #include "ScriptPCH.h"
 #include "naxxramas.h"
 
@@ -25,7 +25,8 @@ enum Spells
     SPELL_DEATHBLOOM                                       = 29865,
     H_SPELL_DEATHBLOOM                                     = 55053,
     SPELL_INEVITABLE_DOOM                                  = 29204,
-    H_SPELL_INEVITABLE_DOOM                                = 55052
+    H_SPELL_INEVITABLE_DOOM                                = 55052,
+    SPELL_BERSERK                                          = 27680
 };
 
 enum Events
@@ -34,6 +35,7 @@ enum Events
     EVENT_AURA,
     EVENT_BLOOM,
     EVENT_DOOM,
+    EVENT_BERSERK
 };
 
 class boss_loatheb : public CreatureScript
@@ -56,6 +58,7 @@ public:
             events.ScheduleEvent(EVENT_AURA, 10000);
             events.ScheduleEvent(EVENT_BLOOM, 5000);
             events.ScheduleEvent(EVENT_DOOM, 120000);
+            events.ScheduleEvent(EVENT_BERSERK, 12*60000);
         }
 
         void UpdateAI(const uint32 diff)
@@ -82,6 +85,14 @@ public:
                     case EVENT_DOOM:
                         DoCastAOE(RAID_MODE(SPELL_INEVITABLE_DOOM,H_SPELL_INEVITABLE_DOOM));
                         events.ScheduleEvent(EVENT_DOOM, events.GetTimer() < 5*60000 ? 30000 : 15000);
+                        break;
+                    case EVENT_BERSERK:
+                        if(getDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
+                        {
+                            if(!me->HasAura(SPELL_BERSERK))
+                                DoCast(me,SPELL_BERSERK,true);
+                        }
+                         events.ScheduleEvent(EVENT_BERSERK, 60000);
                         break;
                 }
             }
@@ -114,7 +125,7 @@ public:
 
         void JustDied(Unit* killer)
         {
-            DoCast(killer, SPELL_FUNGAL_CREEP);
+            DoCastAOE(SPELL_FUNGAL_CREEP, true); //A Little bit hacky ... but it works now (without triggered no cast on death)
         }
     };
 

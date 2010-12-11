@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+ 
 #include "ScriptPCH.h"
 #include "naxxramas.h"
 
@@ -22,7 +22,7 @@
 #define SPELL_ENRAGE            RAID_MODE(28371,54427)
 #define SPELL_DECIMATE          RAID_MODE(28374,54426)
 #define SPELL_BERSERK           26662
-#define SPELL_INFECTED_WOUND    29306
+#define SPELL_INFECTED_WOUND    29307
 
 #define MOB_ZOMBIE  16360
 
@@ -80,15 +80,19 @@ public:
             _EnterCombat();
             events.ScheduleEvent(EVENT_WOUND, 10000);
             events.ScheduleEvent(EVENT_ENRAGE, 15000);
-            events.ScheduleEvent(EVENT_DECIMATE, 105000);
-            events.ScheduleEvent(EVENT_BERSERK, 8*60000);
+            events.ScheduleEvent(EVENT_DECIMATE, RAID_MODE(120000,90000));
+            events.ScheduleEvent(EVENT_BERSERK, RAID_MODE(8*60000,7*60000));
             events.ScheduleEvent(EVENT_SUMMON, 15000);
         }
 
         void JustSummoned(Creature *summon)
         {
             if (summon->GetEntry() == MOB_ZOMBIE)
+            {
                 summon->AI()->AttackStart(me);
+                summon->CastSpell(summon,SPELL_INFECTED_WOUND,true);
+            }
+
             summons.Summon(summon);
         }
 
@@ -115,15 +119,34 @@ public:
                     case EVENT_DECIMATE:
                         // TODO : Add missing text
                         DoCastAOE(SPELL_DECIMATE);
-                        events.ScheduleEvent(EVENT_DECIMATE, 105000);
+                        events.ScheduleEvent(EVENT_DECIMATE, RAID_MODE(120000,90000));
+
+                        for (std::list<uint64>::const_iterator itr = summons.begin(); itr != summons.end(); ++itr)
+                        {
+                            Creature *minion = Unit::GetCreature(*me, *itr);
+                            if (minion && minion->isAlive() )
+                            {
+                                //hack
+                                int32 damage = int32(minion->GetHealth()) - int32(minion->CountPctFromMaxHealth(5));
+                                if (damage > 0)
+                                    me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, minion, true);
+
+                                if(minion->AI()) //is useless
+                                {
+                                    minion->GetMotionMaster()->MoveChase(me);
+                                    minion->AddThreat(me,9999999);
+                                }
+                            }
+                        }
                         break;
                     case EVENT_BERSERK:
-                        DoCast(me, SPELL_BERSERK);
-                        events.ScheduleEvent(EVENT_BERSERK, 5*60000);
+                        if(!me->HasAura(SPELL_BERSERK))
+                            DoCast(me, SPELL_BERSERK);
+                        events.ScheduleEvent(EVENT_BERSERK, 1*60000);
                         break;
                     case EVENT_SUMMON:
                         for (int32 i = 0; i < RAID_MODE(1, 2); ++i)
-                            DoSummon(MOB_ZOMBIE, PosSummon[rand() % 3]);
+                            DoSummon(MOB_ZOMBIE, PosSummon[RAID_MODE(0,rand() % 3)]);
                         events.ScheduleEvent(EVENT_SUMMON, 10000);
                         break;
                 }

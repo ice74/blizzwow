@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2010 BloodyCore <http://code.google.com/p/bloodycore/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "ScriptPCH.h"
@@ -89,24 +89,31 @@ public:
 
     bool OnGossipHello(Player *pPlayer, GameObject *pGO)
     {
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
-        if (InstanceScript* pInstance = pGO->GetInstanceScript())
+        InstanceScript* pInstance = pGO->GetInstanceScript();
+        if (!pInstance)
+            return false;
+
+        pPlayer->ADD_GOSSIP_ITEM(0, "Главный лагерь экспедиции", GOSSIP_SENDER_MAIN, BASE_CAMP);
+        if (pInstance->GetBossState(DATA_PRELEVIATHAN) == DONE || pPlayer->isGameMaster())
         {
-            if (pInstance->GetData(TYPE_COLOSSUS) == 2) //count of 2 collossus death
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
-            if (pInstance->GetBossState(TYPE_LEVIATHAN) == DONE)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
-            if (pInstance->GetBossState(TYPE_XT002) == DONE)
+            pPlayer->ADD_GOSSIP_ITEM(0, "Плац", GOSSIP_SENDER_MAIN, GROUNDS);
+            if (pInstance->GetBossState(TYPE_LEVIATHAN) == DONE || pPlayer->isGameMaster())
             {
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+                pPlayer->ADD_GOSSIP_ITEM(0, "Гигантская кузня", GOSSIP_SENDER_MAIN, FORGE);
+                if (pInstance->GetBossState(TYPE_XT002) == DONE || pPlayer->isGameMaster())
+                {
+                    pPlayer->ADD_GOSSIP_ITEM(0, "Мусорная свалка", GOSSIP_SENDER_MAIN, SCRAPYARD);
+                    pPlayer->ADD_GOSSIP_ITEM(0, "Вестибюль", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+                    if (pInstance->GetBossState(TYPE_KOLOGARN) == DONE || pPlayer->isGameMaster())
+                    {
+                        pPlayer->ADD_GOSSIP_ITEM(0, "Обвалившаяся галерея", GOSSIP_SENDER_MAIN, WALKWAY);
+                        if (pInstance->GetBossState(TYPE_AURIAYA) == DONE || pPlayer->isGameMaster())
+                            pPlayer->ADD_GOSSIP_ITEM(0, "Оранжерея жизни", GOSSIP_SENDER_MAIN, CONSERVATORY);
+                    }
+                }
             }
-            if (pInstance->GetBossState(TYPE_KOLOGARN) == DONE)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
-            if (pInstance->GetBossState(TYPE_AURIAYA) == DONE)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
         }
-        pPlayer->SEND_GOSSIP_MENU(pGO->GetGOInfo()->GetGossipMenuId(), pGO->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pGO->GetGUID());
         return true;
     }
 

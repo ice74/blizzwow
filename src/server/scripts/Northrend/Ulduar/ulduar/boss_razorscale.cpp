@@ -15,7 +15,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 //TODO: Harpoon event is automated needs to be checked
+
 
 /* ScriptData
 SDName: Razorscale
@@ -23,8 +25,10 @@ SDAuthor: PrinceCreed
 SD%Complete: 100
 EndScriptData */
 
+
 #include "ScriptPCH.h"
 #include "ulduar.h"
+
 
 enum Says
 {
@@ -39,7 +43,9 @@ enum Says
     EMOTE_PERMA                     = -1603268,
 };
 
+
 #define GOSSIP_ITEM_1 "Activate Harpoones!"
+
 
 enum Spells
 {
@@ -56,6 +62,7 @@ enum Spells
     SPELL_BERSERK                   = 47008
 };
 
+
 const Position PosHarpoon[4] =
 {
 {594.317f, -136.953f, 391.517f, 4.544f},
@@ -64,7 +71,9 @@ const Position PosHarpoon[4] =
 {561.449f, -146.857f, 391.517f, 5.426f}
 };
 
+
 const Position PosEngSpawn = {591.951f, -95.968f, 391.517f, 0};
+
 
 const Position PosEngRepair[4] =
 {
@@ -74,6 +83,7 @@ const Position PosEngRepair[4] =
 {560.609f, -142.967f, 391.517f, 5.074f}
 };
 
+
 const Position PosDefSpawn[4] =
 {
 {600.75f, -104.850f, 391.517f, 0},
@@ -81,6 +91,7 @@ const Position PosDefSpawn[4] =
 {566.47f, -103.633f, 391.517f, 0},
 {570.41f, -108.791f, 391.517f, 0}
 };
+
 
 const Position PosDefCombat[4] =
 {
@@ -90,8 +101,10 @@ const Position PosDefCombat[4] =
 {560.231f, -153.677f, 391.517f, 5.403f}
 };
 
+
 const Position RazorFlight = {588.050f, -251.191f, 470.536f, 1.605f};
 const Position RazorGround = {586.966f, -175.534f, 391.517f, 1.692f};
+
 
 enum Mobs
 {
@@ -107,14 +120,17 @@ enum Mobs
     GOB_MOLE_MACHINE                = 194316
 };
 
+
 enum DarkRuneSpells
 {
     // Dark Rune Watcher
     SPELL_CHAIN_LIGHTNING           = 64758,
     SPELL_LIGHTNING_BOLT            = 63809,
 
+
     // Dark Rune Guardian
     SPELL_STORMSTRIKE               = 64757,
+
 
     // Dark Rune Sentinel
     SPELL_BATTLE_SHOUT              = 46763,
@@ -122,10 +138,13 @@ enum DarkRuneSpells
     SPELL_WHIRLWIND                 = 63807,
 };
 
+
 #define ACHIEVEMENT_QUICK_SHAVE     RAID_MODE(2919, 2921)
+
 
 #define ACTION_EVENT_START          1
 #define ACTION_GROUND_PHASE         2
+
 
 enum Phases
 {
@@ -134,6 +153,7 @@ enum Phases
     PHASE_GROUND,
     PHASE_FLIGHT
 };
+
 
 enum Events
 {
@@ -152,15 +172,18 @@ enum Events
     EVENT_SUMMON
 };
 
+
 class boss_razorscale : public CreatureScript
 {
 public:
     boss_razorscale() : CreatureScript("boss_razorscale") { }
 
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_razorscaleAI (pCreature);
     }
+
 
     struct boss_razorscaleAI : public BossAI
     {
@@ -172,14 +195,18 @@ public:
             me->ApplySpellImmune(0, IMMUNITY_ID, 49560, true);  // Death Grip
         }
 
+
         Phases phase;
+
 
         uint32 EnrageTimer;
         uint32 FlyCount;
 
+
         Creature* Harpoon[4];
         bool PermaGround;
         bool Enraged;
+
 
         void Reset()
         {
@@ -189,6 +216,7 @@ public:
             me->SetReactState(REACT_PASSIVE);
             PermaGround = false;
         }
+
 
         void EnterCombat(Unit* /*who*/)
         {
@@ -206,9 +234,11 @@ public:
             events.ScheduleEvent(EVENT_FLIGHT, 0, 0, PHASE_GROUND);
         }
 
+
         void JustDied(Unit* /*Killer*/)
         {
             _JustDied();
+
 
             if (instance)
             {
@@ -218,18 +248,23 @@ public:
             }
         }
 
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
 
+
             if (me->getVictim() && !me->getVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
                 me->Kill(me->getVictim());
 
+
             events.Update(diff);
+
 
             if (HealthBelowPct(50) && !PermaGround)
                 EnterPermaGround();
+
 
             if (EnrageTimer <= diff && !Enraged)
             {
@@ -237,6 +272,7 @@ public:
                 Enraged = true;
             }
             else EnrageTimer -= diff;
+
 
             if (phase == PHASE_GROUND)
             {
@@ -329,6 +365,7 @@ public:
                     }
                 }
 
+
                 DoMeleeAttackIfReady();
             }
             else
@@ -364,6 +401,7 @@ public:
             }
         }
 
+
         void EnterPermaGround()
         {
             me->MonsterTextEmote(EMOTE_PERMA, 0, true);
@@ -385,6 +423,7 @@ public:
             events.RescheduleEvent(EVENT_FUSE, 5000, 0, PHASE_PERMAGROUND);
         }
 
+
         void SummonAdds()
         {
             // Adds will come in waves from mole machines. One mole can spawn a Dark Rune Watcher
@@ -399,6 +438,7 @@ public:
             }
         }
 
+
         void DoAction(const int32 action)
         {
             switch(action)
@@ -412,15 +452,19 @@ public:
         }
     };
 
+
 };
+
 
 /*====================================================================================
 ====================================================================================*/
+
 
 class npc_expedition_commander : public CreatureScript
 {
 public:
     npc_expedition_commander() : CreatureScript("npc_expedition_commander") { }
+
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
@@ -436,6 +480,7 @@ public:
         return true;
     }
 
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature)
     {
         InstanceScript* pInstance = pCreature->GetInstanceScript();
@@ -443,18 +488,22 @@ public:
         {
             pPlayer->PrepareGossipMenu(pCreature);
 
+
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT,GOSSIP_ITEM_1,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF);
             pPlayer->SEND_GOSSIP_MENU(13853, pCreature->GetGUID());
         }
         else pPlayer->SEND_GOSSIP_MENU(13910, pCreature->GetGUID());
 
+
         return true;
     }
+
 
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_expedition_commanderAI (pCreature);
     }
+
 
     struct npc_expedition_commanderAI : public ScriptedAI
     {
@@ -464,8 +513,10 @@ public:
             greet = false;
         }
 
+
         InstanceScript* pInstance;
         SummonList summons;
+
 
         bool greet;
         uint32 uiTimer;
@@ -473,12 +524,14 @@ public:
         Creature* engineer[4];
         Creature* defender[4];
 
+
         void Reset()
         {
             uiTimer = 0;
             uiPhase = 0;
             greet = false;
         }
+
 
         void MoveInLineOfSight(Unit *who)
         {
@@ -489,10 +542,12 @@ public:
             }
         }
 
+
         void JustSummoned(Creature *summon)
         {
             summons.Summon(summon);
         }
+
 
         void DoAction(const int32 action)
         {
@@ -503,6 +558,7 @@ public:
                     break;
             }
         }
+
 
         void UpdateAI(const uint32 uiDiff)
         {
@@ -561,7 +617,10 @@ public:
         }
     };
 
+
 };
+
+
 
 
 class npc_mole_machine_trigger : public CreatureScript
@@ -569,10 +628,12 @@ class npc_mole_machine_trigger : public CreatureScript
 public:
     npc_mole_machine_trigger() : CreatureScript("npc_mole_machine_trigger") { }
 
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_mole_machine_triggerAI (pCreature);
     }
+
 
     struct npc_mole_machine_triggerAI : public Scripted_NoMovementAI
     {
@@ -582,8 +643,10 @@ public:
             me->SetVisible(false);
         }
 
+
         GameObject* MoleMachine;
         uint32 SummonTimer;
+
 
         void Reset()
         {
@@ -594,16 +657,19 @@ public:
             SummonTimer = 6000;
         }
 
+
         void UpdateAI(const uint32 uiDiff)
         {
             if (!UpdateVictim())
                 return;
+
 
             if (SummonTimer <= uiDiff)
             {
                 float x = me->GetPositionX();
                 float y = me->GetPositionY();
                 float z = me->GetPositionZ();
+
 
                 // One mole can spawn a Dark Rune Watcher with 1-2 Guardians, or a lone Sentinel
                 if (!(rand()%2))
@@ -615,10 +681,12 @@ public:
                 }
                 else me->SummonCreature(NPC_DARK_RUNE_SENTINEL, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 3000);
 
+
                 SummonTimer = 15000;
             }
             else SummonTimer -= uiDiff;
         }
+
 
         void JustSummoned(Creature *summon)
         {
@@ -626,7 +694,10 @@ public:
         }
     };
 
+
 };
+
+
 
 
 class npc_devouring_flame : public CreatureScript
@@ -634,10 +705,12 @@ class npc_devouring_flame : public CreatureScript
 public:
     npc_devouring_flame() : CreatureScript("npc_devouring_flame") { }
 
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_devouring_flameAI (pCreature);
     }
+
 
     struct npc_devouring_flameAI : public Scripted_NoMovementAI
     {
@@ -647,13 +720,17 @@ public:
             me->SetDisplayId(11686);
         }
 
+
         void Reset()
         {
             DoCast(me, SPELL_FLAME_GROUND);
         }
     };
 
+
 };
+
+
 
 
 class npc_darkrune_watcher : public CreatureScript
@@ -661,10 +738,12 @@ class npc_darkrune_watcher : public CreatureScript
 public:
     npc_darkrune_watcher() : CreatureScript("npc_darkrune_watcher") { }
 
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_darkrune_watcherAI (pCreature);
     }
+
 
     struct npc_darkrune_watcherAI : public ScriptedAI
     {
@@ -673,10 +752,13 @@ public:
             pInstance = pCreature->GetInstanceScript();
         }
 
+
         InstanceScript *pInstance;
+
 
         uint32 ChainTimer;
         uint32 LightTimer;
+
 
         void Reset()
         {
@@ -684,10 +766,12 @@ public:
             LightTimer = urand(1000, 3000);
         }
 
+
         void UpdateAI(const uint32 uiDiff)
         {
             if (!UpdateVictim())
                 return;
+
 
             if (ChainTimer <= uiDiff)
             {
@@ -696,6 +780,7 @@ public:
             }
             else ChainTimer -= uiDiff;
 
+
             if (LightTimer <= uiDiff)
             {
                 DoCastVictim(SPELL_LIGHTNING_BOLT);
@@ -703,11 +788,15 @@ public:
             }
             else LightTimer -= uiDiff;
 
+
             DoMeleeAttackIfReady();
         }
     };
 
+
 };
+
+
 
 
 class npc_darkrune_guardian : public CreatureScript
@@ -715,10 +804,12 @@ class npc_darkrune_guardian : public CreatureScript
 public:
     npc_darkrune_guardian() : CreatureScript("npc_darkrune_guardian") { }
 
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_darkrune_guardianAI (pCreature);
     }
+
 
     struct npc_darkrune_guardianAI : public ScriptedAI
     {
@@ -727,19 +818,24 @@ public:
             pInstance = pCreature->GetInstanceScript();
         }
 
+
         InstanceScript *pInstance;
 
+
         uint32 StormTimer;
+
 
         void Reset()
         {
             StormTimer = urand(3000, 6000);
         }
 
+
         void UpdateAI(const uint32 uiDiff)
         {
             if (!UpdateVictim())
                 return;
+
 
             if (StormTimer <= uiDiff)
             {
@@ -748,11 +844,15 @@ public:
             }
             else StormTimer -= uiDiff;
 
+
             DoMeleeAttackIfReady();
         }
     };
 
+
 };
+
+
 
 
 class npc_darkrune_sentinel : public CreatureScript
@@ -760,10 +860,12 @@ class npc_darkrune_sentinel : public CreatureScript
 public:
     npc_darkrune_sentinel() : CreatureScript("npc_darkrune_sentinel") { }
 
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_darkrune_sentinelAI (pCreature);
     }
+
 
     struct npc_darkrune_sentinelAI : public ScriptedAI
     {
@@ -772,11 +874,14 @@ public:
             pInstance = pCreature->GetInstanceScript();
         }
 
+
         InstanceScript *pInstance;
+
 
         uint32 HeroicTimer;
         uint32 WhirlTimer;
         uint32 ShoutTimer;
+
 
         void Reset()
         {
@@ -785,10 +890,12 @@ public:
             ShoutTimer = urand(15000, 30000);
         }
 
+
         void UpdateAI(const uint32 uiDiff)
         {
             if (!UpdateVictim())
                 return;
+
 
             if (HeroicTimer <= uiDiff)
             {
@@ -797,12 +904,14 @@ public:
             }
             else HeroicTimer -= uiDiff;
 
+
             if (WhirlTimer <= uiDiff)
             {
                 DoCastVictim(SPELL_WHIRLWIND);
                 WhirlTimer = urand(20000, 25000);
             }
             else WhirlTimer -= uiDiff;
+
 
             if (ShoutTimer <= uiDiff)
             {
@@ -811,11 +920,15 @@ public:
             }
             else ShoutTimer -= uiDiff;
 
+
             DoMeleeAttackIfReady();
         }
     };
 
+
 };
+
+
 
 
 void AddSC_boss_razorscale()

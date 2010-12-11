@@ -1,28 +1,21 @@
-/*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* 
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Script Author: LordVanMartin
  */
-
-/* ScriptData
-SDName: Instance_Halls_of_Lightning
-SD%Complete: 90%
-SDComment: All ready.
-SDCategory: Halls of Lightning
-EndScriptData */
-
+ 
 #include "ScriptPCH.h"
 #include "halls_of_lightning.h"
 
@@ -53,6 +46,7 @@ public:
         uint64 m_uiIonarGUID;
         uint64 m_uiLokenGUID;
         uint64 m_uiVolkhanGUID;
+	uint64 m_uiVolkhanAnvilGUID;
 
         uint64 m_uiBjarngrimDoorGUID;
         uint64 m_uiVolkhanDoorGUID;
@@ -68,6 +62,7 @@ public:
             m_uiVolkhanGUID          = 0;
             m_uiIonarGUID            = 0;
             m_uiLokenGUID            = 0;
+		m_uiVolkhanAnvilGUID	 = 0;
 
             m_uiBjarngrimDoorGUID    = 0;
             m_uiVolkhanDoorGUID      = 0;
@@ -76,59 +71,62 @@ public:
             m_uiLokenGlobeGUID       = 0;
         }
 
-        void OnCreatureCreate(Creature* creature)
+        void OnCreatureCreate(Creature* pCreature, bool /*add*/)
         {
-            switch(creature->GetEntry())
+            switch(pCreature->GetEntry())
             {
                 case NPC_BJARNGRIM:
-                    m_uiGeneralBjarngrimGUID = creature->GetGUID();
+                    m_uiGeneralBjarngrimGUID = pCreature->GetGUID();
                     break;
                 case NPC_VOLKHAN:
-                    m_uiVolkhanGUID = creature->GetGUID();
+                    m_uiVolkhanGUID = pCreature->GetGUID();
                     break;
                 case NPC_IONAR:
-                    m_uiIonarGUID = creature->GetGUID();
+                    m_uiIonarGUID = pCreature->GetGUID();
                     break;
                 case NPC_LOKEN:
-                    m_uiLokenGUID = creature->GetGUID();
+                    m_uiLokenGUID = pCreature->GetGUID();
                     break;
+			case NPC_VOLKHAN_ANVIL:
+				m_uiVolkhanAnvilGUID = pCreature->GetGUID();
+				break;
             }
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* pGo, bool /*add*/)
         {
-            switch(go->GetEntry())
+            switch(pGo->GetEntry())
             {
                 case GO_BJARNGRIM_DOOR:
-                    m_uiBjarngrimDoorGUID = go->GetGUID();
+                    m_uiBjarngrimDoorGUID = pGo->GetGUID();
                     if (m_auiEncounter[0] == DONE)
-                        go->SetGoState(GO_STATE_ACTIVE);
+                        pGo->SetGoState(GO_STATE_ACTIVE);
                     else
-                        go->SetGoState(GO_STATE_READY);
+                        pGo->SetGoState(GO_STATE_READY);
                     break;
                 case GO_VOLKHAN_DOOR:
-                    m_uiVolkhanDoorGUID = go->GetGUID();
+                    m_uiVolkhanDoorGUID = pGo->GetGUID();
                     if (m_auiEncounter[1] == DONE)
-                        go->SetGoState(GO_STATE_ACTIVE);
+                        pGo->SetGoState(GO_STATE_ACTIVE);
                     else
-                        go->SetGoState(GO_STATE_READY);
+                        pGo->SetGoState(GO_STATE_READY);
                     break;
                 case GO_IONAR_DOOR:
-                    m_uiIonarDoorGUID = go->GetGUID();
+                    m_uiIonarDoorGUID = pGo->GetGUID();
                     if (m_auiEncounter[2] == DONE)
-                        go->SetGoState(GO_STATE_ACTIVE);
+                        pGo->SetGoState(GO_STATE_ACTIVE);
                     else
-                        go->SetGoState(GO_STATE_READY);
+                        pGo->SetGoState(GO_STATE_READY);
                     break;
                 case GO_LOKEN_DOOR:
-                    m_uiLokenDoorGUID = go->GetGUID();
+                    m_uiLokenDoorGUID = pGo->GetGUID();
                     if (m_auiEncounter[3] == DONE)
-                        go->SetGoState(GO_STATE_ACTIVE);
+                        pGo->SetGoState(GO_STATE_ACTIVE);
                     else
-                        go->SetGoState(GO_STATE_READY);
+                        pGo->SetGoState(GO_STATE_READY);
                     break;
                 case GO_LOKEN_THRONE:
-                    m_uiLokenGlobeGUID = go->GetGUID();
+                    m_uiLokenGlobeGUID = pGo->GetGUID();
                     break;
             }
         }
@@ -139,7 +137,11 @@ public:
             {
                 case TYPE_BJARNGRIM:
                     if (uiData == DONE)
+				{
                         DoUseDoorOrButton(m_uiBjarngrimDoorGUID);
+					GameObject* pGo = instance->GetGameObject(m_uiBjarngrimDoorGUID);
+					pGo->SetGoState(GO_STATE_ACTIVE);
+				}
                     m_auiEncounter[0] = uiData;
                     break;
                 case TYPE_VOLKHAN:
@@ -197,6 +199,8 @@ public:
                     return m_uiIonarGUID;
                 case DATA_LOKEN:
                     return m_uiLokenGUID;
+			case DATA_VOLKHAN_ANVIL:
+				return m_uiVolkhanAnvilGUID;
             }
             return 0;
         }

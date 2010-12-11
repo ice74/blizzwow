@@ -1,28 +1,21 @@
-/*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
+/* 
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Script Author: LordVanMartin
  */
-
-/* Script Data Start
-SDName: Boss maiden_of_grief
-SDAuthor: LordVanMartin
-SD%Complete:
-SDComment:
-SDCategory:
-Script Data End */
-
+ 
 #include "ScriptPCH.h"
 #include "halls_of_stone.h"
 
@@ -79,7 +72,7 @@ public:
 
         void Reset()
         {
-            PartingSorrowTimer = 25000 + rand()%5000;
+            PartingSorrowTimer = 10000 + rand()%5000;
             StormOfGriefTimer = 10000;
             ShockOfSorrowTimer = 20000+rand()%5000;
             PillarOfWoeTimer = 5000 + rand()%10000;
@@ -119,39 +112,48 @@ public:
             {
                 if (PartingSorrowTimer <= diff)
                 {
-                    Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                    if(!me->IsNonMeleeSpellCasted(false))
+                    {
+                        if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                            DoCast(pTarget, SPELL_PARTING_SORROW);
 
-                    if (pTarget)
-                        DoCast(pTarget, SPELL_PARTING_SORROW);
-
-                    PartingSorrowTimer = 30000 + rand()%10000;
+                        PartingSorrowTimer = 10000 + rand()%7000;
+                    }
                 } else PartingSorrowTimer -= diff;
             }
 
             if (StormOfGriefTimer <= diff)
             {
-                DoCast(me->getVictim(), SPELL_STORM_OF_GRIEF_N, true);
-                StormOfGriefTimer = 15000 + rand()%5000;
+                if(!me->IsNonMeleeSpellCasted(false))
+                {
+                    DoCast(me->getVictim(), DUNGEON_MODE(SPELL_STORM_OF_GRIEF_N,SPELL_STORM_OF_GRIEF_H), true);
+                    StormOfGriefTimer = 15000 + rand()%5000;
+                }
             } else StormOfGriefTimer -= diff;
 
             if (ShockOfSorrowTimer <= diff)
             {
-                DoResetThreat();
-                DoScriptText(SAY_STUN, me);
-                DoCast(me, SPELL_SHOCK_OF_SORROW_N);
-                ShockOfSorrowTimer = 20000 + rand()%10000;
+                if(!me->IsNonMeleeSpellCasted(false))
+                {
+                    DoScriptText(SAY_STUN, me);
+                    DoCast(me, DUNGEON_MODE(SPELL_SHOCK_OF_SORROW_N,SPELL_SHOCK_OF_SORROW_H));
+                    ShockOfSorrowTimer = 20000 + rand()%10000;
+                }
             } else ShockOfSorrowTimer -= diff;
 
             if (PillarOfWoeTimer <= diff)
             {
-                Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+                if(!me->IsNonMeleeSpellCasted(false))
+                {
+                    Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
 
-                if (pTarget)
-                    DoCast(pTarget, SPELL_PILLAR_OF_WOE_N);
-                else
-                    DoCast(me->getVictim(), SPELL_PILLAR_OF_WOE_N);
+                    if (pTarget)
+                        DoCast(pTarget, DUNGEON_MODE(SPELL_PILLAR_OF_WOE_N,SPELL_PILLAR_OF_WOE_H));
+                    else
+                        DoCast(me->getVictim(), DUNGEON_MODE(SPELL_PILLAR_OF_WOE_N,SPELL_PILLAR_OF_WOE_H));
 
-                PillarOfWoeTimer = 5000 + rand()%20000;
+                    PillarOfWoeTimer = 5000 + rand()%20000;
+                }
             } else PillarOfWoeTimer -= diff;
 
             DoMeleeAttackIfReady();

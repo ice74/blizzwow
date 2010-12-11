@@ -1,27 +1,20 @@
-/*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* 
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Script Author: LordVanMartin
  */
-
-/* ScriptData
-SDName: Boss Volkhan
-SD%Complete: 60%
-SDComment: Not considered complete. Some events may fail and need further development
-SDCategory: Halls of Lightning
-EndScriptData */
 
 #include "ScriptPCH.h"
 #include "halls_of_lightning.h"
@@ -60,7 +53,6 @@ enum eEnums
     SPELL_SHATTER_N                         = 52429,
     SPELL_SHATTER_H                         = 59527,
 
-    NPC_VOLKHAN_ANVIL                       = 28823,
     NPC_MOLTEN_GOLEM                        = 28695,
     NPC_BRITTLE_GOLEM                       = 28681,
 
@@ -78,26 +70,6 @@ class boss_volkhan : public CreatureScript
 {
 public:
     boss_volkhan() : CreatureScript("boss_volkhan") { }
-
-    bool EffectDummyCreature(Unit* pCaster, uint32 uiSpellId, uint32 uiEffIndex, Creature* pCreatureTarget)
-    {
-        //always check spellid and effectindex
-        if (uiSpellId == SPELL_TEMPER_DUMMY && uiEffIndex == 0)
-        {
-            if (pCaster->GetEntry() != NPC_VOLKHAN_ANVIL || pCreatureTarget->GetEntry() != NPC_VOLKHAN)
-                return true;
-
-            for (uint8 i = 0; i < MAX_GOLEM; ++i)
-            {
-                pCreatureTarget->CastSpell(pCaster, SPELL_SUMMON_MOLTEN_GOLEM, true);
-            }
-
-            //always return true when we are handling this spell and effect
-            return true;
-        }
-
-        return false;
-    }
 
     CreatureAI* GetAI(Creature* pCreature) const
     {
@@ -118,11 +90,14 @@ public:
         bool m_bHasTemper;
         bool m_bIsStriking;
         bool m_bCanShatterGolem;
+        bool m_bMove;
 
         uint8 GolemsShattered;
         uint32 m_uiPause_Timer;
         uint32 m_uiShatteringStomp_Timer;
         uint32 m_uiShatter_Timer;
+        uint32 m_uiCheckTimer;
+        uint32 m_uiCheckZ;
 
         uint32 m_uiHealthAmountModifier;
 
@@ -131,16 +106,22 @@ public:
             m_bIsStriking = false;
             m_bHasTemper = false;
             m_bCanShatterGolem = false;
+            m_bMove = false;
 
-            m_uiPause_Timer = 3500;
-            m_uiShatteringStomp_Timer = 0;
-            m_uiShatter_Timer = 5000;
+            m_uiPause_Timer = 1500;
+            m_uiShatteringStomp_Timer = 30000;
+            m_uiShatter_Timer = 3000;
+            m_uiCheckTimer = 1100;
+            m_uiCheckZ = 1000;
             GolemsShattered = 0;
 
             m_uiHealthAmountModifier = 1;
 
             DespawnGolem();
-            m_lGolemGUIDList.clear();
+
+            me->SetReactState(REACT_AGGRESSIVE);
+            if (!me->HasUnitMovementFlag(MOVEMENTFLAG_WALKING))
+                me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING);
 
             if (m_pInstance)
                 m_pInstance->SetData(TYPE_VOLKHAN, NOT_STARTED);
@@ -226,16 +207,10 @@ public:
                     if (pTemp->isAlive() && pTemp->GetEntry() == NPC_BRITTLE_GOLEM)
                     {
                         pTemp->CastSpell(pTemp, DUNGEON_MODE(SPELL_SHATTER_N, SPELL_SHATTER_H), false);
-                        GolemsShattered += 1;
+                        GolemsShattered++;
                     }
                 }
             }
-        }
-
-        void SpellHit(Unit* /*pCaster*/, const SpellEntry* pSpell)
-        {
-            if (pSpell->Id == SPELL_TEMPER_DUMMY)
-                m_bIsStriking = true;
         }
 
         void JustSummoned(Creature* pSummoned)
@@ -247,8 +222,8 @@ public:
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     pSummoned->AI()->AttackStart(pTarget);
 
-                //why healing when just summoned?
-                pSummoned->CastSpell(pSummoned, DUNGEON_MODE(SPELL_HEAT_N, SPELL_HEAT_H), false, NULL, NULL, me->GetGUID());
+                //useless at this position
+                //pSummoned->CastSpell(pSummoned, DUNGEON_MODE(SPELL_HEAT_N, SPELL_HEAT_H), false, NULL, NULL, me->GetGUID());
             }
         }
 
@@ -257,8 +232,20 @@ public:
             //Return since we have no target
             if (!UpdateVictim())
                 return;
+            
+            //exploit fix, remove later
+            if (m_uiCheckZ <= uiDiff)
+            {
+                if (me->GetPositionZ() < 50.0f)
+                {
+                    EnterEvadeMode();
+                    return;
+                }
+                m_uiCheckZ = 1000;
+            }
+            else m_uiCheckZ -= uiDiff;
 
-            if (m_bIsStriking)
+            if (m_bIsStriking && !m_bMove)
             {
                 if (m_uiPause_Timer <= uiDiff)
                 {
@@ -270,7 +257,7 @@ public:
 
                     m_bHasTemper = false;
                     m_bIsStriking = false;
-                    m_uiPause_Timer = 3500;
+                    m_uiPause_Timer = 1500;
                 }
                 else
                     m_uiPause_Timer -= uiDiff;
@@ -278,21 +265,22 @@ public:
                 return;
             }
 
-            // When to start shatter? After 60, 40 or 20% hp?
-            if (!m_bHasTemper && m_uiHealthAmountModifier >= 3)
+            // ShatteringStomp all the Time, 
+            if (!m_bHasTemper && !m_bMove)
             {
                 if (m_uiShatteringStomp_Timer <= uiDiff)
                 {
-                    //should he stomp even if he has no brittle golem to shatter?
-
                     DoScriptText(RAND(SAY_STOMP_1,SAY_STOMP_2), me);
 
-                    DoCast(me, SPELL_SHATTERING_STOMP_N);
+                    DoCast(me, DUNGEON_MODE(SPELL_SHATTERING_STOMP_N,SPELL_SHATTERING_STOMP_H));
 
-                    DoScriptText(EMOTE_SHATTER, me);
+                    if (Creature* temp = me->FindNearestCreature(NPC_BRITTLE_GOLEM,99))
+                    {
+                        DoScriptText(EMOTE_SHATTER, me);
+                        m_bCanShatterGolem = true;
+                    }
 
                     m_uiShatteringStomp_Timer = 30000;
-                    m_bCanShatterGolem = true;
                 }
                 else
                     m_uiShatteringStomp_Timer -= uiDiff;
@@ -311,8 +299,13 @@ public:
                     m_uiShatter_Timer -= uiDiff;
             }
 
+            Creature* pAnvil = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_VOLKHAN_ANVIL));
+
+            float fX, fY, fZ;
+            me->GetContactPoint(pAnvil, fX, fY, fZ, INTERACTION_DISTANCE);
+
             // Health check
-            if (!m_bCanShatterGolem && me->HealthBelowPct(100 - 20 * m_uiHealthAmountModifier))
+            if (!m_bCanShatterGolem && me->HealthBelowPct(100 - 20 * m_uiHealthAmountModifier) && !m_bMove)
             {
                 ++m_uiHealthAmountModifier;
 
@@ -321,59 +314,45 @@ public:
 
                 DoScriptText(RAND(SAY_FORGE_1,SAY_FORGE_2), me);
 
-                m_bHasTemper = true;
 
-                DoCast(me, SPELL_TEMPER, false);
+                if (me->GetDistance(pAnvil) > 5)
+                {
+                    me->GetMotionMaster()->Clear();
+                    me->SetReactState(REACT_PASSIVE);
+                    me->GetMotionMaster()->MovePoint(5,fX,fY,fZ);
+                }
+
+                DoScriptText(EMOTE_TO_ANVIL, me);
+                m_bMove=true;
             }
+
+            if (me->IsWithinMeleeRange(pAnvil,5) && m_bMove)
+            {
+                me->GetMotionMaster()->Clear();
+                me->SetReactState(REACT_AGGRESSIVE);
+                m_bHasTemper = true;
+                m_bMove=false;
+                for (uint8 i = 0; i < MAX_GOLEM; ++i)
+                {
+                    DoCast(SPELL_SUMMON_MOLTEN_GOLEM);
+                }
+                DoCast(SPELL_TEMPER);
+                m_bIsStriking = true;
+            }
+
+            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType()!=POINT_MOTION_TYPE && m_bMove)
+                //if (m_uiCheckTimer<=uiDiff)
+                {
+                    me->GetMotionMaster()->MovePoint(5,fX,fY,fZ);
+                    m_uiCheckTimer=1100;
+                }
+                //else
+                    //m_uiCheckTimer-=uiDiff;
+
 
             DoMeleeAttackIfReady();
         }
     };
-
-};
-
-
-
-/*######
-## npc_volkhan_anvil
-######*/
-
-class npc_volkhan_anvil : public CreatureScript
-{
-public:
-    npc_volkhan_anvil() : CreatureScript("npc_volkhan_anvil") { }
-
-    bool EffectDummyCreature(Unit* pCaster, uint32 uiSpellId, uint32 uiEffIndex, Creature* pCreatureTarget)
-    {
-        //always check spellid and effectindex
-        if (uiSpellId == SPELL_TEMPER && uiEffIndex == 0)
-        {
-            if (pCaster->GetEntry() != NPC_VOLKHAN || pCreatureTarget->GetEntry() != NPC_VOLKHAN_ANVIL)
-                return true;
-
-            Creature *cre = CAST_CRE(pCaster);
-
-            DoScriptText(EMOTE_TO_ANVIL, pCaster);
-
-            float fX, fY, fZ;
-            pCreatureTarget->GetContactPoint(pCaster, fX, fY, fZ, INTERACTION_DISTANCE);
-
-            pCaster->AttackStop();
-
-            if (pCaster->GetMotionMaster()->GetCurrentMovementGeneratorType() == TARGETED_MOTION_TYPE)
-                pCaster->GetMotionMaster()->MovementExpired();
-
-            cre->GetMap()->CreatureRelocation(cre, fX, fY, fZ, pCreatureTarget->GetOrientation());
-            cre->SendMonsterMove(fX, fY, fZ, 0, cre->GetUnitMovementFlags(), 1);
-
-            pCreatureTarget->CastSpell(pCaster, SPELL_TEMPER_DUMMY, false);
-
-            //always return true when we are handling this spell and effect
-            return true;
-        }
-
-        return false;
-    }
 
 };
 
@@ -481,10 +460,8 @@ public:
 
 };
 
-
 void AddSC_boss_volkhan()
 {
     new boss_volkhan();
-    new npc_volkhan_anvil();
     new mob_molten_golem();
 }

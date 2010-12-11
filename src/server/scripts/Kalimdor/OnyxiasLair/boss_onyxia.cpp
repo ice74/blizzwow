@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
- *
+ * Copyright (C) 2008 - 2010 Trinity <http://www.trinitycore.org/>
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -14,6 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 /* ScriptData
 SDName: Boss_Onyxia
@@ -368,6 +368,21 @@ public:
                     }
                     else
                         m_uiBellowingRoarTimer -= uiDiff;
+
+                    if (m_uiWhelpTimer < uiDiff)
+                    {
+                        me->SummonCreature(NPC_WHELP, aSpawnLocations[0].GetPositionX(), aSpawnLocations[0].GetPositionY(), aSpawnLocations[0].GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN);
+                        me->SummonCreature(NPC_WHELP, aSpawnLocations[1].GetPositionX(), aSpawnLocations[1].GetPositionY(), aSpawnLocations[1].GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN);
+                        if (m_uiSummonWhelpCount >= RAID_MODE(8, 16))
+                        {
+                            m_uiSummonWhelpCount = 0;
+                            m_uiWhelpTimer = 40000;
+                        }
+                        else
+                            m_uiWhelpTimer = 500;
+                    }
+                    else
+                        m_uiWhelpTimer -= uiDiff;
                 }
 
                 if (m_uiFlameBreathTimer <= uiDiff)
@@ -417,6 +432,8 @@ public:
                     me->SetFlying(false);
                     m_bIsMoving = false;
                     me->GetMotionMaster()->MovePoint(9,me->GetHomePosition());
+                    m_uiWhelpTimer = 10000;
+                    m_uiSummonWhelpCount = 0;
                     return;
                 }
 

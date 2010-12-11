@@ -201,7 +201,7 @@ float FifthPortalWPs [6][3] =
     //{1827.100342f, 801.605957f, 44.363358f}
 };
 
-float SixthPoralWPs [4][3] =
+float SixthPortalWPs [4][3] =
 {
     {1888.861084f, 805.074768f, 38.375790f},
     {1869.793823f, 804.135804f, 38.647018f},
@@ -447,7 +447,6 @@ public:
                 uiBoss = pInstance->GetData(DATA_WAVE_COUNT) == 6 ? pInstance->GetData(DATA_FIRST_BOSS) : pInstance->GetData(DATA_SECOND_BOSS);
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_NON_ATTACKABLE);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
 
         void WaypointReached(uint32 uiWPointId)
@@ -773,8 +772,8 @@ struct violet_hold_trashAI : public npc_escortAI
                     break;
                 case 5:
                     for(int i=0;i<4;i++)
-                        AddWaypoint(i,SixthPoralWPs[i][0]+irand(-1,1),SixthPoralWPs[i][1]+irand(-1,1),SixthPoralWPs[i][2],0);
-                    me->SetHomePosition(SixthPoralWPs[3][0],SixthPoralWPs[3][1],SixthPoralWPs[3][2],3.149439f);
+                        AddWaypoint(i,SixthPortalWPs[i][0]+irand(-1,1),SixthPortalWPs[i][1]+irand(-1,1),SixthPortalWPs[i][2],0);
+                    me->SetHomePosition(SixthPortalWPs[3][0],SixthPortalWPs[3][1],SixthPortalWPs[3][2],3.149439f);
                     break;
             }
             SetDespawnAtEnd(false);

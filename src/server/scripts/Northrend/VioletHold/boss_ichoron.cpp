@@ -170,11 +170,11 @@ public:
 
                     bAchievement = false;
                     break;
-                case ACTION_WATER_ELEMENT_KILLED:
+                /*case ACTION_WATER_ELEMENT_KILLED:
                     uint32 damage = me->CountPctFromMaxHealth(3);
                     me->ModifyHealth(-int32(damage));
                     me->LowerPlayerDamageReq(damage);
-                    break;
+                    break;*/
             }
         }
 
@@ -388,9 +388,9 @@ public:
         void JustDied(Unit* /*pKiller*/)
         {
             DoCast(me, SPELL_SPLASH);
-            if (Creature* pIchoron = Unit::GetCreature(*me, pInstance->GetData64(DATA_ICHORON)))
+            /*if (Creature* pIchoron = Unit::GetCreature(*me, pInstance->GetData64(DATA_ICHORON)))
                 if (pIchoron->AI())
-                    pIchoron->AI()->DoAction(ACTION_WATER_ELEMENT_KILLED);
+                    pIchoron->AI()->DoAction(ACTION_WATER_ELEMENT_KILLED);*/
         }
     };
 

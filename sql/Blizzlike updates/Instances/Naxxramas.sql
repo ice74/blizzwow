@@ -90,3 +90,22 @@ INSERT INTO `gameobject` (`guid`, `id`, `map`,`spawnMask`, `position_x`, `positi
 
 UPDATE gameobject_template SET size = 1.2 WHERE entry = 181201;
 UPDATE gameobject_template SET faction = 14 WHERE entry IN (181126,181195,181167,181235,181197,181209,181123,181120,181121,181124,181125,181170,181119,181200,181201,181202,181203,181241,181225,181228,181496,181366);
+
+UPDATE creature_template SET health_mod = '3346800' WHERE entry = '16061';
+UPDATE creature_template SET health_mod = '2231200' WHERE entry = '15956';
+UPDATE creature_template SET health_mod = '780920' WHERE entry = '30549';
+UPDATE creature_template SET health_mod = '2231200' WHERE entry = '15953';
+UPDATE creature_template SET health_mod = '2789000' WHERE entry = '15932';
+UPDATE creature_template SET health_mod = '836700' WHERE entry = '16060';
+UPDATE creature_template SET health_mod = '2928450' WHERE entry = '15931';
+UPDATE creature_template SET health_mod = '2500000' WHERE entry = '15990';
+UPDATE creature_template SET health_mod = '780920' WHERE entry = '16065';
+UPDATE creature_template SET health_mod = '4322950' WHERE entry = '16028';
+UPDATE creature_template SET health_mod = '6693600' WHERE entry = '16011';
+UPDATE creature_template SET health_mod = '2510100' WHERE entry = '15952';
+UPDATE creature_template SET health_mod = '2789000' WHERE entry = '15954';
+UPDATE creature_template SET health_mod = '4183500' WHERE entry = '15989';
+UPDATE creature_template SET health_mod = '780920' WHERE entry = '16063';
+UPDATE creature_template SET health_mod = '3834875' WHERE entry = '15928';
+UPDATE creature_template SET health_mod = '780920' WHERE entry = '16064';
+UPDATE creature_template SET health_mod = '3067900' WHERE entry = '15936';

@@ -353,12 +353,12 @@ ChatCommand * ChatHandler::getCommandTable()
 
 	static ChatCommand wintergraspCommandTable[] =
     {
-        { "status",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleWintergraspStatusCommand,       "", NULL },
-        { "enable",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleWintergraspEnableCommand,       "", NULL },
-        { "start",          SEC_ADMINISTRATOR,  false, &ChatHandler::HandleWintergraspStartCommand,        "", NULL },
-        { "stop",           SEC_ADMINISTRATOR,  false, &ChatHandler::HandleWintergraspStopCommand,         "", NULL },
-        { "switch",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleWintergraspSwitchTeamCommand,   "", NULL },
-        { "timer",          SEC_ADMINISTRATOR,  false, &ChatHandler::HandleWintergraspTimerCommand,        "", NULL },
+        { "status",         SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWintergraspStatusCommand>,       "", NULL },
+        { "enable",         SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWintergraspEnableCommand>,       "", NULL },
+        { "start",          SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWintergraspStartCommand>,        "", NULL },
+        { "stop",           SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWintergraspStopCommand>,         "", NULL },
+        { "switch",         SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWintergraspSwitchTeamCommand>,   "", NULL },
+        { "timer",          SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleWintergraspTimerCommand>,        "", NULL },
         { NULL,             0,                  false, NULL,                                               "", NULL }
     };
 	
@@ -448,10 +448,9 @@ ChatCommand * ChatHandler::getCommandTable()
         { "bindsight",      SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleBindSightCommand>,           "", NULL },
         { "unbindsight",    SEC_ADMINISTRATOR,  false, OldHandler<&ChatHandler::HandleUnbindSightCommand>,         "", NULL },
         { "playall",        SEC_GAMEMASTER,  false, OldHandler<&ChatHandler::HandlePlayAllCommand>,             "", NULL },
-<<<<<<< .mine		{ "wg",             SEC_ADMINISTRATOR,  false, NULL,                                           "", wintergraspCommandTable },
-		{ "findflyhacker",  SEC_PLAYER,         false, &ChatHandler::HandleFlyHackerCommand,         "", NULL },
-=======		{ "wg",             SEC_ADMINISTRATOR,  false, NULL,                                           "", wintergraspCommandTable },
->>>>>>> .theirs        { NULL,             0,                  false, NULL,                                           "", NULL }
+		{ "findflyhacker",  SEC_PLAYER,         false, OldHandler<&ChatHandler::HandleFlyHackerCommand>,         "", NULL },
+	    { "wg",             SEC_ADMINISTRATOR,  false, NULL,                                           "", wintergraspCommandTable },
+        { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
     // cache for commands, needed because some commands are loaded dynamically through ScriptMgr

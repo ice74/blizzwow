@@ -472,6 +472,7 @@ bool ChatHandler::HandleCharacterEraseCommand(const char* args){
 
     Player::DeleteFromDB(character_guid, account_id, true, true);
     PSendSysMessage(LANG_CHARACTER_DELETED,character_name.c_str(),GUID_LOPART(character_guid),account_name.c_str(), account_id);
+
     return true;
 }
 

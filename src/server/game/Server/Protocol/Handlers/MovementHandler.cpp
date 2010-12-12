@@ -461,7 +461,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                     move_type = movementInfo.flags & MOVEMENTFLAG_BACKWARD ? MOVE_FLIGHT_BACK : MOVE_FLIGHT;
                 else if (movementInfo.flags & MOVEMENTFLAG_SWIMMING)
                     move_type = movementInfo.flags & MOVEMENTFLAG_BACKWARD ? MOVE_SWIM_BACK : MOVE_SWIM;
-                else if (movementInfo.flags & MOVEMENTFLAG_WALK_MODE)
+               else if (movementInfo.flags & MOVEMENTFLAG_WALKING)
                     move_type = MOVE_WALK;
                 // hmm... in first time after login player has MOVE_SWIMBACK instead MOVE_WALKBACK
                 else
@@ -471,20 +471,20 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                 // end current speed
 
                 // movement distance
-                const float delta_x = plMover->m_transport || plMover->m_temp_transport ? 0 : plMover->GetPositionX() - movementInfo.x;
-                const float delta_y = plMover->m_transport || plMover->m_temp_transport ? 0 : plMover->GetPositionY() - movementInfo.y;
-                const float delta_z = plMover->m_transport || plMover->m_temp_transport ? 0 : plMover->GetPositionZ() - movementInfo.z;
+                const float delta_x = plMover->m_transport || plMover->m_temp_transport ? 0 : plMover->GetPositionX() - movementInfo.pos.GetPositionX();
+                const float delta_y = plMover->m_transport || plMover->m_temp_transport ? 0 : plMover->GetPositionY() - movementInfo.pos.GetPositionY();
+                const float delta_z = plMover->m_transport || plMover->m_temp_transport ? 0 : plMover->GetPositionZ() - movementInfo.pos.GetPositionZ();
                 const float real_delta = plMover->m_transport || plMover->m_temp_transport ? 0 : pow(delta_x, 2) + pow(delta_y, 2);
                 // end movement distance
 
                 const bool no_fly_auras = !(plMover->HasAuraType(SPELL_AURA_FLY) || plMover->HasAuraType(SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED)
                     || plMover->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) || plMover->HasAuraType(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED)
                     || plMover->HasAuraType(SPELL_AURA_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS) || plMover->HasAuraType(SPELL_AURA_MOD_FLIGHT_SPEED_NOT_STACK));
-                const bool no_fly_flags = (movementInfo.flags & (MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLY_MODE | MOVEMENTFLAG_FLYING)) == 0;
+                const bool no_fly_flags = (movementInfo.flags & (MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLYING)) == 0;
 
                 const bool no_swim_flags = (movementInfo.flags & MOVEMENTFLAG_SWIMMING) == 0;
                 const bool no_swim_in_water = !mover->IsInWater();
-                const bool no_swim_above_water = movementInfo.z-7.0f >= mover->GetBaseMap()->GetWaterLevel(movementInfo.x,movementInfo.y);
+                const bool no_swim_above_water = movementInfo.pos.GetPositionZ()-7.0f >= mover->GetBaseMap()->GetWaterLevel(movementInfo.pos.GetPositionX(),movementInfo.pos.GetPositionY());           
                 const bool no_swim_water = no_swim_in_water && no_swim_above_water;
 
                 const bool no_waterwalk_flags = (movementInfo.flags & MOVEMENTFLAG_WATERWALKING) == 0;
@@ -513,7 +513,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                 // end calculating section
 
                 // AntiGravity (thanks to Meekro)
-                const float JumpHeight = plMover->m_anti_JumpBaseZ - movementInfo.z;
+                const float JumpHeight = plMover->m_anti_JumpBaseZ - movementInfo.pos.GetPositionZ();
                 if (no_fly_auras && no_swim_in_water && plMover->m_anti_JumpBaseZ != 0 && JumpHeight < plMover->m_anti_Last_VSpeed)
                 {
                     #ifdef ANTICHEAT_EXCEPTION_INFO
@@ -573,7 +573,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                         else
                         {
                             plMover->m_anti_JumpCount += 1;
-                            plMover->m_anti_JumpBaseZ = movementInfo.z;
+                            plMover->m_anti_JumpBaseZ = movementInfo.pos.GetPositionZ();
                         }
                     } else
                         plMover->m_anti_JumpCount = 0;
@@ -666,11 +666,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
                 }
 
                 // Teleport To Plane checks
-                if (no_swim_in_water && movementInfo.z < 0.0001f && movementInfo.z > -0.0001f)
+                if (no_swim_in_water && movementInfo.pos.GetPositionZ() < 0.0001f && movementInfo.pos.GetPositionZ() > -0.0001f)
                 {
                     if (const Map *map = plMover->GetMap())
                     {
-                        float plane_z = map->GetHeight(movementInfo.x, movementInfo.y, MAX_HEIGHT) - movementInfo.z;
+                        float plane_z = map->GetHeight(movementInfo.pos.GetPositionX(), movementInfo.pos.GetPositionY(), MAX_HEIGHT) - movementInfo.pos.GetPositionZ();
                         plane_z = (plane_z < -500.0f) ? 0.0f : plane_z; // check holes in height map
                         if (plane_z > 0.1f || plane_z < -0.1f)
                         {

@@ -548,7 +548,7 @@ void BattlegroundIC::SpawnNpcType(uint32 type)
         if(type==BG_IC_NPC[i].type)
         {
             if(GetBGCreature(id)){
-                GetBGCreature(id)->SetVisibility(VISIBILITY_ON);
+                GetBGCreature(id)->SetVisible(true);
                 GetBGCreature(id)->SetRespawnTime(30);
                 GetBGCreature(id)->Respawn(true);
             }
@@ -574,13 +574,13 @@ void BattlegroundIC::DeSpawnNpcType(uint32 type)
                 {
                     if(!GetBGCreature(id)->GetVehicleKit()->IsVehicleInUse())
                     {
-                        GetBGCreature(id)->SetVisibility(VISIBILITY_OFF);
+                        GetBGCreature(id)->SetVisible(false);
                         GetBGCreature(id)->DisappearAndDie();
                     }
                 }
                 else
                 {
-                    GetBGCreature(id)->SetVisibility(VISIBILITY_OFF);
+                    GetBGCreature(id)->SetVisible(false);
                     GetBGCreature(id)->DisappearAndDie();
                 }
             }
@@ -932,7 +932,7 @@ void BattlegroundIC::EventPlayerCapturedFlag(Player* plr)
         plr->SetTransport(m_GunshipA);
         plr->m_movementInfo.t_pos.m_positionX=7.305609f;
         plr->m_movementInfo.t_pos.m_positionY=-0.095246f;
-        plr->m_movementInfo.t_pos.m_positionZ=34.51022;
+        plr->m_movementInfo.t_pos.m_positionZ=34.51022f;
         plr->m_movementInfo.t_guid=m_GunshipA->GetGUID();
         plr->TeleportTo(GetMapId(),661,-1244,288,0,TELE_TO_NOT_LEAVE_TRANSPORT);
         }       
@@ -944,7 +944,7 @@ void BattlegroundIC::EventPlayerCapturedFlag(Player* plr)
         plr->SetTransport(m_GunshipH);
         plr->m_movementInfo.t_pos.m_positionX=7.305609f;
         plr->m_movementInfo.t_pos.m_positionY=-0.095246f;
-        plr->m_movementInfo.t_pos.m_positionZ=34.51022;
+        plr->m_movementInfo.t_pos.m_positionZ=34.51022f;
         plr->m_movementInfo.t_guid=m_GunshipH->GetGUID();
         plr->TeleportTo(GetMapId(),661,-1244,288,0,TELE_TO_NOT_LEAVE_TRANSPORT);
         }

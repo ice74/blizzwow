@@ -124,6 +124,13 @@ class ChatHandler
         static bool LoadCommandTable() { return load_command_table;}
         static void SetLoadCommandTable(bool val){ load_command_table = val;};
 
+        // Фун. авто анонс (бан, молчанка, кик)
+        bool HandleBanCharMessege(const char* charname, const char* duration, const char* playerName, const char* reason);
+        bool HandleBanIPMessege(const char* ip, const char* duration, const char* playerName, const char* reason);
+        bool HandleBanAccMessege(const char* acc, const char* duration, const char* playerName, const char* reason);
+        bool HandleMuteCharMessege(const char* charname, const char* duration, const char* playerName, const char* reason);
+        bool HandleKickCharMessege(const char* charname, const char* playerName);
+
     protected:
         explicit ChatHandler() : m_session(NULL) {}      // for CLI subclass
         static bool SetDataForCommandInTable(ChatCommand *table, const char* text, uint32 security, std::string const& help, std::string const& fullcommand);

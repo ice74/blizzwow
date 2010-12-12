@@ -2914,6 +2914,8 @@ bool ChatHandler::HandleBanIPCommand(const char *args)
 
 bool ChatHandler::HandleBanHelper(BanMode mode, const char *args)
 {
+	std::string announce;
+	
     if (!*args)
         return false;
 
@@ -2981,6 +2983,21 @@ bool ChatHandler::HandleBanHelper(BanMode mode, const char *args)
             SetSentErrorMessage(true);
             return false;
     }
+	
+	if (mode == BAN_CHARACTER)
+	announce = "Персонаж '";
+	else if (mode == BAN_IP)
+	announce = "Ип-адресс '";
+	else
+	announce = "Аккаунт '";
+	announce += nameOrIP.c_str();
+	announce += "' был забанен на ";
+	announce += duration;
+	announce += " персонажем '";
+	announce += m_session->GetPlayerName();
+	announce += "'. Причина: ";
+	announce += reason;
+	HandleAnnounceCommand(announce.c_str());
 
     return true;
 }
@@ -3032,8 +3049,6 @@ bool ChatHandler::HandleUnBanHelper(BanMode mode, const char *args)
 {
     if (!*args)
         return false;
-
-    std::string announce;
 
     char* cnameOrIP = strtok ((char*)args, " ");
     if (!cnameOrIP)
@@ -3613,21 +3628,6 @@ bool ChatHandler::HandlePDumpLoadCommand(const char *args)
             SetSentErrorMessage(true);
             return false;
     }
-
-	if (mode == BAN_CHARACTER)
-        announce = "The character '";
-    else if (mode == BAN_IP)
-        announce = "The IP '";
-    else
-    announce = "Account '";
-    announce += nameOrIP.c_str();
-    announce += "' was banned for ";
-    announce += duration;
-    announce += " by the character '";
-    announce += m_session->GetPlayerName();
-    announce += "'. The reason is: ";
-    announce += reason;
-    HandleAnnounceCommand(announce.c_str());
 
     return true;
 }

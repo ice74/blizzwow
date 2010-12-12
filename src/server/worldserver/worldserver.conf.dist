@@ -26,6 +26,7 @@
 #    CUSTOM SERVER OPTIONS
 #    MOVEMENT ANTICHEAT
 #    OUTDOORPVP WINTERGRASP
+#    SETTINGS AVTO ANNOUNCE MESSEGE
 #
 ###################################################################################################
 
@@ -2877,8 +2878,57 @@ OutdoorPvP.Wintergrasp.Antifarm.Def = 5
 
 #
 ###################################################################################################################
+# SETTINGS AVTO ANNOUNCE MESSEGE (Script by ElecTriNo)
+#
+#    Announce.Ban.Account.Enabled
+#        Ban account avto announce enabled
+#        Default: 1 - on
+#                 0 - off
 
+Announce.Ban.Account.Enabled = 1
 
+#    Announce.Ban.Character.Enabled
+#        Ban character avto announce enabled
+#        Default: 1 - on
+#                 0 - off
 
+Announce.Ban.Character.Enabled = 1
 
+#    Announce.Ban.IP.Enabled
+#        Ban IP announce avto enabled
+#        Default: 1 - on
+#                 0 - off
+
+Announce.Ban.IP.Enabled = 1
+
+#    Announce.Mute.Character.Enabled
+#        Mute character avto announce enabled
+#        Default: 1 - on
+#                 0 - off
+
+Announce.Mute.Character.Enabled = 1
+
+#    Announce.Kick.Character.Enabled
+#        Kick character avto announce enabled
+#        Default: 1 - on
+#                 0 - off
+
+Announce.Kick.Character.Enabled = 1
+
+#    Announce.Delete.Account.Enabled
+#        Delete Account avto announce enabled
+#        Default: 1 - on
+#                 0 - off
+
+Announce.Delete.Account.Enabled = 1
+
+#    Announce.Delete.Character.Enabled
+#        Delete character avto announce enabled
+#        Default: 1 - on
+#                 0 - off
+
+Announce.Delete.Character.Enabled = 1
+
+#
+###################################################################################################################
  

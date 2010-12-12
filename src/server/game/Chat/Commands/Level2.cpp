@@ -47,8 +47,8 @@
 //mute player for some times
 bool ChatHandler::HandleMuteCommand(const char* args)
 {
-    std::string announce;
-
+    std::string announce; 
+	 
     char* nameStr;
     char* delayStr;
     extractOptFirstArg((char*)args,&nameStr,&delayStr);
@@ -56,16 +56,16 @@ bool ChatHandler::HandleMuteCommand(const char* args)
         return false;
 
     char *mutereason = strtok(NULL, "\r");
-    std::string mutereasonstr = "No reason";
+    std::string mutereasonstr = "Нет причины";
     if (mutereason != NULL)
         mutereasonstr = mutereason;
-
-    if(!mutereason)
-    {
-        PSendSysMessage("You must enter a reason of mute");
-        SetSentErrorMessage(true);
-        return false;
-    }
+		
+	if(!mutereason)
+	{
+		PSendSysMessage("Вы должны ввести причину блокировки чата");
+		SetSentErrorMessage(true);
+		return false;
+	}	
 
     Player* target;
     uint64 target_guid;
@@ -100,15 +100,15 @@ bool ChatHandler::HandleMuteCommand(const char* args)
 
     PSendSysMessage(LANG_YOU_DISABLE_CHAT, nameLink.c_str(), notspeaktime, mutereasonstr.c_str());
 
-    announce = "The character '";
-    announce += nameStr;
-    announce += "' was muted for ";
-    announce += delayStr;
-    announce += " minutes by the character '";
-    announce += m_session->GetPlayerName();
-    announce += "'. The reason is: ";
-    announce += mutereason;
-    HandleAnnounceCommand(announce.c_str());
+    announce = "У игрока '";
+	announce += nameStr;
+	announce += "' был отключён чат на ";
+	announce += delayStr;
+	announce += " минут персонажем '";
+	announce += m_session->GetPlayerName();
+	announce += "'. Причина: ";
+	announce += mutereason;
+	HandleAnnounceCommand(announce.c_str());
 
     return true;
 }
@@ -225,6 +225,8 @@ bool ChatHandler::HandleDeMorphCommand(const char* /*args*/)
 //kick player
 bool ChatHandler::HandleKickPlayerCommand(const char *args)
 {
+	std::string announce;
+	
     Player* target = NULL;
     std::string playerName;
     if (!extractPlayerTarget((char*)args, &target, NULL, &playerName))
@@ -248,12 +250,12 @@ bool ChatHandler::HandleKickPlayerCommand(const char *args)
 
     target->GetSession()->KickPlayer();
 	
-	announce = "The character '";
-    announce += target->GetName();
-    announce += "' was kicked by the character '";
-    announce += m_session->GetPlayerName();
-    announce += "'.";
-    HandleAnnounceCommand(announce.c_str());
+	announce = "Игрок '";
+	announce += target->GetName();
+	announce += "' был кикнут персонажем '";
+	announce += m_session->GetPlayerName();
+	announce += "'.";
+	HandleAnnounceCommand(announce.c_str());
 
     return true;
 }
@@ -1179,8 +1181,6 @@ bool ChatHandler::HandleCharacterTitlesCommand(const char* args)
         return false;
 
     Player* target;
-
-    std::string announce;
 
     if (!extractPlayerTarget((char*)args,&target))
         return false;

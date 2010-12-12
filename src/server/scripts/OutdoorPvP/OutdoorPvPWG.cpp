@@ -909,16 +909,20 @@ void OutdoorPvPWG::OnGameObjectRemove(GameObject *go)
     }
 }
 
-void OutdoorPvPWG::UpdateAllWorldObject()
+void OutdoorPvPWG::UpdateCreatureObject()
 {
-    // update cre and go factions
-    for (GameObjectSet::iterator itr = m_gobjects.begin(); itr != m_gobjects.end(); ++itr)
-        UpdateGameObjectInfo(*itr);
+    //update creature factions 
     for (CreatureSet::iterator itr = m_creatures.begin(); itr != m_creatures.end(); ++itr)
         UpdateCreatureInfo(*itr);
     for (QuestGiverMap::iterator itr = m_questgivers.begin(); itr != m_questgivers.end(); ++itr)
         UpdateQuestGiverPosition((*itr).first, (*itr).second);
-
+}
+void OutdoorPvPWG::UpdateAllWorldObject()
+{
+	// update go factions
+    for (GameObjectSet::iterator itr = m_gobjects.begin(); itr != m_gobjects.end(); ++itr)
+        UpdateGameObjectInfo(*itr);
+	
     // rebuild and update building states
     RebuildAllBuildings();
 
@@ -1747,7 +1751,7 @@ bool OutdoorPvPWG::Update(uint32 diff)
             StartBattle();
         }
 
-        //UpdateAllWorldObject();
+        UpdateAllWorldObject();
         UpdateClock();
 
         SendInitWorldStatesTo();
@@ -1810,6 +1814,7 @@ void OutdoorPvPWG::StartBattle()
 	uint32 CountAtk=0;
     m_wartime = true;
     UpdateAllWorldObject();
+	UpdateCreatureObject();
     m_timer = sWorld.getIntConfig(CONFIG_OUTDOORPVP_WINTERGRASP_BATTLE_TIME) * MINUTE * IN_MILLISECONDS;
 
     for (PlayerSet::iterator itr = m_players[getDefenderTeam()].begin(); itr != m_players[getDefenderTeam()].end(); ++itr)

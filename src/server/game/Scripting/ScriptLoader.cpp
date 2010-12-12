@@ -368,10 +368,11 @@ void AddSC_boss_grand_champions();
 void AddSC_instance_trial_of_the_champion();
 void AddSC_trial_of_the_champion();
 void AddSC_boss_anubarak_trial();        //Trial of the Crusader
+void AddSC_boss_lord_jaraxxus();
 void AddSC_boss_faction_champions();
 void AddSC_boss_jaraxxus();
 void AddSC_boss_beasts_of_northrend();
-void AddSC_boss_twin_valkyr();
+void AddSC_boss_twins_valkyr();
 void AddSC_trial_of_the_crusader();
 void AddSC_instance_trial_of_the_crusader();
 void AddSC_boss_anubrekhan();            //Naxxramas
@@ -419,7 +420,7 @@ void AddSC_boss_ignis();
 void AddSC_boss_razorscale();
 void AddSC_boss_xt002();
 void AddSC_boss_kologarn();
-void AddSC_boss_assembly_of_iron();
+void AddSC_bosses_assembly_of_iron();
 void AddSC_ulduar_teleporter();
 void AddSC_instance_ulduar();
 void AddSC_boss_keleseth();              //Utgarde Keep
@@ -464,7 +465,7 @@ void AddSC_instance_halls_of_reflection();   // Halls of Reflection
 void AddSC_halls_of_reflection();
 void AddSC_boss_falric();
 void AddSC_boss_marwyn();
-void AddSC_boss_the_lich_king_hor();
+void AddSC_boss_lich_king_hr();
 void AddSC_instance_icecrown_citadel(); //Icecrown Citadel
 void AddSC_boss_saurfang();
 void AddSC_boss_festergut();
@@ -1064,9 +1065,9 @@ void AddNorthrendScripts()
     AddSC_trial_of_the_champion();
     AddSC_boss_anubarak_trial();        //Trial of the Crusader
     AddSC_boss_faction_champions();
-    AddSC_boss_jaraxxus();
+    AddSC_boss_lord_jaraxxus();
     AddSC_trial_of_the_crusader();
-    AddSC_boss_twin_valkyr();
+    AddSC_boss_twins_valkyr();
     AddSC_boss_beasts_of_northrend();
     AddSC_instance_trial_of_the_crusader();
     AddSC_boss_krik_thir();             //Azjol-Nerub Azjol-Nerub
@@ -1117,7 +1118,7 @@ void AddNorthrendScripts()
     AddSC_boss_ignis();
     AddSC_boss_razorscale();
     AddSC_boss_xt002();
-    AddSC_boss_assembly_of_iron();
+    AddSC_bosses_assembly_of_iron();
     AddSC_boss_kologarn();
     AddSC_ulduar_teleporter();
     AddSC_instance_ulduar();
@@ -1163,7 +1164,7 @@ void AddNorthrendScripts()
     AddSC_halls_of_reflection();
     AddSC_boss_falric();
     AddSC_boss_marwyn();
-	AddSC_boss_the_lich_king_hor();
+    AddSC_boss_lich_king_hr();
 	AddSC_instance_icecrown_citadel(); //Icecrown Citadel
     AddSC_boss_saurfang();
     AddSC_boss_festergut();

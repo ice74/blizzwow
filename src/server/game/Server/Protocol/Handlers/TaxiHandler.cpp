@@ -28,6 +28,7 @@
 #include "Path.h"
 #include "WaypointMovementGenerator.h"
 #include "DestinationHolderImp.h"
+#include "World.h"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket & recv_data)
 {
@@ -312,7 +313,7 @@ void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& recv_data)
     }
 
     // movement anticheat fix - disallow unmount from taxi
-    if (curloc != curDest)
+    // if (curloc != curDest)
     {
          // current source node for next destination
         uint32 sourcenode = GetPlayer()->m_taxi.GetTaxiSource();

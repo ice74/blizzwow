@@ -171,6 +171,7 @@ set(scripts_STAT_SRCS
   Northrend/borean_tundra.cpp
   Northrend/howling_fjord.cpp
   Northrend/dalaran.cpp
+  Northrend/isle_of_conquest.cpp
   Northrend/DraktharonKeep/boss_trollgore.cpp
   Northrend/DraktharonKeep/instance_drak_tharon_keep.cpp
   Northrend/DraktharonKeep/boss_novos.cpp

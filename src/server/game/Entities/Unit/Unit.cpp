@@ -5395,6 +5395,24 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     triggered_spell_id = 33494;
                     break;
                 }
+				//Item - Icecrown 25 Normal Tank Weapon Proc 
+				case 71871: 
+                { 
+                    triggered_spell_id = 71870; 
+					target = this; 
+					break; 
+				} 
+				//Item - Icecrown 25 Heroic Tank Weapon Proc 
+				case 71873: 
+                { 
+                    triggered_spell_id = 71872; 
+					target = this; 
+					break; 
+                } 
+				// Twisted Reflection (boss spell) 
+				case 21063: 
+                    triggered_spell_id = 21064; 
+                    break;          
                 // Twisted Reflection (boss spell)
                 case 21063:
                     triggered_spell_id = 21064;
@@ -5463,6 +5481,20 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 // Sunwell Exalted Caster Neck (??? neck)
                 // cast ??? Light's Wrath if Exalted by Aldor
                 // cast ??? Arcane Bolt if Exalted by Scryers
+				//Item - Icecrown 25 Normal Caster Weapon Proc 
+					case 71845: 
+                    { 
+                        triggered_spell_id = 71843; 
+                        target = this; 
+                        break; 
+                    } 
+					//Item - Icecrown 25 Heroic Caster Weapon Proc 
+					case 71846: 
+					{ 
+						triggered_spell_id = 71844; 
+						target = this; 
+						break; 
+					}
                 case 46569:
                     return false;                           // old unused version
                 // Sunwell Exalted Caster Neck (Shattered Sun Pendant of Acumen neck)
@@ -5719,6 +5751,56 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     {
                         if (!ToPlayer()->HasSpellCooldown(*itr))
                             ToPlayer()->AddSpellCooldown(*itr,0,time(NULL) + cooldown);
+                    }
+                    break;
+                }
+                // Heartpierce Normal
+                case 71880:
+                {
+                    if (GetTypeId() != TYPEID_PLAYER)
+                        return false;
+
+                    switch (getPowerType())
+                    {
+                        case POWER_MANA:
+                            triggered_spell_id = 71881;
+                            break;
+                        case POWER_ENERGY:
+                            triggered_spell_id = 71882;
+                            break;
+                        case POWER_RAGE:
+                            triggered_spell_id = 71883;
+                            break;
+                        case POWER_RUNIC_POWER:
+                            triggered_spell_id = 71884;
+                            break;
+                        default:
+                            return false;
+                    }
+                    break;
+                }
+                // Heartpierce Heroic
+                case 71892:
+                {
+                    if (GetTypeId() != TYPEID_PLAYER)
+                        return false;
+
+                    switch (getPowerType())
+                    {
+                        case POWER_MANA:
+                            triggered_spell_id = 71888;
+                            break;
+                        case POWER_ENERGY:
+                            triggered_spell_id = 71887;
+                            break;
+                        case POWER_RAGE:
+                            triggered_spell_id = 71886;
+                            break;
+                        case POWER_RUNIC_POWER:
+                            triggered_spell_id = 71885;
+                            break;
+                        default:
+                            return false;
                     }
                     break;
                 }
@@ -8470,6 +8552,20 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                         target = pVictim;
                         break;
                     }
+					//Item - Icecrown 25 Normal Healer Weapon Proc 
+					case 71865: 
+                    { 
+                        trigger_spell_id = 71864; 
+                        target = this; 
+                        break; 
+                    } 
+					//Item - Icecrown 25 Heroic Healer Weapon Proc 
+					case 71868: 
+                    { 
+                        trigger_spell_id = 71866; 
+                        target = this; 
+                        break; 
+                   }
                     //Item - Coliseum 25 Heroic Caster Trinket
                     case 67758:
                     {

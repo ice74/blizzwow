@@ -5211,3 +5211,8 @@ INSERT INTO `spell_proc_event` VALUES (57262, 0x01, 0x00, 0x00000400, 0x00000000
 
 DELETE FROM `spell_proc_event` WHERE `entry` IN (57277); 
 INSERT INTO `spell_proc_event` VALUES (57277, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0);
+
+--Фикс seal у палов
+DELETE FROM `spell_bonus_data` WHERE `entry`=25742;
+INSERT INTO `spell_bonus_data` (entry, direct_bonus, ap_bonus, comments) VALUES
+(25742,0,0,'Paladin - Seal of Righteousness Dummy Proc');

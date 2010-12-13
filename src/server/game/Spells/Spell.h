@@ -765,6 +765,8 @@ namespace Trinity
                             continue;
                         if (!target->isAttackableByAOE(i_requireDeadTarget))
                             continue;
+						if (!i_source->canSeeOrDetect(target, false))
+						    continue;
                         if (i_source->IsControlledByPlayer())
                         {
                             if (i_source->IsFriendlyTo(target))

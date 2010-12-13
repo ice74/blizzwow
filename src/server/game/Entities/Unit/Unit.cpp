@@ -8741,6 +8741,13 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
         case 72176:
             basepoints0 = 3;
             break;
+		// Glyph of Shadow only in shadow form
+ 		case 55689:
+ 			if (GetTypeId() != TYPEID_PLAYER)
+ 			if (Player * plr = this->ToPlayer())
+ 			if (plr->m_form != FORM_SHADOW)
+ 			return false;
+ 			break;
     }
 
     // Blade Barrier

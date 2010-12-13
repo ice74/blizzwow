@@ -3928,6 +3928,9 @@ void SpellMgr::LoadSpellCustomAttr()
             mSpellCustomAttr[i] |= SPELL_ATTR_CU_IGNORE_ARMOR;
             count++;
             break;
+		case 25742:
+            spellInfo->SpellFamilyFlags[0] |= 0x400;
+            break;
         // Strength of the Pack
         case 64381:
             spellInfo->StackAmount = 4;

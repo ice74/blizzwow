@@ -727,16 +727,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffIndex effIndex)
                 break;
             }
             case SPELLFAMILY_PALADIN:
-            {
-			 // Judgement of Righteousness
-                if (m_spellInfo->Id == 20187)
-                {
-                    float ap = m_caster->GetTotalAttackPowerValue(BASE_ATTACK);
-                    int32 holy = m_caster->SpellBaseDamageBonus(GetSpellSchoolMask(m_spellInfo));
-                    if (holy < 0)
-                        holy = 0;
-                    damage += int32(ap * 0.2f) + int32(holy * 32 / 100);
-				}
+            {			 
                 // Hammer of the Righteous
                 if (m_spellInfo->SpellFamilyFlags[1]&0x00040000)
                 {
@@ -756,12 +747,6 @@ void Spell::SpellDamageSchoolDmg(SpellEffIndex effIndex)
             }
             case SPELLFAMILY_DEATHKNIGHT:
             {
-			// Judgement - Feedback needed
-				else if (m_spellInfo->Id == 54158)
- 			    {
- 					// [1 + 0.25 * SPH + 0.16 * AP]
- 					damage += int32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.16f);
- 				}
                 // Blood Boil - bonus for diseased targets
                 if (m_spellInfo->SpellFamilyFlags[0] & 0x00040000 && unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DEATHKNIGHT, 0, 0, 0x00000002, m_caster->GetGUID()))
                 {

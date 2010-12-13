@@ -1,6 +1,6 @@
-REPLACE INTO `trinity_string` VALUES ('12006', 'Cheater DETECTED> %s  Reason> Mistiming', '', '', '', '', '', '', '', '×ÈÒÅÐ îáíàðóæåí> %s Ïðè÷èíà> Ðàñõîæäåíèå âðåìåíè');
-REPLACE INTO `trinity_string` VALUES ('12001', 'Cheater DETECTED> %s  Reason> Antigravity', '', '', '', '', '', '', '', '×ÈÒÅÐ îáíàðóæåí> %s Ïðè÷èíà> Àíòèãðàâèòàöèÿ');
-REPLACE INTO `trinity_string` VALUES ('12002', 'Cheater DETECTED> %s  Reason> MultiJamp', '', '', '', '', '', '', '', '×ÈÒÅÐ îáíàðóæåí> %s Ïðè÷èíà> Ìóëüòèïðèæêè');
-REPLACE INTO `trinity_string` VALUES ('12003', 'Cheater DETECTED> %s  Reason> Speed/Tele hack', '', '', '', '', '', '', '', '×ÈÒÅÐ îáíàðóæåí> %s Ïðè÷èíà> ÑÕ/ÒÕ');
-REPLACE INTO `trinity_string` VALUES ('12004', 'Cheater DETECTED> %s  Reason> Fly hack', '', '', '', '', '', '', '', '×ÈÒÅÐ îáíàðóæåí> %s Ïðè÷èíà> ÔÕ');
-REPLACE INTO `trinity_string` VALUES ('12005', 'Cheater DETECTED> %s  Reason> Waterwalk', '', '', '', '', '', '', '', '×ÈÒÅÐ îáíàðóæåí> %s Ïðè÷èíà> Õîæäåíèå ïî âîäå');
+REPLACE INTO `trinity_string` VALUES ('12006', 'Cheater DETECTED> %s  Reason> Mistiming', '', '', '', '', '', '', '', 'Ð§Ð˜Ð¢Ð•Ð  Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½> %s ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð°> Ð Ð°ÑÑ…Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸');
+REPLACE INTO `trinity_string` VALUES ('12001', 'Cheater DETECTED> %s  Reason> Antigravity', '', '', '', '', '', '', '', 'Ð§Ð˜Ð¢Ð•Ð  Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½> %s ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð°> ÐÐ½Ñ‚Ð¸Ð³Ñ€Ð°Ð²Ð¸Ñ‚Ð°Ñ†Ð¸Ñ');
+REPLACE INTO `trinity_string` VALUES ('12002', 'Cheater DETECTED> %s  Reason> MultiJamp', '', '', '', '', '', '', '', 'Ð§Ð˜Ð¢Ð•Ð  Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½> %s ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð°> ÐœÑƒÐ»ÑŒÑ‚Ð¸Ð¿Ñ€Ð¸Ð¶ÐºÐ¸');
+REPLACE INTO `trinity_string` VALUES ('12003', 'Cheater DETECTED> %s  Reason> Speed/Tele hack', '', '', '', '', '', '', '', 'Ð§Ð˜Ð¢Ð•Ð  Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½> %s ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð°> Ð¡Ð¥/Ð¢Ð¥');
+REPLACE INTO `trinity_string` VALUES ('12004', 'Cheater DETECTED> %s  Reason> Fly hack', '', '', '', '', '', '', '', 'Ð§Ð˜Ð¢Ð•Ð  Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½> %s ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð°> Ð¤Ð¥');
+REPLACE INTO `trinity_string` VALUES ('12005', 'Cheater DETECTED> %s  Reason> Waterwalk', '', '', '', '', '', '', '', 'Ð§Ð˜Ð¢Ð•Ð  Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½> %s ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð°> Ð¥Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ Ð¿Ð¾ Ð²Ð¾Ð´Ðµ');

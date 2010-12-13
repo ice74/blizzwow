@@ -5193,3 +5193,21 @@ INSERT INTO `spell_proc_event` (`entry`,`SchoolMask`,`SpellFamilyName`,`SpellFam
 
 UPDATE `creature_template` SET `ScriptName`='npc_savage_worg' WHERE `entry`=29735;
 UPDATE `creature_template` SET `ScriptName`='npc_dark_ranger_marrah' WHERE `entry`=24137;
+
+--Фикс спэлла
+DELETE FROM `spell_proc_event` WHERE `entry` IN (70755);
+INSERT INTO `spell_proc_event` VALUES (70755, 0x00, 0x0A, 0x00000000, 0x80000000, 0x00000000, 0x00004000, 0x00010000, 0, 101, 0);
+
+--Фикс спэлла танцующие оружие
+UPDATE `creature_template` SET `unit_flags`=`unit_flags`|33554432 WHERE `entry`=27893;
+UPDATE `creature_template` SET `mindmg`=250,`maxdmg`=450,`attackpower` = ROUND((`mindmg` + `maxdmg`) / 4 * 7),`mindmg`= ROUND(`mindmg` - `attackpower` / 7),`maxdmg` = ROUND(`maxdmg` - `attackpower` / 7),`baseattacktime`=3000  WHERE `entry`=27893;
+
+--Символ Охотника, Символ Страха, Символ Демона Бездны, Призыв Инфернала, Призыв стражника ужаса.
+DELETE FROM `spell_proc_event` WHERE `entry` IN (57264); 
+INSERT INTO `spell_proc_event` VALUES (57264, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0); 
+
+DELETE FROM `spell_proc_event` WHERE `entry` IN (57262); 
+INSERT INTO `spell_proc_event` VALUES (57262, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0); 
+
+DELETE FROM `spell_proc_event` WHERE `entry` IN (57277); 
+INSERT INTO `spell_proc_event` VALUES (57277, 0x01, 0x00, 0x00000400, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0, 101, 0);

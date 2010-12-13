@@ -6181,6 +6181,28 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     triggered_spell_id = 37378;
                     break;
                 }
+				//Glyph of Felhunter 
+				case 57264: 
+				{ 
+					triggered_spell_id = 56249; 
+                    break; 
+				} 
+				//Glyph of Fear 
+				case 42458: 
+				{ 
+					triggered_spell_id = 56244; 
+                    break; 
+				}
+				case 1122: 
+				{ 
+					triggered_spell_id = 22703; 
+                    break; 
+				} 
+				case 18540: 
+				{ 
+					triggered_spell_id = 60478; 
+                    break; 
+				}
             }
             break;
         }
@@ -6808,6 +6830,11 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
             }
             switch (dummySpell->Id)
             {
+			// Item - Paladin T10 Holy 2P Bonus
+			case 70755:
+			if(procSpell->Id == 31842)
+			triggered_spell_id = 71166;
+			break;
                 // Heart of the Crusader
                 case 20335: // rank 1
                     triggered_spell_id = 21183;
@@ -8162,6 +8189,16 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                     case 33896:             // Desperate Defense (Stonescythe Whelp, Stonescythe Alpha, Stonescythe Ambusher)
                         trigger_spell_id = 33898;
                         break;
+						//Glyph of Voidwalker   
+                    case 57277:   
+                    {   
+						if (auraSpellInfo->SpellIconID == 2557)
+						{   
+                         float stat = 0.0f;   
+                         if (GetStat(STAT_STAMINA) > stat) { trigger_spell_id = 56247;stat = GetStat(STAT_STAMINA); }   
+                       }   
+                        break;   
+                     }
                     case 43820:             // Charm of the Witch Doctor (Amani Charm of the Witch Doctor trinket)
                         // Pct value stored in dummy
                         basepoints0 = pVictim->GetCreateHealth() * SpellMgr::CalculateSpellEffectAmount(auraSpellInfo, 1) / 100;

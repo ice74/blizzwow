@@ -6992,11 +6992,51 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const *
     float radius = 5.0f;
     uint32 amount = damage > 0 ? damage : 1;
     int32 duration = GetSpellDuration(m_spellInfo);
+	Map *map = caster->GetMap(); 
+    uint32 count = 0; 
+    Position pos; 
+        GetSummonPosition(i, pos, radius, count); 
+  TempSummon *summon = map->SummonCreature(entry, pos, properties, duration, caster); 
+        if (!summon) 
+            return;
     switch (m_spellInfo->Id)
     {
-        case 1122: // Inferno
-            amount = 1;
-            break;
+        case 1122: // Inferno 
+    { 
+        amount = 1; 
+        for (count = 0; count < amount; ++count) 
+    { 
+                    
+  if(summon->GetEntry() == 89) 
+  { 
+   if (uint32 weapon = m_caster->GetUInt32Value(PLAYER_VISIBLE_ITEM_16_ENTRYID)) 
+            { 
+                summon->SetDisplayId(169); 
+                summon->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, weapon); 
+            } 
+            else 
+                summon->SetDisplayId(1691); 
+        } 
+         break; 
+   case 60478: 
+    { 
+  amount = 1; 
+  for (count = 0; count < amount; ++count) 
+    { 
+                    
+  if(summon->GetEntry() == 11859) 
+  { 
+   if (uint32 weapon = m_caster->GetUInt32Value(PLAYER_VISIBLE_ITEM_16_ENTRYID)) 
+            { 
+                summon->SetDisplayId(1912); 
+                summon->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, weapon); 
+            } 
+            else 
+                summon->SetDisplayId(1916); 
+        } 
+              
+          break; 
+    }
         case 49028: // Dancing Rune Weapon
             if (AuraEffect *aurEff = m_originalCaster->GetAuraEffect(63330, 0)) // glyph of Dancing Rune Weapon
                 duration += aurEff->GetAmount();
@@ -7039,7 +7079,9 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const *
         ExecuteLogEffectSummonObject(i, summon);
     }
 }
-
+           }
+		}
+	}	
 void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 count)
 {
     pos.SetOrientation(m_caster->GetOrientation());

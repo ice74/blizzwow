@@ -1,4 +1,5 @@
 --Античит AC2
+DELETE FROM `trinity_string` WHERE `entry` IN (12001,12002,12003,12004,12005,12006);
 REPLACE INTO `trinity_string` VALUES ('12006', 'Cheater DETECTED> %s  Reason> Mistiming', '', '', '', '', '', '', '', 'ЧИТЕР обнаружен> %s Причина> Расхождение времени');
 REPLACE INTO `trinity_string` VALUES ('12001', 'Cheater DETECTED> %s  Reason> Antigravity', '', '', '', '', '', '', '', 'ЧИТЕР обнаружен> %s Причина> Антигравитация');
 REPLACE INTO `trinity_string` VALUES ('12002', 'Cheater DETECTED> %s  Reason> MultiJamp', '', '', '', '', '', '', '', 'ЧИТЕР обнаружен> %s Причина> Мультиприжки');

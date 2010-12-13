@@ -24,7 +24,6 @@
 #    CONSOLE AND REMOTE ACCESS
 #    CHARACTER DELETE OPTIONS
 #    CUSTOM SERVER OPTIONS
-#    MOVEMENT ANTICHEAT
 #    OUTDOORPVP WINTERGRASP
 #    SETTINGS AVTO ANNOUNCE MESSEGE
 #
@@ -2742,6 +2741,7 @@ LevelReq.Mail = 1
 
 #
 ###################################################################################################
+<<<<<<< .working
 # MOVEMENT ANTICHEAT
 #
 #    Anticheat.Movement.Enable
@@ -2931,4 +2931,5 @@ Announce.Delete.Character.Enabled = 1
 
 #
 ###################################################################################################################
- 
+ =======
+>>>>>>> .merge-right.r6

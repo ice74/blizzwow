@@ -2011,8 +2011,6 @@ class Unit : public WorldObject
 
         UnitAI *i_AI, *i_disabledAI;
 
-        GameObject * m_temp_transport;
-
         void _UpdateSpells(uint32 time);
         void _DeleteRemovedAuras();
 

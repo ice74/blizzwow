@@ -1103,7 +1103,7 @@ void Spell::AddItemTarget(Item* pitem, uint32 effIndex)
 
 void Spell::DoAllEffectOnTarget(TargetInfo *target)
 {
-    if (!target || target->processed)
+    if (!target || (target && target->processed))
         return;
 
     target->processed = true;                               // Target checked in apply effects procedure

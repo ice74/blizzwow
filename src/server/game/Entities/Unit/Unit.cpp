@@ -8882,6 +8882,14 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
             basepoints0 = int32(GetTotalAttackPowerValue(BASE_ATTACK) * triggerAmount / 100.0f);
             break;
         }
+		// Petrified Twilight Scale
+		case 75481:
+		case 75475:
+        {
+            if (GetHealth() - damage > GetMaxHealth() * triggerAmount / 100)
+                return false;
+            break;
+        }
         // Body and Soul
         case 64128:
         case 65081:

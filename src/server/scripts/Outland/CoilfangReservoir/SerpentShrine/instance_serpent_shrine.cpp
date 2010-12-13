@@ -33,6 +33,7 @@ EndScriptData */
 #define TRASHMOB_COILFANG_SHATTERER 21301  //6*3
 
 #define MIN_KILLS 30
+#define ACHIEVEMENT_LURKER_ABOVE 144
 
 //NOTE: there are 6 platforms
 //there should be 3 shatterers and 2 priestess on all platforms, total of 30 elites, else it won't work!
@@ -156,6 +157,11 @@ public:
                 {
                     LurkerSubEvent = LURKER_HOOKED;
                     SetData(DATA_STRANGE_POOL, IN_PROGRESS);//just fished, signal Lurker script to emerge and start fight, we use IN_PROGRESS so it won't get saved and lurker will be alway invis at start if server restarted
+					// "Hackfix" per dare l'achievement "The Lurker Above"						
+ 								Map::PlayerList const &players = instance->GetPlayers();
+ 								if (players.getSize() == 1)
+ 									DoCompleteAchievement(ACHIEVEMENT_LURKER_ABOVE);
+ 							}
                 } else FishingTimer -= diff;
             }
             //Water checks

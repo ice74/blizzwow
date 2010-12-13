@@ -209,7 +209,10 @@ public:
             DoScriptText(SAY_DEATH, me);
 
             if (pInstance)
+			{
                 pInstance->SetData(DATA_FATHOMLORDKARATHRESSEVENT, DONE);
+				pInstance->SetData(DATA_KARATHRESSEVENT, DONE);
+			}
 
             //support for quest 10944
             me->SummonCreature(SEER_OLUM, OLUM_X, OLUM_Y, OLUM_Z, OLUM_O, TEMPSUMMON_TIMED_DESPAWN, 3600000);

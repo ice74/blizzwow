@@ -865,7 +865,7 @@ public:
 				{
 					pPlayer->RemoveAura(SPELL_WARTSBGONE_LIP_BALM);	//On enleve le buff mis par l'objet de quete
 					me->AddAura(SPELL_FROG_LOVE,me); //On ajoute l'aura a la grenouille (les coeurs)
-					StartFollow(pPlayer, 35, NULL); //La grenouille suis le joueur
+					pPlayer->RemoveAura(SPELL_WARTSBGONE_LIP_BALM);	//It removes the buff set by the object of quest
 					following=true;
 				}
 			}

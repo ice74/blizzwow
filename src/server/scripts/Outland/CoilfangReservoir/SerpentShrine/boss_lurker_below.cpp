@@ -149,7 +149,10 @@ public:
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
+			{
                 pInstance->SetData(DATA_THELURKERBELOWEVENT, DONE);
+				pInstance->SetData(DATA_STRANGE_POOL, DONE);
+			}
 
             Summons.DespawnAll();
         }

@@ -5159,3 +5159,9 @@ DELETE FROM `gameobject_involvedrelation` WHERE `quest` = 13839;
 INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (33658, 13839);
 UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=33658;
 UPDATE `quest_template` SET `ReqCreatureOrGOId2` = 33272, `ReqSpellCast2` = 63010 WHERE `entry` = 13839;
+UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;
+
+--Фикс спэлл
+DELETE FROM `spell_proc_event` WHERE `entry` IN (51696);
+INSERT INTO `spell_proc_event` VALUES (51696, 0x00, 8, 0x00000204, 0x00000000, 
+0x00000000, 0x00000000, 0x00000000, 0.000000, 100.000000, 0);

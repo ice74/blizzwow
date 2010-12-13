@@ -88,3 +88,5 @@ DELETE FROM `gameobject_involvedrelation` WHERE `quest` = 13839;
 INSERT INTO `creature_involvedrelation` (`id`, `quest`) VALUES (33658, 13839);
 UPDATE `creature_template` SET `npcflag`=`npcflag`|2 WHERE `entry`=33658;
 UPDATE `quest_template` SET `ReqCreatureOrGOId2` = 33272, `ReqSpellCast2` = 63010 WHERE `entry` = 13839;
+
+UPDATE `quest_template` SET `ReqSpellCast1`=51962, `ReqSpellCast2`=51962, `ReqSpellCast3`=51962 WHERE `entry`=12645;

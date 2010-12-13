@@ -161,7 +161,8 @@ public:
  								Map::PlayerList const &players = instance->GetPlayers();
  								if (players.getSize() == 1)
  									DoCompleteAchievement(ACHIEVEMENT_LURKER_ABOVE);
- 							}
+ 							
+							
                 } else FishingTimer -= diff;
             }
             //Water checks

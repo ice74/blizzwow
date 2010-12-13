@@ -5408,11 +5408,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     triggered_spell_id = 71872; 
 					target = this; 
 					break; 
-                } 
-				// Twisted Reflection (boss spell) 
-				case 21063: 
-                    triggered_spell_id = 21064; 
-                    break;          
+                } 			         
                 // Twisted Reflection (boss spell)
                 case 21063:
                     triggered_spell_id = 21064;
@@ -8841,7 +8837,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
  		case 55689:
  			if (GetTypeId() != TYPEID_PLAYER)
  			if (Player * plr = this->ToPlayer())
- 			if (plr->m_form != FORM_SHADOW)
+ 			if (plr->GetShapeshiftForm() != FORM_SHADOW)
  			return false;
  			break;
     }

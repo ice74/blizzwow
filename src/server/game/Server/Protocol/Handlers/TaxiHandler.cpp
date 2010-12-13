@@ -313,7 +313,8 @@ void WorldSession::HandleMoveSplineDoneOpcode(WorldPacket& recv_data)
     }
 
     // movement anticheat fix - disallow unmount from taxi
-    // if (curloc != curDest)
+	uint32 curloc;
+    if (curloc != curDest)
     {
          // current source node for next destination
         uint32 sourcenode = GetPlayer()->m_taxi.GetTaxiSource();

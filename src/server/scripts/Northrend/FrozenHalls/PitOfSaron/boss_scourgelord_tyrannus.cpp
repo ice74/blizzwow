@@ -138,7 +138,7 @@ public:
         void KilledUnit(Unit * /*victim*/)
         {
             DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
-			me->SetVisible(VISIBILITY_false);
+			me->SetVisible(false);
         }
 
         void JustDied(Unit* /*killer*/)

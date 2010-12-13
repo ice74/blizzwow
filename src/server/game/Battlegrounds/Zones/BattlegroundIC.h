@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2008-2010 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef __BATTLEGROUNDIC_H
@@ -546,7 +546,7 @@ const ICNpc BG_IC_NPC[MAX_BG_IC_NPC]=
     {BG_IC_NPC_H_ADD_1,1296.01f,-773.256f,69.958f,0.292168f            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
     {BG_IC_NPC_H_ADD_2,1295.94f,-757.756f,69.9587f,6.02165f            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
     {BG_IC_NPC_H_ADD_3,1295.09f,-760.927f,69.9587f,5.94311f            ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
-    {BG_IC_NPC_H_ADD_4,1295.67f,-765.636f,69.9745f,0.048692f        ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
+    {BG_IC_NPC_H_ADD_4,1295.67f,-765.636f,69.9745f,0.048692f       ,BG_IC_NPCID_KORKRON_GUARD,FACTION_HORDE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
     //Boss alliance + 4 add
     {BG_IC_NPC_HIGH_COMMANDER_HALFORD_WYRMBANE,224.159f,-831.012f,60.8201f,0.0191563f,BG_IC_NPCID_HIGH_COMMANDER_HALFORD_WYRMBANE,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
     {BG_IC_NPC_A_ADD_1,223.969f,-822.958f,60.8151f,0.46337f            ,BG_IC_NPCID_SEVENTH_LEGION_INFANTRY,FACTION_ALLIANCE,IC_TYPE_NONE,RESPAWN_ONE_DAY},
